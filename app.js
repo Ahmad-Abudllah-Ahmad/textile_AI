@@ -114,6 +114,8 @@ function hideAllViews() {
     document.getElementById("fvPrintingInspectionView"),
     document.getElementById("fvFinishInspectionView"),
     document.getElementById("foldingInspectionView"),
+    document.getElementById("productionPlanningView"),
+    document.getElementById("energyUtilitiesView"),
     document.getElementById("dashboardView"),
     document.getElementById("millKnowledgeCopilotView")
   ];
@@ -284,6 +286,30 @@ function routeFabricVisionSub(subId) {
   else if (subId === "folding") showFoldingInspectionView();
 }
 
+function showProductionPlanningView() {
+  const planningView = document.getElementById("productionPlanningView");
+  if (!planningView) return;
+
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "production-planning";
+  planningView.style.display = "block";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  history.pushState(null, "", "#production-planning");
+}
+
+function showEnergyUtilitiesView() {
+  const energyView = document.getElementById("energyUtilitiesView");
+  if (!energyView) return;
+
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "energy-utilities";
+  energyView.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  history.pushState(null, "", "#energy-utilities");
+}
+
 function openModuleDashboard(moduleKey = "predictive-maintenance") {
   const dashView = document.getElementById("dashboardView");
   if (!dashView) return;
@@ -351,6 +377,8 @@ window.showFvDyeingInspectionView = showFvDyeingInspectionView;
 window.showFvPrintingInspectionView = showFvPrintingInspectionView;
 window.showFvFinishInspectionView = showFvFinishInspectionView;
 window.showFoldingInspectionView = showFoldingInspectionView;
+window.showProductionPlanningView = showProductionPlanningView;
+window.showEnergyUtilitiesView = showEnergyUtilitiesView;
 window.showMillKnowledgeCopilotView = showMillKnowledgeCopilotView;
 window.openModuleDashboard = openModuleDashboard;
 window.showDashboardView = showDashboardView;
@@ -414,6 +442,10 @@ function initCard3DTilt() {
         showFabricInspectionSubView();
       } else if (moduleId === "fabric-vision" && subId) {
         routeFabricVisionSub(subId);
+      } else if (moduleId === "production-planning") {
+        showProductionPlanningView();
+      } else if (moduleId === "energy-utilities") {
+        showEnergyUtilitiesView();
       } else if (moduleId === "predictive-maintenance") {
         openModuleDashboard("predictive-maintenance");
       } else if (moduleId === "mill-knowledge") {
@@ -448,6 +480,10 @@ function initCard3DTilt() {
           showFabricInspectionSubView();
         } else if (moduleId === "fabric-vision" && subId) {
           routeFabricVisionSub(subId);
+        } else if (moduleId === "production-planning") {
+          showProductionPlanningView();
+        } else if (moduleId === "energy-utilities") {
+          showEnergyUtilitiesView();
         } else if (moduleId === "predictive-maintenance") {
           openModuleDashboard("predictive-maintenance");
         } else if (moduleId === "mill-knowledge") {
@@ -477,6 +513,22 @@ function initCard3DTilt() {
   const btnBackCopilot = document.getElementById("btnBackFromCopilot");
   if (btnBackCopilot) {
     btnBackCopilot.addEventListener("click", () => {
+      sfx.playClick();
+      showProcessingModulesView();
+    });
+  }
+
+  const btnBackPlanning = document.getElementById("btnBackFromPlanning");
+  if (btnBackPlanning) {
+    btnBackPlanning.addEventListener("click", () => {
+      sfx.playClick();
+      showProcessingModulesView();
+    });
+  }
+
+  const btnBackEnergy = document.getElementById("btnBackFromEnergy");
+  if (btnBackEnergy) {
+    btnBackEnergy.addEventListener("click", () => {
       sfx.playClick();
       showProcessingModulesView();
     });
@@ -543,6 +595,8 @@ function initCard3DTilt() {
       const fvView = document.getElementById("fabricInspectionSubView");
       const procView = document.getElementById("processingModulesView");
       const copilotView = document.getElementById("millKnowledgeCopilotView");
+      const planningView = document.getElementById("productionPlanningView");
+      const energyView = document.getElementById("energyUtilitiesView");
 
       const fvDashVisible =
         (grgView && grgView.style.display !== "none") ||
@@ -564,6 +618,12 @@ function initCard3DTilt() {
       ) {
         sfx.playClick();
         showColorIntelligenceSubView();
+      } else if (planningView && planningView.style.display !== "none") {
+        sfx.playClick();
+        showProcessingModulesView();
+      } else if (energyView && energyView.style.display !== "none") {
+        sfx.playClick();
+        showProcessingModulesView();
       } else if (copilotView && copilotView.style.display !== "none") {
         sfx.playClick();
         showProcessingModulesView();
@@ -667,6 +727,10 @@ function setupDashboardInteractions() {
       showFvFinishInspectionView();
     } else if (hash === "#fabric-inspection-folding") {
       showFoldingInspectionView();
+    } else if (hash === "#production-planning" || hash === "#processing-production-planning") {
+      showProductionPlanningView();
+    } else if (hash === "#energy-utilities" || hash === "#processing-energy-utilities") {
+      showEnergyUtilitiesView();
     } else if (hash === "#color-intelligence-suite" || hash === "#color-intelligence") {
       showColorIntelligenceSubView();
     } else if (hash === "#fabric-inspection-suite" || hash === "#fabric-vision") {
@@ -4674,12 +4738,953 @@ function setupMillKnowledgeCopilot() {
 }
 
 // ==========================================================================
-// 11. INITIALIZATION
+// 11. PRODUCTION PLANNING INTERACTIONS
+// ==========================================================================
+function setupProductionPlanningInteractions() {
+  const reoptimizeBtn = document.getElementById("btnReoptimizePlan");
+  const recoveryBtn = document.getElementById("btnApplyRecovery");
+  const stageNodes = document.querySelectorAll(".fabric-flow-node[data-plan-stage]");
+  const stagePanel = document.getElementById("stagePlanPanel");
+
+  const stagePlans = {
+    incoming: {
+      eyebrow: "SELECTED STAGE · INCOMING", title: "Greige release plan · Loom L-18", subtitle: "Roll close, quality release and routing into wet processing", machine: "L-18 · A-frame AF-221", status: "Completed 08:12 · 7 min early",
+      steps: [["Loom close","Complete · 07:46","complete"],["Metre verification","Complete · 07:54","complete"],["Greige quality release","Complete · 08:05","complete"],["Route to PT-02","Released · 08:12","live"]],
+      chartLabel: "PROCESS TIME PLAN", chartTitle: "L-18 focused release sequence", axis: ["07:30","07:42","07:54","08:06","08:12"], flowStats: [["PLANNED WINDOW","07:30–08:19"],["RELEASE VARIANCE","−7 min"],["NEXT HANDOFF","PT-02 · 08:24"]],
+      decisionTitle: "Send directly to PT-02", decisionCopy: "Greige inspection and metre reconciliation are complete. PT-02 is available with no queue conflict.", metrics: [["RELEASE VARIANCE","−7 min"],["ROLL YIELD","99.4%"]], action: "Confirm routing"
+    },
+    pretreatment: {
+      eyebrow: "SELECTED STAGE · PREPARED", title: "Pretreatment plan · PT-02", subtitle: "Continuous preparation sequence and release to the dyeing vessel", machine: "PT-02 · 42.5 m/min", status: "Completed 10:04 · 11 min early",
+      steps: [["Load & stitch","Complete · 08:24","complete"],["Scour & bleach","Complete · 09:18","complete"],["Wash & neutralize","Complete · 09:48","complete"],["Release to JD-04","Released · 10:04","live"]],
+      chartLabel: "PROCESS TIME PLAN", chartTitle: "PT-02 focused preparation sequence", axis: ["08:24","08:50","09:15","09:40","10:04"], flowStats: [["PLANNED WINDOW","08:24–10:15"],["RELEASE VARIANCE","−11 min"],["NEXT HANDOFF","JD-04 · 10:18"]],
+      decisionTitle: "Preserve direct dyeing transfer", decisionCopy: "Quality release is complete. Keep the A-frame in the protected lane to avoid an extra handling cycle.", metrics: [["RELEASE VARIANCE","−11 min"],["FIRST-PASS","99.1%"]], action: "Confirm transfer"
+    },
+    dyeing: {
+      eyebrow: "SELECTED STAGE · IN PROCESS", title: "Jet dyeing plan · JD-04", subtitle: "Recipe execution, shade control and protected release to finishing", machine: "JD-04 · 4,500 kg", status: "68% complete · +18 min",
+      steps: [["CIP verification","Complete · 10:18","complete"],["Recipe dosing","Complete · 10:36","complete"],["Dye circulation","Live · 68% complete","live"],["Shade release","Forecast · 14:47",""]],
+      chartLabel: "PROCESS TIME PLAN", chartTitle: "JD-04 focused dyeing sequence", axis: ["10:18","10:36","12:15","13:58","14:47"], flowStats: [["PLANNED WINDOW","10:18–14:29"],["CURRENT VARIANCE","+18 min"],["NEXT HANDOFF","ST-02 · 15:16"]],
+      decisionTitle: "Protect the finishing handoff", decisionCopy: "Maintain JD-04 speed and hold ST-02 until 15:16. The lot remains inside dispatch tolerance.", metrics: [["TIME TO RELEASE","46 min"],["HANDOFF BUFFER","38 min"]], action: "Apply stage plan"
+    },
+    finishing: {
+      eyebrow: "SELECTED STAGE · NEXT", title: "Stenter finishing plan · ST-02", subtitle: "Protected slot, heat-setting profile and width-control sequence", machine: "ST-02 · Slot 15:16", status: "Ready 82% · 11 min exposure",
+      steps: [["Receive A-frame","Forecast · 15:02",""] ,["Stenter setup","Reserved · 15:05","live"],["Heat-set & width","Planned · 15:16",""] ,["Release to FI-01","Forecast · 16:54",""]],
+      chartLabel: "PROCESS TIME PLAN", chartTitle: "ST-02 focused finishing sequence", axis: ["15:02","15:05","15:16","16:20","16:54"], flowStats: [["PLANNED WINDOW","15:05–16:43"],["SLOT EXPOSURE","+11 min"],["NEXT HANDOFF","FI-01 · 16:58"]],
+      decisionTitle: "Hold the reserved slot", decisionCopy: "Keep ST-02 idle for the protected transfer window. Releasing it now would create a longer downstream changeover.", metrics: [["SLOT EXPOSURE","11 min"],["SETUP READY","82%"]], action: "Protect slot"
+    },
+    inspection: {
+      eyebrow: "SELECTED STAGE · OUTGOING", title: "Final inspection plan · FI-01", subtitle: "Vision inspection, grading, packing and dispatch release", machine: "FI-01 · A-frame line", status: "Forecast start 16:58 · protected",
+      steps: [["Frame receive","Forecast · 16:58",""] ,["Vision scan","Planned · 17:04",""] ,["Grade & defect map","Planned · 17:28",""] ,["Pack & dispatch","Forecast · 17:42",""]],
+      chartLabel: "PROCESS TIME PLAN", chartTitle: "FI-01 focused inspection sequence", axis: ["16:58","17:04","17:16","17:28","17:42"], flowStats: [["PLANNED WINDOW","16:58–17:42"],["DISPATCH SLACK","48 min"],["NEXT HANDOFF","PACK · 17:48"]],
+      decisionTitle: "Reserve inspection team", decisionCopy: "Hold FI-01 and the A-frame packing team for TEX-8821. Forecast completion remains before the dispatch cut-off.", metrics: [["TRANSFER BUFFER","38 min"],["DISPATCH SLACK","48 min"]], action: "Reserve team"
+    }
+  };
+
+  const departmentPlans = {
+    incoming: {
+      layout: "roll-flow",
+      focusIndex: 2,
+      eyebrow: "GREIGE DEPARTMENT · MATERIAL ENTRY",
+      title: "Greige preparation stages & machine plan",
+      kpis: { confidence: ["97.8%","+1.2% after release","positive"], bottleneck: ["BT-03","8 min batching queue","warning"], changeover: ["18 min","Roll-family sequence","positive"], wip: ["4 rolls","23,880 m in route",""] },
+      details: ["Loom efficiency · 96%","4-point score · 8/100 yd","Batch weight · 1,420 kg","Transfer ETA · 08:24"],
+      axis: ["07:30","08:00","08:30","09:00","09:30","10:00"],
+      rows: [
+        ["L-18","Loom take-off",[["TEX-8819",2,14,"done"],["TEX-8821 · roll close",19,20,"live"],["TEX-8826",44,17,"plan"]]],
+        ["GI-02","Greige inspection",[["TEX-8816",3,13,"done"],["TEX-8821 · GSM + faults",24,23,"done"],["TEX-8824",54,18,"plan"]]],
+        ["BT-03","Batcher",[["TEX-8819",4,16,"done"],["TEX-8821 · 6,240 m",49,24,"live"],["TEX-8824",78,16,"plan"]],68],
+        ["AF-07","A-frame transfer",[["TEX-8816",3,14,"done"],["TEX-8821 → PT-02",53,19,"plan"],["TEX-8827",77,17,"plan"]]]
+      ],
+      decision: ["Release the prepared batch to PT-02.","Greige inspection is clear; keep AF-07 assigned to avoid an extra roll transfer."]
+    },
+    pretreatment: {
+      layout: "continuous-range",
+      focusIndex: 3,
+      eyebrow: "PRETREATMENT DEPARTMENT · CONTINUOUS RANGE",
+      title: "Pretreatment stages & machine plan",
+      kpis: { confidence: ["94.7%","+3.1% wet-on-wet plan","positive"], bottleneck: ["MR-01","6 min behind release","warning"], changeover: ["26 min","Chemistry family sequence","positive"], wip: ["3 lots","18,460 m in range",""] },
+      details: ["Flame · 1,050°C","Enzyme bath · 65°C","Peroxide bath · 98°C","Caustic · 22°Bé"],
+      axis: ["08:20","08:45","09:10","09:35","10:00","10:25"],
+      rows: [
+        ["SG-01","Singeing",[["TEX-8819",2,14,"done"],["TEX-8821 · singeing",19,19,"done"],["TEX-8825",45,18,"plan"]]],
+        ["DS-02","Desizing",[["TEX-8819",3,13,"done"],["TEX-8821 · desizing",24,21,"done"],["TEX-8825",51,18,"plan"]]],
+        ["CB-02","Scouring & bleaching",[["TEX-8816",2,14,"done"],["TEX-8821 · bleach",47,27,"done"],["TEX-8824",78,18,"plan"]]],
+        ["MR-01","Mercerizing",[["TEX-8816",3,14,"done"],["TEX-8821 · mercerize",61,24,"live"],["TEX-8824",87,10,"plan"]],81]
+      ],
+      decision: ["Keep the batch on the continuous range.","The singeing-to-mercerizing route is synchronized and releases directly to dyeing without intermediate storage."]
+    },
+    dyeing: {
+      layout: "batch-timeline",
+      focusIndex: 1,
+      eyebrow: "DYEING DEPARTMENT · LIVE ROUTE",
+      title: "Dyeing stages & machine plan",
+      kpis: { confidence: ["91.6%","+4.8% after recovery","positive"], bottleneck: ["JD-04","18 min behind plan","warning"], changeover: ["42 min","Light → dark sequence","positive"], wip: ["3 lots","18,460 m in route",""] },
+      details: ["Recipe accuracy · 99.4%","Bath ratio · 1:8","Rinse pH · 7.2","Residual moisture · 42%"],
+      axis: ["10:00","11:00","12:00","13:00","14:00","15:00"],
+      rows: [
+        ["CK-01","Recipe & color kitchen",[["RN-8819",2,13,"done"],["RN-8821 dosing",18,17,"done"],["RN-8827",72,15,"plan"]]],
+        ["JD-04","Jet dyeing machine",[["TEX-8819",2,15,"done"],["CIP",20,8,"changeover"],["TEX-8821 · 68%",30,37,"live"],["TEX-8827",72,23,"plan"]],61],
+        ["WS-02","Wash-off range",[["TEX-8816",3,16,"done"],["TEX-8821 · rinse",70,14,"plan"],["TEX-8824",87,10,"plan"]]],
+        ["HT-01","Hydro extractor",[["TEX-8816",4,13,"done"],["TEX-8819",28,13,"done"],["TEX-8821",86,10,"plan"]]]
+      ],
+      decision: ["Jet sequence protects the finishing slot.","Keep TEX-8821 on JD-04, then route through wash-off and hydro extraction before the protected ST-02 handoff."]
+    },
+    printing: {
+      layout: "print-cells",
+      focusIndex: 1,
+      eyebrow: "PRINTING DEPARTMENT · SCREEN ROUTE",
+      title: "Printing stages & machine plan",
+      kpis: { confidence: ["89.4%","+5.6% after screen recovery","positive"], bottleneck: ["RP-02","22 min registration delay","warning"], changeover: ["35 min","Color-family sequence","positive"], wip: ["5 lots","27,300 m in route",""] },
+      details: ["Paste viscosity · 4,200 cP","Repeat · 640 mm","Steam · 102°C","Wash pH · 7.1"],
+      axis: ["10:30","11:15","12:00","12:45","13:30","14:15"],
+      rows: [
+        ["CK-02","Print color kitchen",[["TEX-8832 paste",2,16,"done"],["TEX-8840 paste",22,17,"live"],["TEX-8821 route",74,16,"plan"]]],
+        ["RP-02","Rotary screen printer",[["TEX-8832",2,17,"done"],["Screen setup",23,10,"changeover"],["TEX-8840 print",35,30,"live"],["TEX-8821",72,20,"plan"]],57],
+        ["LS-01","Loop steamer",[["TEX-8829",3,15,"done"],["TEX-8840 fixation",68,15,"plan"],["TEX-8821",86,11,"plan"]]],
+        ["PW-01","Print wash range",[["TEX-8829",3,16,"done"],["TEX-8832",39,16,"live"],["TEX-8840",78,18,"plan"]]]
+      ],
+      decision: ["Synchronize print fixation and wash-off.","Reserve LS-01 before the print run exits RP-02 to prevent waiting time and shade migration."]
+    },
+    finishing: {
+      layout: "finish-parameters",
+      focusIndex: 0,
+      eyebrow: "FINISHING DEPARTMENT · PROTECTED SLOT",
+      title: "Finishing stages & machine plan",
+      kpis: { confidence: ["92.8%","+3.7% protected slot","positive"], bottleneck: ["ST-02","11 min slot exposure","warning"], changeover: ["24 min","Width-first sequence","positive"], wip: ["3 lots","16,840 m in route",""] },
+      details: ["185°C · 42 m/min","Nip load · 120 kN","Roll width · 1,520 mm"],
+      axis: ["15:00","15:30","16:00","16:30","17:00","17:30"],
+      rows: [
+        ["ST-02","Stenter",[["TEX-8816",2,13,"done"],["Setup buffer",17,11,"idle"],["TEX-8821 · +11m",30,31,"risk"],["TEX-8827",66,25,"plan"]],30],
+        ["CL-01","Calender",[["TEX-8819",3,17,"done"],["TEX-8821 · finish",63,17,"plan"],["TEX-8827",83,14,"plan"]]],
+        ["RL-03","Rolling & batching",[["TEX-8816",2,15,"done"],["TEX-8819",25,16,"done"],["TEX-8821 · roll",78,18,"plan"]]]
+      ],
+      decision: ["Protect the ST-02 start window.","Hold the stenter setup until dyeing release, then keep calendering and rolling in the same material-flow lane."]
+    },
+    inspection: {
+      layout: "quality-gates",
+      focusIndex: 0,
+      eyebrow: "QUALITY DEPARTMENT · OUTGOING ROUTE",
+      title: "Inspection and packing stages & machine plan",
+      kpis: { confidence: ["96.2%","+2.4% team reservation","positive"], bottleneck: ["FI-01","9 min inspection queue","warning"], changeover: ["16 min","Grouped dispatch sequence","positive"], wip: ["4 rolls","21,120 m awaiting QA",""] },
+      details: ["A-grade · 98.6%","Mapped faults · 6","Roll tension · 28 N","Dispatch · 18:30"],
+      axis: ["16:45","17:00","17:15","17:30","17:45","18:00"],
+      rows: [
+        ["FI-01","4-point inspection",[["TEX-8819",2,16,"done"],["TEX-8824",23,19,"live"],["TEX-8821 · inspect",47,26,"plan"]]],
+        ["DM-01","Defect mapping",[["TEX-8819",3,13,"done"],["TEX-8824",45,16,"plan"],["TEX-8821",65,17,"plan"]]],
+        ["RL-04","Final rolling",[["TEX-8816",2,14,"done"],["TEX-8819",22,14,"done"],["TEX-8821 · final roll",72,20,"plan"]]],
+        ["PK-02","Packing",[["TEX-8816",3,14,"done"],["TEX-8819",42,15,"live"],["TEX-8821 · dispatch",78,18,"plan"]]]
+      ],
+      decision: ["Keep inspection and packing as one flow.","Pre-stage RL-04 and dispatch labels so accepted fabric moves directly from FI-01 into packing."]
+    }
+  };
+
+  const planningView = document.getElementById("productionPlanningView");
+  const planningTooltip = document.createElement("div");
+  planningTooltip.className = "planning-tooltip";
+  planningTooltip.setAttribute("role", "tooltip");
+  planningTooltip.setAttribute("aria-hidden", "true");
+  planningView?.appendChild(planningTooltip);
+
+  stageNodes.forEach((node) => {
+    const plan = departmentPlans[node.dataset.planStage];
+    if (plan) node.dataset.tooltip = `${plan.title} · Click to open its machines, concurrent lots and selected-lot route`;
+  });
+  document.querySelectorAll(".planning-kpi").forEach((card) => { card.dataset.tooltip = card.textContent.trim().replace(/\s+/g," "); });
+  document.querySelectorAll(".schedule-legend span").forEach((item) => { item.dataset.tooltip = `${item.textContent.trim()} schedule status`; });
+  if (recoveryBtn) recoveryBtn.dataset.tooltip = "Apply the AI-recommended recovery action to the selected department plan";
+
+  function positionPlanningTooltip(target, event) {
+    const rect = target.getBoundingClientRect();
+    const anchorX = event?.clientX || rect.left + rect.width / 2;
+    const anchorY = event?.clientY || rect.top;
+    planningTooltip.style.left = `${Math.min(anchorX + 14, window.innerWidth - 292)}px`;
+    planningTooltip.style.top = `${Math.max(12, anchorY - 10)}px`;
+  }
+
+  function showPlanningTooltip(target, event) {
+    if (!target?.dataset.tooltip) return;
+    planningTooltip.textContent = target.dataset.tooltip;
+    planningTooltip.classList.add("is-visible");
+    planningTooltip.setAttribute("aria-hidden", "false");
+    positionPlanningTooltip(target, event);
+  }
+
+  function hidePlanningTooltip() {
+    planningTooltip.classList.remove("is-visible");
+    planningTooltip.setAttribute("aria-hidden", "true");
+  }
+
+  planningView?.addEventListener("pointerover", (event) => showPlanningTooltip(event.target.closest("[data-tooltip]"), event));
+  planningView?.addEventListener("pointermove", (event) => {
+    const target = event.target.closest("[data-tooltip]");
+    if (target && planningTooltip.classList.contains("is-visible")) positionPlanningTooltip(target, event);
+  });
+  planningView?.addEventListener("pointerout", (event) => {
+    const target = event.target.closest("[data-tooltip]");
+    if (target && !target.contains(event.relatedTarget)) hidePlanningTooltip();
+  });
+  planningView?.addEventListener("focusin", (event) => showPlanningTooltip(event.target.closest("[data-tooltip]")));
+  planningView?.addEventListener("focusout", hidePlanningTooltip);
+  stagePanel?.addEventListener("click", (event) => {
+    const block = event.target.closest(".lot-block,.changeover-block,.idle-block");
+    const lane = event.target.closest(".machine-lane");
+    if (block) {
+      stagePanel.querySelectorAll(".is-user-selected").forEach((item) => item.classList.remove("is-user-selected"));
+      block.classList.add("is-user-selected");
+    } else if (lane) {
+      stagePanel.querySelectorAll(".machine-lane.is-inspected").forEach((item) => item.classList.remove("is-inspected"));
+      lane.classList.add("is-inspected");
+    }
+  });
+  stagePanel?.addEventListener("keydown", (event) => {
+    if ((event.key === "Enter" || event.key === " ") && event.target.matches("[role='button'],.machine-lane")) {
+      event.preventDefault();
+      event.target.click();
+    }
+  });
+
+  function renderStagePlan(stageKey, shouldScroll) {
+    const plan = departmentPlans[stageKey];
+    if (!plan) return;
+    stageNodes.forEach((node) => {
+      const selected = node.dataset.planStage === stageKey;
+      node.classList.toggle("is-selected", selected);
+      if (selected) node.setAttribute("aria-current", "step");
+      else node.removeAttribute("aria-current");
+    });
+    const eyebrow = document.getElementById("departmentScheduleEyebrow");
+    const title = document.getElementById("departmentScheduleTitle");
+    const axis = document.getElementById("departmentTimeAxis");
+    const lanes = document.getElementById("departmentMachineLanes");
+    const decisionTitle = document.getElementById("departmentDecisionTitle");
+    const decisionCopy = document.getElementById("departmentDecisionCopy");
+    if (eyebrow) eyebrow.textContent = plan.eyebrow;
+    if (title) title.textContent = plan.title;
+    [
+      ["planningKpiConfidence","planningKpiConfidenceNote",plan.kpis.confidence],
+      ["planningKpiBottleneck","planningKpiBottleneckNote",plan.kpis.bottleneck],
+      ["planningKpiChangeover","planningKpiChangeoverNote",plan.kpis.changeover],
+      ["planningKpiWip","planningKpiWipNote",plan.kpis.wip]
+    ].forEach(([valueId, noteId, data]) => {
+      const value = document.getElementById(valueId);
+      const note = document.getElementById(noteId);
+      if (value) value.textContent = data[0];
+      if (note) { note.textContent = data[1]; note.className = data[2] || ""; }
+      const card = value?.closest(".planning-kpi");
+      if (card) card.dataset.tooltip = `${card.querySelector("span")?.textContent || "Planning indicator"} · ${data[0]} · ${data[1]}`;
+    });
+    if (stagePanel) {
+      stagePanel.classList.remove("is-roll-flow","is-continuous-range","is-batch-timeline","is-print-cells","is-finish-parameters","is-quality-gates");
+      stagePanel.classList.add("is-batch-timeline");
+      stagePanel.dataset.department = stageKey;
+    }
+    if (axis) {
+      axis.classList.remove("is-hidden");
+      axis.innerHTML = `<span></span>${plan.axis.map((time) => `<b data-tooltip="Timeline marker · ${time}">${time}</b>`).join("")}`;
+    }
+    if (lanes) {
+      lanes.className = "machine-lanes department-layout-batch-timeline";
+      lanes.innerHTML = plan.rows.map(([code, name, blocks, now], index) => {
+        const hasFocusLot = blocks.some(([label]) => label.includes("TEX-8821") || label.includes("RN-8821"));
+        return `<div class="machine-lane${hasFocusLot ? " has-focus-lot" : ""}" tabindex="0" data-tooltip="${code} · ${name} · ${plan.details[index]}">
+          <div class="machine-label"><strong>${code}</strong><span>${name}</span><em>${plan.details[index]}</em></div>
+          <div class="lane-track">
+            ${blocks.map(([label, left, width, state]) => {
+              const isFocus = label.includes("TEX-8821") || label.includes("RN-8821");
+              const status = state === "done" ? "Completed" : state === "live" ? "Active now" : state === "risk" ? "At risk" : state === "changeover" ? "Changeover" : state === "idle" ? "Protected buffer" : "Planned";
+              const blockClass = state === "changeover" ? "changeover-block" : state === "idle" ? "idle-block" : `lot-block${state === "done" ? " is-done" : state === "live" ? " is-live" : state === "risk" ? " is-risk" : ""}`;
+              return `<span class="${blockClass}${isFocus ? " is-focus-lot" : ""}" tabindex="0" role="button" data-tooltip="${label} · ${status} · ${code} ${name}" style="left:${left}%;width:${width}%">${label}</span>`;
+            }).join("")}
+            ${now ? `<span class="now-line" style="left:${now}%" data-tooltip="Current production time"><i>NOW</i></span>` : ""}
+          </div>
+        </div>`;
+      }).join("");
+    }
+    if (decisionTitle) decisionTitle.textContent = plan.decision[0];
+    if (decisionCopy) decisionCopy.textContent = plan.decision[1];
+    if (recoveryBtn) { recoveryBtn.disabled = false; recoveryBtn.textContent = "Apply recovery"; recoveryBtn.closest(".schedule-callout")?.classList.remove("is-applied"); }
+    if (shouldScroll && stagePanel) stagePanel.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  stageNodes.forEach((node) => node.addEventListener("click", () => {
+    sfx.playClick();
+    renderStagePlan(node.dataset.planStage, true);
+  }));
+  renderStagePlan("dyeing", false);
+
+  if (reoptimizeBtn) {
+    reoptimizeBtn.addEventListener("click", () => {
+      if (reoptimizeBtn.classList.contains("is-running")) return;
+      sfx.playClick();
+      const original = reoptimizeBtn.innerHTML;
+      reoptimizeBtn.classList.add("is-running");
+      reoptimizeBtn.innerHTML = `<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 11a8 8 0 1 0-2.34 5.66"></path><polyline points="20 4 20 11 13 11"></polyline></svg> Evaluating constraints…`;
+      window.setTimeout(() => {
+        reoptimizeBtn.classList.remove("is-running");
+        reoptimizeBtn.innerHTML = original.replace("Re-optimize plan", "Plan optimized");
+        window.setTimeout(() => { reoptimizeBtn.innerHTML = original; }, 1800);
+      }, 900);
+    });
+  }
+
+  if (recoveryBtn) {
+    recoveryBtn.addEventListener("click", () => {
+      sfx.playClick();
+      recoveryBtn.textContent = "Recovery applied ✓";
+      recoveryBtn.disabled = true;
+      recoveryBtn.closest(".schedule-callout")?.classList.add("is-applied");
+    });
+  }
+}
+
+// ==========================================================================
+// 12. ENERGY & UTILITIES INTERACTIONS
+// ==========================================================================
+function setupEnergyUtilitiesInteractions() {
+  const energyView = document.getElementById("energyUtilitiesView");
+  const rebalanceBtn = document.getElementById("btnRebalanceUtilities");
+  const applyBtn = document.getElementById("btnApplyUtilitySetpoints");
+  const tip = document.getElementById("energyChartTip");
+  const tipTitle = tip ? tip.querySelector(".tip-header") : null;
+  const tipA = tip ? tip.querySelector(".energy-tip-a") : null;
+  const tipB = tip ? tip.querySelector(".energy-tip-b") : null;
+  const chartStack = document.getElementById("energyChartStack");
+  const readingStack = document.getElementById("energyReadingStack");
+  if (!energyView || !chartStack || !readingStack) return;
+
+  const XS = [48, 118, 188, 258, 328, 398, 468];
+  const TIMES = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00"];
+  const Y_TOP = 10;
+  const Y_BOT = 58;
+
+  function mapY(value, min, max) {
+    return Y_BOT - ((value - min) / (max - min || 1)) * (Y_BOT - Y_TOP);
+  }
+
+  function linePath(values, min, max) {
+    return XS.map((x, i) => `${i ? "L" : "M"}${x} ${mapY(values[i], min, max).toFixed(1)}`).join(" ");
+  }
+
+  const scenarios = {
+    peak: {
+      title: "Peak dye",
+      subtitle: "Electricity this shift — live draw against the quiet-hour baseline",
+      unit: "MW",
+      copy: "JD-04 is on circulation. Electricity is above the quiet-hour baseline. Do not cut the 7.90 bar header to flatten this chart.",
+      liveName: "Live electricity",
+      targetName: "Quiet-hour baseline",
+      now: "2.84 MW",
+      set: "2.10 MW",
+      min: 1.6,
+      max: 3.4,
+      yLabels: ["3.4", "2.8", "2.2", "1.6"],
+      live: [1.98, 2.24, 2.68, 3.12, 2.84, 2.46, 2.18],
+      target: [2.1, 2.1, 2.1, 2.1, 2.1, 2.1, 2.1],
+      cursor: 4,
+      hits: [
+        ["Warm-up", "Live 1.98 MW", "Baseline 2.10 MW"],
+        ["Pretreat", "Live 2.24 MW", "Baseline 2.10 MW"],
+        ["Dye start", "Live 2.68 MW", "Baseline 2.10 MW"],
+        ["Peak dye", "Live 3.12 MW", "Baseline 2.10 MW"],
+        ["Live now", "Live 2.84 MW", "Baseline 2.10 MW"],
+        ["Finish", "Live 2.46 MW", "Baseline 2.10 MW"],
+        ["Shift close", "Live 2.18 MW", "Baseline 2.10 MW"]
+      ],
+      readings: [
+        ["Electricity", "2.84 MW"],
+        ["Steam", "8.4 t/h"],
+        ["Gas", "412 Nm³/h"],
+        ["Air header", "7.90 bar"]
+      ],
+      holds: [
+        ["Air header", "7.90 bar", "Hold — do not shed"],
+        ["Heat exchanger", "94.6%", "Keep on"],
+        ["C4 VFD", "28%", "May shed to 18%"]
+      ]
+    },
+    header: {
+      title: "Air header",
+      subtitle: "Compressed-air pressure against the 7.90 bar hold",
+      unit: "bar",
+      copy: "7.90 bar is the constraint. Compressor kWh can fall. Header pressure cannot.",
+      liveName: "Live header",
+      targetName: "7.90 bar setpoint",
+      now: "7.90 bar",
+      set: "7.90 bar",
+      min: 7.7,
+      max: 8.0,
+      yLabels: ["8.0", "7.9", "7.8", "7.7"],
+      live: [7.91, 7.9, 7.88, 7.9, 7.9, 7.89, 7.9],
+      target: [7.9, 7.9, 7.9, 7.9, 7.9, 7.9, 7.9],
+      cursor: 4,
+      hits: [
+        ["Warm-up", "Live 7.91 bar", "Setpoint 7.90 bar"],
+        ["Pretreat", "Live 7.90 bar", "Setpoint 7.90 bar"],
+        ["Dye start", "Live 7.88 bar", "Setpoint 7.90 bar"],
+        ["Peak dye", "Live 7.90 bar", "Setpoint 7.90 bar"],
+        ["Live now", "Live 7.90 bar", "Setpoint 7.90 bar"],
+        ["Finish", "Live 7.89 bar", "Setpoint 7.90 bar"],
+        ["Shift close", "Live 7.90 bar", "Setpoint 7.90 bar"]
+      ],
+      readings: [
+        ["Header", "7.90 bar"],
+        ["SEC", "0.114 kWh/kg"],
+        ["C4 load", "28%"],
+        ["Major leaks", "0"]
+      ],
+      holds: [
+        ["Header setpoint", "7.90 bar", "Hard constraint"],
+        ["C1 / C2", "62% / 58%", "Keep leading"],
+        ["C4", "28%", "Shed to 18%"]
+      ]
+    },
+    thermal: {
+      title: "Heat recovery",
+      subtitle: "Recovered effluent heat against the 94% hold line",
+      unit: "%",
+      copy: "The HEX is recycling 82°C effluent into pretreatment makeup. Boiler steam does less of the first lift. Shade stays on its own loop.",
+      liveName: "Live recovery",
+      targetName: "94% hold",
+      now: "94.6%",
+      set: "94.0%",
+      min: 88,
+      max: 100,
+      yLabels: ["100", "96", "92", "88"],
+      live: [91.2, 92.8, 94.1, 94.6, 94.6, 94.2, 93.4],
+      target: [94, 94, 94, 94, 94, 94, 94],
+      cursor: 4,
+      hits: [
+        ["Warm-up", "Recovery 91.2%", "Hold 94.0%"],
+        ["Pretreat", "Recovery 92.8%", "Hold 94.0%"],
+        ["Dye start", "Recovery 94.1%", "Hold 94.0%"],
+        ["Peak dye", "Recovery 94.6%", "Hold 94.0%"],
+        ["Live now", "Recovery 94.6%", "Hold 94.0%"],
+        ["Finish", "Recovery 94.2%", "Hold 94.0%"],
+        ["Shift close", "Recovery 93.4%", "Hold 94.0%"]
+      ],
+      readings: [
+        ["Recovery", "94.6%"],
+        ["Effluent", "82°C"],
+        ["Makeup", "64°C"],
+        ["Steam avoided", "0.9 t/h"]
+      ],
+      holds: [
+        ["HEX valves", "Open", "Arm for next batch"],
+        ["Shade loop", "ΔE 0.18", "Owns the gate"],
+        ["Boiler", "Follow HEX", "Do not over-fire"]
+      ]
+    },
+    tariff: {
+      title: "Off-peak",
+      subtitle: "Megawatts against the after-16:00 shed line",
+      unit: "MW",
+      copy: "After 16:00 the tariff drops. Shed idle finishing kW. Leave the air header and JD-04 alone.",
+      liveName: "Live plant MW",
+      targetName: "Off-peak target",
+      now: "2.84 MW",
+      set: "1.90 MW",
+      min: 1.2,
+      max: 3.4,
+      yLabels: ["3.4", "2.6", "1.8", "1.2"],
+      live: [2.08, 2.31, 2.84, 3.12, 2.84, 1.92, 1.41],
+      target: [1.9, 1.9, 1.9, 1.9, 1.9, 1.9, 1.9],
+      cursor: 4,
+      hits: [
+        ["Warm-up", "Live 2.08 MW", "Target 1.90 MW"],
+        ["Pretreat", "Live 2.31 MW", "Target 1.90 MW"],
+        ["Dye start", "Live 2.84 MW", "Target 1.90 MW"],
+        ["Peak dye", "Live 3.12 MW", "Target 1.90 MW"],
+        ["Live now", "Live 2.84 MW", "Target 1.90 MW"],
+        ["Finish", "Live 1.92 MW", "Target 1.90 MW"],
+        ["Shift close", "Live 1.41 MW", "Target 1.90 MW"]
+      ],
+      readings: [
+        ["On-peak share", "58%"],
+        ["Moved off-peak", "0.62 MWh"],
+        ["After 16:00", "1.92 MW"],
+        ["Air header", "7.90 bar"]
+      ],
+      holds: [
+        ["JD-04", "On circulation", "Do not shed"],
+        ["ST-02 idle heat", "240 kW", "Can drop"],
+        ["Air VFDs", "Header loop", "Leave on"]
+      ]
+    },
+    leak: {
+      title: "Leak watch",
+      subtitle: "Acoustic quiet time against the 97% healthy band",
+      unit: "%",
+      copy: "The 40 kHz array is quiet. Three micro-leaks were sealed last cycle. Do not add compressor load for a hiss.",
+      liveName: "Quiet time",
+      targetName: "97% healthy",
+      now: "97%",
+      set: "97%",
+      min: 94,
+      max: 100,
+      yLabels: ["100", "98", "96", "94"],
+      live: [99.1, 98.4, 97.2, 97, 97, 97.6, 97.4],
+      target: [97, 97, 97, 97, 97, 97, 97],
+      cursor: 4,
+      hits: [
+        ["Warm-up", "Quiet 99.1%", "Band 97%"],
+        ["Pretreat", "Quiet 98.4%", "Band 97%"],
+        ["Dye start", "Quiet 97.2%", "Band 97%"],
+        ["Peak dye", "Quiet 97.0%", "Band 97%"],
+        ["Live now", "Quiet 97.0%", "Band 97%"],
+        ["Finish", "Quiet 97.6%", "Band 97%"],
+        ["Shift close", "Quiet 97.4%", "Band 97%"]
+      ],
+      readings: [
+        ["Quiet", "97%"],
+        ["Micro-leaks", "3 sealed"],
+        ["Major leaks", "0"],
+        ["Header", "7.90 bar"]
+      ],
+      holds: [
+        ["Sentinel", "40 kHz", "Keep armed"],
+        ["Major leaks", "0", "No extra C4"],
+        ["SEC", "0.114", "Holds if quiet"]
+      ]
+    }
+  };
+
+  const caseKeys = Object.keys(scenarios);
+  const liveBase = {};
+  caseKeys.forEach((key) => {
+    liveBase[key] = scenarios[key].live.slice();
+  });
+  const aux = {
+    peak: { steam: 8.4, gas: 412 },
+    header: { sec: 0.114, c1: 62, c2: 58, c3: 41, c4: 28 },
+    thermal: { effluent: 82, makeup: 64, avoided: 0.9 },
+    tariff: { moved: 0.62, after: 1.92 },
+    leak: { quiet: 97 }
+  };
+  let hoverState = null;
+
+  function formatVal(scene, value) {
+    if (scene.unit === "bar") return `${value.toFixed(2)} bar`;
+    if (scene.unit === "%") return `${value.toFixed(1)}%`;
+    return `${value.toFixed(2)} MW`;
+  }
+
+  function sampleSeries(values, x) {
+    if (x <= XS[0]) return values[0];
+    if (x >= XS[XS.length - 1]) return values[values.length - 1];
+    let i = 0;
+    while (i < XS.length - 1 && XS[i + 1] < x) i += 1;
+    const span = XS[i + 1] - XS[i] || 1;
+    const t = (x - XS[i]) / span;
+    return values[i] + (values[i + 1] - values[i]) * t;
+  }
+
+  function timeAt(x) {
+    const start = 6 * 60;
+    const span = 12 * 60;
+    const mins = start + ((x - XS[0]) / (XS[XS.length - 1] - XS[0])) * span;
+    const h = Math.floor(mins / 60);
+    const m = Math.floor(mins % 60);
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  }
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function pieSlice(startPct, endPct) {
+    const r = 28;
+    const a0 = ((-90 + startPct * 3.6) * Math.PI) / 180;
+    const a1 = ((-90 + endPct * 3.6) * Math.PI) / 180;
+    const sx = (36 + r * Math.cos(a0)).toFixed(2);
+    const sy = (36 + r * Math.sin(a0)).toFixed(2);
+    const ex = (36 + r * Math.cos(a1)).toFixed(2);
+    const ey = (36 + r * Math.sin(a1)).toFixed(2);
+    const large = endPct - startPct > 50 ? 1 : 0;
+    return `M 36 36 L ${sx} ${sy} A ${r} ${r} 0 ${large} 1 ${ex} ${ey} Z`;
+  }
+
+  function meterArc(pct) {
+    const circ = 2 * Math.PI * 26;
+    const dash = (clamp(pct, 0, 100) / 100) * circ;
+    return `${dash.toFixed(1)} ${(circ - dash).toFixed(1)}`;
+  }
+
+  function getVisuals(key) {
+    const scene = scenarios[key];
+    const live = scene.live[scene.cursor];
+    if (key === "peak") {
+      return {
+        pie: [
+          { label: "Electricity", value: live * 12, color: "#D97706", tip: `${live.toFixed(2)} MW` },
+          { label: "Steam", value: aux.peak.steam * 4, color: "#2860EB", tip: `${aux.peak.steam.toFixed(1)} t/h` },
+          { label: "Gas", value: aux.peak.gas / 20, color: "#64748B", tip: `${Math.round(aux.peak.gas)} Nm³/h` },
+          { label: "Air", value: 10, color: "#10B981", tip: "7.90 bar held" }
+        ],
+        meter: { pct: (live / 3.4) * 100, value: `${live.toFixed(2)}`, unit: "MW", label: "of 3.4 cap", color: "#06B6D4" }
+      };
+    }
+    if (key === "header") {
+      return {
+        pie: [
+          { label: "C1", value: aux.header.c1, color: "#D97706", tip: `${aux.header.c1.toFixed(0)}% VFD` },
+          { label: "C2", value: aux.header.c2, color: "#F59E0B", tip: `${aux.header.c2.toFixed(0)}% VFD` },
+          { label: "C3", value: aux.header.c3, color: "#2860EB", tip: `${aux.header.c3.toFixed(0)}% VFD` },
+          { label: "C4", value: aux.header.c4, color: "#10B981", tip: `${aux.header.c4.toFixed(0)}% VFD` }
+        ],
+        meter: { pct: ((live - 7.7) / 0.3) * 100, value: live.toFixed(2), unit: "bar", label: "vs 7.90", color: "#D97706" }
+      };
+    }
+    if (key === "thermal") {
+      return {
+        pie: [
+          { label: "Recovered", value: live, color: "#10B981", tip: `${live.toFixed(1)}% recovered` },
+          { label: "Lost", value: 100 - live, color: "#94A3B8", tip: `${(100 - live).toFixed(1)}% lost` }
+        ],
+        meter: { pct: live, value: live.toFixed(1), unit: "%", label: "HEX capture", color: "#06B6D4" }
+      };
+    }
+    if (key === "tariff") {
+      return {
+        pie: [
+          { label: "On-peak", value: 58, color: "#D97706", tip: "58% on-peak" },
+          { label: "Shoulder", value: 24, color: "#F59E0B", tip: "24% shoulder" },
+          { label: "Off-peak", value: 18, color: "#10B981", tip: "18% off-peak" }
+        ],
+        meter: { pct: (live / 3.4) * 100, value: live.toFixed(2), unit: "MW", label: "plant load", color: "#06B6D4" }
+      };
+    }
+    return {
+      pie: [
+        { label: "Quiet", value: live, color: "#10B981", tip: `${live.toFixed(1)}% quiet` },
+        { label: "Micro", value: 3, color: "#F59E0B", tip: "3 micro-leaks sealed" },
+        { label: "Major", value: 0.2, color: "#EF4444", tip: "0 major leaks" }
+      ],
+      meter: { pct: live, value: live.toFixed(1), unit: "%", label: "quiet band", color: "#10B981" }
+    };
+  }
+
+  function renderPieSlices(items) {
+    const total = items.reduce((sum, item) => sum + item.value, 0) || 1;
+    let cursor = 0;
+    return items.map((item) => {
+      const share = (item.value / total) * 100;
+      const start = cursor;
+      cursor += share;
+      if (share < 0.4) return "";
+      return `<path class="energy-slice" fill="${item.color}" d="${pieSlice(start, cursor)}" data-tip-title="${item.label}" data-tip-a="${item.tip}" data-tip-b="${share.toFixed(0)}% of mix"></path>`;
+    }).join("");
+  }
+
+  function renderAllCases() {
+    chartStack.innerHTML = caseKeys.map((key) => {
+      const scene = scenarios[key];
+      const nowX = XS[scene.cursor];
+      const nowY = mapY(scene.live[scene.cursor], scene.min, scene.max);
+      return `
+        <article class="energy-stack-block">
+          <div class="energy-stack-head">
+            <h3>${scene.title}</h3>
+            <span class="energy-live-num" data-energy-now="${key}">${formatVal(scene, scene.live[scene.cursor])} / ${scene.set}</span>
+          </div>
+          <div class="energy-mini-viewport" data-energy-chart="${key}">
+            <svg class="comparison-chart-svg" viewBox="0 0 500 78" preserveAspectRatio="none" role="img" aria-label="${scene.title}">
+              <line x1="40" y1="10" x2="488" y2="10" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
+              <line x1="40" y1="34" x2="488" y2="34" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
+              <line x1="40" y1="58" x2="488" y2="58" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
+              <text x="36" y="13" font-size="7" fill="#94A3B8" text-anchor="end">${scene.yLabels[0]}</text>
+              <text x="36" y="61" font-size="7" fill="#94A3B8" text-anchor="end">${scene.yLabels[3]}</text>
+              <path class="energy-target-line" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-dasharray="5 3" stroke-linecap="round" d="${linePath(scene.target, scene.min, scene.max)}"></path>
+              <path class="energy-live-line" fill="none" stroke="#06B6D4" stroke-width="2.2" stroke-linecap="round" d="${linePath(scene.live, scene.min, scene.max)}"></path>
+              <line class="energy-now-line" x1="${nowX}" y1="8" x2="${nowX}" y2="58" stroke="rgba(6,182,212,.4)" stroke-width="1" stroke-dasharray="2 2"></line>
+              <circle class="energy-now-dot" cx="${nowX}" cy="${nowY.toFixed(1)}" r="3.2" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.5"></circle>
+              <line class="energy-hover-line" x1="0" y1="6" x2="0" y2="62" stroke="rgba(15,23,42,.35)" stroke-width="1" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="energy-hover-set" cx="0" cy="0" r="3.4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1.5" opacity="0"></circle>
+              <circle class="energy-hover-live" cx="0" cy="0" r="3.8" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.6" opacity="0"></circle>
+              <rect class="energy-hover-pad" x="40" y="4" width="448" height="62" fill="transparent"></rect>
+            </svg>
+          </div>
+        </article>`;
+    }).join("");
+
+    readingStack.innerHTML = caseKeys.map((key) => {
+      const scene = scenarios[key];
+      const visual = getVisuals(key);
+      return `
+        <article class="energy-stack-block">
+          <div class="energy-stack-head">
+            <h3>${scene.title}</h3>
+            <span class="energy-live-num" data-energy-read-now="${key}">${scene.liveName} ${formatVal(scene, scene.live[scene.cursor])}</span>
+          </div>
+          <div class="energy-viz-row" data-energy-reads="${key}">
+            <div class="energy-pie-mini">
+              <svg viewBox="0 0 72 72" aria-label="${scene.title} mix">
+                <circle cx="36" cy="36" r="30" fill="#FFF8F1"></circle>
+                <g class="energy-pie-slices">${renderPieSlices(visual.pie)}</g>
+                <circle cx="36" cy="36" r="16" fill="#FFFFFF"></circle>
+              </svg>
+              <ul>${visual.pie.map((item) => `<li data-tip-title="${item.label}" data-tip-a="${item.tip}"><i style="background:${item.color}"></i>${item.label}</li>`).join("")}</ul>
+            </div>
+            <div class="energy-meter-mini" data-tip-title="${scene.title} meter" data-tip-a="${visual.meter.value} ${visual.meter.unit}" data-tip-b="${visual.meter.label}">
+              <svg viewBox="0 0 80 80" aria-label="${scene.title} meter">
+                <circle cx="40" cy="40" r="26" fill="none" stroke="#E2E8F0" stroke-width="8"></circle>
+                <circle class="energy-meter-arc" cx="40" cy="40" r="26" fill="none" stroke="${visual.meter.color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${meterArc(visual.meter.pct)}" transform="rotate(-90 40 40)"></circle>
+                <text class="energy-meter-val" x="40" y="38" text-anchor="middle">${visual.meter.value}</text>
+                <text class="energy-meter-unit" x="40" y="50" text-anchor="middle">${visual.meter.unit}</text>
+              </svg>
+              <small>${visual.meter.label}</small>
+            </div>
+          </div>
+        </article>`;
+    }).join("");
+  }
+
+  function hideEnergyTip() {
+    if (tip) tip.style.display = "none";
+    energyView.querySelectorAll(".energy-hover-line, .energy-hover-live, .energy-hover-set").forEach((el) => {
+      el.setAttribute("opacity", "0");
+    });
+    hoverState = null;
+  }
+
+  function showChartHover(viewport, event) {
+    const key = viewport.dataset.energyChart;
+    const scene = scenarios[key];
+    if (!scene || !tip) return;
+    const svg = viewport.querySelector("svg");
+    const bounds = svg.getBoundingClientRect();
+    const x = 40 + ((event.clientX - bounds.left) / bounds.width) * 500;
+    const clampedX = clamp(x, XS[0], XS[XS.length - 1]);
+    const live = sampleSeries(scene.live, clampedX);
+    const set = sampleSeries(scene.target, clampedX);
+    const liveY = mapY(live, scene.min, scene.max);
+    const setY = mapY(set, scene.min, scene.max);
+    const hoverLine = viewport.querySelector(".energy-hover-line");
+    const hoverLive = viewport.querySelector(".energy-hover-live");
+    const hoverSet = viewport.querySelector(".energy-hover-set");
+    if (hoverLine) {
+      hoverLine.setAttribute("x1", clampedX.toFixed(1));
+      hoverLine.setAttribute("x2", clampedX.toFixed(1));
+      hoverLine.setAttribute("opacity", "1");
+    }
+    if (hoverLive) {
+      hoverLive.setAttribute("cx", clampedX.toFixed(1));
+      hoverLive.setAttribute("cy", liveY.toFixed(1));
+      hoverLive.setAttribute("opacity", "1");
+    }
+    if (hoverSet) {
+      hoverSet.setAttribute("cx", clampedX.toFixed(1));
+      hoverSet.setAttribute("cy", setY.toFixed(1));
+      hoverSet.setAttribute("opacity", "1");
+    }
+    if (tipTitle) tipTitle.textContent = `${scene.title} · ${timeAt(clampedX)}`;
+    if (tipA) tipA.textContent = `${scene.liveName}: ${formatVal(scene, live)}`;
+    if (tipB) tipB.textContent = `${scene.targetName}: ${formatVal(scene, set)}`;
+    placeEnergyTip(event);
+    hoverState = { key, x: clampedX, clientX: event.clientX, clientY: event.clientY };
+  }
+
+  function placeEnergyTip(event) {
+    if (!tip) return;
+    tip.style.display = "block";
+    const pad = 10;
+    const gap = 16;
+    const width = tip.offsetWidth;
+    const height = tip.offsetHeight;
+    let left = event.clientX + gap;
+    let top = event.clientY - height - 12;
+    if (left + width > window.innerWidth - pad) left = event.clientX - width - gap;
+    if (left < pad) left = pad;
+    if (top < pad) top = event.clientY + gap;
+    if (top + height > window.innerHeight - pad) top = window.innerHeight - height - pad;
+    if (top < pad) top = pad;
+    tip.style.left = `${left}px`;
+    tip.style.top = `${top}px`;
+  }
+
+  function showVisualTip(el, event) {
+    if (!tip || !tipTitle || !el.dataset.tipTitle) return;
+    tipTitle.textContent = el.dataset.tipTitle;
+    if (tipA) tipA.textContent = el.dataset.tipA || "";
+    if (tipB) tipB.textContent = el.dataset.tipB || "";
+    placeEnergyTip(event);
+  }
+
+  function bindVisualHover() {
+    readingStack.addEventListener("pointermove", (event) => {
+      const el = event.target.closest("[data-tip-title]");
+      if (el) showVisualTip(el, event);
+    });
+    readingStack.addEventListener("pointerleave", () => {
+      if (tip) tip.style.display = "none";
+    });
+  }
+
+  function bindChartHover() {
+    energyView.querySelectorAll("[data-energy-chart]").forEach((viewport) => {
+      viewport.addEventListener("pointerenter", (event) => showChartHover(viewport, event));
+      viewport.addEventListener("pointermove", (event) => showChartHover(viewport, event));
+      viewport.addEventListener("pointerleave", hideEnergyTip);
+    });
+  }
+
+  function bindSparkHover() {
+    const sparks = [
+      { id: "energySparkSec", values: [0.132, 0.126, 0.121, 0.117, 0.114], ys: [52, 46, 38, 24, 10], format: (v) => `${v.toFixed(3)} kWh/kg` },
+      { id: "energySparkHex", values: [91.2, 92.8, 93.7, 94.2, 94.6], ys: [40, 34, 28, 18, 10], format: (v) => `${v.toFixed(1)}%` },
+      { id: "energySparkAir", values: [7.91, 7.88, 7.9, 7.89, 7.9], ys: [28, 30, 28, 28, 27], format: (v) => `${v.toFixed(2)} bar` }
+    ];
+    sparks.forEach((spark) => {
+      const wrap = document.getElementById(spark.id);
+      if (!wrap) return;
+      const svg = wrap.querySelector("svg");
+      const cross = wrap.querySelector(".spark-crosshair");
+      const dot = wrap.querySelector(".energy-spark-hover");
+      const tipBox = wrap.querySelector(".spark-tooltip");
+      const tipVal = tipBox ? tipBox.querySelector(".tip-value") : null;
+      wrap.addEventListener("pointermove", (event) => {
+        const bounds = svg.getBoundingClientRect();
+        const t = clamp((event.clientX - bounds.left) / bounds.width, 0, 1);
+        const idx = t * (spark.values.length - 1);
+        const lo = Math.floor(idx);
+        const hi = Math.min(spark.values.length - 1, lo + 1);
+        const p = idx - lo;
+        const value = spark.values[lo] + (spark.values[hi] - spark.values[lo]) * p;
+        const x = t * 340;
+        const y = spark.ys[lo] + (spark.ys[hi] - spark.ys[lo]) * p;
+        if (cross) {
+          cross.setAttribute("x1", x.toFixed(1));
+          cross.setAttribute("x2", x.toFixed(1));
+          cross.setAttribute("opacity", "1");
+        }
+        if (dot) {
+          dot.setAttribute("cx", x.toFixed(1));
+          dot.setAttribute("cy", y.toFixed(1));
+          dot.setAttribute("opacity", "1");
+        }
+        if (tipTitle) tipTitle.textContent = spark.format(value);
+        if (tipA) tipA.textContent = tipBox && tipBox.querySelector(".tip-label") ? tipBox.querySelector(".tip-label").textContent : "";
+        if (tipB) tipB.textContent = "";
+        placeEnergyTip(event);
+      });
+      wrap.addEventListener("pointerleave", () => {
+        if (cross) cross.setAttribute("opacity", "0");
+        if (dot) dot.setAttribute("opacity", "0");
+        if (tip) tip.style.display = "none";
+      });
+    });
+  }
+
+  function updateReadings(key) {
+    const row = energyView.querySelector(`[data-energy-reads="${key}"]`);
+    if (!row) return;
+    const visual = getVisuals(key);
+    const slices = row.querySelector(".energy-pie-slices");
+    if (slices) slices.innerHTML = renderPieSlices(visual.pie);
+    const arc = row.querySelector(".energy-meter-arc");
+    const val = row.querySelector(".energy-meter-val");
+    const meter = row.querySelector(".energy-meter-mini");
+    if (arc) {
+      arc.setAttribute("stroke-dasharray", meterArc(visual.meter.pct));
+      arc.setAttribute("stroke", visual.meter.color);
+    }
+    if (val) val.textContent = visual.meter.value;
+    if (meter) {
+      meter.setAttribute("data-tip-a", `${visual.meter.value} ${visual.meter.unit}`);
+      meter.setAttribute("data-tip-b", visual.meter.label);
+    }
+  }
+
+  function tickLive() {
+    if (energyView.style.display === "none") return;
+    const t = Date.now() / 1000;
+    caseKeys.forEach((key, idx) => {
+      const scene = scenarios[key];
+      const amp = (scene.max - scene.min) * 0.015;
+      const i = scene.cursor;
+      scene.live[i] = clamp(liveBase[key][i] + Math.sin(t * 1.4 + idx) * amp + (Math.random() - 0.5) * amp * 0.25, scene.min, scene.max);
+      if (i > 0) {
+        scene.live[i - 1] = clamp(liveBase[key][i - 1] + Math.sin(t * 0.9 + idx) * amp * 0.45, scene.min, scene.max);
+      }
+      const viewport = energyView.querySelector(`[data-energy-chart="${key}"]`);
+      if (viewport) {
+        const livePath = viewport.querySelector(".energy-live-line");
+        const nowDot = viewport.querySelector(".energy-now-dot");
+        if (livePath) livePath.setAttribute("d", linePath(scene.live, scene.min, scene.max));
+        if (nowDot) nowDot.setAttribute("cy", mapY(scene.live[i], scene.min, scene.max).toFixed(1));
+      }
+      const nowLabel = energyView.querySelector(`[data-energy-now="${key}"]`);
+      if (nowLabel) nowLabel.textContent = `${formatVal(scene, scene.live[i])} / ${scene.set}`;
+      const readNow = energyView.querySelector(`[data-energy-read-now="${key}"]`);
+      if (readNow) readNow.textContent = `${scene.liveName} ${formatVal(scene, scene.live[i])}`;
+      updateReadings(key);
+    });
+
+    aux.peak.steam = clamp(8.4 + Math.sin(t * 1.1) * 0.08, 8.2, 8.7);
+    aux.peak.gas = clamp(412 + Math.sin(t * 0.9) * 6, 400, 430);
+    aux.header.sec = clamp(0.114 + Math.sin(t * 0.7) * 0.001, 0.112, 0.117);
+    aux.header.c1 = clamp(62 + Math.sin(t * 0.8) * 1.1, 60, 64);
+    aux.header.c2 = clamp(58 + Math.sin(t * 0.95) * 1.0, 56, 60);
+    aux.header.c3 = clamp(41 + Math.sin(t * 1.05) * 1.3, 38, 44);
+    aux.header.c4 = clamp(28 + Math.sin(t * 1.2) * 1.2, 26, 30);
+    aux.thermal.effluent = clamp(82 + Math.sin(t) * 0.4, 81, 83);
+    aux.thermal.makeup = clamp(64 + Math.sin(t * 0.8) * 0.5, 63, 65);
+    aux.thermal.avoided = clamp(0.9 + Math.sin(t * 1.05) * 0.03, 0.84, 0.96);
+    aux.tariff.after = clamp(1.92 + Math.sin(t * 0.6) * 0.04, 1.85, 2.0);
+    aux.tariff.moved = clamp(0.62 + (t % 20) * 0.0004, 0.62, 0.7);
+
+    const secEl = document.getElementById("energyKpiSec");
+    const hexEl = document.getElementById("energyKpiHex");
+    const airEl = document.getElementById("energyKpiAir");
+    if (secEl) secEl.textContent = `${aux.header.sec.toFixed(3)} kWh/kg`;
+    if (hexEl) hexEl.textContent = `${scenarios.thermal.live[scenarios.thermal.cursor].toFixed(1)}%`;
+    if (airEl) airEl.textContent = `${scenarios.header.live[scenarios.header.cursor].toFixed(2)} bar`;
+
+    const clock = document.getElementById("energyLiveClock");
+    if (clock) {
+      const now = new Date();
+      clock.textContent = `LIVE ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+    }
+
+    if (hoverState) {
+      const viewport = energyView.querySelector(`[data-energy-chart="${hoverState.key}"]`);
+      if (viewport) {
+        showChartHover(viewport, { clientX: hoverState.clientX, clientY: hoverState.clientY });
+      }
+    }
+  }
+
+  renderAllCases();
+  bindChartHover();
+  bindVisualHover();
+  bindSparkHover();
+  tickLive();
+  window.setInterval(tickLive, 1200);
+
+  if (rebalanceBtn) {
+    rebalanceBtn.addEventListener("click", () => {
+      sfx.playClick();
+      rebalanceBtn.textContent = "Balanced ✓";
+      window.setTimeout(() => { rebalanceBtn.textContent = "Rebalance"; }, 1600);
+    });
+  }
+
+  if (applyBtn) {
+    applyBtn.addEventListener("click", () => {
+      sfx.playClick();
+      applyBtn.textContent = "Setpoints applied ✓";
+      applyBtn.disabled = true;
+    });
+  }
+}
+
+// ==========================================================================
+// 13. INITIALIZATION
 // ==========================================================================
 function initApp() {
   initCard3DTilt();
   setupMillKnowledgeCopilot();
   setupDashboardInteractions();
+  setupProductionPlanningInteractions();
+  setupEnergyUtilitiesInteractions();
   initCustomCursor();
   initScadaClock();
   initScadaRealTimeEngine();
@@ -5782,4 +6787,3 @@ if (document.readyState === "loading") {
 } else {
   initApp();
 }
-
