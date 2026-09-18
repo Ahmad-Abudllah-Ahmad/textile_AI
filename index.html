@@ -4259,6 +4259,76 @@
 
   </div>
 
+  <!-- =========================================================================
+       VIEW 4: MILL KNOWLEDGE COPILOT (SHIFT ENGINEERING ASSISTANT)
+       ========================================================================= -->
+  <div class="dyeing-inspection-container copilot-container" id="millKnowledgeCopilotView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromCopilot" aria-label="Back to Processing Modules">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon copilot-brand-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            <circle cx="9" cy="10" r="1" fill="currentColor"></circle>
+            <circle cx="12" cy="10" r="1" fill="currentColor"></circle>
+            <circle cx="15" cy="10" r="1" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Mill Knowledge Copilot</h1>
+          <p class="inspection-subtitle">Shift engineering assistant · SOP retrieval · Explainable plant guidance</p>
+        </div>
+      </div>
+      <div class="inspection-header-right copilot-header-actions">
+        <span class="copilot-live-pill" aria-live="polite">
+          <span class="live-dot-pulse"></span>
+          Listening · Shift A
+        </span>
+        <button type="button" class="inspection-return-btn" id="btnResetCopilot">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+          </svg>
+          <span>New briefing</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="copilot-shell">
+      <aside class="copilot-rail" aria-label="Previous chats">
+        <article class="copilot-history-card">
+          <div class="copilot-history-head">
+            <p class="section-micro-title">PREVIOUS CHATS</p>
+            <span class="copilot-history-count" id="copilotHistoryCount">0</span>
+          </div>
+          <div class="copilot-history-list" id="copilotHistoryList"></div>
+        </article>
+      </aside>
+
+      <section class="copilot-stage" aria-label="Mill Knowledge conversation">
+        <div class="copilot-thread" id="copilotThread" role="log" aria-live="polite"></div>
+
+        <div class="copilot-prompt-panel">
+          <div class="copilot-prompt-head">
+            <div class="copilot-prompt-title-wrap">
+              <span class="section-micro-title" id="copilotPromptTitle">SUGGESTED QUESTIONS</span>
+              <span class="copilot-prompt-hint" id="copilotPromptHint">From this shift’s live context</span>
+            </div>
+            <button type="button" class="copilot-topics-btn" id="btnCopilotAllTopics" hidden>
+              All topics
+            </button>
+          </div>
+          <div class="copilot-prompt-grid" id="copilotPromptGrid"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 

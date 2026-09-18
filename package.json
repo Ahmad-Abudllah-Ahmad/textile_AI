@@ -1,0 +1,9 @@
+{
+  "name": "tex-stack",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TEX//STACK textile operations demo with Mill Knowledge Copilot",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

@@ -108,7 +108,8 @@ function hideAllViews() {
     document.getElementById("bleachingColorInspectionView"),
     document.getElementById("mercerizingColorInspectionView"),
     document.getElementById("stenterColorInspectionView"),
-    document.getElementById("dashboardView")
+    document.getElementById("dashboardView"),
+    document.getElementById("millKnowledgeCopilotView")
   ];
   views.forEach((v) => {
     if (v) v.style.display = "none";
@@ -247,6 +248,22 @@ function openModuleDashboard(moduleKey = "predictive-maintenance") {
   }
 }
 
+function showMillKnowledgeCopilotView() {
+  const copilotView = document.getElementById("millKnowledgeCopilotView");
+  if (!copilotView) return;
+
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "mill-knowledge";
+  copilotView.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  history.pushState(null, "", "#mill-knowledge-copilot");
+
+  if (typeof window.ensureCopilotReady === "function") {
+    window.ensureCopilotReady();
+  }
+}
+
 function showDashboardView() {
   openModuleDashboard("predictive-maintenance");
 }
@@ -276,6 +293,7 @@ window.showBleachingColorInspectionView = showBleachingColorInspectionView;
 window.showMercerizingColorInspectionView = showMercerizingColorInspectionView;
 window.showStenterColorInspectionView = showStenterColorInspectionView;
 window.showFinishColorInspectionView = showStenterColorInspectionView;
+window.showMillKnowledgeCopilotView = showMillKnowledgeCopilotView;
 window.openModuleDashboard = openModuleDashboard;
 window.showDashboardView = showDashboardView;
 window.hideDashboardView = hideDashboardView;
@@ -342,6 +360,8 @@ function initCard3DTilt() {
         showPrintingColorInspectionView();
       } else if (moduleId === "predictive-maintenance") {
         openModuleDashboard("predictive-maintenance");
+      } else if (moduleId === "mill-knowledge") {
+        showMillKnowledgeCopilotView();
       }
     });
 
@@ -376,6 +396,8 @@ function initCard3DTilt() {
           showPrintingColorInspectionView();
         } else if (moduleId === "predictive-maintenance") {
           openModuleDashboard("predictive-maintenance");
+        } else if (moduleId === "mill-knowledge") {
+          showMillKnowledgeCopilotView();
         }
       }
     });
@@ -396,6 +418,14 @@ function initCard3DTilt() {
   const btnBackFv = document.getElementById("btnBackFromFabricVision");
   if (btnBackFv) {
     btnBackFv.addEventListener("click", showProcessingModulesView);
+  }
+
+  const btnBackCopilot = document.getElementById("btnBackFromCopilot");
+  if (btnBackCopilot) {
+    btnBackCopilot.addEventListener("click", () => {
+      sfx.playClick();
+      showProcessingModulesView();
+    });
   }
 
   // Back & Return buttons for Color Intelligence Inspection Views
@@ -434,6 +464,7 @@ function initCard3DTilt() {
       const ciView = document.getElementById("colorIntelligenceSubView");
       const fvView = document.getElementById("fabricInspectionSubView");
       const procView = document.getElementById("processingModulesView");
+      const copilotView = document.getElementById("millKnowledgeCopilotView");
 
       if (
         (dyeingView && dyeingView.style.display !== "none") ||
@@ -444,6 +475,9 @@ function initCard3DTilt() {
       ) {
         sfx.playClick();
         showColorIntelligenceSubView();
+      } else if (copilotView && copilotView.style.display !== "none") {
+        sfx.playClick();
+        showProcessingModulesView();
       } else if (dashView && dashView.style.display !== "none") {
         hideDashboardView();
       } else if ((ciView && ciView.style.display !== "none") || (fvView && fvView.style.display !== "none")) {
@@ -536,6 +570,8 @@ function setupDashboardInteractions() {
       showColorIntelligenceSubView();
     } else if (hash === "#fabric-inspection-suite" || hash === "#fabric-vision") {
       showFabricInspectionSubView();
+    } else if (hash === "#mill-knowledge-copilot" || hash === "#mill-knowledge") {
+      showMillKnowledgeCopilotView();
     } else if (hash === "#processing" || hash === "#processing-modules") {
       showProcessingModulesView();
     }
@@ -3020,10 +3056,1460 @@ function createInspectionDashboardController(cfg) {
 }
 
 // ==========================================================================
-// 10. INITIALIZATION
+// 10. MILL KNOWLEDGE COPILOT (GUIDED TOPIC TREE)
+// ==========================================================================
+const COPILOT_ROOT_IDS = [
+  "shift-help",
+  "color-pass",
+  "fabric-trace",
+  "aj003",
+  "energy",
+  "handover",
+  "passport"
+];
+
+const COPILOT_KNOWLEDGE = {
+  "shift-help": {
+    tag: "SHIFT",
+    tagClass: "tag-shift",
+    prompt: "What can you help with on this shift?",
+    topic: "Shift briefing",
+    source: "Mill Knowledge Copilot · Shift A",
+    metric: { label: "SOP library", value: "1,240" },
+    body: [
+      "I am the mill’s shift engineering assistant. I retrieve SOPs, summarise handover, and explain what the textile AI modules are seeing — without taking the final decision away from you.",
+      "Work the operating loop with me: observe the signal, understand the evidence, decide the next action, act with an owner, then verify the outcome."
+    ],
+    steps: [
+      "Color Intelligence — shade prediction, ΔE, recipe correction",
+      "Fabric Vision — defect location, roll grade, loom trace-back",
+      "Predictive Maintenance — asset risk, work orders, verification",
+      "Energy, Planning, Compliance — utilities, OEE, passport evidence"
+    ],
+    followUps: ["shift-first-look", "handover", "shift-approvals"]
+  },
+  "shift-first-look": {
+    tag: "SHIFT",
+    tagClass: "tag-shift",
+    prompt: "Where should I look first on Shift A?",
+    topic: "Shift briefing",
+    source: "Mill Knowledge · Start of shift",
+    metric: { label: "Open watch items", value: "2" },
+    body: [
+      "Start with the two items that can still move today’s plan: shade on Lot TEX-8821 and the reliability watch on air-jet AJ-003.",
+      "Everything else on Shift A is stable — three batch transitions completed, zero safety incidents, compressed air at 99.8% uptime."
+    ],
+    steps: [
+      "Open Color Intelligence if you own the Royal Navy #8821 lot",
+      "Open Predictive Maintenance if you own AJ-003",
+      "Use handover if you are receiving the next shift"
+    ],
+    followUps: ["color-pass", "aj003", "handover"]
+  },
+  "shift-approvals": {
+    tag: "SHIFT",
+    tagClass: "tag-shift",
+    prompt: "Which actions still need a person to approve?",
+    topic: "Shift briefing",
+    source: "Mill Knowledge · Control boundary",
+    metric: { label: "Human gates", value: "3" },
+    body: [
+      "The copilot can surface evidence and a recommended next step. Colour correction, maintenance work and final quality acceptance stay with a qualified person.",
+      "If a recommendation is declined, keep the reason on the record so the next shift sees why the plant stayed on the current path."
+    ],
+    steps: [
+      "Shade correction — dyer or quality accepts dosing change",
+      "AJ-003 — maintenance supervisor assigns the work order",
+      "Roll disposition — quality decides hold, cut-out or release"
+    ],
+    followUps: ["color-operator-gate", "aj003-workorder", "fabric-contain"]
+  },
+  "color-pass": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "How does Color Intelligence decide if a dye batch will pass?",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Dyeing",
+    metric: { label: "Live ΔE vs Royal Navy #8821", value: "0.18" },
+    body: [
+      "The decision is whether this batch will finish inside the approved customer colour tolerance. Color Intelligence never silently accepts a lot.",
+      "It joins the approved recipe, comparable lot history, the live spectro curve and the customer limit, then predicts the likely final shade and explains any correction."
+    ],
+    steps: [
+      "Approved standard — customer colour and allowed ΔE (now 0.50)",
+      "Live prediction — in-line spectro updates CIE L*a*b* as the fabric runs",
+      "Explained option — recipe or dosing change is shown with a reason",
+      "Operator decision — accept or decline; first-time-right rate is 99.2%",
+      "Final proof — instrument reading confirms pass or fail at completion"
+    ],
+    followUps: ["delta-e", "dye-correction", "color-operator-gate"]
+  },
+  "delta-e": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "What does ΔE mean on this lot?",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Quality rule",
+    metric: { label: "Customer ΔE limit", value: "< 0.50 PASS" },
+    body: [
+      "ΔE is the numerical distance between the measured colour and the approved standard. A lower number is a closer match. The customer’s configured threshold decides pass or fail — not the model.",
+      "Royal Navy #8821 is running at ΔE 0.18 (L* 24.00, a* −1.80, b* −18.50). That is a MATCH against the 0.50 limit."
+    ],
+    steps: [
+      "If live ΔE stays under 0.50, the batch stays MATCH",
+      "If it drifts, review an explained dosing correction and re-measure",
+      "Quality still owns final acceptance from the instrument reading"
+    ],
+    followUps: ["delta-e-navy", "delta-e-process-map", "delta-e-if-fails"]
+  },
+  "delta-e-navy": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "How is Royal Navy #8821 tracking right now?",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Lot TEX-8821",
+    metric: { label: "Status", value: "MATCH" },
+    body: [
+      "Lot TEX-8821, Royal Navy #8821, is inside tolerance. Target swatch is #1A2849. Live measured swatch is #1B294A. Spectral fit is 99.2% with peak wavelength at 460 nm.",
+      "Keep the lot on the light-to-dark dye sequence. That cut vessel wash water 38% and wash downtime 45 minutes without putting shade at risk."
+    ],
+    steps: [
+      "Hold tolerance at 0.50 — do not tighten mid-batch",
+      "Watch the 400–700 nm overlay for a growing live-vs-target gap",
+      "Only open a correction if ΔE starts climbing toward 0.35+"
+    ],
+    followUps: ["dye-correction", "handover-tex8821"]
+  },
+  "delta-e-process-map": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "How do other wet processes measure colour?",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Process map",
+    metric: { label: "Active colour lines", value: "5" },
+    body: [
+      "Each wet process uses the same spectro loop, but the live unit changes with the job.",
+      "Dyeing and printing stay on ΔE. Bleaching watches whiteness, mercerizing watches luster, and Finish watches thermo-fixation shade plus residual moisture."
+    ],
+    steps: [
+      "Printing — Reactive Magenta #704 at ΔE 0.19, paste viscosity in dPa·s",
+      "Bleaching — Optical White #010, whiteness in Wb, peroxide in g/kg",
+      "Mercerizing — Pearl Sateen #330, luster in BAN, caustic in °Bé",
+      "Finish — Khaki Twill #520, ΔE 0.17, moisture as % H₂O"
+    ],
+    followUps: ["dye-correction"]
+  },
+  "delta-e-if-fails": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "What if live ΔE climbs above 0.50?",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Exception",
+    metric: { label: "Fail gate", value: "ΔE ≥ 0.50" },
+    body: [
+      "If live ΔE crosses 0.50 the lot is no longer a predicted pass. Do not wait for the end of the run — correction only helps while the batch can still be influenced.",
+      "The spectro will keep streaming. Quality still makes the final call from the instrument reading after any accepted correction."
+    ],
+    steps: [
+      "Open the live-vs-target reflectance overlay",
+      "Review the suggested dye offsets before touching the recipe",
+      "Accept or decline the correction with a named owner",
+      "Re-measure and record the new ΔE before release"
+    ],
+    followUps: ["dye-correction", "color-operator-gate"]
+  },
+  "dye-correction": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "Walk me through a first-time-right dye correction",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Closed-loop dosing",
+    metric: { label: "Auto-correction rate", value: "99.2%" },
+    body: [
+      "Correction is recommended while the batch can still be influenced — not after the lot is already off-shade.",
+      "Current auxiliary dosing on this range is 2.4 mL/kg. Printing speaks in paste viscosity, bleaching in peroxide, mercerizing in caustic, and Finish in residual moisture."
+    ],
+    steps: [
+      "Compare target vs measured swatches and the 400–700 nm overlay",
+      "Review the suggested dye offset pills",
+      "Recalibrate the spectro if the sensor has drifted",
+      "Apply the change only after the operator accepts it",
+      "Verify the new ΔE before releasing the batch"
+    ],
+    followUps: ["correction-now", "correction-other-processes", "correction-verify"]
+  },
+  "correction-now": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "Do we need a correction on the current dye lot?",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Lot TEX-8821",
+    metric: { label: "Recommendation", value: "Hold recipe" },
+    body: [
+      "No. Royal Navy #8821 is MATCH at ΔE 0.18 with 99.2% spectral fit. Opening a correction now would add chemistry and risk without moving customer acceptance.",
+      "Keep watching the overlay. A correction becomes useful only if ΔE starts walking toward the 0.50 line."
+    ],
+    steps: [
+      "Leave auxiliary dosing at 2.4 mL/kg",
+      "Keep the light-to-dark sequence for the next vessel",
+      "Revisit only if the live curve separates from the target"
+    ],
+    followUps: ["correction-verify", "handover-tex8821"]
+  },
+  "correction-other-processes": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "What does a correction look like after dyeing?",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Process corrections",
+    metric: { label: "Shared rule", value: "Explain, then approve" },
+    body: [
+      "The loop is the same: show the gap, recommend a change, wait for a person, then verify. Only the unit on the recommendation changes."
+    ],
+    steps: [
+      "Printing — paste dosing, typically around 18.5 dPa·s on Magenta #704",
+      "Bleaching — peroxide, around 13.8 g/kg against Optical White #010",
+      "Mercerizing — caustic strength, around 27.8 °Bé",
+      "Finish — residual moisture, around 4.0% H₂O on Khaki Twill #520"
+    ],
+    followUps: ["correction-verify"]
+  },
+  "correction-verify": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "How do we verify a correction actually worked?",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Verify",
+    metric: { label: "Proof", value: "Instrument reading" },
+    body: [
+      "A recommendation is not a pass. After any accepted change, wait for the next spectro window and compare ΔE, L*a*b* and the reflectance overlay with the customer standard.",
+      "Record who approved the change, the time, and the new reading so the next shift can see the outcome."
+    ],
+    steps: [
+      "Confirm live ΔE is back under 0.50",
+      "Check the swatch pair still reads as a visual MATCH",
+      "Close the case only after quality accepts the instrument result"
+    ],
+    followUps: ["color-operator-gate", "handover-evidence"]
+  },
+  "color-operator-gate": {
+    tag: "COLOR",
+    tagClass: "tag-color",
+    prompt: "Who approves a shade recommendation?",
+    topic: "Color Intelligence",
+    source: "Color Intelligence · Control boundary",
+    metric: { label: "Final owner", value: "Quality" },
+    body: [
+      "The dyer can accept or decline a mid-batch correction. Final lot acceptance stays with quality and the approved instrument reading.",
+      "If the recommendation is declined, keep the reason with the lot. That is what prevents the next shift from repeating a change that was already judged unnecessary."
+    ],
+    steps: [
+      "Copilot explains the predicted shade and the suggested offset",
+      "Dyer accepts or declines while the batch can still be influenced",
+      "Quality confirms pass or fail at completion"
+    ],
+    followUps: ["correction-now", "delta-e-if-fails"]
+  },
+  "fabric-trace": {
+    tag: "VISION",
+    tagClass: "tag-vision",
+    prompt: "How does Fabric Vision map a defect back to the loom?",
+    topic: "Fabric Vision",
+    source: "Fabric Inspection & Vision AI",
+    metric: { label: "Optical defect rate", value: "0.012%" },
+    body: [
+      "Vision inspection maps each visible defect to its exact position on the roll. The record keeps classification confidence, roll ID, production batch and the probable loom source.",
+      "Quality is not an isolated final check. Apparel can see the same roll evidence before cutting."
+    ],
+    steps: [
+      "Detect — locate and classify the defect on the roll map",
+      "Trace — keep roll, batch and source loom linked",
+      "Contain — quality decides hold, cut-out or downgrade",
+      "Plan — apparel sees material context before cutting",
+      "Recover — supervisors rebalance work to protect output"
+    ],
+    followUps: ["fabric-last-scan", "fabric-contain", "fabric-apparel"]
+  },
+  "fabric-last-scan": {
+    tag: "VISION",
+    tagClass: "tag-vision",
+    prompt: "What did the last greige scan find?",
+    topic: "Fabric Vision",
+    source: "Fabric Vision · Greige",
+    metric: { label: "Roll grade", value: "A+" },
+    body: [
+      "The last scan covered 4,820 m of greige. It found 2 broken picks and 0 oil stains. Weft/warp skew is +0.14°. ASTM D5430 is 2.1 penalty points per 100 square yards — Grade A+.",
+      "Broken picks stay linked to the probable source loom so weaving can see the same record the inspection camera wrote."
+    ],
+    steps: [
+      "No oil-stain containment is required on this roll",
+      "Review the two broken-pick coordinates before the next cut plan",
+      "Keep bow-and-skew compensation active"
+    ],
+    followUps: ["fabric-contain", "aj003"]
+  },
+  "fabric-contain": {
+    tag: "VISION",
+    tagClass: "tag-vision",
+    prompt: "How should quality contain a mapped defect?",
+    topic: "Fabric Vision",
+    source: "Fabric Vision · Containment",
+    metric: { label: "Owner", value: "Quality" },
+    body: [
+      "Once a defect has a roll position and a source loom, quality decides the material fate. The copilot does not release or downgrade fabric on its own.",
+      "Use the roll map so cutting does not inherit a known defect as a surprise at sewing."
+    ],
+    steps: [
+      "Hold the affected metres if the defect is critical",
+      "Cut-out or downgrade if the rest of the roll is Grade A",
+      "Leave the loom link intact so weaving can close the cause"
+    ],
+    followUps: ["fabric-apparel", "fabric-last-scan"]
+  },
+  "fabric-apparel": {
+    tag: "VISION",
+    tagClass: "tag-vision",
+    prompt: "How does this reach the garment line?",
+    topic: "Fabric Vision",
+    source: "Fabric Vision · Apparel flow",
+    metric: { label: "Line view", value: "Cut to pack" },
+    body: [
+      "The same roll, batch and order stay visible from cutting through bundling, sewing, inline quality, finishing and packing.",
+      "If a roll is held or partially cut out, the line sees the material context and can rebalance bundles instead of discovering a shortage at packing."
+    ],
+    steps: [
+      "Cutting receives the roll map and remaining usable length",
+      "Supervisors move people or bundles if a hold creates a gap",
+      "Output is judged against the order target, not just machine speed"
+    ],
+    followUps: ["handover-tex8821"]
+  },
+  "aj003": {
+    tag: "MAINT",
+    tagClass: "tag-maint",
+    prompt: "What should we do if AJ-003 vibration rises?",
+    topic: "Predictive Maintenance",
+    source: "Predictive Maintenance · Air-jet AJ-003",
+    metric: { label: "Required human gate", value: "Approve work order" },
+    body: [
+      "If air-jet loom AJ-003 drifts from its recent normal — vibration, temperature, miss-picks and unplanned stops moving together — treat it as an emerging reliability concern, not a single unexplained alarm.",
+      "The platform ranks the risk against other plant issues and shows contributing evidence. A qualified person still confirms the physical cause."
+    ],
+    steps: [
+      "Early warning — related signs move beyond the recent baseline",
+      "Prioritised alert — compare AJ-003 with other open plant risks",
+      "Investigation — review evidence, timing and asset history together",
+      "Maintenance action — assign owner, due time and priority",
+      "Verification — record findings and confirm the asset response"
+    ],
+    followUps: ["aj003-evidence", "aj003-workorder", "pressure-drop"]
+  },
+  "aj003-evidence": {
+    tag: "MAINT",
+    tagClass: "tag-maint",
+    prompt: "What evidence would confirm AJ-003 is drifting?",
+    topic: "Predictive Maintenance",
+    source: "Predictive Maintenance · AJ-003 evidence",
+    metric: { label: "Pattern to watch", value: "Signals together" },
+    body: [
+      "One noisy vibration sample is not enough. The concern is when vibration, temperature, miss-picks and short stops rise together against AJ-003’s recent baseline.",
+      "Open the asset history next to the current window so you can see whether this is a new pattern or a repeat of a verified fault."
+    ],
+    steps: [
+      "Compare the last stable window with the current 5-minute interval",
+      "Check whether miss-picks arrived with the temperature rise",
+      "Look for a linked utilities event on line beta before blaming the loom alone"
+    ],
+    followUps: ["aj003-workorder", "pressure-drop"]
+  },
+  "aj003-workorder": {
+    tag: "MAINT",
+    tagClass: "tag-maint",
+    prompt: "How should we raise the AJ-003 work order?",
+    topic: "Predictive Maintenance",
+    source: "Predictive Maintenance · Work order",
+    metric: { label: "Assign", value: "Maintenance supervisor" },
+    body: [
+      "Create the work order from the investigation, not from the raw alarm. Give it an owner, a due time and a priority against today’s production exposure.",
+      "Close it only after the team records the finding and confirms AJ-003 has returned to its recent normal."
+    ],
+    steps: [
+      "Attach the contributing signals and the time window",
+      "State the likely operational exposure for weaving",
+      "Verify vibration, miss-picks and stops after the intervention"
+    ],
+    followUps: ["aj003-evidence", "handover-watchlist"]
+  },
+  "pressure-drop": {
+    tag: "MAINT",
+    tagClass: "tag-maint",
+    prompt: "Could a line-beta pressure drop be involved?",
+    topic: "Predictive Maintenance",
+    source: "Predictive Maintenance · Utilities header",
+    metric: { label: "Air header setpoint", value: "7.90 bar" },
+    body: [
+      "A pressure drop on line beta is a utilities-plus-process event. Check the header first, then the valves that isolate the dye range, then acoustic leak evidence.",
+      "Compressors 1–4 are VFD-modulated to hold 7.90 bar at minimum kWh. The leak sentinel is quiet this shift — 0 major leaks, three micro-leaks already sealed."
+    ],
+    steps: [
+      "Confirm header pressure against the 7.90 bar setpoint",
+      "Inspect line-beta isolation valves — green is open, red is closed",
+      "If the leak sentinel is quiet, look for a process demand spike"
+    ],
+    followUps: ["pressure-valves", "pressure-leak-vs-demand"]
+  },
+  "pressure-valves": {
+    tag: "MAINT",
+    tagClass: "tag-maint",
+    prompt: "Which valves should I check on line beta?",
+    topic: "Predictive Maintenance",
+    source: "SCADA · Line beta",
+    metric: { label: "Valve rule", value: "Green open · Red closed" },
+    body: [
+      "On the dye-range map, start at the line-beta isolation valves before opening a compressor investigation. An unexpected closed valve will drop downstream pressure without a leak.",
+      "Use the live HUD on each valve, then walk to the tanks and gauges on the same header."
+    ],
+    steps: [
+      "Confirm the isolation pair matches the current range recipe",
+      "If a valve is red and should be feeding the range, treat that first",
+      "Only then look at compressor load and leak sentinel history"
+    ],
+    followUps: ["pressure-leak-vs-demand", "energy-header-rule"]
+  },
+  "pressure-leak-vs-demand": {
+    tag: "MAINT",
+    tagClass: "tag-maint",
+    prompt: "Is this a leak or a demand spike?",
+    topic: "Predictive Maintenance",
+    source: "Energy & Utilities · Diagnosis",
+    metric: { label: "Leak sentinel", value: "0 major leaks" },
+    body: [
+      "The 40 kHz leak sentinel is quiet, so do not start at a hunt for a burst line. A batch change, wash-down or extra range coming online can pull the header down while compressors ramp.",
+      "If pressure recovers as demand falls, record it as a demand event. If it stays low with quiet acoustics and open valves, then raise utilities work."
+    ],
+    steps: [
+      "Compare header pressure with the current number of live ranges",
+      "Check whether the drop lined up with a vessel wash or lot change",
+      "Raise a work order only if pressure stays off 7.90 bar after demand settles"
+    ],
+    followUps: ["energy-header-rule", "aj003-workorder"]
+  },
+  "energy": {
+    tag: "ENERGY",
+    tagClass: "tag-energy",
+    prompt: "How do we save energy without losing air pressure?",
+    topic: "Energy & Utilities",
+    source: "Energy & Utilities Optimization AI",
+    metric: { label: "Specific energy", value: "0.114 kWh/kg" },
+    body: [
+      "Do not chase kWh by starving the header. The optimiser modulates compressor VFDs so 7.90 bar is held while specific energy stays at 0.114 kWh/kg (−14.2% YoY).",
+      "Thermal recovery is 94.6%: 82°C dye-liquor effluent pre-heats pre-treatment makeup. That cuts boiler steam without changing shade or wash performance."
+    ],
+    steps: [
+      "Keep header pressure as the constraint, kWh as the objective",
+      "Seal acoustic leaks before adding compressor load",
+      "Use recovered heat on the next wet-process batch, then verify SEC"
+    ],
+    followUps: ["energy-header-rule", "energy-heat-recovery"]
+  },
+  "energy-header-rule": {
+    tag: "ENERGY",
+    tagClass: "tag-energy",
+    prompt: "What is the air-header rule for this mill?",
+    topic: "Energy & Utilities",
+    source: "Energy & Utilities · Compressed air",
+    metric: { label: "Hard constraint", value: "7.90 bar" },
+    body: [
+      "7.90 bar is the process constraint. Energy savings come from how the compressors hold that point, not from lowering it.",
+      "VFD modulation on compressors 1–4 is why specific energy can fall to 0.114 kWh/kg without putting jet looms or the dye range on a soft header."
+    ],
+    steps: [
+      "Never recommend a setpoint cut to make the kWh chart look better",
+      "Fix leaks and idle demand first",
+      "Then let the optimiser shed compressor load"
+    ],
+    followUps: ["pressure-drop", "energy-heat-recovery"]
+  },
+  "energy-heat-recovery": {
+    tag: "ENERGY",
+    tagClass: "tag-energy",
+    prompt: "Where is the waste-heat saving coming from?",
+    topic: "Energy & Utilities",
+    source: "Energy & Utilities · Thermal recovery",
+    metric: { label: "Heat recovery", value: "94.6%" },
+    body: [
+      "The dye-liquor heat exchanger is recycling 82°C effluent into pre-treatment makeup. That is the 94.6% thermal recovery figure — boiler steam is doing less of the first temperature lift.",
+      "Shade and wash performance stay on their own control loops. Do not trade a heat-recovery gain against a ΔE miss."
+    ],
+    steps: [
+      "Confirm the exchanger is on before the next pre-treatment batch",
+      "Watch SEC after the batch, not only steam flow in the moment",
+      "If shade drifts, hold the colour loop first and review heat second"
+    ],
+    followUps: ["color-pass", "energy-header-rule"]
+  },
+  "handover": {
+    tag: "PLAN",
+    tagClass: "tag-plan",
+    prompt: "Summarize Shift A handover",
+    topic: "Shift handover",
+    source: "Mill Knowledge · Shift handover",
+    metric: { label: "On-time dispatch", value: "99.4%" },
+    body: [
+      "Shift A is ready to hand over. There were three batch transitions, zero safety incidents and 99.8% compressed-air uptime. Plant OEE is 94.2% — availability 98.1%, performance 96.4%, quality 99.8%.",
+      "Lot TEX-8821 remains on the light-to-dark dye sequence. Target ship date is 18 Sep 2026 with no supply-chain bottleneck."
+    ],
+    steps: [
+      "Watch AJ-003 if vibration, temperature and miss-picks rise together",
+      "Royal Navy #8821 is MATCH at ΔE 0.18 — keep tolerance at 0.50",
+      "Pass open cases with owner, evidence and unverified items"
+    ],
+    followUps: ["handover-tex8821", "handover-watchlist", "handover-evidence"]
+  },
+  "handover-tex8821": {
+    tag: "PLAN",
+    tagClass: "tag-plan",
+    prompt: "What should the next shift know about TEX-8821?",
+    topic: "Shift handover",
+    source: "Planning · Lot TEX-8821",
+    metric: { label: "Ship date", value: "18 Sep 2026" },
+    body: [
+      "TEX-8821 is the live navy lot. Shade is MATCH at ΔE 0.18 and the vessel sequence is already light-to-dark to protect water and wash time.",
+      "Apparel can plan against a 99.4% on-time dispatch forecast. Do not reshuffle this lot unless colour or fabric containment changes."
+    ],
+    steps: [
+      "Keep Royal Navy #8821 on the current recipe",
+      "If Fabric Vision holds metres, update the cut plan before sewing",
+      "Leave the ship-date commitment visible on the handover"
+    ],
+    followUps: ["delta-e-navy", "fabric-apparel"]
+  },
+  "handover-watchlist": {
+    tag: "PLAN",
+    tagClass: "tag-plan",
+    prompt: "What stays on the incoming watchlist?",
+    topic: "Shift handover",
+    source: "Mill Knowledge · Watchlist",
+    metric: { label: "Watch items", value: "AJ-003 · TEX-8821" },
+    body: [
+      "Carry two named items forward: AJ-003 for reliability and TEX-8821 for shade. Everything else on Shift A closed cleanly.",
+      "If either item is still open at the next handover, pass the evidence pack — not only a spoken warning."
+    ],
+    steps: [
+      "AJ-003 — note whether signals are still moving together",
+      "TEX-8821 — latest ΔE and whether a correction was declined",
+      "Utilities — header still holding 7.90 bar"
+    ],
+    followUps: ["aj003", "delta-e-navy"]
+  },
+  "handover-evidence": {
+    tag: "PLAN",
+    tagClass: "tag-plan",
+    prompt: "What must be written down before we leave?",
+    topic: "Shift handover",
+    source: "Mill Knowledge · Handover quality",
+    metric: { label: "Required on each case", value: "Owner · reason · time" },
+    body: [
+      "A verbal handover is not enough when an auditor or the next supervisor asks what changed. Every open priority needs an owner, a reason, a timestamp and whether the outcome was verified.",
+      "That is how the mill repeats a good correction and avoids re-arguing a decision that was already made."
+    ],
+    steps: [
+      "Name the owner still responsible after the shift change",
+      "Attach the reading, roll map or asset window you used",
+      "Mark verified or still open — never leave it implied"
+    ],
+    followUps: ["shift-approvals", "passport-already"]
+  },
+  "passport": {
+    tag: "COMPLY",
+    tagClass: "tag-comply",
+    prompt: "What evidence goes into a Digital Product Passport?",
+    topic: "Compliance",
+    source: "Compliance & Traceability AI",
+    metric: { label: "ZDHC MRSL", value: "Level 3" },
+    body: [
+      "The mill already connects order, style, customer, lot, batch, machine, roll defects, shade results, maintenance actions and audit events into a product history.",
+      "That is the foundation for a Digital Product Passport. A complete passport still needs unique product identity, fibre origin, supplier journey, environmental evidence and controlled QR access."
+    ],
+    steps: [
+      "Materials — fibre content, source and supplier evidence",
+      "Manufacturing — where and when each major process occurred",
+      "Quality — shade, fabric and garment verification records",
+      "Impact — water, energy, carbon and chemical information",
+      "Access — a secure QR-linked view for the right audience"
+    ],
+    followUps: ["passport-already", "passport-missing", "passport-zdhc"]
+  },
+  "passport-already": {
+    tag: "COMPLY",
+    tagClass: "tag-comply",
+    prompt: "What can we already prove on a lot today?",
+    topic: "Compliance",
+    source: "Compliance · Current ledger",
+    metric: { label: "Traceable objects", value: "Lot to action" },
+    body: [
+      "For a live lot such as TEX-8821 we can already show the customer standard, shade result, machine path, any fabric defects, maintenance actions on linked assets, and who approved a change.",
+      "That is enough for an internal audit trail. It is not yet a customer-facing passport."
+    ],
+    steps: [
+      "Order, style, customer and lot identity",
+      "Batch, machine and process timestamps",
+      "ΔE result, roll defects and work-order outcomes"
+    ],
+    followUps: ["passport-missing", "handover-tex8821"]
+  },
+  "passport-missing": {
+    tag: "COMPLY",
+    tagClass: "tag-comply",
+    prompt: "What is still missing for a full passport?",
+    topic: "Compliance",
+    source: "Compliance · Gap",
+    metric: { label: "Next step", value: "Passport registry" },
+    body: [
+      "The missing pieces sit mostly outside the current mill loop: fibre origin, supplier chain, full environmental totals, care guidance, end-of-life instructions and a controlled public QR.",
+      "Recommended next step is a dedicated passport registry for one representative order, lot and batch, then name the data owners for what we do not yet hold."
+    ],
+    steps: [
+      "Assign a unique product identity",
+      "Collect supplier and fibre-origin evidence",
+      "Attach water, energy, carbon and chemical totals",
+      "Decide who may open the QR view"
+    ],
+    followUps: ["passport-zdhc", "passport-already"]
+  },
+  "passport-zdhc": {
+    tag: "COMPLY",
+    tagClass: "tag-comply",
+    prompt: "Are chemicals and effluent in the record?",
+    topic: "Compliance",
+    source: "Compliance · ZDHC & effluent",
+    metric: { label: "Effluent pH", value: "7.12" },
+    body: [
+      "Yes, at mill-gate level. Every dyestuff and auxiliary batch is checked against ZDHC MRSL Level 3. Effluent is pH 7.12, COD 42 mg/L, BOD 8 mg/L, TDS 420 ppm, with 92% water recycle.",
+      "Those readings can travel with the lot history. They still need a passport identity before they become a customer-facing claim."
+    ],
+    steps: [
+      "Keep MRSL Level 3 verification on each chemical batch",
+      "Do not publish effluent figures without the lot-to-claim link",
+      "Use the same record in handover that you would show an auditor"
+    ],
+    followUps: ["handover-evidence"]
+  }
+};
+
+function getCopilotEntry(id) {
+  const entry = COPILOT_KNOWLEDGE[id];
+  if (!entry) return null;
+  return Object.assign({ id: id }, entry);
+}
+
+const COPILOT_CHARTS = {
+  "shift-help": [
+    { type: "pie", title: "SOP library by domain", items: [{ label: "Color", value: 310 }, { label: "Vision", value: 220 }, { label: "Maint", value: 280 }, { label: "Utils", value: 190 }, { label: "Plan", value: 240 }] },
+    { type: "bar", title: "Live module coverage", items: [{ label: "Color", value: 99.2 }, { label: "Vision", value: 99.98 }, { label: "Maint", value: 94 }, { label: "Energy", value: 86 }, { label: "Plan", value: 94.2 }], unit: "%" }
+  ],
+  "shift-first-look": [
+    { type: "bar", title: "Open watch items", items: [{ label: "TEX-8821", value: 0.18 }, { label: "AJ-003", value: 1 }, { label: "Line β", value: 0 }], unit: "risk" },
+    { type: "line", title: "OEE last 6 hours", labels: ["08:00", "09:00", "10:00", "11:00", "12:00", "13:00"], values: [93.1, 93.8, 94.0, 94.4, 94.1, 94.2], unit: "%" }
+  ],
+  "shift-approvals": [
+    { type: "pie", title: "Human gates this shift", items: [{ label: "Shade", value: 1 }, { label: "Work order", value: 1 }, { label: "Roll hold", value: 1 }] },
+    { type: "bar", title: "Approvals waiting", items: [{ label: "Dyer", value: 1 }, { label: "Maint", value: 1 }, { label: "Quality", value: 1 }] }
+  ],
+  "color-pass": [
+    { type: "line", title: "Live ΔE · last 40 min", labels: ["−40", "−30", "−20", "−10", "Now"], values: [0.22, 0.21, 0.19, 0.18, 0.18], max: 0.55, threshold: 0.5, unit: "ΔE" },
+    { type: "bar", title: "Live vs customer limit", items: [{ label: "Live", value: 0.18 }, { label: "Limit", value: 0.5 }], unit: "ΔE" }
+  ],
+  "delta-e": [
+    { type: "line", title: "Royal Navy #8821 ΔE", labels: ["−40", "−30", "−20", "−10", "Now"], values: [0.21, 0.2, 0.19, 0.18, 0.18], max: 0.55, threshold: 0.5, unit: "ΔE" },
+    { type: "pie", title: "CIE Lab share of gap", items: [{ label: "L* 24.00", value: 24 }, { label: "a* 1.80", value: 18 }, { label: "b* 18.50", value: 58 }] }
+  ],
+  "delta-e-navy": [
+    { type: "line", title: "Spectral fit %", labels: ["−40", "−30", "−20", "−10", "Now"], values: [98.6, 98.9, 99.0, 99.1, 99.2], min: 97, max: 100, unit: "%" },
+    { type: "bar", title: "Navy lot snapshot", items: [{ label: "ΔE", value: 0.18 }, { label: "Fit %", value: 99.2 }, { label: "Peak nm", value: 46 }] }
+  ],
+  "delta-e-process-map": [
+    { type: "bar", title: "Process colour index", items: [{ label: "Dye ΔE", value: 0.18 }, { label: "Print ΔE", value: 0.19 }, { label: "Finish ΔE", value: 0.17 }] },
+    { type: "pie", title: "Active colour lines", items: [{ label: "Dye", value: 1 }, { label: "Print", value: 1 }, { label: "Bleach", value: 1 }, { label: "Merc", value: 1 }, { label: "Finish", value: 1 }] }
+  ],
+  "delta-e-if-fails": [
+    { type: "line", title: "ΔE walk toward fail", labels: ["T0", "T1", "T2", "T3", "T4"], values: [0.18, 0.27, 0.36, 0.44, 0.51], max: 0.6, threshold: 0.5, unit: "ΔE" },
+    { type: "bar", title: "Fail gate", items: [{ label: "Live", value: 0.51 }, { label: "Limit", value: 0.5 }], unit: "ΔE" }
+  ],
+  "dye-correction": [
+    { type: "line", title: "Auxiliary dosing mL/kg", labels: ["−40", "−30", "−20", "−10", "Now"], values: [2.55, 2.48, 2.44, 2.41, 2.4], min: 2.2, max: 2.7, unit: "mL/kg" },
+    { type: "bar", title: "First-time-right", items: [{ label: "Corrected", value: 99.2 }, { label: "Hold", value: 0.8 }], unit: "%" }
+  ],
+  "correction-now": [
+    { type: "pie", title: "Recipe action", items: [{ label: "Hold", value: 92 }, { label: "Watch", value: 8 }] },
+    { type: "line", title: "ΔE while holding recipe", labels: ["−40", "−30", "−20", "−10", "Now"], values: [0.2, 0.19, 0.18, 0.18, 0.18], max: 0.55, threshold: 0.5, unit: "ΔE" }
+  ],
+  "correction-other-processes": [
+    { type: "bar", title: "Correction units by process", items: [{ label: "Print", value: 18.5 }, { label: "Bleach", value: 13.8 }, { label: "Merc", value: 27.8 }, { label: "Finish", value: 4 }] },
+    { type: "pie", title: "Shared rule", items: [{ label: "Explain", value: 1 }, { label: "Approve", value: 1 }, { label: "Verify", value: 1 }] }
+  ],
+  "correction-verify": [
+    { type: "line", title: "ΔE after accepted change", labels: ["Before", "+5", "+10", "+15", "Now"], values: [0.41, 0.33, 0.26, 0.21, 0.18], max: 0.55, threshold: 0.5, unit: "ΔE" },
+    { type: "bar", title: "Proof checklist", items: [{ label: "ΔE", value: 0.18 }, { label: "Swatch", value: 1 }, { label: "QA", value: 1 }] }
+  ],
+  "color-operator-gate": [
+    { type: "pie", title: "Who owns the gate", items: [{ label: "Dyer", value: 1 }, { label: "Quality", value: 1 }, { label: "Copilot", value: 0 }] },
+    { type: "bar", title: "Decisions this lot", items: [{ label: "Accepted", value: 0 }, { label: "Declined", value: 0 }, { label: "Pending", value: 1 }] }
+  ],
+  "fabric-trace": [
+    { type: "bar", title: "Last greige scan defects", items: [{ label: "Broken pick", value: 2 }, { label: "Oil stain", value: 0 }, { label: "Other", value: 0 }] },
+    { type: "pie", title: "4,820 m disposition", items: [{ label: "Pass", value: 4818 }, { label: "Picks", value: 2 }] }
+  ],
+  "fabric-last-scan": [
+    { type: "line", title: "Skew angle °", labels: ["−40", "−30", "−20", "−10", "Now"], values: [0.22, 0.19, 0.16, 0.15, 0.14], max: 0.4, unit: "°" },
+    { type: "bar", title: "ASTM D5430 points / 100 yd²", items: [{ label: "This roll", value: 2.1 }, { label: "A+ cap", value: 4 }] }
+  ],
+  "fabric-contain": [
+    { type: "pie", title: "Containment options", items: [{ label: "Release", value: 70 }, { label: "Cut-out", value: 20 }, { label: "Hold", value: 10 }] },
+    { type: "bar", title: "Metres by fate", items: [{ label: "Usable", value: 4810 }, { label: "Review", value: 10 }] }
+  ],
+  "fabric-apparel": [
+    { type: "line", title: "Line output vs target", labels: ["Cut", "Sew", "QC", "Finish", "Pack"], values: [96, 94, 95, 97, 99.4], min: 90, max: 100, unit: "%" },
+    { type: "bar", title: "WIP bundles", items: [{ label: "Cut", value: 18 }, { label: "Sew", value: 24 }, { label: "Pack", value: 11 }] }
+  ],
+  "aj003": [
+    { type: "line", title: "AJ-003 vibration trend", labels: ["−40", "−30", "−20", "−10", "Now"], values: [0.42, 0.48, 0.61, 0.74, 0.82], max: 1, unit: "g" },
+    { type: "bar", title: "Signals moving together", items: [{ label: "Vibe", value: 0.82 }, { label: "Temp", value: 0.71 }, { label: "Miss", value: 0.64 }, { label: "Stops", value: 0.4 }] }
+  ],
+  "aj003-evidence": [
+    { type: "line", title: "Miss-picks / 5 min", labels: ["12:40", "12:50", "13:00", "13:10", "13:20"], values: [1, 1, 3, 4, 5] },
+    { type: "bar", title: "Now vs last stable window", items: [{ label: "Vibe", value: 0.82 }, { label: "Baseline", value: 0.44 }] }
+  ],
+  "aj003-workorder": [
+    { type: "pie", title: "Work-order state", items: [{ label: "Draft", value: 1 }, { label: "Assigned", value: 0 }, { label: "Verified", value: 0 }] },
+    { type: "bar", title: "Exposure if loom stops", items: [{ label: "Picks/h", value: 38 }, { label: "Lots", value: 1 }] }
+  ],
+  "pressure-drop": [
+    { type: "line", title: "Line beta header bar", labels: ["−40", "−30", "−20", "−10", "Now"], values: [7.91, 7.9, 7.88, 7.84, 7.81], min: 7.6, max: 8, threshold: 7.9, unit: "bar" },
+    { type: "bar", title: "Utilities snapshot", items: [{ label: "Setpoint", value: 7.9 }, { label: "Live", value: 7.81 }, { label: "Major leaks", value: 0 }] }
+  ],
+  "pressure-valves": [
+    { type: "pie", title: "Line-beta valves", items: [{ label: "Open", value: 3 }, { label: "Closed", value: 1 }] },
+    { type: "bar", title: "Header vs valves", items: [{ label: "Header", value: 7.81 }, { label: "Setpoint", value: 7.9 }] }
+  ],
+  "pressure-leak-vs-demand": [
+    { type: "line", title: "Demand vs pressure", labels: ["−40", "−30", "−20", "−10", "Now"], values: [7.9, 7.86, 7.83, 7.8, 7.81], min: 7.6, max: 8, threshold: 7.9, unit: "bar" },
+    { type: "pie", title: "Leak sentinel 40 kHz", items: [{ label: "Quiet", value: 97 }, { label: "Micro", value: 3 }, { label: "Major", value: 0 }] }
+  ],
+  "energy": [
+    { type: "line", title: "SEC kWh/kg", labels: ["Mon", "Tue", "Wed", "Thu", "Fri"], values: [0.132, 0.126, 0.121, 0.117, 0.114], min: 0.1, max: 0.14, unit: "kWh/kg" },
+    { type: "bar", title: "Air vs recovery", items: [{ label: "Header bar", value: 7.9 }, { label: "Heat %", value: 94.6 }] }
+  ],
+  "energy-header-rule": [
+    { type: "line", title: "Compressor VFD load %", labels: ["C1", "C2", "C3", "C4"], values: [62, 58, 41, 28], min: 0, max: 100, unit: "%" },
+    { type: "bar", title: "Header constraint", items: [{ label: "Hold", value: 7.9 }, { label: "Live", value: 7.9 }] }
+  ],
+  "energy-heat-recovery": [
+    { type: "pie", title: "Thermal recovery", items: [{ label: "Recovered", value: 94.6 }, { label: "Lost", value: 5.4 }] },
+    { type: "bar", title: "Effluent into makeup", items: [{ label: "In °C", value: 82 }, { label: "Recover %", value: 94.6 }] }
+  ],
+  "handover": [
+    { type: "bar", title: "Shift A OEE split", items: [{ label: "Avail", value: 98.1 }, { label: "Perf", value: 96.4 }, { label: "Qual", value: 99.8 }], unit: "%" },
+    { type: "line", title: "Air uptime %", labels: ["09:00", "10:00", "11:00", "12:00", "13:00"], values: [99.6, 99.7, 99.8, 99.8, 99.8], min: 99, max: 100, unit: "%" }
+  ],
+  "handover-tex8821": [
+    { type: "line", title: "TEX-8821 ΔE", labels: ["Start", "Mid", "Now"], values: [0.21, 0.19, 0.18], max: 0.55, threshold: 0.5, unit: "ΔE" },
+    { type: "bar", title: "Dispatch forecast", items: [{ label: "On time", value: 99.4 }, { label: "Water −", value: 38 }], unit: "%" }
+  ],
+  "handover-watchlist": [
+    { type: "pie", title: "Incoming watchlist", items: [{ label: "AJ-003", value: 1 }, { label: "TEX-8821", value: 1 }, { label: "Closed", value: 5 }] },
+    { type: "bar", title: "Header hold", items: [{ label: "Air bar", value: 7.9 }, { label: "ΔE", value: 0.18 }] }
+  ],
+  "handover-evidence": [
+    { type: "bar", title: "Cases with owner · reason · time", items: [{ label: "Complete", value: 4 }, { label: "Verbal only", value: 1 }] },
+    { type: "pie", title: "Verification state", items: [{ label: "Verified", value: 3 }, { label: "Open", value: 2 }] }
+  ],
+  "passport": [
+    { type: "pie", title: "Passport completeness", items: [{ label: "In mill", value: 62 }, { label: "Missing", value: 38 }] },
+    { type: "bar", title: "ZDHC & effluent", items: [{ label: "MRSL", value: 3 }, { label: "pH", value: 7.12 }, { label: "Recycle %", value: 92 }] }
+  ],
+  "passport-already": [
+    { type: "bar", title: "Objects already linked", items: [{ label: "Lot", value: 1 }, { label: "Shade", value: 1 }, { label: "Defect", value: 2 }, { label: "WO", value: 1 }] },
+    { type: "pie", title: "Audience", items: [{ label: "Internal", value: 1 }, { label: "Customer QR", value: 0 }] }
+  ],
+  "passport-missing": [
+    { type: "pie", title: "Missing passport pieces", items: [{ label: "Origin", value: 1 }, { label: "Supplier", value: 1 }, { label: "Impact", value: 1 }, { label: "QR", value: 1 }] },
+    { type: "bar", title: "Registry readiness", items: [{ label: "Mill loop", value: 62 }, { label: "Full DPP", value: 0 }], unit: "%" }
+  ],
+  "passport-zdhc": [
+    { type: "bar", title: "Effluent vs limit", items: [{ label: "COD", value: 42 }, { label: "Limit", value: 150 }, { label: "BOD", value: 8 }] },
+    { type: "pie", title: "Water fate", items: [{ label: "Recycled", value: 92 }, { label: "Make-up", value: 8 }] }
+  ]
+};
+
+const COPILOT_HISTORY_SEED = [
+  { id: "seed-1", entryId: "delta-e-navy", topic: "Color Intelligence", prompt: "How is Royal Navy #8821 tracking right now?", tag: "COLOR", tagClass: "tag-color", time: "14:12", live: false },
+  { id: "seed-2", entryId: "aj003", topic: "Predictive Maintenance", prompt: "What should we do if AJ-003 vibration rises?", tag: "MAINT", tagClass: "tag-maint", time: "13:48", live: false },
+  { id: "seed-3", entryId: "pressure-drop", topic: "Energy & Utilities", prompt: "Could a line-beta pressure drop be involved?", tag: "ENERGY", tagClass: "tag-energy", time: "13:10", live: false },
+  { id: "seed-4", entryId: "handover", topic: "Shift handover", prompt: "Summarize Shift A handover", tag: "PLAN", tagClass: "tag-plan", time: "12:55", live: false }
+];
+
+function copilotSvg(name, attrs) {
+  const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+  Object.keys(attrs || {}).forEach((key) => el.setAttribute(key, String(attrs[key])));
+  return el;
+}
+
+function getCopilotCharts(entry) {
+  return COPILOT_CHARTS[entry && entry.id] || COPILOT_CHARTS["shift-help"];
+}
+
+function getCopilotChartTip() {
+  let tip = document.getElementById("copilotChartTip");
+  if (tip) return tip;
+  tip = document.createElement("div");
+  tip.id = "copilotChartTip";
+  tip.className = "copilot-chart-tip";
+  tip.setAttribute("role", "tooltip");
+  tip.hidden = true;
+  document.body.appendChild(tip);
+  window.addEventListener("scroll", hideCopilotChartTip, true);
+  return tip;
+}
+
+function hideCopilotChartTip() {
+  const tip = document.getElementById("copilotChartTip");
+  if (tip) tip.hidden = true;
+  document.querySelectorAll(".copilot-chart-card.is-hot, .copilot-bar.is-hot, .copilot-pie-slice.is-hot, .copilot-line-dot.is-hot, .copilot-legend-hit.is-hot").forEach((el) => {
+    el.classList.remove("is-hot");
+  });
+}
+
+function showCopilotChartTip(event, info) {
+  const tip = getCopilotChartTip();
+  tip.innerHTML = "";
+
+  const kicker = document.createElement("div");
+  kicker.className = "copilot-chart-tip-kicker";
+  kicker.textContent = info.title || "Live reading";
+
+  const value = document.createElement("div");
+  value.className = "copilot-chart-tip-value";
+  value.textContent = info.unit ? (info.value + " " + info.unit) : String(info.value);
+
+  const label = document.createElement("div");
+  label.className = "copilot-chart-tip-label";
+  label.textContent = info.label || "";
+
+  tip.appendChild(kicker);
+  tip.appendChild(value);
+  if (info.detail) {
+    const detail = document.createElement("div");
+    detail.className = "copilot-chart-tip-detail";
+    detail.textContent = info.detail;
+    tip.appendChild(detail);
+  }
+  if (info.label) tip.appendChild(label);
+
+  tip.hidden = false;
+  const pad = 14;
+  const width = tip.offsetWidth || 180;
+  const height = tip.offsetHeight || 72;
+  let x = event.clientX + pad;
+  let y = event.clientY - height - 10;
+  if (x + width > window.innerWidth - 8) x = event.clientX - width - pad;
+  if (y < 8) y = event.clientY + pad;
+  tip.style.left = Math.max(8, x) + "px";
+  tip.style.top = Math.max(8, y) + "px";
+}
+
+function bindCopilotChartHover(el, card, info) {
+  if (!el) return;
+  el.style.cursor = "pointer";
+  el.addEventListener("pointerenter", (event) => {
+    hideCopilotChartTip();
+    el.classList.add("is-hot");
+    if (card) card.classList.add("is-hot");
+    showCopilotChartTip(event, info);
+  });
+  el.addEventListener("pointermove", (event) => {
+    showCopilotChartTip(event, info);
+  });
+  el.addEventListener("pointerleave", hideCopilotChartTip);
+}
+
+function renderCopilotLineChart(spec, card) {
+  const svg = copilotSvg("svg", { class: "copilot-chart-svg", viewBox: "0 0 220 100" });
+  const values = spec.values || [];
+  const labels = spec.labels || [];
+  const min = spec.min != null ? spec.min : Math.min.apply(null, values.concat([0]));
+  const max = spec.max != null ? spec.max : Math.max.apply(null, values.concat([1]));
+  const span = max - min || 1;
+  const left = 18;
+  const right = 212;
+  const top = 10;
+  const bottom = 78;
+  const pts = values.map((value, index) => {
+    const x = left + (index / Math.max(values.length - 1, 1)) * (right - left);
+    const y = bottom - ((value - min) / span) * (bottom - top);
+    return { x: x, y: y, value: value, label: labels[index] || ("Point " + (index + 1)) };
+  });
+
+  if (spec.threshold != null) {
+    const ty = bottom - ((spec.threshold - min) / span) * (bottom - top);
+    svg.appendChild(copilotSvg("line", { x1: left, y1: ty, x2: right, y2: ty, stroke: "#F59E0B", "stroke-width": "1", "stroke-dasharray": "3 3" }));
+  }
+
+  const d = pts.map((pt, index) => (index === 0 ? "M" : "L") + " " + pt.x.toFixed(1) + " " + pt.y.toFixed(1)).join(" ");
+  const area = d + " L " + right + " " + bottom + " L " + left + " " + bottom + " Z";
+  svg.appendChild(copilotSvg("path", { d: area, fill: "rgba(79,70,229,0.12)", class: "copilot-line-area" }));
+  svg.appendChild(copilotSvg("path", { d: d, fill: "none", stroke: "#4F46E5", "stroke-width": "2", "stroke-linecap": "round", class: "copilot-line-path copilot-line-draw" }));
+
+  const hoverLine = copilotSvg("line", { x1: 0, y1: top, x2: 0, y2: bottom, stroke: "rgba(79,70,229,0.35)", "stroke-width": "1", "stroke-dasharray": "2 2", class: "copilot-line-guide", opacity: "0" });
+  svg.appendChild(hoverLine);
+
+  pts.forEach((pt) => {
+    const hit = copilotSvg("circle", { cx: pt.x.toFixed(1), cy: pt.y.toFixed(1), r: "9", fill: "transparent", class: "copilot-line-hit" });
+    const dot = copilotSvg("circle", { cx: pt.x.toFixed(1), cy: pt.y.toFixed(1), r: "2.6", fill: "#4F46E5", class: "copilot-line-dot" });
+    svg.appendChild(dot);
+    svg.appendChild(hit);
+    const info = {
+      title: spec.title,
+      label: pt.label,
+      value: pt.value,
+      unit: spec.unit || "",
+      detail: spec.threshold != null ? ("Limit " + spec.threshold + (spec.unit ? " " + spec.unit : "")) : (pts.length + " samples")
+    };
+    [hit, dot].forEach((el) => {
+      bindCopilotChartHover(el, card, info);
+      el.addEventListener("pointerenter", () => {
+        hoverLine.setAttribute("x1", pt.x.toFixed(1));
+        hoverLine.setAttribute("x2", pt.x.toFixed(1));
+        hoverLine.setAttribute("opacity", "1");
+        dot.classList.add("is-hot");
+        dot.setAttribute("r", "4.4");
+      });
+      el.addEventListener("pointerleave", () => {
+        hoverLine.setAttribute("opacity", "0");
+        dot.setAttribute("r", "2.6");
+      });
+    });
+  });
+
+  labels.forEach((label, index) => {
+    if (!pts[index]) return;
+    const text = copilotSvg("text", { x: pts[index].x.toFixed(1), y: "94", "text-anchor": "middle", fill: "#94A3B8", "font-size": "7" });
+    text.textContent = label;
+    svg.appendChild(text);
+  });
+  return svg;
+}
+
+function renderCopilotBarChart(spec, card) {
+  const svg = copilotSvg("svg", { class: "copilot-chart-svg", viewBox: "0 0 220 100" });
+  const items = spec.items || [];
+  const max = Math.max.apply(null, items.map((item) => item.value).concat([1]));
+  const slot = 200 / Math.max(items.length, 1);
+  const colors = ["#4F46E5", "#06B6D4", "#5CD389", "#FFA026", "#FF6B9F"];
+  items.forEach((item, index) => {
+    const h = (item.value / max) * 62;
+    const x = 12 + index * slot + slot * 0.18;
+    const w = slot * 0.64;
+    const y = 76 - h;
+    const bar = copilotSvg("rect", { x: x.toFixed(1), y: y.toFixed(1), width: w.toFixed(1), height: Math.max(h, 1).toFixed(1), rx: "3", fill: colors[index % colors.length], class: "copilot-bar" });
+    const hit = copilotSvg("rect", { x: x.toFixed(1), y: "8", width: w.toFixed(1), height: "70", fill: "transparent", class: "copilot-bar-hit" });
+    svg.appendChild(bar);
+    svg.appendChild(hit);
+    const val = copilotSvg("text", { x: (x + w / 2).toFixed(1), y: (y - 4).toFixed(1), "text-anchor": "middle", fill: "#0F172A", "font-size": "7", "font-weight": "700" });
+    val.textContent = String(item.value);
+    svg.appendChild(val);
+    const lbl = copilotSvg("text", { x: (x + w / 2).toFixed(1), y: "92", "text-anchor": "middle", fill: "#94A3B8", "font-size": "7" });
+    lbl.textContent = item.label;
+    svg.appendChild(lbl);
+    const info = {
+      title: spec.title,
+      label: item.label,
+      value: item.value,
+      unit: spec.unit || "",
+      detail: "Share of max " + Math.round((item.value / max) * 100) + "%"
+    };
+    bindCopilotChartHover(hit, card, info);
+    bindCopilotChartHover(bar, card, info);
+    hit.addEventListener("pointerenter", () => bar.classList.add("is-hot"));
+    hit.addEventListener("pointerleave", () => bar.classList.remove("is-hot"));
+  });
+  return svg;
+}
+
+function renderCopilotPieChart(spec, card) {
+  const wrap = document.createElement("div");
+  const svg = copilotSvg("svg", { class: "copilot-chart-svg", viewBox: "0 0 220 100" });
+  const items = spec.items || [];
+  const total = items.reduce((sum, item) => sum + item.value, 0) || 1;
+  const colors = ["#4F46E5", "#06B6D4", "#5CD389", "#FFA026", "#FF6B9F", "#2860EB"];
+  let angle = 0;
+  const cx = 48;
+  const cy = 50;
+  const r = 32;
+
+  function pt(deg) {
+    const rad = (deg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+
+  const slices = [];
+  items.forEach((item, index) => {
+    const slice = (item.value / total) * 360;
+    const start = angle;
+    const end = angle + slice;
+    const p1 = pt(start);
+    const p2 = pt(end);
+    const large = slice > 180 ? 1 : 0;
+    const d = slice >= 359.9
+      ? "M " + (cx - r) + " " + cy + " A " + r + " " + r + " 0 1 1 " + (cx + r) + " " + cy + " A " + r + " " + r + " 0 1 1 " + (cx - r) + " " + cy
+      : "M " + cx + " " + cy + " L " + p1.x.toFixed(2) + " " + p1.y.toFixed(2) + " A " + r + " " + r + " 0 " + large + " 1 " + p2.x.toFixed(2) + " " + p2.y.toFixed(2) + " Z";
+    const path = copilotSvg("path", { d: d, fill: colors[index % colors.length], class: "copilot-pie-slice" });
+    svg.appendChild(path);
+    slices.push(path);
+    const pct = Math.round((item.value / total) * 100);
+    bindCopilotChartHover(path, card, {
+      title: spec.title,
+      label: item.label,
+      value: item.value,
+      unit: spec.unit || "",
+      detail: pct + "% of this mix"
+    });
+    angle = end;
+  });
+  wrap.appendChild(svg);
+
+  const legend = document.createElement("div");
+  legend.className = "copilot-chart-legend";
+  items.forEach((item, index) => {
+    const row = document.createElement("button");
+    row.type = "button";
+    row.className = "copilot-legend-hit";
+    const swatch = document.createElement("i");
+    swatch.className = "copilot-chart-swatch";
+    swatch.style.background = colors[index % colors.length];
+    row.appendChild(swatch);
+    row.appendChild(document.createTextNode(item.label + " " + item.value));
+    const pct = Math.round((item.value / total) * 100);
+    bindCopilotChartHover(row, card, {
+      title: spec.title,
+      label: item.label,
+      value: item.value,
+      unit: spec.unit || "",
+      detail: pct + "% of this mix"
+    });
+    row.addEventListener("pointerenter", () => {
+      if (slices[index]) slices[index].classList.add("is-hot");
+    });
+    row.addEventListener("pointerleave", () => {
+      if (slices[index]) slices[index].classList.remove("is-hot");
+    });
+    legend.appendChild(row);
+  });
+  wrap.appendChild(legend);
+  return wrap;
+}
+
+function renderCopilotCharts(bubble, entry) {
+  const pair = getCopilotCharts(entry);
+  const row = document.createElement("div");
+  row.className = "copilot-charts";
+  pair.slice(0, 2).forEach((spec) => {
+    const card = document.createElement("div");
+    card.className = "copilot-chart-card";
+    const title = document.createElement("p");
+    title.className = "copilot-chart-title";
+    title.textContent = spec.title + (spec.unit ? " · " + spec.unit : "");
+    card.appendChild(title);
+    if (spec.type === "line") card.appendChild(renderCopilotLineChart(spec, card));
+    else if (spec.type === "pie") card.appendChild(renderCopilotPieChart(spec, card));
+    else card.appendChild(renderCopilotBarChart(spec, card));
+    row.appendChild(card);
+  });
+  bubble.appendChild(row);
+}
+
+function formatCopilotTime() {
+  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function createCopilotParagraphs(parent, lines) {
+  (lines || []).forEach((line) => {
+    const p = document.createElement("p");
+    p.textContent = line;
+    parent.appendChild(p);
+  });
+}
+
+function typeCopilotText(el, text, done) {
+  let index = 0;
+  el.textContent = "";
+  el.classList.add("is-typing");
+  function tick() {
+    index += 1;
+    el.textContent = text.slice(0, index);
+    if (el.closest) {
+      const log = el.closest(".copilot-thread");
+      if (log) log.scrollTop = log.scrollHeight;
+    }
+    if (index < text.length) {
+      window.setTimeout(tick, text[index - 1] === " " ? 6 : 11);
+    } else {
+      el.classList.remove("is-typing");
+      if (done) done();
+    }
+  }
+  tick();
+}
+
+function appendCopilotMessage(thread, role, builder) {
+  const row = document.createElement("article");
+  row.className = "copilot-msg is-" + role;
+
+  const avatar = document.createElement("div");
+  avatar.className = "copilot-avatar";
+  avatar.setAttribute("aria-hidden", "true");
+  avatar.innerHTML = role === "user"
+    ? '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'
+    : '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+
+  const bubble = document.createElement("div");
+  bubble.className = "copilot-bubble";
+
+  const meta = document.createElement("div");
+  meta.className = "copilot-bubble-meta";
+  const roleEl = document.createElement("span");
+  roleEl.className = "copilot-role";
+  roleEl.textContent = role === "user" ? "Shift engineer" : "Mill Copilot";
+  const timeEl = document.createElement("span");
+  timeEl.className = "copilot-time";
+  timeEl.textContent = formatCopilotTime();
+  meta.appendChild(roleEl);
+  meta.appendChild(timeEl);
+  bubble.appendChild(meta);
+
+  builder(bubble);
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+  thread.appendChild(row);
+  thread.scrollTop = thread.scrollHeight;
+  return row;
+}
+
+function appendCopilotReplyRest(bubble, entry) {
+  if (entry.metric) {
+    const chip = document.createElement("div");
+    chip.className = "copilot-metric-chip";
+    const strong = document.createElement("strong");
+    strong.textContent = entry.metric.value;
+    const label = document.createElement("span");
+    label.textContent = entry.metric.label;
+    chip.appendChild(strong);
+    chip.appendChild(label);
+    bubble.appendChild(chip);
+  }
+
+  if (entry.steps && entry.steps.length) {
+    const list = document.createElement("ol");
+    list.className = "copilot-steps";
+    entry.steps.forEach((step, index) => {
+      const item = document.createElement("li");
+      const num = document.createElement("span");
+      num.className = "copilot-step-num";
+      num.textContent = String(index + 1).padStart(2, "0");
+      const text = document.createElement("span");
+      text.textContent = step;
+      item.appendChild(num);
+      item.appendChild(text);
+      list.appendChild(item);
+    });
+    bubble.appendChild(list);
+  }
+
+  renderCopilotCharts(bubble, entry);
+
+  if (entry.source) {
+    const source = document.createElement("span");
+    source.className = "copilot-source-tag";
+    source.textContent = entry.source;
+    bubble.appendChild(source);
+  }
+}
+
+function renderCopilotReply(bubble, entry, options) {
+  const animate = !!(options && options.animate);
+  const onDone = options && options.onDone;
+  const lines = (entry.body || []).slice();
+
+  if (!animate) {
+    createCopilotParagraphs(bubble, lines);
+    appendCopilotReplyRest(bubble, entry);
+    if (onDone) onDone();
+    return;
+  }
+
+  const paras = lines.map(() => {
+    const p = document.createElement("p");
+    bubble.appendChild(p);
+    return p;
+  });
+
+  function typeLine(lineIndex) {
+    if (lineIndex >= paras.length) {
+      appendCopilotReplyRest(bubble, entry);
+      if (onDone) onDone();
+      return;
+    }
+    typeCopilotText(paras[lineIndex], lines[lineIndex], () => typeLine(lineIndex + 1));
+  }
+  typeLine(0);
+}
+
+function setupMillKnowledgeCopilot() {
+  const thread = document.getElementById("copilotThread");
+  const grid = document.getElementById("copilotPromptGrid");
+  const resetBtn = document.getElementById("btnResetCopilot");
+  const allTopicsBtn = document.getElementById("btnCopilotAllTopics");
+  const titleEl = document.getElementById("copilotPromptTitle");
+  const hintEl = document.getElementById("copilotPromptHint");
+  const historyList = document.getElementById("copilotHistoryList");
+  const historyCount = document.getElementById("copilotHistoryCount");
+  if (!thread || !grid) return;
+
+  let busy = false;
+  let seeded = false;
+  let currentId = null;
+  let visibleIds = COPILOT_ROOT_IDS.slice();
+  let historyItems = COPILOT_HISTORY_SEED.map((item) => Object.assign({}, item));
+
+  function renderHistory() {
+    if (!historyList) return;
+    historyList.innerHTML = "";
+    if (historyCount) historyCount.textContent = String(historyItems.length);
+    historyItems.forEach((item) => {
+      const row = document.createElement("button");
+      row.type = "button";
+      row.className = "copilot-history-item" + (item.live ? " is-live" : "");
+      row.setAttribute("aria-label", "Open chat: " + item.prompt);
+      const top = document.createElement("div");
+      top.className = "copilot-history-item-top";
+      const title = document.createElement("span");
+      title.className = "copilot-history-item-title";
+      title.textContent = item.topic;
+      const time = document.createElement("span");
+      time.className = "copilot-history-item-time";
+      time.textContent = item.time;
+      top.appendChild(title);
+      top.appendChild(time);
+      const copy = document.createElement("p");
+      copy.className = "copilot-history-item-copy";
+      copy.textContent = item.prompt;
+      row.appendChild(top);
+      row.appendChild(copy);
+      row.addEventListener("click", () => openHistoryChat(item));
+      historyList.appendChild(row);
+    });
+  }
+
+  function pushHistory(entry) {
+    historyItems.forEach((item) => { item.live = false; });
+    const existing = historyItems.find((item) => item.entryId === entry.id);
+    if (existing) {
+      existing.live = true;
+      existing.time = formatCopilotTime();
+      existing.prompt = entry.prompt;
+      historyItems = [existing].concat(historyItems.filter((item) => item !== existing));
+    } else {
+      historyItems.unshift({
+        id: "live-" + Date.now(),
+        entryId: entry.id,
+        topic: entry.topic || entry.tag,
+        prompt: entry.prompt,
+        tag: entry.tag,
+        tagClass: entry.tagClass,
+        time: formatCopilotTime(),
+        live: true
+      });
+    }
+    renderHistory();
+  }
+
+  function openHistoryChat(item) {
+    if (busy || !item || !item.entryId) return;
+    const entry = getCopilotEntry(item.entryId);
+    if (!entry) return;
+    sfx.playClick();
+    historyItems.forEach((row) => { row.live = row.id === item.id || row.entryId === item.entryId; });
+    renderHistory();
+    thread.innerHTML = "";
+    currentId = entry.id;
+    appendCopilotMessage(thread, "user", (bubble) => {
+      const p = document.createElement("p");
+      p.textContent = entry.prompt;
+      bubble.appendChild(p);
+    });
+    appendCopilotMessage(thread, "assistant", (bubble) => {
+      renderCopilotReply(bubble, entry);
+    });
+    updatePromptChrome(entry);
+    renderPromptChips(nextQuestionIds(entry), entry.id);
+  }
+
+  function setBusy(next) {
+    busy = next;
+    grid.querySelectorAll(".copilot-prompt-chip").forEach((chip) => {
+      chip.disabled = next;
+    });
+    if (allTopicsBtn) allTopicsBtn.disabled = next;
+    if (historyList) {
+      historyList.querySelectorAll(".copilot-history-item").forEach((btn) => {
+        btn.disabled = next;
+      });
+    }
+  }
+
+  function nextQuestionIds(entry) {
+    if (entry.followUps && entry.followUps.length) {
+      return entry.followUps.filter((id) => COPILOT_KNOWLEDGE[id]);
+    }
+    return COPILOT_ROOT_IDS.slice();
+  }
+
+  function updatePromptChrome(entry) {
+    if (titleEl) {
+      titleEl.textContent = entry ? "GO DEEPER" : "SUGGESTED QUESTIONS";
+    }
+    if (hintEl) {
+      hintEl.textContent = entry
+        ? (entry.topic || "Related to your last question")
+        : "From this shift’s live context";
+    }
+    if (allTopicsBtn) {
+      allTopicsBtn.hidden = !entry;
+    }
+  }
+
+  function renderPromptChips(ids, activeId) {
+    visibleIds = (ids && ids.length ? ids : COPILOT_ROOT_IDS).filter((id) => COPILOT_KNOWLEDGE[id]);
+    grid.innerHTML = "";
+
+    visibleIds.forEach((id) => {
+      const entry = getCopilotEntry(id);
+      if (!entry) return;
+
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "copilot-prompt-chip" + (id === activeId ? " is-active" : "");
+      chip.dataset.promptId = id;
+
+      const tag = document.createElement("span");
+      tag.className = "copilot-chip-tag " + entry.tagClass;
+      tag.textContent = entry.tag;
+
+      const label = document.createElement("span");
+      label.textContent = entry.prompt;
+
+      chip.appendChild(tag);
+      chip.appendChild(label);
+      chip.addEventListener("click", () => selectCopilotQuestion(id));
+      grid.appendChild(chip);
+    });
+  }
+
+  function seedWelcome() {
+    thread.innerHTML = "";
+    currentId = null;
+    appendCopilotMessage(thread, "assistant", (bubble) => {
+      createCopilotParagraphs(bubble, [
+        "Shift A copilot is live. I have the SOP library, module evidence and this shift’s handover in one place.",
+        "Choose a question below. After I answer, I will narrow the next questions to that same topic."
+      ]);
+      const source = document.createElement("span");
+      source.className = "copilot-source-tag";
+      source.textContent = "Observe · Understand · Decide · Act · Verify";
+      bubble.appendChild(source);
+    });
+    updatePromptChrome(null);
+    renderPromptChips(COPILOT_ROOT_IDS);
+    historyItems = COPILOT_HISTORY_SEED.map((item) => Object.assign({}, item));
+    renderHistory();
+    seeded = true;
+  }
+
+  function returnToAllTopics() {
+    if (busy) return;
+    sfx.playClick();
+    currentId = null;
+    updatePromptChrome(null);
+    renderPromptChips(COPILOT_ROOT_IDS);
+    thread.scrollTop = thread.scrollHeight;
+  }
+
+  function selectCopilotQuestion(promptId) {
+    const entry = getCopilotEntry(promptId);
+    if (!entry || busy) return;
+
+    currentId = promptId;
+    sfx.playClick();
+    pushHistory(entry);
+    appendCopilotMessage(thread, "user", (bubble) => {
+      const p = document.createElement("p");
+      p.textContent = entry.prompt;
+      bubble.appendChild(p);
+    });
+
+    setBusy(true);
+    updatePromptChrome(entry);
+    renderPromptChips(nextQuestionIds(entry), promptId);
+
+    const typingRow = appendCopilotMessage(thread, "assistant", (bubble) => {
+      const dots = document.createElement("div");
+      dots.className = "copilot-typing";
+      dots.setAttribute("aria-label", "Copilot is preparing a reply");
+      dots.innerHTML = "<span></span><span></span><span></span>";
+      bubble.appendChild(dots);
+    });
+
+    window.setTimeout(() => {
+      typingRow.remove();
+      appendCopilotMessage(thread, "assistant", (bubble) => {
+        renderCopilotReply(bubble, entry, {
+          animate: true,
+          onDone: function () {
+            setBusy(false);
+          }
+        });
+      });
+    }, 280);
+  }
+
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      if (busy) return;
+      sfx.playClick();
+      seedWelcome();
+    });
+  }
+
+  if (allTopicsBtn) {
+    allTopicsBtn.addEventListener("click", returnToAllTopics);
+  }
+
+  seedWelcome();
+
+  window.ensureCopilotReady = function ensureCopilotReady() {
+    if (!seeded) seedWelcome();
+    window.requestAnimationFrame(() => {
+      thread.scrollTop = thread.scrollHeight;
+    });
+  };
+}
+
+// ==========================================================================
+// 11. INITIALIZATION
 // ==========================================================================
 function initApp() {
   initCard3DTilt();
+  setupMillKnowledgeCopilot();
   setupDashboardInteractions();
   initCustomCursor();
   initScadaClock();
