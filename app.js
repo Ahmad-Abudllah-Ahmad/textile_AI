@@ -108,6 +108,12 @@ function hideAllViews() {
     document.getElementById("bleachingColorInspectionView"),
     document.getElementById("mercerizingColorInspectionView"),
     document.getElementById("stenterColorInspectionView"),
+    document.getElementById("greigeInspectionView"),
+    document.getElementById("pretreatmentInspectionView"),
+    document.getElementById("fvDyeingInspectionView"),
+    document.getElementById("fvPrintingInspectionView"),
+    document.getElementById("fvFinishInspectionView"),
+    document.getElementById("foldingInspectionView"),
     document.getElementById("dashboardView"),
     document.getElementById("millKnowledgeCopilotView")
   ];
@@ -232,6 +238,52 @@ function showStenterColorInspectionView() {
   history.pushState(null, "", "#color-intelligence-finish");
 }
 
+function showNamedFabricVisionView(viewId, hash) {
+  const view = document.getElementById(viewId);
+  if (!view) return;
+
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "fabric-vision";
+  view.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  history.pushState(null, "", hash);
+}
+
+function showGreigeInspectionView() {
+  showNamedFabricVisionView("greigeInspectionView", "#fabric-inspection-greige");
+}
+
+function showPretreatmentInspectionView() {
+  showNamedFabricVisionView("pretreatmentInspectionView", "#fabric-inspection-pretreatment");
+}
+
+function showFvDyeingInspectionView() {
+  showNamedFabricVisionView("fvDyeingInspectionView", "#fabric-inspection-dyeing");
+}
+
+function showFvPrintingInspectionView() {
+  showNamedFabricVisionView("fvPrintingInspectionView", "#fabric-inspection-printing");
+}
+
+function showFvFinishInspectionView() {
+  showNamedFabricVisionView("fvFinishInspectionView", "#fabric-inspection-finish");
+}
+
+function showFoldingInspectionView() {
+  showNamedFabricVisionView("foldingInspectionView", "#fabric-inspection-folding");
+}
+
+function routeFabricVisionSub(subId) {
+  if (subId === "greige") showGreigeInspectionView();
+  else if (subId === "pretreatment") showPretreatmentInspectionView();
+  else if (subId === "dyeing") showFvDyeingInspectionView();
+  else if (subId === "printing") showFvPrintingInspectionView();
+  else if (subId === "finish") showFvFinishInspectionView();
+  else if (subId === "folding") showFoldingInspectionView();
+}
+
 function openModuleDashboard(moduleKey = "predictive-maintenance") {
   const dashView = document.getElementById("dashboardView");
   if (!dashView) return;
@@ -293,6 +345,12 @@ window.showBleachingColorInspectionView = showBleachingColorInspectionView;
 window.showMercerizingColorInspectionView = showMercerizingColorInspectionView;
 window.showStenterColorInspectionView = showStenterColorInspectionView;
 window.showFinishColorInspectionView = showStenterColorInspectionView;
+window.showGreigeInspectionView = showGreigeInspectionView;
+window.showPretreatmentInspectionView = showPretreatmentInspectionView;
+window.showFvDyeingInspectionView = showFvDyeingInspectionView;
+window.showFvPrintingInspectionView = showFvPrintingInspectionView;
+window.showFvFinishInspectionView = showFvFinishInspectionView;
+window.showFoldingInspectionView = showFoldingInspectionView;
 window.showMillKnowledgeCopilotView = showMillKnowledgeCopilotView;
 window.openModuleDashboard = openModuleDashboard;
 window.showDashboardView = showDashboardView;
@@ -354,10 +412,8 @@ function initCard3DTilt() {
         showStenterColorInspectionView();
       } else if (moduleId === "fabric-vision" && !subId) {
         showFabricInspectionSubView();
-      } else if (moduleId === "fabric-vision" && subId === "dyeing") {
-        showDyeingColorInspectionView();
-      } else if (moduleId === "fabric-vision" && subId === "printing") {
-        showPrintingColorInspectionView();
+      } else if (moduleId === "fabric-vision" && subId) {
+        routeFabricVisionSub(subId);
       } else if (moduleId === "predictive-maintenance") {
         openModuleDashboard("predictive-maintenance");
       } else if (moduleId === "mill-knowledge") {
@@ -390,10 +446,8 @@ function initCard3DTilt() {
           showStenterColorInspectionView();
         } else if (moduleId === "fabric-vision" && !subId) {
           showFabricInspectionSubView();
-        } else if (moduleId === "fabric-vision" && subId === "dyeing") {
-          showDyeingColorInspectionView();
-        } else if (moduleId === "fabric-vision" && subId === "printing") {
-          showPrintingColorInspectionView();
+        } else if (moduleId === "fabric-vision" && subId) {
+          routeFabricVisionSub(subId);
         } else if (moduleId === "predictive-maintenance") {
           openModuleDashboard("predictive-maintenance");
         } else if (moduleId === "mill-knowledge") {
@@ -445,6 +499,31 @@ function initCard3DTilt() {
     }
   });
 
+  // Back & Return buttons for Fabric Inspection Vision Views
+  [
+    ["btnBackFromGreige", "btnReturnToFabricSuiteFromGreige"],
+    ["btnBackFromPretreatment", "btnReturnToFabricSuiteFromPretreatment"],
+    ["btnBackFromFvDyeing", "btnReturnToFabricSuiteFromFvDyeing"],
+    ["btnBackFromFvPrinting", "btnReturnToFabricSuiteFromFvPrinting"],
+    ["btnBackFromFvFinish", "btnReturnToFabricSuiteFromFvFinish"],
+    ["btnBackFromFolding", "btnReturnToFabricSuiteFromFolding"]
+  ].forEach(([backId, returnId]) => {
+    const bBtn = document.getElementById(backId);
+    if (bBtn) {
+      bBtn.addEventListener("click", () => {
+        sfx.playClick();
+        showFabricInspectionSubView();
+      });
+    }
+    const rBtn = document.getElementById(returnId);
+    if (rBtn) {
+      rBtn.addEventListener("click", () => {
+        sfx.playClick();
+        showFabricInspectionSubView();
+      });
+    }
+  });
+
   // Global ESC handler for hierarchical back navigation
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
@@ -453,13 +532,30 @@ function initCard3DTilt() {
       const blcView = document.getElementById("bleachingColorInspectionView");
       const mrcView = document.getElementById("mercerizingColorInspectionView");
       const stnView = document.getElementById("stenterColorInspectionView");
+      const grgView = document.getElementById("greigeInspectionView");
+      const preView = document.getElementById("pretreatmentInspectionView");
+      const fvdView = document.getElementById("fvDyeingInspectionView");
+      const fvpView = document.getElementById("fvPrintingInspectionView");
+      const fvfView = document.getElementById("fvFinishInspectionView");
+      const fldView = document.getElementById("foldingInspectionView");
       const dashView = document.getElementById("dashboardView");
       const ciView = document.getElementById("colorIntelligenceSubView");
       const fvView = document.getElementById("fabricInspectionSubView");
       const procView = document.getElementById("processingModulesView");
       const copilotView = document.getElementById("millKnowledgeCopilotView");
 
-      if (
+      const fvDashVisible =
+        (grgView && grgView.style.display !== "none") ||
+        (preView && preView.style.display !== "none") ||
+        (fvdView && fvdView.style.display !== "none") ||
+        (fvpView && fvpView.style.display !== "none") ||
+        (fvfView && fvfView.style.display !== "none") ||
+        (fldView && fldView.style.display !== "none");
+
+      if (fvDashVisible) {
+        sfx.playClick();
+        showFabricInspectionSubView();
+      } else if (
         (dyeingView && dyeingView.style.display !== "none") ||
         (prnView && prnView.style.display !== "none") ||
         (blcView && blcView.style.display !== "none") ||
@@ -559,6 +655,18 @@ function setupDashboardInteractions() {
       showStenterColorInspectionView();
     } else if (hash === "#processing-predictive-maintenance" || hash === "#predictive-maintenance") {
       openModuleDashboard("predictive-maintenance");
+    } else if (hash === "#fabric-inspection-greige") {
+      showGreigeInspectionView();
+    } else if (hash === "#fabric-inspection-pretreatment") {
+      showPretreatmentInspectionView();
+    } else if (hash === "#fabric-inspection-dyeing") {
+      showFvDyeingInspectionView();
+    } else if (hash === "#fabric-inspection-printing") {
+      showFvPrintingInspectionView();
+    } else if (hash === "#fabric-inspection-finish") {
+      showFvFinishInspectionView();
+    } else if (hash === "#fabric-inspection-folding") {
+      showFoldingInspectionView();
     } else if (hash === "#color-intelligence-suite" || hash === "#color-intelligence") {
       showColorIntelligenceSubView();
     } else if (hash === "#fabric-inspection-suite" || hash === "#fabric-vision") {
@@ -2612,18 +2720,21 @@ function createInspectionDashboardController(cfg) {
     currentTargetColor = { r: rgb.r, g: rgb.g, b: rgb.b, hex };
     const lab = rgbToLab(rgb.r, rgb.g, rgb.b);
 
-    if (inputL) inputL.value = lab.L.toFixed(2);
-    if (inputA) inputA.value = lab.a.toFixed(2);
-    if (inputB) inputB.value = lab.b.toFixed(2);
-
     if (targetSrgbPicker) targetSrgbPicker.value = hex;
     if (targetSwatch) targetSwatch.style.backgroundColor = hex;
-    if (targetHexDisplay) targetHexDisplay.textContent = `HEX: ${hex}`;
-    if (targetCielabDisplay) {
-      targetCielabDisplay.textContent = `L*: ${lab.L.toFixed(2)} • a*: ${lab.a.toFixed(2)} • b*: ${lab.b.toFixed(2)}`;
-    }
     if (targetColorName) {
       targetColorName.textContent = explicitName || cfg.shadeMap[hex] || `Standard Shade ${hex}`;
+    }
+    if (!cfg.visionMode) {
+      if (inputL) inputL.value = lab.L.toFixed(2);
+      if (inputA) inputA.value = lab.a.toFixed(2);
+      if (inputB) inputB.value = lab.b.toFixed(2);
+      if (targetHexDisplay) targetHexDisplay.textContent = `HEX: ${hex}`;
+      if (targetCielabDisplay) {
+        targetCielabDisplay.textContent = `L*: ${lab.L.toFixed(2)} • a*: ${lab.a.toFixed(2)} • b*: ${lab.b.toFixed(2)}`;
+      }
+    } else if (cfg.formatHex && targetHexDisplay) {
+      targetHexDisplay.textContent = cfg.formatHex(hex, explicitName);
     }
 
     updateCalculations();
@@ -2642,18 +2753,28 @@ function createInspectionDashboardController(cfg) {
     const deltaE = Math.sqrt(dL * dL + da * da + db * db);
 
     if (liveDeltaEVal) liveDeltaEVal.textContent = deltaE.toFixed(2);
-    const hexColor = labToHex(targetL, targetA, targetB);
-    const rgb = hexToRgb(hexColor);
-    currentTargetColor = { r: rgb.r, g: rgb.g, b: rgb.b, hex: hexColor };
 
-    if (targetSwatch) targetSwatch.style.backgroundColor = hexColor;
-    if (targetHexDisplay) targetHexDisplay.textContent = `HEX: ${hexColor}`;
-    if (targetSrgbPicker && targetSrgbPicker.value.toUpperCase() !== hexColor.toUpperCase()) {
-      targetSrgbPicker.value = hexColor;
+    if (!cfg.visionMode) {
+      const hexColor = labToHex(targetL, targetA, targetB);
+      const rgb = hexToRgb(hexColor);
+      currentTargetColor = { r: rgb.r, g: rgb.g, b: rgb.b, hex: hexColor };
+
+      if (targetSwatch) targetSwatch.style.backgroundColor = hexColor;
+      if (targetHexDisplay) targetHexDisplay.textContent = `HEX: ${hexColor}`;
+      if (targetSrgbPicker && targetSrgbPicker.value.toUpperCase() !== hexColor.toUpperCase()) {
+        targetSrgbPicker.value = hexColor;
+      }
+      if (targetCielabDisplay) {
+        targetCielabDisplay.textContent = `L*: ${targetL.toFixed(2)} • a*: ${targetA.toFixed(2)} • b*: ${targetB.toFixed(2)}`;
+      }
+    } else if (cfg.formatLab && targetCielabDisplay) {
+      targetCielabDisplay.textContent = cfg.formatLab(targetL, targetA, targetB);
     }
-    if (targetCielabDisplay) {
-      targetCielabDisplay.textContent = `L*: ${targetL.toFixed(2)} • a*: ${targetA.toFixed(2)} • b*: ${targetB.toFixed(2)}`;
+    if (cfg.visionMode && cfg.defaultHex) {
+      const rgb = hexToRgb(cfg.defaultHex);
+      currentTargetColor = { r: rgb.r, g: rgb.g, b: rgb.b, hex: cfg.defaultHex };
     }
+
     if (deltaMatchStatus) {
       if (deltaE <= tolerance) {
         deltaMatchStatus.textContent = "✓ MATCH";
@@ -2751,9 +2872,10 @@ function createInspectionDashboardController(cfg) {
       const mouseX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
       const t = mouseX / rect.width;
       const wl = Math.round(400 + t * 300);
+      const scanM = Math.round(t * 120);
       spectrumIndicator.style.left = `${(t * 100).toFixed(1)}%`;
       if (spectrumTooltip) {
-        spectrumTooltip.textContent = `λ ${wl}nm`;
+        spectrumTooltip.textContent = cfg.visionMode ? `Scan ${scanM} m` : `λ ${wl}nm`;
         spectrumTooltip.style.display = "block";
         spectrumTooltip.style.left = `${(t * 100).toFixed(1)}%`;
       }
@@ -2762,6 +2884,40 @@ function createInspectionDashboardController(cfg) {
       spectrumIndicator.style.left = "45%";
       if (spectrumTooltip) spectrumTooltip.style.display = "none";
     });
+  }
+
+  // Optional machine dropdown + chip sync (Fabric Inspection dashboards)
+  if (Array.isArray(cfg.machines) && cfg.machines.length) {
+    const machineSelect = document.getElementById(`${p}MachineSelect`);
+    const machineChips = document.querySelectorAll(`.${p}-machine-chip`);
+    const hudHead = document.getElementById(`${p}HudHead`);
+    const hudLot = document.getElementById(`${p}HudLot`);
+    const chartMachineTitle = document.getElementById(`${p}ChartMachineTitle`);
+
+    function applyMachine(id, playSound) {
+      const machine = cfg.machines.find((m) => m.id === id) || cfg.machines[0];
+      if (!machine) return;
+      if (playSound) sfx.playClick();
+      if (machineSelect && machineSelect.value !== machine.id) {
+        machineSelect.value = machine.id;
+      }
+      machineChips.forEach((chip) => {
+        chip.classList.toggle("active", chip.getAttribute("data-machine-id") === machine.id);
+      });
+      if (hudHead) hudHead.textContent = machine.model;
+      if (hudLot) hudLot.textContent = machine.tag;
+      if (chartMachineTitle) chartMachineTitle.textContent = machine.name;
+    }
+
+    if (machineSelect) {
+      machineSelect.addEventListener("change", (e) => applyMachine(e.target.value, true));
+    }
+    machineChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        applyMachine(chip.getAttribute("data-machine-id"), true);
+      });
+    });
+    applyMachine(cfg.machines[0].id, false);
   }
 
   // Comparison Render Loop
@@ -2838,13 +2994,25 @@ function createInspectionDashboardController(cfg) {
       return;
     }
 
+    if (Array.isArray(cfg.machines) && liveDeltaEVal) {
+      const hudStrong = view.querySelector(".hud-delta-tag strong");
+      if (hudStrong) hudStrong.textContent = liveDeltaEVal.textContent;
+    }
+
     scanPhase += 0.035;
     const targetRNorm = currentTargetColor.r / 255;
     const targetGNorm = currentTargetColor.g / 255;
     const targetBNorm = currentTargetColor.b / 255;
     const baseReflectance = cfg.baseReflectance || 12;
 
-    if (statPeakWavelength) statPeakWavelength.textContent = `${cfg.peakWl}nm`;
+    if (statPeakWavelength) {
+      if (cfg.visionMode) {
+        const scanM = Math.round(40 + ((Math.sin(scanPhase * 0.4) + 1) / 2) * 80);
+        statPeakWavelength.textContent = `${scanM} m`;
+      } else {
+        statPeakWavelength.textContent = `${cfg.peakWl}nm`;
+      }
+    }
 
     if (currentChartMode === "spectral") {
       const targetPts = [];
@@ -2921,9 +3089,16 @@ function createInspectionDashboardController(cfg) {
         const diff = liveReflectance - targetReflectance;
         const diffSign = diff >= 0 ? "+" : "";
         const isPass = Math.abs(diff) < 1.5;
-        if (compTipHeader) compTipHeader.textContent = `λ ${wl}nm (${getWavelengthColorName(wl)})`;
-        if (compTipTarget) compTipTarget.textContent = `${targetReflectance.toFixed(1)}%`;
-        if (compTipLive) compTipLive.textContent = `${liveReflectance.toFixed(1)}%`;
+        if (compTipHeader) {
+          if (cfg.visionMode) {
+            const posM = Math.round(hoverXRatio * 120);
+            compTipHeader.textContent = `Scan ${posM} m`;
+          } else {
+            compTipHeader.textContent = `λ ${wl}nm (${getWavelengthColorName(wl)})`;
+          }
+        }
+        if (compTipTarget) compTipTarget.textContent = cfg.visionMode ? `${targetReflectance.toFixed(1)}` : `${targetReflectance.toFixed(1)}%`;
+        if (compTipLive) compTipLive.textContent = cfg.visionMode ? `${liveReflectance.toFixed(1)}` : `${liveReflectance.toFixed(1)}%`;
         if (compTipDiff) {
           compTipDiff.textContent = `${diffSign}${diff.toFixed(2)}% (${isPass ? "PASS" : "WARN"})`;
           compTipDiff.style.color = isPass ? "#10B981" : "#F59E0B";
@@ -3007,9 +3182,10 @@ function createInspectionDashboardController(cfg) {
         }
 
         const secAgo = ((1 - hoverXRatio) * 40).toFixed(0);
+        const unit = cfg.visionMode ? (cfg.deltaUnit || "idx") : "ΔE";
         if (compTipHeader) compTipHeader.textContent = `T - ${secAgo}s (In-Line Stream)`;
-        if (compTipTarget) compTipTarget.textContent = `ΔE 0.00`;
-        if (compTipLive) compTipLive.textContent = `ΔE ${val.toFixed(2)}`;
+        if (compTipTarget) compTipTarget.textContent = `${unit} 0.00`;
+        if (compTipLive) compTipLive.textContent = `${unit} ${val.toFixed(2)}`;
         if (compTipDiff) {
           const tolLimit = parseFloat(inputTol?.value) || cfg.defaultTol || 0.50;
           compTipDiff.textContent = `Tol < ${tolLimit.toFixed(2)} (PASS)`;
@@ -4624,6 +4800,981 @@ function initApp() {
       (t, y) => `${(4.0 + (70 - y) / 70 * 0.4).toFixed(1)}% H₂O`
     ]
   });
+
+  createInspectionDashboardController({
+    viewId: "greigeInspectionView",
+    prefix: "grg",
+    visionMode: true,
+    deltaUnit: "pts",
+    defaultL: 20.00,
+    defaultA: 0.00,
+    defaultB: 0.00,
+    defaultTol: 0.50,
+    defaultHex: "#C4B8A5",
+    defaultName: "ASTM D5430 Grade A · Greige 140 GSM",
+    measured: { L: 20.12, a: 0.04, b: 0.08, hex: "#C2B6A3" },
+    formatLab: (L, a, b) => `Index: ${L.toFixed(2)} pts • Holes: ${a.toFixed(2)} • Oil: ${b.toFixed(2)}`,
+    formatHex: (hex, name) => `CLASS: ${name || "GRG-MAP"}`,
+    shadeMap: {
+      "#C4B8A5": "Greige Cotton #140",
+      "#D6CBB8": "Light Greige #142",
+      "#B7A78F": "Raw Loomstate #148",
+      "#E2D6C4": "Unsized Warp #150",
+      "#A89880": "Heavy Greige #160"
+    },
+    peakWl: 580,
+    baseReflectance: 18,
+    calibratingText: "Zeroing Linear Camera...",
+    correctedText: "Grade Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `${(0.28 - t * 0.05 + Math.sin(t * 7) * 0.02).toFixed(2)} pts`,
+      (t, y) => `${(97.4 + t * 1.4).toFixed(1)}%`,
+      (t, y) => `${(36.8 + (70 - y) / 70 * 2.2).toFixed(1)} m/min`
+    ],
+    machines: [
+      { id: "uster-fv2", name: "Uster Fabriq Vision 2", model: "USTER FV2 (LINEAR CAMERA)", tag: "#GRG-2204-GREY" },
+      { id: "comatex-isw", name: "Comatex ISW Inspection", model: "COMATEX ISW (4-POINT TABLE)", tag: "#GRG-2204-ISW" },
+      { id: "four-point", name: "4-Point Grading Table", model: "ASTM D5430 MENDING FRAME", tag: "#GRG-2204-MEND" },
+      { id: "aframe", name: "A-Frame Batching Winder", model: "A-FRAME BATCHER 320 cm", tag: "#GRG-2204-BATCH" }
+    ]
+  });
+
+  createInspectionDashboardController({
+    viewId: "pretreatmentInspectionView",
+    prefix: "pre",
+    visionMode: true,
+    deltaUnit: "idx",
+    defaultL: 0.00,
+    defaultA: 0.00,
+    defaultB: 0.00,
+    defaultTol: 0.50,
+    defaultHex: "#F4F1EA",
+    defaultName: "Clean Prepared Cloth · No Tear / Stain",
+    measured: { L: 0.08, a: 0.04, b: 0.12, hex: "#F2EFE8" },
+    formatLab: (L, a, b) => `Tear: ${L.toFixed(2)} • Hole: ${a.toFixed(2)} • Stains: ${b.toFixed(2)} /1000m`,
+    formatHex: (hex, name) => `CLASS: ${name || "PRE-MAP"}`,
+    shadeMap: {
+      "#F4F1EA": "Prepared White #020",
+      "#FAFAF7": "Optic Bleach #010",
+      "#EDE6D8": "Scoured Ecru #030",
+      "#E8E2D4": "Desized Base #040",
+      "#F7F3EC": "Mercerized Prep #050"
+    },
+    peakWl: 440,
+    baseReflectance: 32,
+    calibratingText: "Zeroing Prep Optic & pH Probe...",
+    correctedText: "Pretreatment Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `Δ ${(0.28 - t * 0.08 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
+      (t, y) => `${(97.8 + t * 1.3).toFixed(1)}%`,
+      (t, y) => `${(6.2 + (70 - y) / 70 * 0.4).toFixed(1)} pH`
+    ],
+    machines: [
+      { id: "singeray", name: "Benninger SingeRay", model: "SINGERAY (GAS SINGEING)", tag: "#PRE-1092-SINGE" },
+      { id: "ben-bleach", name: "BEN-BLEACH Range", model: "BEN-BLEACH DESIZE–SCOUR–BLEACH", tag: "#PRE-1092-BLEACH" },
+      { id: "ben-dimensa", name: "BEN-DIMENSA Mercerizer", model: "BEN-DIMENSA (HOT MERCERIZE)", tag: "#PRE-1092-MERC" },
+      { id: "ben-wash", name: "BEN-WASH Extracta", model: "EXTRACTA / TRIKOFLEX WASH", tag: "#PRE-1092-WASH" }
+    ]
+  });
+
+  createInspectionDashboardController({
+    viewId: "fvDyeingInspectionView",
+    prefix: "fvd",
+    visionMode: true,
+    deltaUnit: "idx",
+    defaultL: 0.00,
+    defaultA: 0.00,
+    defaultB: 0.00,
+    defaultTol: 0.50,
+    defaultHex: "#1A2849",
+    defaultName: "Clean Dyed Twill · No Tear / Spot",
+    measured: { L: 0.08, a: 0.04, b: 0.12, hex: "#1B294A" },
+    formatLab: (L, a, b) => `Tear: ${L.toFixed(2)} • Hole: ${a.toFixed(2)} • Spots: ${b.toFixed(2)} /1000m`,
+    formatHex: (hex, name) => `CLASS: ${name || "DYE-MAP"}`,
+    shadeMap: {
+      "#1A2849": "Clean Navy Map",
+      "#7F1D1D": "Dye Splash Class A",
+      "#44403C": "Oil Spot Class B",
+      "#365314": "Alkali Spot Class C",
+      "#0F172A": "Tear / Hole Mask"
+    },
+    peakWl: 460,
+    baseReflectance: 10,
+    calibratingText: "Zeroing Defect Vision Camera...",
+    correctedText: "Defect Map Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `${(98.6 + t * 0.9).toFixed(1)}%`,
+      (t, y) => `Δ ${(0.20 - t * 0.08 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
+      (t, y) => `${Math.max(1, Math.round(4 - t * 2 + Math.sin(t * 6)))} /1000m`
+    ],
+    machines: [
+      { id: "uster-fv2", name: "Uster Fabriq Vision 2", model: "USTER FV2 (DYE-LINE CAMERA)", tag: "#DYE-4410-NAVY" },
+      { id: "evs", name: "Elbit Vision Systems", model: "EVS I-TEX INSPECTION", tag: "#DYE-4410-EVS" },
+      { id: "mahlo", name: "Mahlo Orgatex Web", model: "MAHLO ORGATEX WEB INSPECT", tag: "#DYE-4410-MAHLO" },
+      { id: "bst", name: "BST eltromat iPQ-Web", model: "BST iPQ-WEB SURFACE QC", tag: "#DYE-4410-BST" }
+    ]
+  });
+
+  createInspectionDashboardController({
+    viewId: "fvPrintingInspectionView",
+    prefix: "fvp",
+    visionMode: true,
+    deltaUnit: "idx",
+    defaultL: 0.00,
+    defaultA: 0.00,
+    defaultB: 0.00,
+    defaultTol: 0.50,
+    defaultHex: "#C026D3",
+    defaultName: "Approved Print CAD · Magenta #704",
+    measured: { L: 0.12, a: 0.04, b: 0.08, hex: "#BD25CF" },
+    formatLab: (L, a, b) => `Register: ${L.toFixed(2)} mm • Pin-holes: ${a.toFixed(2)} • Misprints: ${b.toFixed(2)}`,
+    formatHex: (hex, name) => `CLASS: ${name || "PRN-MAP"}`,
+    shadeMap: {
+      "#C026D3": "Reactive Magenta #704",
+      "#0891B2": "Cyan Register #610",
+      "#EAB308": "Yellow Screen #302",
+      "#18181B": "Black Keyline #900",
+      "#BE123C": "Misprint Class A"
+    },
+    peakWl: 540,
+    baseReflectance: 12,
+    calibratingText: "Zeroing Print Vision Camera...",
+    correctedText: "Print Map Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `Δ ${(0.22 - t * 0.06 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
+      (t, y) => `${(98.2 + t * 1.0).toFixed(1)}%`,
+      (t, y) => `${Math.max(1, Math.round(3 - t * 1.5 + Math.sin(t * 5)))} /1000m`
+    ],
+    machines: [
+      { id: "zimmer", name: "Zimmer Austria Vision", model: "ZIMMER ROTASCREEN VISION QC", tag: "#PRN-704-ZIM" },
+      { id: "reggiani", name: "EFI Reggiani Print QC", model: "REGGIANI UNICA QC CAMERA", tag: "#PRN-704-EFI" },
+      { id: "stork", name: "Stork Prints Vision QC", model: "SPGPRINTS ROTARY VISION", tag: "#PRN-704-STORK" },
+      { id: "bst-reg", name: "BST Print Register Control", model: "BST ELTROMAT REGISTER", tag: "#PRN-704-BST" }
+    ]
+  });
+
+  createInspectionDashboardController({
+    viewId: "fvFinishInspectionView",
+    prefix: "fvf",
+    visionMode: true,
+    deltaUnit: "idx",
+    defaultL: 152.00,
+    defaultA: 0.00,
+    defaultB: 240.00,
+    defaultTol: 0.50,
+    defaultHex: "#6E6652",
+    defaultName: "Finished Khaki Twill · 152 cm / 240 GSM",
+    measured: { L: 152.11, a: 0.04, b: 239.92, hex: "#6C6450" },
+    formatLab: (L, a, b) => `Width: ${L.toFixed(2)} cm • Skew: ${a.toFixed(2)}° • GSM: ${b.toFixed(2)}`,
+    formatHex: (hex, name) => `CLASS: ${name || "FNS-MAP"}`,
+    shadeMap: {
+      "#6E6652": "Khaki Twill #520",
+      "#595444": "Olive Taupe #522",
+      "#73674A": "Field Drab #525",
+      "#9C8C70": "Desert Tan #530",
+      "#4A4D3E": "Forest Khaki #540"
+    },
+    peakWl: 580,
+    baseReflectance: 10,
+    calibratingText: "Zeroing Finish Vision Camera...",
+    correctedText: "Finish Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `Δ ${(0.22 - t * 0.07 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
+      (t, y) => `${(98.6 + t * 0.8).toFixed(1)}%`,
+      (t, y) => `${(0.12 - t * 0.04 + Math.abs(Math.sin(t * 5)) * 0.02).toFixed(2)} /m²`
+    ],
+    machines: [
+      { id: "power-frame", name: "Brückner POWER-FRAME", model: "POWER-FRAME SFP-4 STENTER", tag: "#FNS-8802-STENT" },
+      { id: "power-shrink", name: "POWER-SHRINK Sanfor", model: "POWER-SHRINK SANFOR RANGE", tag: "#FNS-8802-SANFOR" },
+      { id: "power-compact", name: "POWER-COMPACT Compactor", model: "POWER-COMPACT FELT CALENDER", tag: "#FNS-8802-COMP" },
+      { id: "montex", name: "Monforts MONTEX Stenter", model: "MONTEX STENTER LINE", tag: "#FNS-8802-MONTEX" }
+    ]
+  });
+
+  createInspectionDashboardController({
+    viewId: "foldingInspectionView",
+    prefix: "fld",
+    visionMode: true,
+    deltaUnit: "idx",
+    defaultL: 50.00,
+    defaultA: 2.00,
+    defaultB: 2.00,
+    defaultTol: 0.50,
+    defaultHex: "#E2E8F0",
+    defaultName: "Export Roll Spec · 50.00 m · PE wrap",
+    measured: { L: 50.08, a: 2.10, b: 2.04, hex: "#E0E6EE" },
+    formatLab: (L, a, b) => `Length: ${L.toFixed(2)} m • Edge: ${a.toFixed(2)} mm • Wrap: ${b.toFixed(2)}`,
+    formatHex: (hex, name) => `CLASS: ${name || "FLD-MAP"}`,
+    shadeMap: {
+      "#E2E8F0": "Pack White #010",
+      "#F8FAFC": "PE Wrap Clear",
+      "#CBD5E1": "Selvedge Guide",
+      "#94A3B8": "Core Tube Grey",
+      "#334155": "Ticket Black"
+    },
+    peakWl: 580,
+    baseReflectance: 28,
+    calibratingText: "Zeroing Length Encoder & Edge Eye...",
+    correctedText: "Pack Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `${(99.40 + t * 0.48).toFixed(2)}%`,
+      (t, y) => `±${(2.6 - t * 0.5 + Math.sin(t * 6) * 0.08).toFixed(1)} mm`,
+      (t, y) => `${(30.4 + (70 - y) / 70 * 2.4).toFixed(0)} m/min`
+    ],
+    machines: [
+      { id: "konsan", name: "Konsan Plaiting & Roll", model: "KONSAN PLAIT / ROLL INSPECT", tag: "#FLD-3301-KON" },
+      { id: "suntech", name: "Suntech ST-DFPM", model: "SUNTECH DOUBLE-FOLD PLAITER", tag: "#FLD-3301-ST" },
+      { id: "comatex-isp", name: "Comatex ISP Inspection", model: "COMATEX ISP HIGH-PROD LINE", tag: "#FLD-3301-ISP" },
+      { id: "imb-sa", name: "Comatex IMB SA Packer", model: "IMB SA AUTO PE WRAP", tag: "#FLD-3301-PACK" }
+    ]
+  });
+
+  // Initialize the High-Tech Machine Vision Camera Engine for all 6 Fabric Inspection Module Dashboards
+  initFabricInspectionCameraFeeds();
+}
+
+// =========================================================================
+// HIGH-TECH INDUSTRIAL MACHINE VISION CAMERA FEED ENGINE FOR 6 MODULES
+// =========================================================================
+function initFabricInspectionCameraFeeds() {
+  const cameraConfigs = [
+    {
+      prefix: "grg",
+      viewId: "greigeInspectionView",
+      canvasId: "grgFeedCanvas",
+      viewportId: "grgFeedViewport",
+      laserLineId: "grgLaserLine",
+      bannerId: "grgDefectBanner",
+      bannerTextId: "grgDefectBannerText",
+      pauseBtnId: "grgBtnPauseFeed",
+      modePillsId: "grgModePills",
+      injectBtnId: "grgBtnInjectSpot",
+      fpsId: "grgHudFps",
+      machineSelectId: "grgMachineSelect",
+      imgSrc: "assets/feed_cam_greige.jpg",
+      baseSpeedMpm: 38.4,
+      fabricMinX: 0.35,
+      fabricMaxX: 0.75,
+      defectCatalog: [
+        { name: "OIL STAIN", code: "ASTM-B", classif: "Major", badge: "OIL", penalty: 2, conf: 98.2, sev: "amber", drawType: "oil" },
+        { name: "BROKEN PICK", code: "ASTM-A", classif: "Minor", badge: "PICK", penalty: 1, conf: 95.7, sev: "cyan", drawType: "pick" },
+        { name: "SLUB KNOT", code: "ASTM-C", classif: "Major", badge: "SLUB", penalty: 2, conf: 97.4, sev: "amber", drawType: "slub" },
+        { name: "WEAVE HOLE", code: "ASTM-D", classif: "Critical", badge: "HOLE", penalty: 4, conf: 99.1, sev: "red", drawType: "hole" }
+      ],
+      onLaserHit: (defect) => {
+        const oilEl = document.getElementById("grgHudOil");
+        const holeEl = document.getElementById("grgHudHole");
+        const ptsEl = document.getElementById("grgHudPts");
+        const idxEl = document.getElementById("grgHudIndex");
+        if (defect.drawType === "oil" && oilEl) {
+          oilEl.textContent = String(parseInt(oilEl.textContent || "0", 10) + 1);
+        } else if (defect.drawType === "hole" && holeEl) {
+          holeEl.textContent = String(parseInt(holeEl.textContent || "0", 10) + 1);
+        }
+        if (ptsEl && idxEl) {
+          const cur = parseFloat(ptsEl.textContent || "0.24");
+          const updated = (cur + defect.penalty * 0.04).toFixed(2);
+          ptsEl.textContent = updated;
+          idxEl.textContent = updated;
+        }
+      }
+    },
+    {
+      prefix: "pre",
+      viewId: "pretreatmentInspectionView",
+      canvasId: "preFeedCanvas",
+      viewportId: "preFeedViewport",
+      laserLineId: "preLaserLine",
+      bannerId: "preDefectBanner",
+      bannerTextId: "preDefectBannerText",
+      pauseBtnId: "preBtnPauseFeed",
+      modePillsId: "preModePills",
+      injectBtnId: "preBtnInjectSpot",
+      fpsId: "preHudFps",
+      machineSelectId: "preMachineSelect",
+      imgSrc: "assets/feed_cam_pretreat.jpg",
+      baseSpeedMpm: 48.0,
+      fabricMinX: 0.26,
+      fabricMaxX: 0.74,
+      defectCatalog: [
+        { name: "CHEMICAL STAIN", code: "PRE-CS", classif: "Major", badge: "STAIN", penalty: 2, conf: 97.8, sev: "amber", drawType: "cloudy" },
+        { name: "FABRIC TEAR", code: "PRE-TR", classif: "Critical", badge: "TEAR", penalty: 4, conf: 99.2, sev: "red", drawType: "tear" },
+        { name: "BLEACH STREAK", code: "PRE-BL", classif: "Minor", badge: "STREAK", penalty: 1, conf: 94.5, sev: "cyan", drawType: "streak" },
+        { name: "SINGE SCORCH", code: "PRE-SG", classif: "Critical", badge: "SCORCH", penalty: 3, conf: 98.9, sev: "red", drawType: "scorch" }
+      ],
+      onLaserHit: (defect) => {
+        const deltaTag = document.querySelector("#pretreatmentInspectionView .hud-delta-tag strong");
+        if (deltaTag) {
+          const cur = parseFloat(deltaTag.textContent || "0.21");
+          deltaTag.textContent = (cur + 0.03).toFixed(2);
+        }
+      }
+    },
+    {
+      prefix: "fvd",
+      viewId: "fvDyeingInspectionView",
+      canvasId: "fvdFeedCanvas",
+      viewportId: "fvdFeedViewport",
+      laserLineId: "fvdLaserLine",
+      bannerId: "fvdDefectBanner",
+      bannerTextId: "fvdDefectBannerText",
+      pauseBtnId: "fvdBtnPauseFeed",
+      modePillsId: "fvdModePills",
+      injectBtnId: "fvdBtnInjectSpot",
+      fpsId: "fvdHudFps",
+      machineSelectId: "fvdMachineSelect",
+      imgSrc: "assets/feed_cam_dyeing.jpg",
+      baseSpeedMpm: 42.5,
+      fabricMinX: 0.38,
+      fabricMaxX: 0.62,
+      defectCatalog: [
+        { name: "FABRIC TEAR", code: "DYE-TR", classif: "Critical", badge: "TEAR", penalty: 4, conf: 99.4, sev: "red", drawType: "tear" },
+        { name: "CHEMICAL STAIN", code: "DYE-CS", classif: "Major", badge: "STAIN", penalty: 2, conf: 97.5, sev: "amber", drawType: "cloudy" },
+        { name: "DYE LIQUOR SPLASH", code: "DYE-SP", classif: "Critical", badge: "SPOT", penalty: 3, conf: 98.8, sev: "red", drawType: "dyesplash" },
+        { name: "SHADING STREAK", code: "DYE-SH", classif: "Major", badge: "SHADE", penalty: 2, conf: 96.2, sev: "amber", drawType: "streak" }
+      ],
+      onLaserHit: (defect) => {
+        const spotEl = document.getElementById("fvdHudSpot");
+        const idxEl = document.getElementById("fvdHudIndex");
+        if (spotEl) {
+          spotEl.textContent = String(parseInt(spotEl.textContent || "0", 10) + 1);
+        }
+        if (idxEl) {
+          idxEl.textContent = (parseFloat(idxEl.textContent || "0.12") + 0.03).toFixed(2);
+        }
+      }
+    },
+    {
+      prefix: "fvp",
+      viewId: "fvPrintingInspectionView",
+      canvasId: "fvpFeedCanvas",
+      viewportId: "fvpFeedViewport",
+      laserLineId: "fvpLaserLine",
+      bannerId: "fvpDefectBanner",
+      bannerTextId: "fvpDefectBannerText",
+      pauseBtnId: "fvpBtnPauseFeed",
+      modePillsId: "fvpModePills",
+      injectBtnId: "fvpBtnInjectSpot",
+      fpsId: "fvpHudFps",
+      machineSelectId: "fvpMachineSelect",
+      imgSrc: "assets/feed_cam_print.jpg",
+      baseSpeedMpm: 55.0,
+      fabricMinX: 0.42,
+      fabricMaxX: 0.58,
+      defectCatalog: [
+        { name: "COLOR BLOTCH / DRIP", code: "PRN-BL", classif: "Critical", badge: "MIS", penalty: 3, conf: 99.2, sev: "red", drawType: "blotch" },
+        { name: "DOCTOR BLADE STREAK", code: "PRN-DR", classif: "Major", badge: "PIN", penalty: 2, conf: 97.8, sev: "amber", drawType: "docstreak" },
+        { name: "MISREGISTRATION", code: "PRN-RG", classif: "Major", badge: "REG", penalty: 2, conf: 96.5, sev: "amber", drawType: "misreg" },
+        { name: "LINT RESIST WHITE", code: "PRN-LT", classif: "Minor", badge: "LINT", penalty: 1, conf: 95.1, sev: "cyan", drawType: "pinhole" }
+      ],
+      onLaserHit: (defect) => {
+        const misEl = document.getElementById("fvpHudMis");
+        const idxEl = document.getElementById("fvpHudIndex");
+        if (misEl) {
+          misEl.textContent = String(parseInt(misEl.textContent || "0", 10) + 1);
+        }
+        if (idxEl) {
+          idxEl.textContent = (parseFloat(idxEl.textContent || "0.16") + 0.03).toFixed(2);
+        }
+      }
+    },
+    {
+      prefix: "fvf",
+      viewId: "fvFinishInspectionView",
+      canvasId: "fvfFeedCanvas",
+      viewportId: "fvfFeedViewport",
+      laserLineId: "fvfLaserLine",
+      bannerId: "fvfDefectBanner",
+      bannerTextId: "fvfDefectBannerText",
+      pauseBtnId: "fvfBtnPauseFeed",
+      modePillsId: "fvfModePills",
+      injectBtnId: "fvfBtnInjectSpot",
+      fpsId: "fvfHudFps",
+      machineSelectId: "fvfMachineSelect",
+      imgSrc: "assets/feed_cam_finish.jpg",
+      baseSpeedMpm: 55.0,
+      fabricMinX: 0.34,
+      fabricMaxX: 0.66,
+      defectCatalog: [
+        { name: "SURFACE NEP / LUMP", code: "FNS-NP", classif: "Minor", badge: "NEP", penalty: 1, conf: 95.9, sev: "cyan", drawType: "slub" },
+        { name: "STENTER PIN MARK", code: "FNS-PN", classif: "Major", badge: "PIN", penalty: 2, conf: 97.6, sev: "amber", drawType: "pinhole" },
+        { name: "CHEMICAL RESIDUE", code: "FNS-CR", classif: "Major", badge: "STAIN", penalty: 2, conf: 96.4, sev: "amber", drawType: "cloudy" },
+        { name: "WEFT SKEW LINE", code: "FNS-SK", classif: "Critical", badge: "SKEW", penalty: 3, conf: 98.7, sev: "red", drawType: "skew" }
+      ],
+      onLaserHit: (defect) => {
+        const idxEl = document.getElementById("fvfHudIndex");
+        const skewEl = document.getElementById("fvfHudSkew");
+        if (idxEl) {
+          idxEl.textContent = (parseFloat(idxEl.textContent || "0.15") + 0.03).toFixed(2);
+        }
+        if (defect.drawType === "skew" && skewEl) {
+          skewEl.textContent = "0.7°";
+          setTimeout(() => { if (skewEl) skewEl.textContent = "0.4°"; }, 3000);
+        }
+      }
+    },
+    {
+      prefix: "fld",
+      viewId: "foldingInspectionView",
+      canvasId: "fldFeedCanvas",
+      viewportId: "fldFeedViewport",
+      laserLineId: "fldLaserLine",
+      bannerId: "fldDefectBanner",
+      bannerTextId: "fldDefectBannerText",
+      pauseBtnId: "fldBtnPauseFeed",
+      modePillsId: "fldModePills",
+      injectBtnId: "fldBtnInjectSpot",
+      fpsId: "fldHudFps",
+      machineSelectId: "fldMachineSelect",
+      imgSrc: "assets/feed_cam_folding.jpg",
+      baseSpeedMpm: 32.0,
+      fabricMinX: 0.40,
+      fabricMaxX: 0.60,
+      defectCatalog: [
+        { name: "SELVEDGE EDGE CREASE", code: "FLD-CR", classif: "Critical", badge: "EDGE", penalty: 3, conf: 98.6, sev: "red", drawType: "crease" },
+        { name: "CONTAMINANT SPOT", code: "FLD-ST", classif: "Major", badge: "STAIN", penalty: 2, conf: 97.3, sev: "amber", drawType: "oil" },
+        { name: "LOOSE SELVEDGE THREAD", code: "FLD-TH", classif: "Minor", badge: "THREAD", penalty: 1, conf: 94.6, sev: "cyan", drawType: "pick" },
+        { name: "TENSION WRINKLE", code: "FLD-WR", classif: "Major", badge: "WRINKLE", penalty: 2, conf: 96.8, sev: "amber", drawType: "crease" }
+      ],
+      onLaserHit: (defect) => {
+        const idxEl = document.getElementById("fldHudIndex");
+        const edgeEl = document.getElementById("fldHudEdge");
+        if (idxEl) {
+          idxEl.textContent = (parseFloat(idxEl.textContent || "0.14") + 0.02).toFixed(2);
+        }
+        if (defect.drawType === "crease" && edgeEl) {
+          edgeEl.textContent = "3.8";
+          setTimeout(() => { if (edgeEl) edgeEl.textContent = "2.1"; }, 3000);
+        }
+      }
+    }
+  ];
+
+  cameraConfigs.forEach((cfg) => {
+    initSingleCameraFeed(cfg);
+  });
+}
+
+function initSingleCameraFeed(cfg) {
+  const canvas = document.getElementById(cfg.canvasId);
+  const view = document.getElementById(cfg.viewId);
+  if (!canvas || !view) return;
+
+  const ctx = canvas.getContext("2d");
+  const laserLine = document.getElementById(cfg.laserLineId);
+  const banner = document.getElementById(cfg.bannerId);
+  const bannerText = document.getElementById(cfg.bannerTextId);
+  const pauseBtn = document.getElementById(cfg.pauseBtnId);
+  const modePills = document.getElementById(cfg.modePillsId);
+  const injectBtn = document.getElementById(cfg.injectBtnId);
+  const fpsDisplay = document.getElementById(cfg.fpsId);
+  const machineSelect = document.getElementById(cfg.machineSelectId);
+
+  let isPaused = false;
+  let currentMode = "rgb"; // "rgb", "heatmap", "laser"
+  let scrollY = 0;
+  let speedMpm = cfg.baseSpeedMpm;
+  let defects = [];
+  let nextSpawnTime = performance.now() + 3500 + Math.random() * 3000;
+  let lastFrameTime = performance.now();
+  let frameCount = 0;
+  let fps = 60.0;
+  let laserTimer = null;
+  let bannerTimer = null;
+
+  // Load fabric texture image
+  const img = new Image();
+  img.src = cfg.imgSrc;
+  let imgLoaded = false;
+  img.onload = () => { imgLoaded = true; };
+
+  // Listen to machine select to update line speed
+  if (machineSelect) {
+    machineSelect.addEventListener("change", () => {
+      const speeds = {
+        "uster-fv2": 38.4,
+        "comatex-isw": 34.0,
+        "four-point": 28.0,
+        "aframe": 45.0,
+        "singeray": 48.0,
+        "ben-bleach": 45.0,
+        "ben-dimensa": 42.0,
+        "ben-wash": 50.0,
+        "evs": 46.0,
+        "mahlo": 42.5,
+        "bst": 44.0,
+        "zimmer": 55.0,
+        "reggiani": 58.0,
+        "stork": 52.0,
+        "bst-reg": 50.0,
+        "power-frame": 55.0,
+        "power-shrink": 40.0,
+        "power-compact": 36.0,
+        "montex": 52.0,
+        "konsan": 32.0,
+        "suntech": 35.0,
+        "comatex-isp": 30.0,
+        "imb-sa": 34.0
+      };
+      if (speeds[machineSelect.value]) {
+        speedMpm = speeds[machineSelect.value];
+        const metaTag = view.querySelector(".meta-tag-feed");
+        if (metaTag) metaTag.textContent = `${speedMpm.toFixed(1)} m/min`;
+      }
+    });
+  }
+
+  // Setup pause/play toggle
+  if (pauseBtn) {
+    pauseBtn.addEventListener("click", () => {
+      isPaused = !isPaused;
+      const pauseIcon = pauseBtn.querySelector(".icon-pause");
+      const playIcon = pauseBtn.querySelector(".icon-play");
+      const label = pauseBtn.querySelector(".ctrl-label");
+      if (isPaused) {
+        if (pauseIcon) pauseIcon.style.display = "none";
+        if (playIcon) playIcon.style.display = "block";
+        if (label) label.textContent = "RESUME";
+      } else {
+        if (pauseIcon) pauseIcon.style.display = "block";
+        if (playIcon) playIcon.style.display = "none";
+        if (label) label.textContent = "PAUSE";
+      }
+    });
+  }
+
+  // Setup mode pills
+  if (modePills) {
+    modePills.querySelectorAll(".feed-mode-pill").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        modePills.querySelectorAll(".feed-mode-pill").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentMode = btn.dataset.mode || "rgb";
+      });
+    });
+  }
+
+  // Defect spawner - strictly constrained inside the fabric web bounds
+  function spawnDefect(customType) {
+    const typeDef = customType || cfg.defectCatalog[Math.floor(Math.random() * cfg.defectCatalog.length)];
+    const canvasW = canvas.width || 720;
+    const minX = (cfg.fabricMinX || 0.35) * canvasW;
+    const maxX = (cfg.fabricMaxX || 0.65) * canvasW;
+    const spawnX = minX + Math.random() * (maxX - minX);
+    defects.push({
+      x: spawnX,
+      y: -35,
+      type: typeDef,
+      name: typeDef.name,
+      code: typeDef.code,
+      classif: typeDef.classif,
+      badge: typeDef.badge,
+      penalty: typeDef.penalty,
+      conf: Math.min(99.4, typeDef.conf + (Math.random() * 1.4 - 0.7)),
+      sev: typeDef.sev,
+      drawType: typeDef.drawType,
+      size: 11 + Math.random() * 8,
+      laserTriggered: false
+    });
+  }
+
+  if (injectBtn) {
+    injectBtn.addEventListener("click", () => {
+      spawnDefect();
+      if (typeof sfx !== "undefined" && sfx && sfx.playClick) sfx.playClick();
+    });
+  }
+
+  // Main render loop
+  function renderLoop(timestamp) {
+    requestAnimationFrame(renderLoop);
+
+    // Only render if view is visible
+    if (view.style.display === "none") return;
+
+    // Maintain crisp resolution
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width > 0 && (canvas.width !== Math.round(rect.width) || canvas.height !== Math.round(rect.height))) {
+      canvas.width = Math.round(rect.width);
+      canvas.height = Math.round(rect.height);
+    }
+
+    const dt = timestamp - lastFrameTime;
+    lastFrameTime = timestamp;
+    frameCount++;
+    if (frameCount % 20 === 0 && dt > 0) {
+      fps = 1000 / dt;
+      if (fpsDisplay) fpsDisplay.textContent = `${Math.min(60, fps).toFixed(1)} FPS`;
+    }
+
+    if (!isPaused) {
+      // Speed in px/frame: ~38.4 m/min => ~2.4 px per frame
+      const speedPx = (speedMpm / 38.4) * 2.2;
+      scrollY = (scrollY + speedPx) % (canvas.height || 255);
+
+      // Defect spawning timer
+      if (timestamp > nextSpawnTime) {
+        spawnDefect();
+        nextSpawnTime = timestamp + 6500 + Math.random() * 4500;
+      }
+
+      // Move defects
+      for (let i = 0; i < defects.length; i++) {
+        defects[i].y += speedPx;
+      }
+      // Remove out-of-bounds defects
+      defects = defects.filter((d) => d.y < canvas.height + 60);
+
+      // Defect collision detection at middle of feed
+      const laserY = canvas.height * 0.48;
+      for (let i = 0; i < defects.length; i++) {
+        const d = defects[i];
+        if (!d.laserTriggered && d.y >= laserY - 14 && d.y <= laserY + 14) {
+          d.laserTriggered = true;
+
+          if (cfg.onLaserHit) {
+            cfg.onLaserHit(d);
+          }
+        }
+      }
+    }
+
+    // DRAWING
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // 1. Draw fabric texture background scrolling
+    if (imgLoaded) {
+      const imgH = h;
+      const y1 = scrollY - imgH;
+      const y2 = scrollY;
+      const y3 = scrollY + imgH;
+      ctx.drawImage(img, 0, y1, w, imgH);
+      ctx.drawImage(img, 0, y2, w, imgH);
+      if (y3 < h) {
+        ctx.drawImage(img, 0, y3, w, imgH);
+      }
+    } else {
+      ctx.fillStyle = "#1E293B";
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    // Apply Camera Mode Filter Effects
+    if (currentMode === "heatmap") {
+      ctx.fillStyle = "rgba(15, 23, 42, 0.45)";
+      ctx.fillRect(0, 0, w, h);
+
+      // False-color spectral tint
+      const grad = ctx.createLinearGradient(0, 0, w, 0);
+      grad.addColorStop(0, "rgba(59, 130, 246, 0.15)");
+      grad.addColorStop(0.5, "rgba(16, 185, 129, 0.08)");
+      grad.addColorStop(1, "rgba(59, 130, 246, 0.15)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+    } else if (currentMode === "laser") {
+      ctx.fillStyle = "rgba(0, 10, 20, 0.5)";
+      ctx.fillRect(0, 0, w, h);
+    }
+
+    // 2. Draw Moving Defect Spots accurately strictly on the fabric
+    defects.forEach((d) => {
+      drawDefectGraphic(ctx, d, currentMode);
+      drawAiBoundingBox(ctx, d, currentMode, w, cfg);
+    });
+  }
+
+  requestAnimationFrame(renderLoop);
+}
+
+function drawDefectGraphic(ctx, d, mode) {
+  ctx.save();
+  const rad = Math.max(10, d.size || 14);
+
+  switch (d.drawType) {
+    case "oil": {
+      const grad = ctx.createRadialGradient(d.x, d.y, 1, d.x, d.y, rad);
+      grad.addColorStop(0, "rgba(70, 45, 10, 0.88)");
+      grad.addColorStop(0.5, "rgba(120, 75, 20, 0.62)");
+      grad.addColorStop(0.85, "rgba(180, 120, 30, 0.32)");
+      grad.addColorStop(1, "rgba(180, 120, 30, 0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.ellipse(d.x, d.y, rad * 1.25, rad * 0.95, 0.25, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(100, 60, 15, 0.6)";
+      ctx.beginPath();
+      ctx.arc(d.x + rad * 0.9, d.y - rad * 0.6, 2.5, 0, Math.PI * 2);
+      ctx.arc(d.x - rad * 0.8, d.y + rad * 0.7, 2, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case "pick": {
+      ctx.strokeStyle = "rgba(15, 23, 42, 0.92)";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(d.x - 24, d.y);
+      ctx.lineTo(d.x + 24, d.y);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(226, 232, 240, 0.85)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(d.x - 4, d.y - 5);
+      ctx.lineTo(d.x + 6, d.y + 5);
+      ctx.stroke();
+      break;
+    }
+    case "slub": {
+      ctx.fillStyle = "rgba(241, 245, 249, 0.92)";
+      ctx.beginPath();
+      ctx.ellipse(d.x, d.y, 14, 5.5, 0.15, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(148, 163, 184, 0.85)";
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+      break;
+    }
+    case "hole": {
+      ctx.fillStyle = "#020617";
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 5.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.75)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 7.5, 0, Math.PI * 2);
+      ctx.stroke();
+      break;
+    }
+    case "cloudy": {
+      // Authentic chemical stain on fabric surface (permeates fabric weave)
+      const rad = 18;
+      const grad = ctx.createRadialGradient(d.x, d.y, 1, d.x, d.y, rad);
+      grad.addColorStop(0, "rgba(217, 119, 6, 0.78)");
+      grad.addColorStop(0.45, "rgba(245, 158, 11, 0.50)");
+      grad.addColorStop(0.8, "rgba(252, 211, 77, 0.20)");
+      grad.addColorStop(1, "rgba(252, 211, 77, 0)");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.ellipse(d.x, d.y, rad * 1.22, rad * 0.88, 0.15, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Irregular chemical stain satellite droplets absorbed into fabric
+      ctx.fillStyle = "rgba(180, 83, 9, 0.52)";
+      ctx.beginPath();
+      ctx.arc(d.x + rad * 0.75, d.y - rad * 0.45, 2, 0, Math.PI * 2);
+      ctx.arc(d.x - rad * 0.7, d.y + rad * 0.5, 1.8, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case "streak": {
+      const grad = ctx.createLinearGradient(d.x - 10, d.y, d.x + 10, d.y);
+      grad.addColorStop(0, "rgba(255, 255, 255, 0)");
+      grad.addColorStop(0.5, "rgba(255, 255, 255, 0.65)");
+      grad.addColorStop(1, "rgba(255, 255, 255, 0)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(d.x - 10, d.y - 28, 20, 56);
+      break;
+    }
+    case "scorch": {
+      const grad = ctx.createLinearGradient(0, d.y - 6, 0, d.y + 6);
+      grad.addColorStop(0, "rgba(180, 83, 9, 0)");
+      grad.addColorStop(0.5, "rgba(180, 83, 9, 0.75)");
+      grad.addColorStop(1, "rgba(180, 83, 9, 0)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(d.x - 36, d.y - 6, 72, 12);
+      break;
+    }
+    case "dyesplash": {
+      ctx.fillStyle = "rgba(2, 6, 23, 0.96)";
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(d.x + 11, d.y - 7, 2.5, 0, Math.PI * 2);
+      ctx.arc(d.x - 10, d.y + 8, 2.2, 0, Math.PI * 2);
+      ctx.arc(d.x + 8, d.y + 10, 1.8, 0, Math.PI * 2);
+      ctx.arc(d.x - 9, d.y - 8, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case "resist": {
+      ctx.fillStyle = "rgba(147, 197, 253, 0.7)";
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      break;
+    }
+    case "blotch": {
+      ctx.fillStyle = "rgba(225, 29, 72, 0.92)";
+      ctx.beginPath();
+      ctx.ellipse(d.x, d.y, 12, 8, 0.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "rgba(6, 182, 212, 0.88)";
+      ctx.beginPath();
+      ctx.arc(d.x + 9, d.y + 5, 4.5, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case "docstreak": {
+      ctx.strokeStyle = "rgba(225, 29, 72, 0.96)";
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(d.x, d.y - 40);
+      ctx.lineTo(d.x, d.y + 40);
+      ctx.stroke();
+      break;
+    }
+    case "misreg": {
+      ctx.strokeStyle = "rgba(6, 182, 212, 0.9)";
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(d.x - 12, d.y - 12, 24, 24);
+      ctx.strokeStyle = "rgba(225, 29, 72, 0.9)";
+      ctx.strokeRect(d.x - 9, d.y - 9, 24, 24);
+      break;
+    }
+    case "crease": {
+      ctx.strokeStyle = "rgba(15, 23, 42, 0.88)";
+      ctx.lineWidth = 2.4;
+      ctx.beginPath();
+      ctx.moveTo(d.x - 18, d.y - 20);
+      ctx.lineTo(d.x + 18, d.y + 20);
+      ctx.stroke();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(d.x - 17, d.y - 19);
+      ctx.lineTo(d.x + 19, d.y + 21);
+      ctx.stroke();
+      break;
+    }
+    case "skew": {
+      ctx.strokeStyle = "rgba(239, 68, 68, 0.85)";
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([5, 3]);
+      ctx.beginPath();
+      ctx.moveTo(d.x - 42, d.y + 12);
+      ctx.lineTo(d.x + 42, d.y - 12);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      break;
+    }
+    case "tear": {
+      // Realistic fabric tear on cloth surface with frayed fibers and dark void
+      ctx.strokeStyle = "rgba(2, 6, 23, 0.98)";
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      ctx.moveTo(d.x - 14, d.y - 10);
+      ctx.lineTo(d.x - 4, d.y - 1);
+      ctx.lineTo(d.x + 3, d.y - 5);
+      ctx.lineTo(d.x + 14, d.y + 9);
+      ctx.stroke();
+      // Frayed yarn edges
+      ctx.strokeStyle = "rgba(241, 245, 249, 0.9)";
+      ctx.lineWidth = 1.1;
+      ctx.beginPath();
+      ctx.moveTo(d.x - 10, d.y - 12);
+      ctx.lineTo(d.x - 5, d.y - 7);
+      ctx.moveTo(d.x - 1, d.y - 3);
+      ctx.lineTo(d.x + 5, d.y + 1);
+      ctx.moveTo(d.x + 8, d.y + 5);
+      ctx.lineTo(d.x + 13, d.y + 7);
+      ctx.stroke();
+      // Center void gap
+      ctx.fillStyle = "rgba(2, 6, 23, 0.95)";
+      ctx.beginPath();
+      ctx.ellipse(d.x, d.y, 4.5, 2.2, 0.25, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+    case "pinhole": {
+      ctx.fillStyle = "#FFFFFF";
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(239, 68, 68, 0.95)";
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 5, 0, Math.PI * 2);
+      ctx.stroke();
+      break;
+    }
+    default: {
+      ctx.fillStyle = "rgba(239, 68, 68, 0.8)";
+      ctx.beginPath();
+      ctx.arc(d.x, d.y, 6, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    }
+  }
+  ctx.restore();
+}
+
+function drawAiBoundingBox(ctx, d, mode, canvasWidth, cfg) {
+  ctx.save();
+  const bw = 38;
+  const bh = 32;
+  const fabricLeft = ((cfg && cfg.fabricMinX) || 0.35) * canvasWidth;
+  const fabricRight = ((cfg && cfg.fabricMaxX) || 0.65) * canvasWidth;
+
+  // Ensure bounding box center is strictly inside fabric web
+  const bx = Math.max(fabricLeft + 4, Math.min(fabricRight - bw - 4, d.x - bw / 2));
+  const by = d.y - bh / 2;
+
+  let color = "#06B6D4"; // Minor cyan
+  if (d.sev === "red") color = "#EF4444";
+  else if (d.sev === "amber") color = "#F59E0B";
+
+  if (mode === "heatmap") {
+    // Thermal anomaly glow
+    const hGrad = ctx.createRadialGradient(d.x, d.y, 2, d.x, d.y, 44);
+    hGrad.addColorStop(0, "rgba(239, 68, 68, 0.85)");
+    hGrad.addColorStop(0.35, "rgba(245, 158, 11, 0.6)");
+    hGrad.addColorStop(0.7, "rgba(59, 130, 246, 0.3)");
+    hGrad.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = hGrad;
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, 44, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Neon box background tint
+  ctx.fillStyle = color === "#EF4444" ? "rgba(239, 68, 68, 0.12)" : color === "#F59E0B" ? "rgba(245, 158, 11, 0.10)" : "rgba(6, 182, 212, 0.10)";
+  ctx.fillRect(bx, by, bw, bh);
+
+  // Corner brackets
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.8;
+  const arm = 6;
+  ctx.beginPath();
+  // TL
+  ctx.moveTo(bx, by + arm); ctx.lineTo(bx, by); ctx.lineTo(bx + arm, by);
+  // TR
+  ctx.moveTo(bx + bw - arm, by); ctx.lineTo(bx + bw, by); ctx.lineTo(bx + bw, by + arm);
+  // BL
+  ctx.moveTo(bx, by + bh - arm); ctx.lineTo(bx, by + bh); ctx.lineTo(bx + arm, by + bh);
+  // BR
+  ctx.moveTo(bx + bw - arm, by + bh); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh - arm);
+  ctx.stroke();
+
+  // Floating detection badge - strictly centered and clamped within the fabric area
+  const label = `AI: ${d.name} · ${d.conf.toFixed(1)}%`;
+  ctx.font = "bold 8.5px 'JetBrains Mono', monospace";
+  const txtW = ctx.measureText(label).width;
+  const tagX = Math.max(fabricLeft + 4, Math.min(fabricRight - txtW - 8, d.x - txtW / 2));
+  const tagY = by - 6;
+
+  ctx.fillStyle = "rgba(15, 23, 42, 0.94)";
+  ctx.fillRect(tagX - 3, tagY - 9, txtW + 6, 11);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.strokeRect(tagX - 3, tagY - 9, txtW + 6, 11);
+
+  ctx.fillStyle = color;
+  ctx.fillText(label, tagX, tagY);
+  ctx.restore();
 }
 
 if (document.readyState === "loading") {
