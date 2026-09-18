@@ -4917,25 +4917,97 @@ function setupProductionPlanningInteractions() {
   planningTooltip.setAttribute("aria-hidden", "true");
   planningView?.appendChild(planningTooltip);
 
+  const stageDetailsData = {
+    incoming: { title: "Greige Release", machine: "L-18 · Loom Take-off", text: "Verified 6,240 m greige batch released 7 min early with 99.4% roll yield." },
+    pretreatment: { title: "Continuous Pretreatment", machine: "Range PT-02", text: "Scour, bleach, wash and neutralize sequence synchronized directly to dyeing." },
+    dyeing: { title: "Jet Dyeing", machine: "JD-04 · Recipe RN-8821", text: "Current active lot in process (68%). Protected ST-02 slot reservation at 15:05." },
+    printing: { title: "Rotary Printing", machine: "RP-02 · Screen Route", text: "Optional bypass route available with 12-color rotary screen setup buffer." },
+    finishing: { title: "Stenter Finishing", machine: "ST-02 · Reserved", text: "Protected heat-setting window (185°C · 42 m/min) held for TEX-8821 release." },
+    inspection: { title: "Final Inspection & Packing", machine: "FI-01 · A-Frame Line", text: "4-point grading and defect mapping reserved for delivery cut-off at 18:30." }
+  };
+
   stageNodes.forEach((node) => {
-    const plan = departmentPlans[node.dataset.planStage];
-    if (plan) node.dataset.tooltip = `${plan.title} · Click to open its machines, concurrent lots and selected-lot route`;
+    const stage = node.dataset.planStage;
+    const d = stageDetailsData[stage];
+    if (d) {
+      node.dataset.tooltip = `<strong>${d.title}</strong><em>${d.machine}</em><span>${d.text} · Click to view machine plan</span>`;
+    }
   });
-  document.querySelectorAll(".planning-kpi").forEach((card) => { card.dataset.tooltip = card.textContent.trim().replace(/\s+/g," "); });
-  document.querySelectorAll(".schedule-legend span").forEach((item) => { item.dataset.tooltip = `${item.textContent.trim()} schedule status`; });
-  if (recoveryBtn) recoveryBtn.dataset.tooltip = "Apply the AI-recommended recovery action to the selected department plan";
+
+  const flowConnectors = planningView?.querySelectorAll(".fabric-flow-connector");
+  flowConnectors?.forEach((conn, idx) => {
+    conn.dataset.tooltip = `<strong>Material Flow Conveyance · Stage 0${idx + 1} → 0${idx + 2}</strong><em>Automated A-Frame / Roll Transfer</em><span>Buffer monitored by plant RFID &amp; floor sensors.</span>`;
+  });
+
+  document.querySelectorAll(".schedule-legend span").forEach((item) => {
+    const text = item.textContent.trim();
+    item.dataset.tooltip = `<strong>Schedule Status: ${text}</strong><em>Factory Machine Lane Marker</em><span>Tracks scheduled, currently executing, or at-risk batch blocks.</span>`;
+  });
+
+  if (reoptimizeBtn) reoptimizeBtn.dataset.tooltip = "<strong>Re-optimize Production Plan</strong><em>Constraint-Aware Sequencing</em><span>Re-evaluate active bottlenecks, changeover buffers and downstream delivery cut-offs.</span>";
+  if (recoveryBtn) recoveryBtn.dataset.tooltip = "<strong>Apply AI Recovery Action</strong><em>Automated Delay Compensation</em><span>Execute recommended buffer hold or routing adjustment to protect dispatch time.</span>";
+
+  // Output progress elements tooltips
+  const summaryActual = planningView?.querySelector(".output-summary span:nth-of-type(1)");
+  if (summaryActual) summaryActual.dataset.tooltip = "<strong>ACTUAL OUTPUT</strong><em>Cumulative good metres: 3,920 m</em><span>Quality-verified fabric metres completed this shift.</span>";
+  const summaryPlan = planningView?.querySelector(".output-summary span:nth-of-type(2)");
+  if (summaryPlan) summaryPlan.dataset.tooltip = "<strong>PLANNED BENCHMARK</strong><em>Shift target: 4,180 m</em><span>Planned production curve required to hit 18:30 dispatch cut-off.</span>";
+  const summaryGap = planningView?.querySelector(".output-summary .output-gap");
+  if (summaryGap) summaryGap.dataset.tooltip = "<strong>OUTPUT VARIANCE</strong><em>Variance: −260 m</em><span>Production lag currently being recovered via wash-off sync.</span>";
+  const liveChip = planningView?.querySelector(".output-summary .planning-live-chip");
+  if (liveChip) liveChip.dataset.tooltip = "<strong>LIVE TELEMETRY STREAM</strong><em>Update frequency: Real-time</em><span>Direct telemetry feed from loom sensors, jet flowmeters and stenters.</span>";
+
+  planningView?.querySelectorAll(".output-chart-footer span").forEach((key) => {
+    key.dataset.tooltip = `<strong>Output Curve: ${key.textContent.trim()}</strong><em>Cumulative Production Analysis</em><span>Compares shift plan against sensor-verified output and machine forecast.</span>`;
+  });
+
+  // Handoff panel elements tooltips
+  const handoff1 = planningView?.querySelector(".handoff-item:nth-child(1)");
+  if (handoff1) handoff1.dataset.tooltip = "<strong>Dyeing to Finishing Route Protection</strong><em>JD-04 → ST-02</em><span>Readiness 82% · Predicted arrival 15:16 · Reserved window 15:05 (11 min exposure).</span>";
+  const handoff2 = planningView?.querySelector(".handoff-item:nth-child(2)");
+  if (handoff2) handoff2.dataset.tooltip = "<strong>Finishing to Inspection Capacity</strong><em>ST-02 → FI-01</em><span>Readiness 96% · Inspection capacity secured · 38 min transfer buffer.</span>";
+  const risk1 = planningView?.querySelector(".flow-risk-summary div:nth-child(1)");
+  if (risk1) risk1.dataset.tooltip = "<strong>STARVATION RISK: LOW</strong><em>Downstream Continuity</em><span>Continuous roll buffer ensures stenter ST-02 does not starve.</span>";
+  const risk2 = planningView?.querySelector(".flow-risk-summary div:nth-child(2)");
+  if (risk2) risk2.dataset.tooltip = "<strong>BLOCKING RISK: NONE</strong><em>Exit Lane Clearance</em><span>Inspection team ready; no A-frame queue backup at finish range.</span>";
+  const risk3 = planningView?.querySelector(".flow-risk-summary div:nth-child(3)");
+  if (risk3) risk3.dataset.tooltip = "<strong>TRANSFER BUFFER: 38 MIN</strong><em>Dispatch Protection</em><span>Slack time allows on-time handoff for 18:30 dispatch cut-off.</span>";
+
+  // Interactive hover on output chart
+  const chartWrap = planningView?.querySelector(".output-chart-wrap");
+  const chartTip = planningView?.querySelector(".output-chart-tip");
+  if (chartWrap && chartTip) {
+    chartWrap.addEventListener("mousemove", (e) => {
+      const rect = chartWrap.getBoundingClientRect();
+      const xRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const totalMinutes = 600; // 08:00 to 18:00
+      const currentMin = Math.round(xRatio * totalMinutes);
+      const h = 8 + Math.floor(currentMin / 60);
+      const m = currentMin % 60;
+      const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+      const isPast = xRatio <= 0.72;
+      const metres = Math.round(58 + xRatio * (6240 - 58));
+      chartTip.style.left = `${Math.max(8, Math.min(rect.width - 165, e.clientX - rect.left - 75))}px`;
+      chartTip.innerHTML = `<strong>${timeStr} · ${isPast ? 'Recorded Output' : 'AI Forecast'}</strong><span>${isPast ? 'Good output' : 'Projected output'}: <b>${metres.toLocaleString()} m</b></span><span>${isPast ? 'Quality verified ✓' : 'Dispatch due 18:30'}</span>`;
+    });
+    chartWrap.addEventListener("mouseleave", () => {
+      chartTip.style.left = "71%";
+      const actualVal = planningView?.querySelector(".output-summary span:nth-of-type(1) strong")?.textContent || "3,920 m";
+      chartTip.innerHTML = `<strong>14:32 · JD-04</strong><span>Good output <b>${actualVal}</b></span><span>Projected completion 17:42</span>`;
+    });
+  }
 
   function positionPlanningTooltip(target, event) {
     const rect = target.getBoundingClientRect();
     const anchorX = event?.clientX || rect.left + rect.width / 2;
     const anchorY = event?.clientY || rect.top;
-    planningTooltip.style.left = `${Math.min(anchorX + 14, window.innerWidth - 292)}px`;
+    planningTooltip.style.left = `${Math.min(anchorX + 14, window.innerWidth - 335)}px`;
     planningTooltip.style.top = `${Math.max(12, anchorY - 10)}px`;
   }
 
   function showPlanningTooltip(target, event) {
     if (!target?.dataset.tooltip) return;
-    planningTooltip.textContent = target.dataset.tooltip;
+    planningTooltip.innerHTML = target.dataset.tooltip;
     planningTooltip.classList.add("is-visible");
     planningTooltip.setAttribute("aria-hidden", "false");
     positionPlanningTooltip(target, event);
@@ -5003,7 +5075,10 @@ function setupProductionPlanningInteractions() {
       if (value) value.textContent = data[0];
       if (note) { note.textContent = data[1]; note.className = data[2] || ""; }
       const card = value?.closest(".planning-kpi");
-      if (card) card.dataset.tooltip = `${card.querySelector("span")?.textContent || "Planning indicator"} · ${data[0]} · ${data[1]}`;
+      if (card) {
+        const label = card.querySelector("span")?.textContent || "Planning indicator";
+        card.dataset.tooltip = `<strong>${label} · ${data[0]}</strong><em>${data[1]}</em><span>Constraint-aware dynamic AI schedule telemetry.</span>`;
+      }
     });
     if (stagePanel) {
       stagePanel.classList.remove("is-roll-flow","is-continuous-range","is-batch-timeline","is-print-cells","is-finish-parameters","is-quality-gates");
@@ -5012,22 +5087,22 @@ function setupProductionPlanningInteractions() {
     }
     if (axis) {
       axis.classList.remove("is-hidden");
-      axis.innerHTML = `<span></span>${plan.axis.map((time) => `<b data-tooltip="Timeline marker · ${time}">${time}</b>`).join("")}`;
+      axis.innerHTML = `<span></span>${plan.axis.map((time) => `<b data-tooltip="<strong>Timeline Marker ${time}</strong><em>Shift Scheduling Axis</em><span>Synchronized with active factory clock</span>">${time}</b>`).join("")}`;
     }
     if (lanes) {
       lanes.className = "machine-lanes department-layout-batch-timeline";
       lanes.innerHTML = plan.rows.map(([code, name, blocks, now], index) => {
         const hasFocusLot = blocks.some(([label]) => label.includes("TEX-8821") || label.includes("RN-8821"));
-        return `<div class="machine-lane${hasFocusLot ? " has-focus-lot" : ""}" tabindex="0" data-tooltip="${code} · ${name} · ${plan.details[index]}">
+        return `<div class="machine-lane${hasFocusLot ? " has-focus-lot" : ""}" tabindex="0" data-tooltip="<strong>${code} · ${name}</strong><em>Telemetry: ${plan.details[index]}</em><span>Status: Active sequence · Focus lot: ${hasFocusLot ? 'Running in lane' : 'Scheduled'}</span>">
           <div class="machine-label"><strong>${code}</strong><span>${name}</span><em>${plan.details[index]}</em></div>
           <div class="lane-track">
             ${blocks.map(([label, left, width, state]) => {
               const isFocus = label.includes("TEX-8821") || label.includes("RN-8821");
               const status = state === "done" ? "Completed" : state === "live" ? "Active now" : state === "risk" ? "At risk" : state === "changeover" ? "Changeover" : state === "idle" ? "Protected buffer" : "Planned";
               const blockClass = state === "changeover" ? "changeover-block" : state === "idle" ? "idle-block" : `lot-block${state === "done" ? " is-done" : state === "live" ? " is-live" : state === "risk" ? " is-risk" : ""}`;
-              return `<span class="${blockClass}${isFocus ? " is-focus-lot" : ""}" tabindex="0" role="button" data-tooltip="${label} · ${status} · ${code} ${name}" style="left:${left}%;width:${width}%">${label}</span>`;
+              return `<span class="${blockClass}${isFocus ? " is-focus-lot" : ""}" tabindex="0" role="button" data-tooltip="<strong>Lot ${label}</strong><em>${status} · Machine ${code} (${name})</em><span>Timeline: ${left}%–${left + width}% · ${isFocus ? 'Selected priority lot TEX-8821' : 'Batch sequence'}</span>" style="left:${left}%;width:${width}%">${label}</span>`;
             }).join("")}
-            ${now ? `<span class="now-line" style="left:${now}%" data-tooltip="Current production time"><i>NOW</i></span>` : ""}
+            ${now ? `<span class="now-line" style="left:${now}%" data-tooltip="<strong>Live Factory Clock (NOW)</strong><em>Timeline marker: ${now}%</em><span>Real-time shop-floor synchronization active</span>"><i>NOW</i></span>` : ""}
           </div>
         </div>`;
       }).join("");
@@ -5049,48 +5124,152 @@ function setupProductionPlanningInteractions() {
   }));
   renderStagePlan("incoming", false);
 
+  const stageFluctuations = {
+    incoming: (t) => ({
+      conf: (97.8 + Math.sin(t * 1.4) * 0.22).toFixed(1) + "%",
+      confNote: `+${(1.2 + Math.cos(t * 1.1) * 0.15).toFixed(1)}% after release`,
+      confCls: "positive",
+      bCode: "BT-03",
+      bNote: `${Math.round(8 + Math.sin(t * 0.8) * 0.4)} min batching queue`,
+      cTime: `${Math.round(18 + Math.cos(t * 0.7) * 0.5)} min`,
+      cNote: "Roll-family sequence",
+      wip: "4 rolls",
+      wipNote: `${Math.round(23880 + Math.sin(t * 1.5) * 38).toLocaleString()} m in route`,
+      lanes: [
+        `Loom efficiency · ${(96 + Math.sin(t * 1.2) * 0.35).toFixed(1)}%`,
+        `4-point score · ${(8 + Math.cos(t * 0.9) * 0.2).toFixed(1)}/100 yd`,
+        `Batch weight · ${(1420 + Math.round(Math.sin(t * 1.3) * 4)).toLocaleString()} kg`,
+        `Transfer ETA · 08:24`
+      ]
+    }),
+    pretreatment: (t) => ({
+      conf: (94.7 + Math.sin(t * 1.3) * 0.24).toFixed(1) + "%",
+      confNote: `+${(3.1 + Math.cos(t * 1.2) * 0.18).toFixed(1)}% wet-on-wet plan`,
+      confCls: "positive",
+      bCode: "MR-01",
+      bNote: `${Math.round(6 + Math.sin(t * 0.9) * 0.3)} min behind release`,
+      cTime: `${Math.round(26 + Math.cos(t * 0.8) * 0.6)} min`,
+      cNote: "Chemistry family sequence",
+      wip: "3 lots",
+      wipNote: `${Math.round(18460 + Math.sin(t * 1.4) * 32).toLocaleString()} m in range`,
+      lanes: [
+        `Flame · ${Math.round(1050 + Math.sin(t * 1.1) * 4)}°C`,
+        `Enzyme bath · ${(65 + Math.cos(t * 0.8) * 0.4).toFixed(1)}°C`,
+        `Peroxide bath · ${(98 + Math.sin(t * 1.3) * 0.5).toFixed(1)}°C`,
+        `Caustic · ${(22 + Math.cos(t * 1.0) * 0.2).toFixed(1)}°Bé`
+      ]
+    }),
+    dyeing: (t) => ({
+      conf: (91.6 + Math.sin(t * 1.5) * 0.26).toFixed(1) + "%",
+      confNote: `+${(4.8 + Math.cos(t * 1.1) * 0.2).toFixed(1)}% after recovery`,
+      confCls: "positive",
+      bCode: "JD-04",
+      bNote: `${Math.round(18 + Math.sin(t * 0.7) * 0.5)} min behind plan`,
+      cTime: `${Math.round(42 + Math.cos(t * 0.8) * 0.8)} min`,
+      cNote: "Light → dark sequence",
+      wip: "3 lots",
+      wipNote: `${Math.round(18460 + Math.sin(t * 1.3) * 35).toLocaleString()} m in route`,
+      lanes: [
+        `Recipe accuracy · ${(99.4 + Math.sin(t * 0.9) * 0.15).toFixed(1)}%`,
+        `Bath ratio · 1:8 · ${Math.round(132 + Math.sin(t * 1.2) * 2)}°C`,
+        `Rinse pH · ${(7.2 + Math.cos(t * 1.0) * 0.1).toFixed(1)}`,
+        `Residual moisture · ${(42 + Math.sin(t * 1.4) * 0.5).toFixed(1)}%`
+      ]
+    }),
+    printing: (t) => ({
+      conf: (89.4 + Math.sin(t * 1.2) * 0.28).toFixed(1) + "%",
+      confNote: `+${(5.6 + Math.cos(t * 1.0) * 0.22).toFixed(1)}% after screen recovery`,
+      confCls: "positive",
+      bCode: "RP-02",
+      bNote: `${Math.round(22 + Math.sin(t * 0.8) * 0.6)} min registration delay`,
+      cTime: `${Math.round(35 + Math.cos(t * 0.9) * 0.7)} min`,
+      cNote: "Color-family sequence",
+      wip: "5 lots",
+      wipNote: `${Math.round(27300 + Math.sin(t * 1.6) * 45).toLocaleString()} m in route`,
+      lanes: [
+        `Paste viscosity · ${Math.round(4200 + Math.sin(t * 1.1) * 20)} cP`,
+        `Repeat · 640 mm · ${(48 + Math.sin(t * 1.3) * 0.6).toFixed(1)} m/min`,
+        `Steam · ${(102 + Math.cos(t * 0.8) * 0.4).toFixed(1)}°C`,
+        `Wash pH · ${(7.1 + Math.sin(t * 1.2) * 0.1).toFixed(1)}`
+      ]
+    }),
+    finishing: (t) => ({
+      conf: (92.8 + Math.sin(t * 1.4) * 0.25).toFixed(1) + "%",
+      confNote: `+${(3.7 + Math.cos(t * 1.2) * 0.18).toFixed(1)}% protected slot`,
+      confCls: "positive",
+      bCode: "ST-02",
+      bNote: `${Math.round(11 + Math.sin(t * 0.8) * 0.4)} min slot exposure`,
+      cTime: `${Math.round(24 + Math.cos(t * 0.7) * 0.5)} min`,
+      cNote: "Width-first sequence",
+      wip: "3 lots",
+      wipNote: `${Math.round(16840 + Math.sin(t * 1.3) * 28).toLocaleString()} m in route`,
+      lanes: [
+        `${Math.round(185 + Math.sin(t * 1.0) * 1.5)}°C · ${(42 + Math.cos(t * 1.2) * 0.5).toFixed(1)} m/min`,
+        `Nip load · ${Math.round(120 + Math.sin(t * 0.9) * 2)} kN`,
+        `Roll width · 1,520 mm · ${(98 + Math.cos(t * 1.1) * 0.4).toFixed(1)}%`
+      ]
+    }),
+    inspection: (t) => ({
+      conf: (96.2 + Math.sin(t * 1.3) * 0.22).toFixed(1) + "%",
+      confNote: `+${(2.4 + Math.cos(t * 1.1) * 0.15).toFixed(1)}% team reservation`,
+      confCls: "positive",
+      bCode: "FI-01",
+      bNote: `${Math.round(9 + Math.sin(t * 0.8) * 0.3)} min inspection queue`,
+      cTime: `${Math.round(16 + Math.cos(t * 0.9) * 0.4)} min`,
+      cNote: "Grouped dispatch sequence",
+      wip: "4 rolls",
+      wipNote: `${Math.round(21120 + Math.sin(t * 1.5) * 36).toLocaleString()} m awaiting QA`,
+      lanes: [
+        `A-grade · ${(98.6 + Math.sin(t * 1.2) * 0.18).toFixed(1)}%`,
+        `Mapped faults · ${Math.round(6 + Math.sin(t * 0.7) * 0.4)}`,
+        `Roll tension · ${(28 + Math.cos(t * 1.0) * 0.5).toFixed(1)} N`,
+        `Dispatch · 18:30`
+      ]
+    })
+  };
+
   function tickPlanningLive() {
     if (planningView && planningView.style.display === "none") return;
     const t = Date.now() / 1000;
 
-    // 1. Fluctuating KPIs based on active stage
-    if (currentStageKey === "incoming") {
-      const confVal = (97.8 + Math.sin(t * 1.4) * 0.22).toFixed(1);
+    // 1. Fluctuating KPIs & machine lanes for ANY active department
+    const flucFn = stageFluctuations[currentStageKey];
+    if (flucFn) {
+      const data = flucFn(t);
       const kpiConf = document.getElementById("planningKpiConfidence");
-      if (kpiConf) kpiConf.textContent = `${confVal}%`;
-
+      if (kpiConf) kpiConf.textContent = data.conf;
       const confNote = document.getElementById("planningKpiConfidenceNote");
       if (confNote) {
-        const diff = (1.2 + Math.cos(t * 1.1) * 0.15).toFixed(1);
-        confNote.textContent = `+${diff}% after release`;
+        confNote.textContent = data.confNote;
+        confNote.className = data.confCls;
       }
-
-      const qMin = Math.round(8 + Math.sin(t * 0.8) * 0.4);
       const bVal = document.getElementById("planningKpiBottleneck");
-      if (bVal) bVal.textContent = "BT-03";
+      if (bVal) bVal.textContent = data.bCode;
       const bNote = document.getElementById("planningKpiBottleneckNote");
-      if (bNote) bNote.textContent = `${qMin} min batching queue`;
-
-      const cMin = Math.round(18 + Math.cos(t * 0.7) * 0.5);
+      if (bNote) bNote.textContent = data.bNote;
       const cVal = document.getElementById("planningKpiChangeover");
-      if (cVal) cVal.textContent = `${cMin} min`;
+      if (cVal) cVal.textContent = data.cTime;
       const cNote = document.getElementById("planningKpiChangeoverNote");
-      if (cNote) cNote.textContent = "Roll-family sequence";
-
-      const wipM = Math.round(23880 + Math.sin(t * 1.5) * 38);
+      if (cNote) cNote.textContent = data.cNote;
       const wipVal = document.getElementById("planningKpiWip");
-      if (wipVal) wipVal.textContent = "4 rolls";
+      if (wipVal) wipVal.textContent = data.wip;
       const wipNote = document.getElementById("planningKpiWipNote");
-      if (wipNote) wipNote.textContent = `${wipM.toLocaleString()} m in route`;
+      if (wipNote) wipNote.textContent = data.wipNote;
 
-      const loomEm = planningView.querySelector('.machine-lane:nth-child(1) .machine-label em');
-      if (loomEm) loomEm.textContent = `Loom efficiency · ${(96 + Math.sin(t * 1.2) * 0.35).toFixed(1)}%`;
-      const scoreEm = planningView.querySelector('.machine-lane:nth-child(2) .machine-label em');
-      if (scoreEm) scoreEm.textContent = `4-point score · ${(8 + Math.cos(t * 0.9) * 0.2).toFixed(1)}/100 yd`;
-      const batchEm = planningView.querySelector('.machine-lane:nth-child(3) .machine-label em');
-      if (batchEm) batchEm.textContent = `Batch weight · ${(1420 + Math.round(Math.sin(t * 1.3) * 4)).toLocaleString()} kg`;
-      const etaEm = planningView.querySelector('.machine-lane:nth-child(4) .machine-label em');
-      if (etaEm) etaEm.textContent = `Transfer ETA · 08:24`;
+      data.lanes.forEach((text, i) => {
+        const laneEm = planningView.querySelector(`.machine-lane:nth-child(${i + 1}) .machine-label em`);
+        if (laneEm) laneEm.textContent = text;
+      });
+    }
+
+    // Fluctuating progress on active dyeing step 03 node
+    const dyeingNode = planningView?.querySelector('.fabric-flow-node[data-plan-stage="dyeing"]');
+    if (dyeingNode) {
+      const prog = (68 + Math.sin(t * 1.2) * 0.5).toFixed(1);
+      const progBar = dyeingNode.querySelector(".flow-progress span");
+      if (progBar) progBar.style.width = `${prog}%`;
+      const progFoot = dyeingNode.querySelector(".flow-node-foot span");
+      if (progFoot) progFoot.textContent = `${Math.round(prog)}% · 46 min left`;
     }
 
     // 2. Fluctuating LOT OUTPUT PROGRESS (Cumulative good metres vs plan)
@@ -5105,7 +5284,9 @@ function setupProductionPlanningInteractions() {
     if (gapEl) gapEl.textContent = `−${Math.abs(gapM)} m`;
 
     const tipMetres = planningView?.querySelector(".output-chart-tip span b");
-    if (tipMetres) tipMetres.textContent = `${liveOutput.toLocaleString()} m`;
+    if (tipMetres && !planningView?.querySelector(".output-chart-wrap:hover")) {
+      tipMetres.textContent = `${liveOutput.toLocaleString()} m`;
+    }
 
     // Fluctuating SVG output graph curve
     const liveY = 38 + Math.sin(t * 1.2) * 3.5;
