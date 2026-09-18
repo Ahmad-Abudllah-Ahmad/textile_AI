@@ -2391,7 +2391,1969 @@
     </div>
   </div>
 
+    <!-- =========================================================================
+       VIEW FV: Greige Vision AI — Grey Fabric Defect Inspection
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="greigeInspectionView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromGreige" aria-label="Back to Fabric Inspection Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon" style="background: rgba(245, 158, 11, 0.12); color: #D97706;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Greige Vision AI — Grey Fabric Defect Inspection</h1>
+          <p class="inspection-subtitle">Linear-Camera 4-Point Grading, Broken End/Pick Detection &amp; Oil-Stain Classification</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToFabricSuiteFromGreige">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Return to Fabric Inspection Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Defect Match Index</span>
+            <span class="inspect-badge badge-emerald">EXCELLENT</span>
+          </div>
+          <div class="metric-huge-val">0.24 pts</div>
+          <div class="metric-chart-wrap" id="grgSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="grgGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16,185,129,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34 L 340 70 L 0 70 Z" fill="url(#grgGradDeltaE)" />
+              <path id="grgSparkPathDeltaE" d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="grgSparkDotDeltaE" cx="340" cy="34" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="grgSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16,185,129,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="grgSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="grgSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="grgSparkValDeltaE">0.24 pts</span>
+              <span class="tip-label">Per 100 m² · ASTM D5430</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Auto-Grading Accuracy</span>
+            <span class="inspect-badge badge-cyan">FIRST TIME RIGHT</span>
+          </div>
+          <div class="metric-huge-val">98.7%</div>
+          <div class="metric-chart-wrap" id="grgSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="grgGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6,182,212,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#grgGradCorrection)" />
+              <path id="grgSparkPathCorrection" d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="grgSparkDotCorrection" cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="grgSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6,182,212,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="grgSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="grgSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="grgSparkValCorrection">98.7%</span>
+              <span class="tip-label">Target: 97.5%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Scan Throughput</span>
+            <span class="inspect-badge badge-amber">OPTIMIZED</span>
+          </div>
+          <div class="metric-huge-val">38.4 m/min</div>
+          <div class="metric-chart-wrap" id="grgSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="grgGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(245,158,11,0.3)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#grgGradDosing)" />
+              <path id="grgSparkPathDosing" d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="grgSparkDotDosing" cx="200" cy="16" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="grgSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(245,158,11,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="grgSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="grgSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="grgSparkValDosing">38.4 m/min</span>
+              <span class="tip-label">Open-width greige scan</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row">
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Greige Linear-Camera Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <label class="machine-select-wrap">
+                <span class="machine-select-label">MACHINE</span>
+                <select class="machine-select-pill" id="grgMachineSelect" aria-label="Select inspection machine">
+                  <option value="uster-fv2" selected>Uster Fabriq Vision 2</option>
+                  <option value="comatex-isw">Comatex ISW Inspection</option>
+                  <option value="four-point">4-Point Grading Table</option>
+                  <option value="aframe">A-Frame Batching Winder</option>
+                </select>
+              </label>
+              <span class="meta-tag-feed">38.4 m/min</span>
+            </div>
+          </div>
+
+          <div class="sensor-feed-viewport" id="grgFeedViewport">
+            <canvas class="sensor-camera-canvas" id="grgFeedCanvas" width="720" height="255"></canvas>
+            <div class="feed-raster-overlay"></div>
+            <div class="feed-scan-laser-line" id="grgLaserLine"></div>
+
+            <!-- Left & Right Selvedge Rulers -->
+            <div class="selvedge-ruler ruler-left">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+            <div class="selvedge-ruler ruler-right">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+
+            <!-- Top Left Metadata Overlay -->
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">CAMERA HEAD:</span> <span id="grgHudHead">USTER FV2 (LINEAR CAMERA)</span></div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> GREIGE COTTON PLAIN WEAVE (140 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> <span id="grgHudLot">#GRG-2204-GREY</span></div>
+              <div class="hud-item hud-telemetry"><span class="hud-key">TELEMETRY:</span> <span id="grgHudFps">59.8 FPS</span> • <span id="grgHudRate">4.8 kHz</span> • EXP 240µs</div>
+            </div>
+
+            <!-- Defect Alert Banner (flashes when defect hits laser) -->
+            <div class="feed-defect-banner" id="grgDefectBanner" style="opacity: 0;">
+              <span class="defect-icon">⚠️</span>
+              <span class="defect-text" id="grgDefectBannerText">DEFECT DETECTED: OIL SPOT</span>
+            </div>
+
+            <!-- Interactive Camera Control Toolbar -->
+            <div class="feed-control-toolbar">
+              <button type="button" class="feed-ctrl-btn feed-pause-btn" id="grgBtnPauseFeed" title="Pause / Resume Feed">
+                <svg class="icon-pause" viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                <svg class="icon-play" viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span class="ctrl-label">PAUSE</span>
+              </button>
+              <div class="feed-mode-pills" id="grgModePills">
+                <button type="button" class="feed-mode-pill active" data-mode="rgb">AI RGB</button>
+                <button type="button" class="feed-mode-pill" data-mode="heatmap">HEATMAP</button>
+                <button type="button" class="feed-mode-pill" data-mode="laser">LASER</button>
+              </div>
+              <button type="button" class="feed-ctrl-btn feed-inject-btn" id="grgBtnInjectSpot" title="Simulate passing spot under camera">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                <span>INJECT SPOT</span>
+              </button>
+            </div>
+
+            <!-- Bottom Right HUD Metrics -->
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">PTS</strong> <span id="grgHudPts">0.24</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">HOLE</strong> <span id="grgHudHole">0</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">OIL</strong> <span id="grgHudOil">1</span></span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE INDEX: <strong id="grgHudIndex">0.24</strong></span>
+                <span class="hud-delta-status" id="grgHudStatus">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>0 m</span><span>25 m</span><span>50 m</span><span>75 m</span><span>100 m</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="grgSpectrumBarGradient">
+              <div class="spectrum-indicator" id="grgSpectrumIndicator" style="left: 32%;"></div>
+              <div class="spectrum-tooltip" id="grgSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+
+          <div class="machine-chip-row" id="grgMachineChipRow">
+            <button type="button" class="machine-chip grg-machine-chip active" data-machine-id="uster-fv2">Uster Fabriq Vision 2</button>
+            <button type="button" class="machine-chip grg-machine-chip" data-machine-id="comatex-isw">Comatex ISW Inspection</button>
+            <button type="button" class="machine-chip grg-machine-chip" data-machine-id="four-point">4-Point Grading Table</button>
+            <button type="button" class="machine-chip grg-machine-chip" data-machine-id="aframe">A-Frame Batching Winder</button>
+          </div>
+        </div>
+
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Live Tear, Hole &amp; Oil Stain Classification</h2>
+            <span class="inspect-badge badge-emerald">4-POINT TOLERANCE &lt; 0.50 PASS</span>
+          </div>
+          <span id="grgLiveDeltaEVal" hidden>0.18</span>
+          <span id="grgDeltaMatchStatus" hidden>✓</span>
+
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">Tear, Hole &amp; Oil Stain Density along Cloth Length</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="grgBtnTabSpectral">Tear Density Profile</button>
+                <button type="button" class="chart-tab-btn" id="grgBtnTabDeltaStream">Oil Stain Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport" id="grgComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="grgComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="grgGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(245, 158, 11, 0.28)" /><stop offset="100%" stop-color="rgba(0,0,0,0.02)" />
+                  </linearGradient>
+                  <linearGradient id="grgSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">40</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">0</text>
+                <path id="grgDeltaAreaPath" fill="url(#grgGradDeltaCorridor)" d="" />
+                <path id="grgTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="grgLiveFeedCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="grgLiveSensorMarker">
+                  <line id="grgLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="#F59E0B73" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="grgLiveScanDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="grgTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
+                </g>
+                <g id="grgWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">0m</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">20m</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">40m</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">60m</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">80m</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">100m</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">120m</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#grgSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-tooltip" id="grgCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="grgCompTipHeader">Scan 60 m</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Clean map:</span> <strong id="grgCompTipTarget">20.0</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #F59E0B; box-shadow: 0 0 8px #F59E0Bcc;"></span><span>Live tear / oil:</span> <strong id="grgCompTipLive">20.2</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="grgCompTipDiff">+0.2 pts (PASS)</strong></div>
+              </div>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Master Clean Map (Grade A)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#F59E0B;"></span><span>Live Tear / Hole / Oil Camera</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box" style="background:rgba(245, 158, 11, 0.28);"></span><span>Tolerance (±0.50 pts)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SCAN POS:</strong> <span id="grgStatPeakWavelength">60 m</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">CAMERA FIT:</strong> <span id="grgStatSpectralFit">98.9%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE PTS:</strong> <span id="grgStatLiveDeltaE">0.15</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET TEAR / HOLE / OIL CALIBRATION</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="grgInputTargetL">Tear Index (pts)</label><div class="input-with-stepper"><input type="number" id="grgInputTargetL" value="20.00" step="0.10" min="0" max="100" /></div></div>
+              <div class="input-field-wrap"><label for="grgInputTargetA">Hole Count</label><div class="input-with-stepper"><input type="number" id="grgInputTargetA" value="0.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="grgInputTargetB">Oil Stains /1000m</label><div class="input-with-stepper"><input type="number" id="grgInputTargetB" value="0.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="grgInputToleranceLimit">Tolerance (pts)</label><div class="input-with-stepper"><input type="number" id="grgInputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS DEFECT CLASS OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">Broken End / Pick Classifier</span><span class="dye-conc">4-pt map</span><span class="offset-pill pill-pos">+0.02 auto-tuned</span></div>
+              <div class="offset-item"><span class="dye-name">Oil Stain Neural Filter</span><span class="dye-conc">120 FPS</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+              <div class="offset-item"><span class="dye-name">Hole / Slub Threshold</span><span class="dye-conc">Ø 0.4 mm</span><span class="offset-pill pill-neg">-0.05 mm auto-adjusted</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="grgBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="grgBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Grade Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
   <!-- =========================================================================
+       VIEW FV: Pretreatment Vision AI — Preparation Quality Inspection
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="pretreatmentInspectionView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromPretreatment" aria-label="Back to Fabric Inspection Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon" style="background: rgba(37, 99, 235, 0.12); color: #2563EB;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Pretreatment Vision AI — Preparation Quality Inspection</h1>
+          <p class="inspection-subtitle">Singe / Desize / Scour / Bleach Absorbency, Residual Size &amp; Bath pH Closed-Loop</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToFabricSuiteFromPretreatment">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Return to Fabric Inspection Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Absorbency Deviation</span>
+            <span class="inspect-badge badge-emerald">EXCELLENT</span>
+          </div>
+          <div class="metric-huge-val">Δ 0.21</div>
+          <div class="metric-chart-wrap" id="preSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="preGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16,185,129,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34 L 340 70 L 0 70 Z" fill="url(#preGradDeltaE)" />
+              <path id="preSparkPathDeltaE" d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="preSparkDotDeltaE" cx="340" cy="34" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="preSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16,185,129,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="preSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="preSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="preSparkValDeltaE">Δ 0.21</span>
+              <span class="tip-label">Drop-test vs gold standard</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Desize–Scour Efficiency</span>
+            <span class="inspect-badge badge-cyan">FIRST TIME RIGHT</span>
+          </div>
+          <div class="metric-huge-val">99.0%</div>
+          <div class="metric-chart-wrap" id="preSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="preGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6,182,212,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#preGradCorrection)" />
+              <path id="preSparkPathCorrection" d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="preSparkDotCorrection" cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="preSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6,182,212,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="preSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="preSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="preSparkValCorrection">99.0%</span>
+              <span class="tip-label">Target: 98.0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Bath pH Level</span>
+            <span class="inspect-badge badge-amber">IN SPEC</span>
+          </div>
+          <div class="metric-huge-val">6.4 pH</div>
+          <div class="metric-chart-wrap" id="preSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="preGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(245,158,11,0.3)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#preGradDosing)" />
+              <path id="preSparkPathDosing" d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="preSparkDotDosing" cx="200" cy="16" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="preSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(245,158,11,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="preSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="preSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="preSparkValDosing">6.4 pH</span>
+              <span class="tip-label">Pre-treat makeup</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row">
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Pretreatment Optical Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <label class="machine-select-wrap">
+                <span class="machine-select-label">MACHINE</span>
+                <select class="machine-select-pill" id="preMachineSelect" aria-label="Select inspection machine">
+                  <option value="singeray" selected>Benninger SingeRay</option>
+                  <option value="ben-bleach">BEN-BLEACH Range</option>
+                  <option value="ben-dimensa">BEN-DIMENSA Mercerizer</option>
+                  <option value="ben-wash">BEN-WASH Extracta</option>
+                </select>
+              </label>
+              <span class="meta-tag-feed">48.0 m/min</span>
+            </div>
+          </div>
+
+          <div class="sensor-feed-viewport" id="preFeedViewport">
+            <canvas class="sensor-camera-canvas" id="preFeedCanvas" width="720" height="255"></canvas>
+            <div class="feed-raster-overlay"></div>
+            <div class="feed-scan-laser-line" id="preLaserLine"></div>
+
+            <!-- Left & Right Selvedge Rulers -->
+            <div class="selvedge-ruler ruler-left">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+            <div class="selvedge-ruler ruler-right">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+
+            <!-- Top Left Metadata Overlay -->
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">SENSOR HEAD:</span> <span id="preHudHead">SINGERAY (GAS SINGEING)</span></div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> PREPARED COTTON POPLIN (120 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> <span id="preHudLot">#PRE-1092-SINGE</span></div>
+              <div class="hud-item hud-telemetry"><span class="hud-key">TELEMETRY:</span> <span id="preHudFps">60.0 FPS</span> • <span id="preHudRate">5.2 kHz</span> • EXP 220µs</div>
+            </div>
+
+            <!-- Defect Alert Banner -->
+            <div class="feed-defect-banner" id="preDefectBanner" style="opacity: 0;">
+              <span class="defect-icon">⚠️</span>
+              <span class="defect-text" id="preDefectBannerText">DEFECT DETECTED: SIZING RESIDUE</span>
+            </div>
+
+            <!-- Interactive Camera Control Toolbar -->
+            <div class="feed-control-toolbar">
+              <button type="button" class="feed-ctrl-btn feed-pause-btn" id="preBtnPauseFeed" title="Pause / Resume Feed">
+                <svg class="icon-pause" viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                <svg class="icon-play" viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span class="ctrl-label">PAUSE</span>
+              </button>
+              <div class="feed-mode-pills" id="preModePills">
+                <button type="button" class="feed-mode-pill active" data-mode="rgb">AI RGB</button>
+                <button type="button" class="feed-mode-pill" data-mode="heatmap">HEATMAP</button>
+                <button type="button" class="feed-mode-pill" data-mode="laser">LASER</button>
+              </div>
+              <button type="button" class="feed-ctrl-btn feed-inject-btn" id="preBtnInjectSpot" title="Simulate passing spot under camera">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                <span>INJECT SPOT</span>
+              </button>
+            </div>
+
+            <!-- Bottom Right HUD Metrics -->
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">L*</strong> 94.10</span>
+                <span class="cielab-pill"><strong class="cielab-k">pH</strong> 6.4</span>
+                <span class="cielab-pill"><strong class="cielab-k">H₂O₂</strong> 14.0</span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE ΔE: <strong>0.21</strong></span>
+                <span class="hud-delta-status">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>0 m</span><span>25 m</span><span>50 m</span><span>75 m</span><span>100 m</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="preSpectrumBarGradient">
+              <div class="spectrum-indicator" id="preSpectrumIndicator" style="left: 22%;"></div>
+              <div class="spectrum-tooltip" id="preSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+
+          <div class="machine-chip-row" id="preMachineChipRow">
+            <button type="button" class="machine-chip pre-machine-chip active" data-machine-id="singeray">Benninger SingeRay</button>
+            <button type="button" class="machine-chip pre-machine-chip" data-machine-id="ben-bleach">BEN-BLEACH Range</button>
+            <button type="button" class="machine-chip pre-machine-chip" data-machine-id="ben-dimensa">BEN-DIMENSA Mercerizer</button>
+            <button type="button" class="machine-chip pre-machine-chip" data-machine-id="ben-wash">BEN-WASH Extracta</button>
+          </div>
+        </div>
+
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Live Tear &amp; Chemical Stain Classification</h2>
+            <span class="inspect-badge badge-emerald">DEFECT TOLERANCE &lt; 0.50 PASS</span>
+          </div>
+          <span id="preLiveDeltaEVal" hidden>0.15</span>
+          <span id="preDeltaMatchStatus" hidden>✓</span>
+
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">Tear &amp; Chemical Stain Density along Cloth Length</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="preBtnTabSpectral">Tear Density Profile</button>
+                <button type="button" class="chart-tab-btn" id="preBtnTabDeltaStream">Chemical Stain Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport" id="preComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="preComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="preGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(37, 99, 235, 0.28)" /><stop offset="100%" stop-color="rgba(0,0,0,0.02)" />
+                  </linearGradient>
+                  <linearGradient id="preSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">40</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">0</text>
+                <path id="preDeltaAreaPath" fill="url(#preGradDeltaCorridor)" d="" />
+                <path id="preTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="preLiveFeedCurvePath" fill="none" stroke="#2563EB" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="preLiveSensorMarker">
+                  <line id="preLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="#2563EB73" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="preLiveScanDot" cx="280" cy="52" r="4" fill="#2563EB" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="preTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
+                </g>
+                <g id="preWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">0m</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">20m</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">40m</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">60m</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">80m</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">100m</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">120m</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#preSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-tooltip" id="preCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="preCompTipHeader">Scan 40 m</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Clean map:</span> <strong id="preCompTipTarget">0.00</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #2563EB; box-shadow: 0 0 8px #2563EBcc;"></span><span>Live tear / stain:</span> <strong id="preCompTipLive">0.12</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="preCompTipDiff">+0.12 idx (PASS)</strong></div>
+              </div>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Master Clean Map (no tears)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#2563EB;"></span><span>Live Tear / Stain Camera</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box" style="background:rgba(37, 99, 235, 0.28);"></span><span>Tolerance (±0.50 idx)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SCAN POS:</strong> <span id="preStatPeakWavelength">40 m</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">CAMERA FIT:</strong> <span id="preStatSpectralFit">99.0%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE STAINS:</strong> <span id="preStatLiveDeltaE">0.15</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET TEAR / STAIN CALIBRATION</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="preInputTargetL">Tear Index</label><div class="input-with-stepper"><input type="number" id="preInputTargetL" value="0.00" step="0.10" min="0" max="100" /></div></div>
+              <div class="input-field-wrap"><label for="preInputTargetA">Hole Count</label><div class="input-with-stepper"><input type="number" id="preInputTargetA" value="0.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="preInputTargetB">Chemical Stains /1000m</label><div class="input-with-stepper"><input type="number" id="preInputTargetB" value="0.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="preInputToleranceLimit">Tolerance (idx)</label><div class="input-with-stepper"><input type="number" id="preInputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS DEFECT CLASSIFIER OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">Tear / Hole Geometry Net</span><span class="dye-conc">Ø 0.6 mm</span><span class="offset-pill pill-pos">+0.04 mm auto-tuned</span></div>
+              <div class="offset-item"><span class="dye-name">Chemical Stain Classifier</span><span class="dye-conc">3 /1000m</span><span class="offset-pill pill-neg">-0.2 /1000m auto-adjusted</span></div>
+              <div class="offset-item"><span class="dye-name">Alkali / Size Spot Filter</span><span class="dye-conc">prep line</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="preBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="preBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Recipe Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW FV: Dyeing Vision AI — Fabric Defect &amp; Stain Inspection
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="fvDyeingInspectionView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromFvDyeing" aria-label="Back to Fabric Inspection Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon" style="background: rgba(6, 182, 212, 0.12); color: #0891B2;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Dyeing Vision AI — Fabric Defect &amp; Stain Inspection</h1>
+          <p class="inspection-subtitle">Cloth Tear / Hole Detection, Chemical &amp; Dye-Spot Classification, Crease-Mark Mapping</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToFabricSuiteFromFvDyeing">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Return to Fabric Inspection Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Defect Detection Rate</span>
+            <span class="inspect-badge badge-emerald">EXCELLENT</span>
+          </div>
+          <div class="metric-huge-val">99.4%</div>
+          <div class="metric-chart-wrap" id="fvdSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fvdGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16,185,129,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#fvdGradDeltaE)" />
+              <path id="fvdSparkPathDeltaE" d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fvdSparkDotDeltaE" cx="340" cy="10" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fvdSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16,185,129,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fvdSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fvdSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="fvdSparkValDeltaE">99.4%</span>
+              <span class="tip-label">Tear / hole / stain recall</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Tear / Hole Match Index</span>
+            <span class="inspect-badge badge-cyan">IN SPEC</span>
+          </div>
+          <div class="metric-huge-val">Δ 0.12</div>
+          <div class="metric-chart-wrap" id="fvdSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fvdGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6,182,212,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34 L 340 70 L 0 70 Z" fill="url(#fvdGradCorrection)" />
+              <path id="fvdSparkPathCorrection" d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fvdSparkDotCorrection" cx="340" cy="34" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fvdSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6,182,212,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fvdSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fvdSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="fvdSparkValCorrection">Δ 0.12</span>
+              <span class="tip-label">Geometry vs gold map</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Chemical Spot Alerts</span>
+            <span class="inspect-badge badge-rose">WATCH</span>
+          </div>
+          <div class="metric-huge-val">3 /1000m</div>
+          <div class="metric-chart-wrap" id="fvdSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fvdGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(225,29,72,0.28)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#fvdGradDosing)" />
+              <path id="fvdSparkPathDosing" d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#E11D48" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fvdSparkDotDosing" cx="200" cy="16" r="4.5" fill="#E11D48" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fvdSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(225,29,72,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fvdSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#E11D48" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fvdSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="fvdSparkValDosing">3 /1000m</span>
+              <span class="tip-label">Dye splash · oil · alkali</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row">
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Dyeing Defect Vision Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <label class="machine-select-wrap">
+                <span class="machine-select-label">MACHINE</span>
+                <select class="machine-select-pill" id="fvdMachineSelect" aria-label="Select inspection machine">
+                  <option value="uster-fv2" selected>Uster Fabriq Vision 2</option>
+                  <option value="evs">Elbit Vision Systems</option>
+                  <option value="mahlo">Mahlo Orgatex Web</option>
+                  <option value="bst">BST eltromat iPQ-Web</option>
+                </select>
+              </label>
+              <span class="meta-tag-feed">42.5 m/min</span>
+            </div>
+          </div>
+
+          <div class="sensor-feed-viewport" id="fvdFeedViewport">
+            <canvas class="sensor-camera-canvas" id="fvdFeedCanvas" width="720" height="255"></canvas>
+            <div class="feed-raster-overlay"></div>
+            <div class="feed-scan-laser-line" id="fvdLaserLine"></div>
+
+            <!-- Left & Right Selvedge Rulers -->
+            <div class="selvedge-ruler ruler-left">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+            <div class="selvedge-ruler ruler-right">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+
+            <!-- Top Left Metadata Overlay -->
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">CAMERA HEAD:</span> <span id="fvdHudHead">USTER FV2 (DYE-LINE CAMERA)</span></div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> DYED COTTON TWILL (190 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> <span id="fvdHudLot">#DYE-4410-NAVY</span></div>
+              <div class="hud-item hud-telemetry"><span class="hud-key">TELEMETRY:</span> <span id="fvdHudFps">60.0 FPS</span> • <span id="fvdHudRate">4.6 kHz</span> • EXP 260µs</div>
+            </div>
+
+            <!-- Defect Alert Banner -->
+            <div class="feed-defect-banner" id="fvdDefectBanner" style="opacity: 0;">
+              <span class="defect-icon">⚠️</span>
+              <span class="defect-text" id="fvdDefectBannerText">DEFECT DETECTED: DYE SPLASH</span>
+            </div>
+
+            <!-- Interactive Camera Control Toolbar -->
+            <div class="feed-control-toolbar">
+              <button type="button" class="feed-ctrl-btn feed-pause-btn" id="fvdBtnPauseFeed" title="Pause / Resume Feed">
+                <svg class="icon-pause" viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                <svg class="icon-play" viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span class="ctrl-label">PAUSE</span>
+              </button>
+              <div class="feed-mode-pills" id="fvdModePills">
+                <button type="button" class="feed-mode-pill active" data-mode="rgb">AI RGB</button>
+                <button type="button" class="feed-mode-pill" data-mode="heatmap">HEATMAP</button>
+                <button type="button" class="feed-mode-pill" data-mode="laser">LASER</button>
+              </div>
+              <button type="button" class="feed-ctrl-btn feed-inject-btn" id="fvdBtnInjectSpot" title="Simulate passing spot under camera">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                <span>INJECT SPOT</span>
+              </button>
+            </div>
+
+            <!-- Bottom Right HUD Metrics -->
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">TEAR</strong> <span id="fvdHudTear">0</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">HOLE</strong> <span id="fvdHudHole">0</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">SPOT</strong> <span id="fvdHudSpot">3</span></span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE INDEX: <strong id="fvdHudIndex">0.12</strong></span>
+                <span class="hud-delta-status" id="fvdHudStatus">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>0 m</span><span>25 m</span><span>50 m</span><span>75 m</span><span>100 m</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="fvdSpectrumBarGradient">
+              <div class="spectrum-indicator" id="fvdSpectrumIndicator" style="left: 28%;"></div>
+              <div class="spectrum-tooltip" id="fvdSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+
+          <div class="machine-chip-row" id="fvdMachineChipRow">
+            <button type="button" class="machine-chip fvd-machine-chip active" data-machine-id="uster-fv2">Uster Fabriq Vision 2</button>
+            <button type="button" class="machine-chip fvd-machine-chip" data-machine-id="evs">Elbit Vision Systems</button>
+            <button type="button" class="machine-chip fvd-machine-chip" data-machine-id="mahlo">Mahlo Orgatex Web</button>
+            <button type="button" class="machine-chip fvd-machine-chip" data-machine-id="bst">BST eltromat iPQ-Web</button>
+          </div>
+        </div>
+
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Live Tear &amp; Chemical Stain Classification</h2>
+            <span class="inspect-badge badge-emerald">DEFECT TOLERANCE &lt; 0.50 PASS</span>
+          </div>
+          <span id="fvdLiveDeltaEVal" hidden>0.12</span>
+          <span id="fvdDeltaMatchStatus" hidden>✓</span>
+
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">Tear &amp; Chemical Stain Density along Cloth Length</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="fvdBtnTabSpectral">Tear Density Profile</button>
+                <button type="button" class="chart-tab-btn" id="fvdBtnTabDeltaStream">Chemical Stain Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport" id="fvdComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="fvdComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="fvdGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(6, 182, 212, 0.28)" /><stop offset="100%" stop-color="rgba(0,0,0,0.02)" />
+                  </linearGradient>
+                  <linearGradient id="fvdSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">40</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">0</text>
+                <path id="fvdDeltaAreaPath" fill="url(#fvdGradDeltaCorridor)" d="" />
+                <path id="fvdTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="fvdLiveFeedCurvePath" fill="none" stroke="#06B6D4" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="fvdLiveSensorMarker">
+                  <line id="fvdLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="#06B6D473" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="fvdLiveScanDot" cx="280" cy="52" r="4" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="fvdTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
+                </g>
+                <g id="fvdWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">0m</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">20m</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">40m</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">60m</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">80m</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">100m</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">120m</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#fvdSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-tooltip" id="fvdCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="fvdCompTipHeader">Scan 55 m</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Clean map:</span> <strong id="fvdCompTipTarget">0.00</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #06B6D4; box-shadow: 0 0 8px #06B6D4cc;"></span><span>Live tear / stain:</span> <strong id="fvdCompTipLive">0.12</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="fvdCompTipDiff">+0.12 idx (PASS)</strong></div>
+              </div>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Master Clean Map (no tears)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#06B6D4;"></span><span>Live Tear / Stain Camera</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box" style="background:rgba(6, 182, 212, 0.28);"></span><span>Tolerance (±0.50 idx)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SCAN POS:</strong> <span id="fvdStatPeakWavelength">55 m</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">CAMERA FIT:</strong> <span id="fvdStatSpectralFit">99.2%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE STAINS:</strong> <span id="fvdStatLiveDeltaE">0.15</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET TEAR / STAIN CALIBRATION</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="fvdInputTargetL">Tear Index</label><div class="input-with-stepper"><input type="number" id="fvdInputTargetL" value="0.00" step="0.10" min="0" max="100" /></div></div>
+              <div class="input-field-wrap"><label for="fvdInputTargetA">Hole Count</label><div class="input-with-stepper"><input type="number" id="fvdInputTargetA" value="0.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="fvdInputTargetB">Chemical Stains /1000m</label><div class="input-with-stepper"><input type="number" id="fvdInputTargetB" value="0.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="fvdInputToleranceLimit">Tolerance (idx)</label><div class="input-with-stepper"><input type="number" id="fvdInputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS DEFECT CLASSIFIER OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">Tear / Hole Geometry Net</span><span class="dye-conc">Ø 0.6 mm</span><span class="offset-pill pill-pos">+0.04 mm auto-tuned</span></div>
+              <div class="offset-item"><span class="dye-name">Chemical Stain Classifier</span><span class="dye-conc">3 /1000m</span><span class="offset-pill pill-neg">-0.2 /1000m auto-adjusted</span></div>
+              <div class="offset-item"><span class="dye-name">Crease-Mark Filter</span><span class="dye-conc">jet rope</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="fvdBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="fvdBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Defect Map Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW FV: Printing Vision AI — Print Defect &amp; Registration Inspection
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="fvPrintingInspectionView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromFvPrinting" aria-label="Back to Fabric Inspection Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon" style="background: rgba(236, 72, 153, 0.12); color: #DB2777;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Printing Vision AI — Print Defect &amp; Registration Inspection</h1>
+          <p class="inspection-subtitle">Misprint, Pin-Hole, Blotch &amp; Registration-Skew Detection on Rotary / Digital Print Lines</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToFabricSuiteFromFvPrinting">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Return to Fabric Inspection Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Print Defect Match Index</span>
+            <span class="inspect-badge badge-emerald">EXCELLENT</span>
+          </div>
+          <div class="metric-huge-val">Δ 0.16</div>
+          <div class="metric-chart-wrap" id="fvpSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fvpGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16,185,129,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34 L 340 70 L 0 70 Z" fill="url(#fvpGradDeltaE)" />
+              <path id="fvpSparkPathDeltaE" d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fvpSparkDotDeltaE" cx="340" cy="34" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fvpSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16,185,129,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fvpSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fvpSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="fvpSparkValDeltaE">Δ 0.16</span>
+              <span class="tip-label">Misprint vs master CAD</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Registration Skew Accuracy</span>
+            <span class="inspect-badge badge-cyan">FIRST TIME RIGHT</span>
+          </div>
+          <div class="metric-huge-val">99.1%</div>
+          <div class="metric-chart-wrap" id="fvpSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fvpGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6,182,212,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#fvpGradCorrection)" />
+              <path id="fvpSparkPathCorrection" d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fvpSparkDotCorrection" cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fvpSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6,182,212,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fvpSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fvpSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="fvpSparkValCorrection">99.1%</span>
+              <span class="tip-label">Target: 98.5%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Misprint Alert Rate</span>
+            <span class="inspect-badge badge-rose">WATCH</span>
+          </div>
+          <div class="metric-huge-val">2 /1000m</div>
+          <div class="metric-chart-wrap" id="fvpSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fvpGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(225,29,72,0.28)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#fvpGradDosing)" />
+              <path id="fvpSparkPathDosing" d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#E11D48" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fvpSparkDotDosing" cx="200" cy="16" r="4.5" fill="#E11D48" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fvpSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(225,29,72,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fvpSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#E11D48" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fvpSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="fvpSparkValDosing">2 /1000m</span>
+              <span class="tip-label">Out-of-register · blotch</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row">
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Print Defect Vision Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <label class="machine-select-wrap">
+                <span class="machine-select-label">MACHINE</span>
+                <select class="machine-select-pill" id="fvpMachineSelect" aria-label="Select inspection machine">
+                  <option value="zimmer" selected>Zimmer Austria Vision</option>
+                  <option value="reggiani">EFI Reggiani Print QC</option>
+                  <option value="stork">Stork Prints Vision QC</option>
+                  <option value="bst-reg">BST Print Register Control</option>
+                </select>
+              </label>
+              <span class="meta-tag-feed">55.0 m/min</span>
+            </div>
+          </div>
+
+          <div class="sensor-feed-viewport" id="fvpFeedViewport">
+            <canvas class="sensor-camera-canvas" id="fvpFeedCanvas" width="720" height="255"></canvas>
+            <div class="feed-raster-overlay"></div>
+            <div class="feed-scan-laser-line" id="fvpLaserLine"></div>
+
+            <!-- Left & Right Selvedge Rulers -->
+            <div class="selvedge-ruler ruler-left">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+            <div class="selvedge-ruler ruler-right">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+
+            <!-- Top Left Metadata Overlay -->
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">CAMERA HEAD:</span> <span id="fvpHudHead">ZIMMER ROTASCREEN VISION QC</span></div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> PRINTED COTTON SATEEN (140 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> <span id="fvpHudLot">#PRN-704-ZIM</span></div>
+              <div class="hud-item hud-telemetry"><span class="hud-key">TELEMETRY:</span> <span id="fvpHudFps">60.0 FPS</span> • <span id="fvpHudRate">5.8 kHz</span> • EXP 180µs</div>
+            </div>
+
+            <!-- Defect Alert Banner -->
+            <div class="feed-defect-banner" id="fvpDefectBanner" style="opacity: 0;">
+              <span class="defect-icon">⚠️</span>
+              <span class="defect-text" id="fvpDefectBannerText">DEFECT DETECTED: MISPRINT BLOTCH</span>
+            </div>
+
+            <!-- Interactive Camera Control Toolbar -->
+            <div class="feed-control-toolbar">
+              <button type="button" class="feed-ctrl-btn feed-pause-btn" id="fvpBtnPauseFeed" title="Pause / Resume Feed">
+                <svg class="icon-pause" viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                <svg class="icon-play" viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span class="ctrl-label">PAUSE</span>
+              </button>
+              <div class="feed-mode-pills" id="fvpModePills">
+                <button type="button" class="feed-mode-pill active" data-mode="rgb">AI RGB</button>
+                <button type="button" class="feed-mode-pill" data-mode="heatmap">HEATMAP</button>
+                <button type="button" class="feed-mode-pill" data-mode="laser">LASER</button>
+              </div>
+              <button type="button" class="feed-ctrl-btn feed-inject-btn" id="fvpBtnInjectSpot" title="Simulate passing spot under camera">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                <span>INJECT SPOT</span>
+              </button>
+            </div>
+
+            <!-- Bottom Right HUD Metrics -->
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">REG</strong> <span id="fvpHudReg">±0.12</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">PIN</strong> <span id="fvpHudPin">0</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">MIS</strong> <span id="fvpHudMis">2</span></span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE INDEX: <strong id="fvpHudIndex">0.16</strong></span>
+                <span class="hud-delta-status" id="fvpHudStatus">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>0 m</span><span>25 m</span><span>50 m</span><span>75 m</span><span>100 m</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="fvpSpectrumBarGradient">
+              <div class="spectrum-indicator" id="fvpSpectrumIndicator" style="left: 48%;"></div>
+              <div class="spectrum-tooltip" id="fvpSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+
+          <div class="machine-chip-row" id="fvpMachineChipRow">
+            <button type="button" class="machine-chip fvp-machine-chip active" data-machine-id="zimmer">Zimmer Austria Vision</button>
+            <button type="button" class="machine-chip fvp-machine-chip" data-machine-id="reggiani">EFI Reggiani Print QC</button>
+            <button type="button" class="machine-chip fvp-machine-chip" data-machine-id="stork">Stork Prints Vision QC</button>
+            <button type="button" class="machine-chip fvp-machine-chip" data-machine-id="bst-reg">BST Print Register Control</button>
+          </div>
+        </div>
+
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Live Misprint &amp; Registration Classification</h2>
+            <span class="inspect-badge badge-emerald">PRINT TOLERANCE &lt; 0.50 PASS</span>
+          </div>
+          <span id="fvpLiveDeltaEVal" hidden>0.16</span>
+          <span id="fvpDeltaMatchStatus" hidden>✓</span>
+
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">Misprint &amp; Registration Error along Cloth Length</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="fvpBtnTabSpectral">Registration Profile</button>
+                <button type="button" class="chart-tab-btn" id="fvpBtnTabDeltaStream">Misprint Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport" id="fvpComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="fvpComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="fvpGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(236, 72, 153, 0.28)" /><stop offset="100%" stop-color="rgba(0,0,0,0.02)" />
+                  </linearGradient>
+                  <linearGradient id="fvpSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">40</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">0</text>
+                <path id="fvpDeltaAreaPath" fill="url(#fvpGradDeltaCorridor)" d="" />
+                <path id="fvpTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="fvpLiveFeedCurvePath" fill="none" stroke="#EC4899" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="fvpLiveSensorMarker">
+                  <line id="fvpLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="#EC489973" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="fvpLiveScanDot" cx="280" cy="52" r="4" fill="#EC4899" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="fvpTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
+                </g>
+                <g id="fvpWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">0m</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">20m</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">40m</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">60m</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">80m</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">100m</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">120m</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#fvpSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-tooltip" id="fvpCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="fvpCompTipHeader">Scan 70 m</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Approved CAD:</span> <strong id="fvpCompTipTarget">0.00</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #EC4899; box-shadow: 0 0 8px #EC4899cc;"></span><span>Live misprint / register:</span> <strong id="fvpCompTipLive">0.12</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="fvpCompTipDiff">+0.12 mm (PASS)</strong></div>
+              </div>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Master Print CAD (in register)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#EC4899;"></span><span>Live Misprint / Register Camera</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box" style="background:rgba(236, 72, 153, 0.28);"></span><span>Tolerance (±0.50 idx)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SCAN POS:</strong> <span id="fvpStatPeakWavelength">70 m</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">CAMERA FIT:</strong> <span id="fvpStatSpectralFit">99.1%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE MISPRINTS:</strong> <span id="fvpStatLiveDeltaE">0.15</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET MISPRINT / REGISTER CALIBRATION</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="fvpInputTargetL">Registration (mm)</label><div class="input-with-stepper"><input type="number" id="fvpInputTargetL" value="0.00" step="0.10" min="0" max="100" /></div></div>
+              <div class="input-field-wrap"><label for="fvpInputTargetA">Pin-Hole Count</label><div class="input-with-stepper"><input type="number" id="fvpInputTargetA" value="0.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="fvpInputTargetB">Misprints /1000m</label><div class="input-with-stepper"><input type="number" id="fvpInputTargetB" value="0.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="fvpInputToleranceLimit">Tolerance (idx)</label><div class="input-with-stepper"><input type="number" id="fvpInputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS PRINT DEFECT OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">Registration Skew Compensator</span><span class="dye-conc">±0.12 mm</span><span class="offset-pill pill-pos">+0.03 mm auto-tuned</span></div>
+              <div class="offset-item"><span class="dye-name">Misprint / Blotch Classifier</span><span class="dye-conc">2 /1000m</span><span class="offset-pill pill-neg">-0.1 /1000m auto-adjusted</span></div>
+              <div class="offset-item"><span class="dye-name">Pin-Hole Screen Filter</span><span class="dye-conc">mesh 155</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="fvpBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="fvpBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Print Map Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW FV: Finish Vision AI — Dimensional &amp; Surface Inspection
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="fvFinishInspectionView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromFvFinish" aria-label="Back to Fabric Inspection Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon" style="background: rgba(249, 115, 22, 0.12); color: #EA580C;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Finish Vision AI — Dimensional &amp; Surface Inspection</h1>
+          <p class="inspection-subtitle">Width / GSM / Skew-Bow, Sanfor Residual Shrinkage &amp; Surface Defect Density</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToFabricSuiteFromFvFinish">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Return to Fabric Inspection Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Dimensional Match Index</span>
+            <span class="inspect-badge badge-emerald">EXCELLENT</span>
+          </div>
+          <div class="metric-huge-val">Δ 0.15</div>
+          <div class="metric-chart-wrap" id="fvfSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fvfGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16,185,129,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34 L 340 70 L 0 70 Z" fill="url(#fvfGradDeltaE)" />
+              <path id="fvfSparkPathDeltaE" d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fvfSparkDotDeltaE" cx="340" cy="34" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fvfSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16,185,129,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fvfSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fvfSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="fvfSparkValDeltaE">Δ 0.15</span>
+              <span class="tip-label">Width · GSM · shrinkage</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Skew / Bow Correction</span>
+            <span class="inspect-badge badge-cyan">FIRST TIME RIGHT</span>
+          </div>
+          <div class="metric-huge-val">99.3%</div>
+          <div class="metric-chart-wrap" id="fvfSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fvfGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6,182,212,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#fvfGradCorrection)" />
+              <path id="fvfSparkPathCorrection" d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fvfSparkDotCorrection" cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fvfSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6,182,212,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fvfSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fvfSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="fvfSparkValCorrection">99.3%</span>
+              <span class="tip-label">Target: 98.5%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Surface Defect Density</span>
+            <span class="inspect-badge badge-purple">OPTIMIZED</span>
+          </div>
+          <div class="metric-huge-val">0.08 /m²</div>
+          <div class="metric-chart-wrap" id="fvfSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fvfGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(168,85,247,0.3)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#fvfGradDosing)" />
+              <path id="fvfSparkPathDosing" d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fvfSparkDotDosing" cx="200" cy="16" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fvfSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(168,85,247,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fvfSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fvfSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="fvfSparkValDosing">0.08 /m²</span>
+              <span class="tip-label">Neps · raise marks · shine</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row">
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Finish Surface Vision Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <label class="machine-select-wrap">
+                <span class="machine-select-label">MACHINE</span>
+                <select class="machine-select-pill" id="fvfMachineSelect" aria-label="Select inspection machine">
+                  <option value="power-frame" selected>Brückner POWER-FRAME</option>
+                  <option value="power-shrink">POWER-SHRINK Sanfor</option>
+                  <option value="power-compact">POWER-COMPACT Compactor</option>
+                  <option value="montex">Monforts MONTEX Stenter</option>
+                </select>
+              </label>
+              <span class="meta-tag-feed">55.0 m/min</span>
+            </div>
+          </div>
+
+          <div class="sensor-feed-viewport" id="fvfFeedViewport">
+            <canvas class="sensor-camera-canvas" id="fvfFeedCanvas" width="720" height="255"></canvas>
+            <div class="feed-raster-overlay"></div>
+            <div class="feed-scan-laser-line" id="fvfLaserLine"></div>
+
+            <!-- Left & Right Selvedge Rulers -->
+            <div class="selvedge-ruler ruler-left">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+            <div class="selvedge-ruler ruler-right">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+
+            <!-- Top Left Metadata Overlay -->
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">CAMERA HEAD:</span> <span id="fvfHudHead">POWER-FRAME SFP-4 STENTER</span></div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> FINISHED MERCERIZED TWILL (240 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> <span id="fvfHudLot">#FNS-8802-STENT</span></div>
+              <div class="hud-item hud-telemetry"><span class="hud-key">TELEMETRY:</span> <span id="fvfHudFps">60.0 FPS</span> • <span id="fvfHudRate">5.5 kHz</span> • EXP 200µs</div>
+            </div>
+
+            <!-- Defect Alert Banner -->
+            <div class="feed-defect-banner" id="fvfDefectBanner" style="opacity: 0;">
+              <span class="defect-icon">⚠️</span>
+              <span class="defect-text" id="fvfDefectBannerText">DEFECT DETECTED: SURFACE NEP</span>
+            </div>
+
+            <!-- Interactive Camera Control Toolbar -->
+            <div class="feed-control-toolbar">
+              <button type="button" class="feed-ctrl-btn feed-pause-btn" id="fvfBtnPauseFeed" title="Pause / Resume Feed">
+                <svg class="icon-pause" viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                <svg class="icon-play" viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span class="ctrl-label">PAUSE</span>
+              </button>
+              <div class="feed-mode-pills" id="fvfModePills">
+                <button type="button" class="feed-mode-pill active" data-mode="rgb">AI RGB</button>
+                <button type="button" class="feed-mode-pill" data-mode="heatmap">HEATMAP</button>
+                <button type="button" class="feed-mode-pill" data-mode="laser">LASER</button>
+              </div>
+              <button type="button" class="feed-ctrl-btn feed-inject-btn" id="fvfBtnInjectSpot" title="Simulate passing spot under camera">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                <span>INJECT SPOT</span>
+              </button>
+            </div>
+
+            <!-- Bottom Right HUD Metrics -->
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">W</strong> <span id="fvfHudW">152.0</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">SKEW</strong> <span id="fvfHudSkew">0.4°</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">GSM</strong> <span id="fvfHudGsm">240</span></span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE INDEX: <strong id="fvfHudIndex">0.15</strong></span>
+                <span class="hud-delta-status" id="fvfHudStatus">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>0 m</span><span>25 m</span><span>50 m</span><span>75 m</span><span>100 m</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="fvfSpectrumBarGradient">
+              <div class="spectrum-indicator" id="fvfSpectrumIndicator" style="left: 55%;"></div>
+              <div class="spectrum-tooltip" id="fvfSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+
+          <div class="machine-chip-row" id="fvfMachineChipRow">
+            <button type="button" class="machine-chip fvf-machine-chip active" data-machine-id="power-frame">Brückner POWER-FRAME</button>
+            <button type="button" class="machine-chip fvf-machine-chip" data-machine-id="power-shrink">POWER-SHRINK Sanfor</button>
+            <button type="button" class="machine-chip fvf-machine-chip" data-machine-id="power-compact">POWER-COMPACT Compactor</button>
+            <button type="button" class="machine-chip fvf-machine-chip" data-machine-id="montex">Monforts MONTEX Stenter</button>
+          </div>
+        </div>
+
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Live Dimensional &amp; Surface Defect Classification</h2>
+            <span class="inspect-badge badge-emerald">FINISH TOLERANCE &lt; 0.50 PASS</span>
+          </div>
+          <span id="fvfLiveDeltaEVal" hidden>0.15</span>
+          <span id="fvfDeltaMatchStatus" hidden>✓</span>
+
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">Width, Skew &amp; Surface Defect Density along Cloth Length</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="fvfBtnTabSpectral">Width / Skew Profile</button>
+                <button type="button" class="chart-tab-btn" id="fvfBtnTabDeltaStream">Surface Defect Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport" id="fvfComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="fvfComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="fvfGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(249, 115, 22, 0.28)" /><stop offset="100%" stop-color="rgba(0,0,0,0.02)" />
+                  </linearGradient>
+                  <linearGradient id="fvfSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">40</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">0</text>
+                <path id="fvfDeltaAreaPath" fill="url(#fvfGradDeltaCorridor)" d="" />
+                <path id="fvfTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="fvfLiveFeedCurvePath" fill="none" stroke="#F97316" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="fvfLiveSensorMarker">
+                  <line id="fvfLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="#F9731673" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="fvfLiveScanDot" cx="280" cy="52" r="4" fill="#F97316" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="fvfTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
+                </g>
+                <g id="fvfWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">0m</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">20m</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">40m</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">60m</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">80m</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">100m</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">120m</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#fvfSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-tooltip" id="fvfCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="fvfCompTipHeader">Scan 80 m</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Finish spec:</span> <strong id="fvfCompTipTarget">152.00</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #F97316; box-shadow: 0 0 8px #F97316cc;"></span><span>Live width / surface:</span> <strong id="fvfCompTipLive">152.11</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="fvfCompTipDiff">+0.11 cm (PASS)</strong></div>
+              </div>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Master Finish Spec (width / GSM)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#F97316;"></span><span>Live Dimensional / Surface Camera</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box" style="background:rgba(249, 115, 22, 0.28);"></span><span>Tolerance (±0.50 idx)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SCAN POS:</strong> <span id="fvfStatPeakWavelength">80 m</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">CAMERA FIT:</strong> <span id="fvfStatSpectralFit">99.3%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE SURFACE:</strong> <span id="fvfStatLiveDeltaE">0.14</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET WIDTH / SURFACE CALIBRATION</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="fvfInputTargetL">Width (cm)</label><div class="input-with-stepper"><input type="number" id="fvfInputTargetL" value="152.00" step="0.10" min="0" max="400" /></div></div>
+              <div class="input-field-wrap"><label for="fvfInputTargetA">Skew / Bow (°)</label><div class="input-with-stepper"><input type="number" id="fvfInputTargetA" value="0.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="fvfInputTargetB">GSM</label><div class="input-with-stepper"><input type="number" id="fvfInputTargetB" value="240.00" step="0.10" min="0" max="400" /></div></div>
+              <div class="input-field-wrap"><label for="fvfInputToleranceLimit">Tolerance (idx)</label><div class="input-with-stepper"><input type="number" id="fvfInputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS FINISH DOSING OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">Weft Straightener Gain</span><span class="dye-conc">0.4°</span><span class="offset-pill pill-pos">+0.05° auto-tuned</span></div>
+              <div class="offset-item"><span class="dye-name">Sanfor Rubber-Belt Shrink</span><span class="dye-conc">3.2%</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+              <div class="offset-item"><span class="dye-name">Softener Pad Liquor</span><span class="dye-conc">25.0 g/L</span><span class="offset-pill pill-neg">-0.4 g/L auto-adjusted</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="fvfBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="fvfBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Finish Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW FV: Folding Vision AI — Roll &amp; Pack Inspection
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="foldingInspectionView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromFolding" aria-label="Back to Fabric Inspection Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon" style="background: rgba(139, 92, 246, 0.12); color: #7C3AED;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Folding Vision AI — Roll &amp; Pack Inspection</h1>
+          <p class="inspection-subtitle">Length Count, Edge Alignment, Plait Geometry &amp; PE-Wrap Integrity before Dispatch</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToFabricSuiteFromFolding">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Return to Fabric Inspection Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Length Count Accuracy</span>
+            <span class="inspect-badge badge-emerald">EXCELLENT</span>
+          </div>
+          <div class="metric-huge-val">99.85%</div>
+          <div class="metric-chart-wrap" id="fldSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fldGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16,185,129,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#fldGradDeltaE)" />
+              <path id="fldSparkPathDeltaE" d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fldSparkDotDeltaE" cx="340" cy="10" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fldSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16,185,129,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fldSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fldSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="fldSparkValDeltaE">99.85%</span>
+              <span class="tip-label">Meter-counter vs gold tape</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Edge Alignment Match</span>
+            <span class="inspect-badge badge-cyan">IN SPEC</span>
+          </div>
+          <div class="metric-huge-val">±2.1 mm</div>
+          <div class="metric-chart-wrap" id="fldSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fldGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6,182,212,0.35)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34 L 340 70 L 0 70 Z" fill="url(#fldGradCorrection)" />
+              <path id="fldSparkPathCorrection" d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fldSparkDotCorrection" cx="340" cy="34" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fldSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6,182,212,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fldSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fldSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="fldSparkValCorrection">±2.1 mm</span>
+              <span class="tip-label">Selvedge photocell error</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Packing Throughput</span>
+            <span class="inspect-badge badge-purple">OPTIMIZED</span>
+          </div>
+          <div class="metric-huge-val">32 m/min</div>
+          <div class="metric-chart-wrap" id="fldSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="fldGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(168,85,247,0.3)" />
+                  <stop offset="100%" stop-color="rgba(0,0,0,0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#fldGradDosing)" />
+              <path id="fldSparkPathDosing" d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="fldSparkDotDosing" cx="200" cy="16" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" />
+              <line class="spark-crosshair" id="fldSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(168,85,247,0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="fldSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="fldSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="fldSparkValDosing">32 m/min</span>
+              <span class="tip-label">Inspect · fold · wrap</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row">
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Folding &amp; Pack Vision Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <label class="machine-select-wrap">
+                <span class="machine-select-label">MACHINE</span>
+                <select class="machine-select-pill" id="fldMachineSelect" aria-label="Select inspection machine">
+                  <option value="konsan" selected>Konsan Plaiting &amp; Roll</option>
+                  <option value="suntech">Suntech ST-DFPM</option>
+                  <option value="comatex-isp">Comatex ISP Inspection</option>
+                  <option value="imb-sa">Comatex IMB SA Packer</option>
+                </select>
+              </label>
+              <span class="meta-tag-feed">32.0 m/min</span>
+            </div>
+          </div>
+
+          <div class="sensor-feed-viewport" id="fldFeedViewport">
+            <canvas class="sensor-camera-canvas" id="fldFeedCanvas" width="720" height="255"></canvas>
+            <div class="feed-raster-overlay"></div>
+            <div class="feed-scan-laser-line" id="fldLaserLine"></div>
+
+            <!-- Left & Right Selvedge Rulers -->
+            <div class="selvedge-ruler ruler-left">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+            <div class="selvedge-ruler ruler-right">
+              <span>0mm</span><span>400</span><span>800</span><span>1200</span><span>1600mm</span>
+            </div>
+
+            <!-- Top Left Metadata Overlay -->
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">CAMERA HEAD:</span> <span id="fldHudHead">KONSAN PLAIT / ROLL INSPECT</span></div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> FINISHED ROLL / PLAIT (240 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> <span id="fldHudLot">#FLD-3301-KON</span></div>
+              <div class="hud-item hud-telemetry"><span class="hud-key">TELEMETRY:</span> <span id="fldHudFps">60.0 FPS</span> • <span id="fldHudRate">4.2 kHz</span> • EXP 280µs</div>
+            </div>
+
+            <!-- Defect Alert Banner -->
+            <div class="feed-defect-banner" id="fldDefectBanner" style="opacity: 0;">
+              <span class="defect-icon">⚠️</span>
+              <span class="defect-text" id="fldDefectBannerText">DEFECT DETECTED: EDGE CREASE</span>
+            </div>
+
+            <!-- Interactive Camera Control Toolbar -->
+            <div class="feed-control-toolbar">
+              <button type="button" class="feed-ctrl-btn feed-pause-btn" id="fldBtnPauseFeed" title="Pause / Resume Feed">
+                <svg class="icon-pause" viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                <svg class="icon-play" viewBox="0 0 24 24" width="11" height="11" fill="currentColor" style="display:none;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span class="ctrl-label">PAUSE</span>
+              </button>
+              <div class="feed-mode-pills" id="fldModePills">
+                <button type="button" class="feed-mode-pill active" data-mode="rgb">AI RGB</button>
+                <button type="button" class="feed-mode-pill" data-mode="heatmap">HEATMAP</button>
+                <button type="button" class="feed-mode-pill" data-mode="laser">LASER</button>
+              </div>
+              <button type="button" class="feed-ctrl-btn feed-inject-btn" id="fldBtnInjectSpot" title="Simulate passing spot under camera">
+                <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                <span>INJECT SPOT</span>
+              </button>
+            </div>
+
+            <!-- Bottom Right HUD Metrics -->
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">LEN</strong> <span id="fldHudLen">50.00</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">EDGE</strong> <span id="fldHudEdge">2.1</span></span>
+                <span class="cielab-pill"><strong class="cielab-k">WRAP</strong> <span id="fldHudWrap">OK</span></span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE INDEX: <strong id="fldHudIndex">0.14</strong></span>
+                <span class="hud-delta-status" id="fldHudStatus">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>0 m</span><span>25 m</span><span>50 m</span><span>75 m</span><span>100 m</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="fldSpectrumBarGradient">
+              <div class="spectrum-indicator" id="fldSpectrumIndicator" style="left: 62%;"></div>
+              <div class="spectrum-tooltip" id="fldSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+
+          <div class="machine-chip-row" id="fldMachineChipRow">
+            <button type="button" class="machine-chip fld-machine-chip active" data-machine-id="konsan">Konsan Plaiting &amp; Roll</button>
+            <button type="button" class="machine-chip fld-machine-chip" data-machine-id="suntech">Suntech ST-DFPM</button>
+            <button type="button" class="machine-chip fld-machine-chip" data-machine-id="comatex-isp">Comatex ISP Inspection</button>
+            <button type="button" class="machine-chip fld-machine-chip" data-machine-id="imb-sa">Comatex IMB SA Packer</button>
+          </div>
+        </div>
+
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Live Roll Edge &amp; Fold Geometry Classification</h2>
+            <span class="inspect-badge badge-emerald">PACK TOLERANCE &lt; 0.50 PASS</span>
+          </div>
+          <span id="fldLiveDeltaEVal" hidden>0.14</span>
+          <span id="fldDeltaMatchStatus" hidden>✓</span>
+
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">Edge Alignment &amp; Fold Geometry along Cloth Length</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="fldBtnTabSpectral">Edge / Length Profile</button>
+                <button type="button" class="chart-tab-btn" id="fldBtnTabDeltaStream">Pack Geometry Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport" id="fldComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="fldComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="fldGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(139, 92, 246, 0.28)" /><stop offset="100%" stop-color="rgba(0,0,0,0.02)" />
+                  </linearGradient>
+                  <linearGradient id="fldSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">40</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">0</text>
+                <path id="fldDeltaAreaPath" fill="url(#fldGradDeltaCorridor)" d="" />
+                <path id="fldTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="fldLiveFeedCurvePath" fill="none" stroke="#8B5CF6" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="fldLiveSensorMarker">
+                  <line id="fldLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="#8B5CF673" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="fldLiveScanDot" cx="280" cy="52" r="4" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="fldTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
+                </g>
+                <g id="fldWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">0m</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">20m</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">40m</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">60m</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">80m</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">100m</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">120m</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#fldSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-tooltip" id="fldCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="fldCompTipHeader">Scan 90 m</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Pack spec:</span> <strong id="fldCompTipTarget">50.00</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #8B5CF6; box-shadow: 0 0 8px #8B5CF6cc;"></span><span>Live edge / fold:</span> <strong id="fldCompTipLive">50.08</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="fldCompTipDiff">+0.08 m (PASS)</strong></div>
+              </div>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Master Pack Spec (edge / length)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#8B5CF6;"></span><span>Live Edge / Fold Camera</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box" style="background:rgba(139, 92, 246, 0.28);"></span><span>Tolerance (±0.50 idx)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SCAN POS:</strong> <span id="fldStatPeakWavelength">90 m</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">CAMERA FIT:</strong> <span id="fldStatSpectralFit">99.4%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE EDGE:</strong> <span id="fldStatLiveDeltaE">0.13</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET EDGE / FOLD CALIBRATION</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="fldInputTargetL">Length (m)</label><div class="input-with-stepper"><input type="number" id="fldInputTargetL" value="50.00" step="0.10" min="0" max="100" /></div></div>
+              <div class="input-field-wrap"><label for="fldInputTargetA">Edge Error (mm)</label><div class="input-with-stepper"><input type="number" id="fldInputTargetA" value="2.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="fldInputTargetB">Wrap Tension</label><div class="input-with-stepper"><input type="number" id="fldInputTargetB" value="2.00" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="fldInputToleranceLimit">Tolerance (idx)</label><div class="input-with-stepper"><input type="number" id="fldInputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS FOLD / PACK OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">Meter-Counter Encoder Gain</span><span class="dye-conc">99.85%</span><span class="offset-pill pill-pos">+0.04% auto-tuned</span></div>
+              <div class="offset-item"><span class="dye-name">Selvedge Photocell Offset</span><span class="dye-conc">±2.1 mm</span><span class="offset-pill pill-neg">-0.3 mm auto-adjusted</span></div>
+              <div class="offset-item"><span class="dye-name">PE Wrap Tension</span><span class="dye-conc">1–3 wraps</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="fldBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="fldBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Pack Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+<!-- =========================================================================
        VIEW 3: PROCESSING TELEMETRY DASHBOARD (MATCHING IMAGE 1 & 2 EXACTLY)
        ========================================================================= -->
   <div class="dashboard-container" id="dashboardView" style="display: none;">
