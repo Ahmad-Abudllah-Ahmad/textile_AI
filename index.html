@@ -1,0 +1,2813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TEX//STACK — Next-Gen Textile Operations</title>
+  <meta name="description"
+    content="Explore the four primary manufacturing pillars: Spinning, Weaving, Processing, and Finishing with real-time operational telemetry." />
+
+  <!-- Lufga-Style Geometric Sans Typography (Outfit & Plus Jakarta Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <!-- Ambient background glow elements (Per Image 3 Design System) -->
+  <div class="ambient-glow glow-blue"></div>
+  <div class="ambient-glow glow-pink"></div>
+  <div class="ambient-grid"></div>
+
+  <!-- Interactive dynamic cursor follower -->
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-aura" id="cursorAura"></div>
+
+  <!-- =========================================================================
+       VIEW 1: MAIN 4 BUTTONS PAGE (LIGHT LUUXE AESTHETIC PER IMAGE 3)
+       ========================================================================= -->
+  <div class="app-wrapper" id="mainPageView">
+    <!-- MAIN 4 BUTTONS GRID -->
+    <main class="sectors-grid" id="sectorsGrid">
+
+      <!-- 01: SPINNING (BLUE #2860EB) -->
+      <button class="sector-card" data-sector="spinning" aria-label="Spinning">
+        <div class="card-glow-bg glow-blue-card"></div>
+        <div class="card-border"></div>
+
+        <img src="assets/spinning.jpg" alt="Spinning" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+
+        <div class="card-content-overlay">
+          <span class="card-phase-num">01</span>
+          <h2 class="card-title title-blue">SPINNING</h2>
+        </div>
+
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 02: WEAVING (PINK #FF6B9F) -->
+      <button class="sector-card" data-sector="weaving" aria-label="Weaving">
+        <div class="card-glow-bg glow-pink-card"></div>
+        <div class="card-border"></div>
+
+        <img src="assets/weaving.jpg" alt="Weaving" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+
+        <div class="card-content-overlay">
+          <span class="card-phase-num">02</span>
+          <h2 class="card-title title-pink">WEAVING</h2>
+        </div>
+
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 03: PROCESSING (GREEN #5CD389) -->
+      <button class="sector-card active-trigger" data-sector="processing"
+        aria-label="Processing - Click to explore Processing Operations">
+        <div class="card-glow-bg glow-green-card"></div>
+        <div class="card-border"></div>
+
+        <img src="assets/processing.jpg" alt="Processing" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+
+        <div class="card-content-overlay">
+          <span class="card-phase-num">03</span>
+          <h2 class="card-title title-green">PROCESSING</h2>
+        </div>
+
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 04: STITCHING (ORANGE #FFA026) -->
+      <button class="sector-card" data-sector="stitching" aria-label="Stitching">
+        <div class="card-glow-bg glow-orange-card"></div>
+        <div class="card-border"></div>
+
+        <img src="assets/stitching.jpg" alt="Stitching" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+
+        <div class="card-content-overlay">
+          <span class="card-phase-num">04</span>
+          <h2 class="card-title title-orange">STITCHING</h2>
+        </div>
+
+        <div class="card-glare"></div>
+      </button>
+
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 2: PROCESSING AI MODULES GRID (7 DEDICATED DOMAIN MODULE CARDS)
+       ========================================================================= -->
+  <div class="processing-modules-container" id="processingModulesView" style="display: none;">
+    <!-- Top Navigation (Only Back Button on Side) -->
+    <header class="proc-header-bar">
+      <button class="proc-back-btn" id="btnBackToPillars" aria-label="Back to 4 Manufacturing Pillars">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+    </header>
+
+    <!-- 7 Specialized AI Module Cards -->
+    <main class="proc-modules-grid" id="procModulesGrid">
+
+      <!-- 01: COLOR INTELLIGENCE AI -->
+      <button class="sector-card module-card-btn" data-module="color-intelligence" aria-label="Color Intelligence AI">
+        <div class="card-glow-bg glow-cyan-card"></div>
+        <div class="card-border border-cyan"></div>
+        <img src="assets/module_color_intelligence.jpg" alt="Color Intelligence AI" class="card-cover-img"
+          loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">01</span>
+          <h2 class="card-title title-cyan">COLOR INTELLIGENCE AI</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 02: FABRIC INSPECTION & VISION AI -->
+      <button class="sector-card module-card-btn" data-module="fabric-vision"
+        aria-label="Fabric Inspection &amp; Vision AI">
+        <div class="card-glow-bg glow-blue-card"></div>
+        <div class="card-border border-blue"></div>
+        <img src="assets/module_fabric_vision.jpg" alt="Fabric Inspection &amp; Vision AI" class="card-cover-img"
+          loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">02</span>
+          <h2 class="card-title title-blue">FABRIC INSPECTION &amp; VISION AI</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 03: ENERGY & UTILITIES OPTIMIZATION AI -->
+      <button class="sector-card module-card-btn" data-module="energy-utilities"
+        aria-label="Energy &amp; Utilities Optimization AI">
+        <div class="card-glow-bg glow-amber-card"></div>
+        <div class="card-border border-amber"></div>
+        <img src="assets/module_energy_utilities.jpg" alt="Energy &amp; Utilities Optimization AI"
+          class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">03</span>
+          <h2 class="card-title title-amber">ENERGY &amp; UTILITIES OPTIMIZATION AI</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 04: PRODUCTION PLANNING & SCHEDULING AI -->
+      <button class="sector-card module-card-btn" data-module="production-planning"
+        aria-label="Production Planning &amp; Scheduling AI">
+        <div class="card-glow-bg glow-emerald-card"></div>
+        <div class="card-border border-emerald"></div>
+        <img src="assets/module_production_planning.jpg" alt="Production Planning &amp; Scheduling AI"
+          class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">04</span>
+          <h2 class="card-title title-emerald">PRODUCTION PLANNING &amp; SCHEDULING AI</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 05: PREDICTIVE MAINTENANCE AI -->
+      <button class="sector-card module-card-btn is-primary-module" data-module="predictive-maintenance"
+        aria-label="Predictive Maintenance AI">
+        <div class="card-glow-bg glow-rose-card"></div>
+        <div class="card-border border-rose"></div>
+        <img src="assets/module_predictive_maintenance.jpg" alt="Predictive Maintenance AI" class="card-cover-img"
+          loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">05</span>
+          <h2 class="card-title title-rose">PREDICTIVE MAINTENANCE AI</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 06: COMPLIANCE & TRACEABILITY AI -->
+      <button class="sector-card module-card-btn" data-module="compliance-traceability"
+        aria-label="Compliance &amp; Traceability AI">
+        <div class="card-glow-bg glow-purple-card"></div>
+        <div class="card-border border-purple"></div>
+        <img src="assets/module_compliance_traceability.jpg" alt="Compliance &amp; Traceability AI"
+          class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">06</span>
+          <h2 class="card-title title-purple">COMPLIANCE &amp; TRACEABILITY AI</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 07: MILL KNOWLEDGE COPILOT -->
+      <button class="sector-card module-card-btn" data-module="mill-knowledge" aria-label="Mill Knowledge Copilot">
+        <div class="card-glow-bg glow-indigo-card"></div>
+        <div class="card-border border-indigo"></div>
+        <img src="assets/module_mill_knowledge.jpg" alt="Mill Knowledge Copilot" class="card-cover-img"
+          loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">07</span>
+          <h2 class="card-title title-indigo">MILL KNOWLEDGE COPILOT</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 2A: COLOR INTELLIGENCE SUB-SUITE (DYEING & PRINTING)
+       ========================================================================= -->
+  <div class="processing-modules-container sub-modules-container" id="colorIntelligenceSubView" style="display: none;">
+    <header class="proc-header-bar">
+      <button class="proc-back-btn" id="btnBackFromColorIntel" aria-label="Back to Processing Modules">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+    </header>
+
+    <main class="sub-modules-grid" id="colorIntelSubGrid">
+      <!-- 01: DYEING -->
+      <button class="sector-card sub-card-btn" data-module="color-intelligence" data-sub="dyeing" aria-label="Dyeing">
+        <div class="card-glow-bg glow-cyan-card"></div>
+        <div class="card-border border-cyan"></div>
+        <img src="assets/sub_dyeing.jpg" alt="Dyeing Operations" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">01</span>
+          <h2 class="card-title title-cyan">DYEING</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 02: PRINTING -->
+      <button class="sector-card sub-card-btn" data-module="color-intelligence" data-sub="printing"
+        aria-label="Printing">
+        <div class="card-glow-bg glow-pink-card"></div>
+        <div class="card-border border-pink"></div>
+        <img src="assets/sub_printing.jpg" alt="Printing Operations" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">02</span>
+          <h2 class="card-title title-pink">PRINTING</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 03: BLEACHING -->
+      <button class="sector-card sub-card-btn" data-module="color-intelligence" data-sub="bleaching"
+        aria-label="Bleaching (White Process)">
+        <div class="card-glow-bg glow-emerald-card"></div>
+        <div class="card-border border-emerald"></div>
+        <img src="assets/sub_bleaching.jpg" alt="Bleaching White Operations" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">03</span>
+          <h2 class="card-title title-emerald">BLEACHING</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 04: MERCERIZING -->
+      <button class="sector-card sub-card-btn" data-module="color-intelligence" data-sub="mercerizing"
+        aria-label="Mercerizing">
+        <div class="card-glow-bg glow-amber-card"></div>
+        <div class="card-border border-amber"></div>
+        <img src="assets/sub_mercerizing.jpg" alt="Mercerizing Operations" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">04</span>
+          <h2 class="card-title title-amber">MERCERIZING</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 05: STENTER -->
+      <button class="sector-card sub-card-btn" data-module="color-intelligence" data-sub="stenter" aria-label="Stenter">
+        <div class="card-glow-bg glow-purple-card"></div>
+        <div class="card-border border-purple"></div>
+        <img src="assets/sub_stenter.jpg" alt="Stenter Operations" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">05</span>
+          <h2 class="card-title title-purple">STENTER</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 2B: FABRIC INSPECTION & VISION SUB-SUITE (GREIGE & PRETREATMENT)
+       ========================================================================= -->
+  <div class="processing-modules-container sub-modules-container" id="fabricInspectionSubView" style="display: none;">
+    <header class="proc-header-bar">
+      <button class="proc-back-btn" id="btnBackFromFabricVision" aria-label="Back to Processing Modules">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+    </header>
+
+    <main class="sub-modules-grid" id="fabricVisionSubGrid">
+      <!-- 01: GREIGE -->
+      <button class="sector-card sub-card-btn" data-module="fabric-vision" data-sub="greige" aria-label="Greige">
+        <div class="card-glow-bg glow-amber-card"></div>
+        <div class="card-border border-amber"></div>
+        <img src="assets/sub_greige.jpg" alt="Greige Inspection" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">01</span>
+          <h2 class="card-title title-amber">GREIGE</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 02: PRETREATMENT -->
+      <button class="sector-card sub-card-btn" data-module="fabric-vision" data-sub="pretreatment"
+        aria-label="Pretreatment">
+        <div class="card-glow-bg glow-blue-card"></div>
+        <div class="card-border border-blue"></div>
+        <img src="assets/sub_pretreatment.jpg" alt="Pretreatment Operations" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">02</span>
+          <h2 class="card-title title-blue">PRETREATMENT</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 03: DYEING -->
+      <button class="sector-card sub-card-btn" data-module="fabric-vision" data-sub="dyeing"
+        aria-label="Dyeing Inspection">
+        <div class="card-glow-bg glow-cyan-card"></div>
+        <div class="card-border border-cyan"></div>
+        <img src="assets/sub_fv_dyeing.jpg" alt="Dyeing Inspection" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">03</span>
+          <h2 class="card-title title-cyan">DYEING</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 04: PRINTING -->
+      <button class="sector-card sub-card-btn" data-module="fabric-vision" data-sub="printing"
+        aria-label="Printing Inspection">
+        <div class="card-glow-bg glow-pink-card"></div>
+        <div class="card-border border-pink"></div>
+        <img src="assets/sub_fv_printing.jpg" alt="Printing Inspection" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">04</span>
+          <h2 class="card-title title-pink">PRINTING</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+
+
+      <!-- 05: FINISH -->
+      <button class="sector-card sub-card-btn" data-module="fabric-vision" data-sub="finish"
+        aria-label="Finish Inspection">
+        <div class="card-glow-bg glow-orange-card"></div>
+        <div class="card-border border-orange"></div>
+        <img src="assets/sub_fv_finish.jpg" alt="Finishing Inspection" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">06</span>
+          <h2 class="card-title title-orange">FINISH</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 06: FOLDING -->
+      <button class="sector-card sub-card-btn" data-module="fabric-vision" data-sub="folding"
+        aria-label="Folding Inspection">
+        <div class="card-glow-bg glow-purple-card"></div>
+        <div class="card-border border-purple"></div>
+        <img src="assets/sub_fv_folding.jpg" alt="Folding & Packaging" class="card-cover-img" loading="eager" />
+        <div class="card-overlay"></div>
+        <div class="card-content-overlay">
+          <span class="card-phase-num">05</span>
+          <h2 class="card-title title-purple">FOLDING</h2>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 2A-1: COLOR INSPECTION AI FOR DYEING (CONTINUOUS IN-LINE SPECTRO)
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="dyeingColorInspectionView" style="display: none;">
+    <!-- Top Control Bar -->
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromDyeing" aria-label="Back to Color Intelligence Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+
+        <div class="inspection-brand-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Color Intelligence AI — Dyeing Color Inspection</h1>
+          <p class="inspection-subtitle">Spectrophotometric Delta-E Formulation, Inline Spectro Analysis &amp;
+            Continuous Auto-Dosing</p>
+        </div>
+      </div>
+
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToColorSuite">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>Return to Color Intelligence Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="inspection-content-body">
+      <!-- 3 TOP METRIC CARDS WITH CURVED LINE CHARTS -->
+      <section class="inspection-metrics-row">
+
+        <!-- Card 1: Spectro Color Match Index -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Spectro Color Match Index</span>
+            <span class="inspect-badge badge-emerald">EXCELLENT</span>
+          </div>
+          <div class="metric-huge-val">ΔE 0.18</div>
+
+          <!-- Curved Line Chart: ΔE Deviation Trend -->
+          <div class="metric-chart-wrap" id="sparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16, 185, 129, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(16, 185, 129, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 0 52 C 40 48, 70 56, 110 44 C 150 32, 180 50, 220 42 C 260 34, 290 46, 340 38 L 340 70 L 0 70 Z"
+                fill="url(#gradDeltaE)" />
+              <path id="sparkPathDeltaE"
+                d="M 0 52 C 40 48, 70 56, 110 44 C 150 32, 180 50, 220 42 C 260 34, 290 46, 340 38" fill="none"
+                stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="sparkDotDeltaE" cx="340" cy="38" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="sparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70"
+                stroke="rgba(16, 185, 129, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="sparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2"
+                opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="sparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="sparkValDeltaE">ΔE 0.18</span>
+              <span class="tip-label">Tolerance: &lt; 0.50 PASS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Recipe Auto-Correction Rate -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Recipe Auto-Correction Rate</span>
+            <span class="inspect-badge badge-cyan">FIRST TIME RIGHT</span>
+          </div>
+          <div class="metric-huge-val">99.2%</div>
+
+          <!-- Curved Line Chart: Accuracy Curve -->
+          <div class="metric-chart-wrap" id="sparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6, 182, 212, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(6, 182, 212, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z"
+                fill="url(#gradCorrection)" />
+              <path id="sparkPathCorrection"
+                d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none"
+                stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="sparkDotCorrection" cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF"
+                stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="sparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70"
+                stroke="rgba(6, 182, 212, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="sparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF"
+                stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="sparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="sparkValCorrection">99.2%</span>
+              <span class="tip-label">Target: 98.0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Auxiliary Chemical Dosing -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Auxiliary Chemical Dosing</span>
+            <span class="inspect-badge badge-purple">OPTIMIZED</span>
+          </div>
+          <div class="metric-huge-val">2.4 mL/kg</div>
+
+          <!-- Curved Line Chart: Dynamic Metering Profile -->
+          <div class="metric-chart-wrap" id="sparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(168, 85, 247, 0.3)" />
+                  <stop offset="100%" stop-color="rgba(168, 85, 247, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path
+                d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z"
+                fill="url(#gradDosing)" />
+              <path id="sparkPathDosing"
+                d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52"
+                fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="sparkDotDosing" cx="200" cy="16" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="sparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70"
+                stroke="rgba(168, 85, 247, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="sparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2"
+                opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" id="sparkTipDosing" style="display: none;">
+              <span class="tip-value" id="sparkValDosing">2.40 mL/kg</span>
+              <span class="tip-label">Optimum Strike Rate</span>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- BOTTOM 2 COMPONENTS: LIVE FEED & USER COLOR DATA -->
+      <section class="inspection-details-row">
+
+        <!-- Component 1 (Left): Live Fabric Feed Passing Through Sensor -->
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Spectrophotometer Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <span class="meta-tag-feed">D65 ILLUMINANT</span>
+              <span class="meta-tag-feed">42.5 m/min</span>
+              <span class="meta-tag-feed tag-online">60 FPS ONLINE</span>
+            </div>
+          </div>
+
+          <!-- Video Stream Container with Visual Overlays -->
+          <div class="sensor-feed-viewport">
+            <img src="assets/fabric_spectro_feed.jpg" alt="In-Line Spectrophotometer Fabric Feed"
+              class="sensor-feed-img" />
+
+            <!-- Dynamic Optical Scanning Laser -->
+            <div class="feed-scan-laser"></div>
+
+            <!-- Optical Sensor Measurement Reticle -->
+            <div class="feed-reticle-overlay">
+              <div class="reticle-box">
+                <div class="reticle-corner tl"></div>
+                <div class="reticle-corner tr"></div>
+                <div class="reticle-corner bl"></div>
+                <div class="reticle-corner br"></div>
+                <div class="reticle-crosshair"></div>
+                <div class="reticle-spot-pulse"></div>
+              </div>
+              <div class="reticle-data-badge">
+                <span class="lbl">SCANNING SPOT</span>
+                <span class="val">Ø 25mm • 10° OBSERVER</span>
+              </div>
+            </div>
+
+            <!-- Top Left Metadata Overlay -->
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">SPECTRO HEAD:</span> SP-S00D (DUAL BEAM)</div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> 100% COMBED COTTON (180 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> #DYE-8821-NAVY</div>
+            </div>
+
+            <!-- Bottom Right Coordinates HUD Overlay -->
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">L*</strong> 24.12</span>
+                <span class="cielab-pill"><strong class="cielab-k">a*</strong> -1.84</span>
+                <span class="cielab-pill"><strong class="cielab-k">b*</strong> -18.42</span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE ΔE: <strong>0.18</strong></span>
+                <span class="hud-delta-status">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Reflectance Spectrum Bar (400 - 700 nm) -->
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>400nm (Violet)</span>
+              <span>480nm (Cyan)</span>
+              <span>550nm (Green)</span>
+              <span>620nm (Yellow)</span>
+              <span>700nm (Red)</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="spectrumBarGradient">
+              <div class="spectrum-indicator" id="spectrumIndicator" style="left: 28%;"></div>
+              <div class="spectrum-tooltip" id="spectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component 2 (Right): User Actual Color Data & Formulation Calibration -->
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Master Standard vs Actual Measured Color Data</h2>
+            <span class="inspect-badge badge-emerald">TOLERANCE ΔE &lt; 0.50 PASS</span>
+          </div>
+
+          <!-- Side-by-Side Color Swatch Comparison -->
+          <div class="swatch-comparison-grid">
+            <!-- Target Master Standard Swatch with sRGB Color Selection -->
+            <div class="swatch-card target-swatch">
+              <label class="swatch-preview-box-wrap" for="targetSrgbPicker" title="Click to select any color in sRGB">
+                <div class="swatch-preview-box" id="targetSwatchPreview" style="background-color: #1A2849;">
+                  <span class="swatch-type-tag">TARGET STANDARD</span>
+                  <div class="swatch-picker-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#FFFFFF" stroke-width="2.5">
+                      <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                      <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                      <path d="M2 2l7.586 7.586"></path>
+                      <circle cx="11" cy="11" r="2"></circle>
+                    </svg>
+                  </div>
+                </div>
+                <input type="color" id="targetSrgbPicker" value="#1A2849" class="srgb-hidden-input" />
+              </label>
+
+              <div class="swatch-info-meta">
+                <div class="swatch-name-row">
+                  <span class="swatch-name" id="targetColorName">Royal Navy #8821</span>
+                  <label class="pick-srgb-chip-btn" for="targetSrgbPicker" title="Open sRGB color picker">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 8v8M8 12h8"></path>
+                    </svg>
+                    <span>Pick sRGB</span>
+                  </label>
+                </div>
+                <div class="swatch-cielab-text" id="targetCielabDisplay">L*: 24.00 • a*: -1.80 • b*: -18.50</div>
+                <div class="swatch-hex-row">
+                  <span class="swatch-hex-text" id="targetHexDisplay">HEX: #1A2849</span>
+                  <div class="quick-shades-list">
+                    <button type="button" class="shade-dot" data-hex="#1A2849" data-name="Royal Navy #8821"
+                      style="background: #1A2849;" title="Royal Navy"></button>
+                    <button type="button" class="shade-dot" data-hex="#059669" data-name="Emerald Jade #508"
+                      style="background: #059669;" title="Emerald Jade"></button>
+                    <button type="button" class="shade-dot" data-hex="#DC2626" data-name="Crimson Red #412"
+                      style="background: #DC2626;" title="Crimson Red"></button>
+                    <button type="button" class="shade-dot" data-hex="#7C3AED" data-name="Deep Violet #931"
+                      style="background: #7C3AED;" title="Deep Violet"></button>
+                    <button type="button" class="shade-dot" data-hex="#D97706" data-name="Golden Ochre #204"
+                      style="background: #D97706;" title="Golden Ochre"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Central Delta Comparison Badge -->
+            <div class="swatch-delta-connector">
+              <div class="delta-circle-badge">
+                <span class="delta-label">DIFF</span>
+                <span class="delta-num" id="liveDeltaEVal">0.18</span>
+                <span class="delta-unit">ΔE</span>
+              </div>
+              <span class="delta-ok-check" id="deltaMatchStatus">✓ MATCH</span>
+            </div>
+
+            <!-- Live Measured Substrate Swatch -->
+            <div class="swatch-card measured-swatch">
+              <div class="swatch-preview-box" id="measuredSwatchPreview" style="background-color: #1B294A;">
+                <span class="swatch-type-tag">IN-LINE MEASURED</span>
+              </div>
+              <div class="swatch-info-meta">
+                <div class="swatch-name">Live Substrate Feed</div>
+                <div class="swatch-cielab-text">L*: 24.12 • a*: -1.84 • b*: -18.42</div>
+                <div class="swatch-hex-text" id="measuredHexDisplay">HEX: #1B294A</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time Single Comparison Chart: Target Standard vs Live In-Line Feed -->
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">In-Line Sensor Stream vs Target Standard Spectral Comparison</span>
+                <span class="live-stream-badge">LIVE 60 FPS</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="btnTabSpectral">Spectral Reflectance
+                  (400–700nm)</button>
+                <button type="button" class="chart-tab-btn" id="btnTabDeltaStream">Real-Time ΔE Stream</button>
+              </div>
+            </div>
+
+            <!-- Single Unified Comparison Graph Viewport -->
+            <div class="comparison-graph-viewport" id="comparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="comparisonChartSvg" viewBox="0 0 540 135"
+                preserveAspectRatio="none">
+                <defs>
+                  <!-- Shaded Delta Area Gradient -->
+                  <linearGradient id="gradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(16, 185, 129, 0.28)" />
+                    <stop offset="100%" stop-color="rgba(16, 185, 129, 0.02)" />
+                  </linearGradient>
+                  <!-- Spectrum Ribbon Gradient -->
+                  <linearGradient id="spectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" />
+                    <stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" />
+                    <stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" />
+                    <stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+
+                <!-- Grid lines & scales -->
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1"
+                  stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end"
+                  font-family="'JetBrains Mono', monospace">80%</text>
+
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1"
+                  stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end"
+                  font-family="'JetBrains Mono', monospace">40%</text>
+
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1"
+                  stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end"
+                  font-family="'JetBrains Mono', monospace">0%</text>
+
+                <!-- Dynamic Area Fill between Target & Live Feed -->
+                <path id="deltaAreaPath" fill="url(#gradDeltaCorridor)" d="" />
+
+                <!-- Target Standard Curve (Golden dashed reference line) -->
+                <path id="targetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3"
+                  stroke-linecap="round" d="" />
+
+                <!-- Live Coming Feed Curve (Solid glowing cyan stream line) -->
+                <path id="liveFeedCurvePath" fill="none" stroke="#06B6D4" stroke-width="2.6" stroke-linecap="round"
+                  d="" />
+
+                <!-- Moving Sensor Optical Scan Reticle on Curve -->
+                <g id="liveSensorMarker">
+                  <line id="liveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="rgba(6, 182, 212, 0.45)"
+                    stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="liveScanDot" cx="280" cy="52" r="4" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="targetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2"
+                    opacity="0" />
+                </g>
+
+                <!-- X Axis Wavelength Scale Markers -->
+                <g id="wavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle"
+                    font-family="'JetBrains Mono', monospace">400nm</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle"
+                    font-family="'JetBrains Mono', monospace">450nm</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle"
+                    font-family="'JetBrains Mono', monospace">500nm</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle"
+                    font-family="'JetBrains Mono', monospace">550nm</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle"
+                    font-family="'JetBrains Mono', monospace">600nm</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle"
+                    font-family="'JetBrains Mono', monospace">650nm</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle"
+                    font-family="'JetBrains Mono', monospace">700nm</text>
+                </g>
+
+                <!-- Spectrum Color Ribbon Baseline -->
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#spectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <!-- Floating Interactive Chart Tooltip -->
+              <div class="comp-chart-tooltip" id="compChartTooltip" style="display: none;">
+                <div class="tip-header" id="compTipHeader">λ 480nm (Cyan-Blue)</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Target:</span> <strong
+                    id="compTipTarget">24.2%</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live"></span><span>Live Feed:</span> <strong
+                    id="compTipLive">24.5%</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="compTipDiff">+0.3%
+                    (PASS)</strong></div>
+              </div>
+
+              <!-- Real-Time Comparison Legend & Telemetry Readout -->
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item">
+                    <span class="legend-line target-legend-line"></span>
+                    <span>Target Standard (Rλ)</span>
+                  </div>
+                  <div class="comp-legend-item">
+                    <span class="legend-line live-legend-line"></span>
+                    <span>Live In-Line Feed (Rλ)</span>
+                  </div>
+                  <div class="comp-legend-item">
+                    <span class="legend-box delta-legend-box"></span>
+                    <span>Tolerance (±0.50 ΔE)</span>
+                  </div>
+                </div>
+
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">PEAK λ:</strong> <span
+                      id="statPeakWavelength">460nm</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SPECTRAL FIT:</strong> <span
+                      id="statSpectralFit">99.2%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE ΔE:</strong> <span
+                      id="statLiveDeltaE">0.18</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Actual Color Data Input Fields -->
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET COLOR DATA CALIBRATION (CIELAB)</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap">
+                <label for="inputTargetL">Lightness (L*)</label>
+                <div class="input-with-stepper">
+                  <input type="number" id="inputTargetL" value="24.00" step="0.10" min="0" max="100" />
+                </div>
+              </div>
+              <div class="input-field-wrap">
+                <label for="inputTargetA">Red / Green (a*)</label>
+                <div class="input-with-stepper">
+                  <input type="number" id="inputTargetA" value="-1.80" step="0.10" min="-128" max="127" />
+                </div>
+              </div>
+              <div class="input-field-wrap">
+                <label for="inputTargetB">Yellow / Blue (b*)</label>
+                <div class="input-with-stepper">
+                  <input type="number" id="inputTargetB" value="-18.50" step="0.10" min="-128" max="127" />
+                </div>
+              </div>
+              <div class="input-field-wrap">
+                <label for="inputToleranceLimit">Tolerance (ΔE)</label>
+                <div class="input-with-stepper">
+                  <input type="number" id="inputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Autonomous Dyestuff Recipe Offsets & Action Buttons -->
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS DYE LIQUOR DISPENSE OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item">
+                <span class="dye-name">C.I. Reactive Blue 21</span>
+                <span class="dye-conc">2.42% owf</span>
+                <span class="offset-pill pill-pos">+0.02% auto-dispensed</span>
+              </div>
+              <div class="offset-item">
+                <span class="dye-name">C.I. Reactive Red 195</span>
+                <span class="dye-conc">0.68% owf</span>
+                <span class="offset-pill pill-zero">0.00% on target</span>
+              </div>
+              <div class="offset-item">
+                <span class="dye-name">C.I. Reactive Yellow 145</span>
+                <span class="dye-conc">0.15% owf</span>
+                <span class="offset-pill pill-neg">-0.01% auto-dispensed</span>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="btnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                </svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="btnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                <span>Apply Recipe Correction</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 3: PROCESSING TELEMETRY DASHBOARD (MATCHING IMAGE 1 & 2 EXACTLY)
+       ========================================================================= -->
+  <div class="dashboard-container" id="dashboardView" style="display: none;">
+    <!-- Dashboard Content Area -->
+    <div class="dash-inner-content">
+
+      <!-- Top Control Toolbar -->
+      <header class="dash-top-toolbar">
+        <div class="toolbar-left-group">
+          <!-- Back Button -->
+          <button class="proc-back-btn dash-brand-icon" id="backArrowBtn" aria-label="Back">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+          </button>
+
+          <!-- Interval Selector -->
+          <div class="dash-pill-box interval-pill">
+            <span class="pill-muted-title">Interval</span>
+            <span class="pill-bold-val">last 5 min</span>
+            <span class="pill-date-sub">07.12.2026<br />12:30 - 13:10</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <!-- Play Control -->
+          <button class="dash-icon-pill-btn" title="Play Stream">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+              <polygon points="6 4 20 12 6 20 6 4"></polygon>
+            </svg>
+          </button>
+
+          <!-- Breakdown Dropdown -->
+          <div class="dash-pill-box">
+            <span class="pill-muted-title">Breakdown</span>
+            <span class="pill-bold-val">Dye Range > Chamber...</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <!-- Filter Pills -->
+          <div class="dash-pill-box filter-pill-group">
+            <span class="pill-muted-title">Filter</span>
+            <span class="pill-bold-val">Range in <span class="badge-count">3</span></span>
+            <span class="pill-separator"></span>
+            <span class="pill-bold-val">Chamber in <span class="badge-count">4</span></span>
+            <span class="pill-separator"></span>
+            <span class="pill-bold-val">Lot in <span class="badge-count">1</span></span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <!-- Reload Button -->
+          <button class="dash-icon-pill-btn" title="Refresh">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
+          </button>
+
+          <!-- Secondary Filter Pill -->
+          <div class="dash-pill-box">
+            <span class="pill-muted-title">Filter</span>
+            <span class="pill-bold-val">Lot in <span class="badge-count">1</span></span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Toolbar Right Group -->
+        <div class="toolbar-right-group">
+          <button class="dash-dark-btn load-btn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Load</span>
+            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <button class="dash-dark-btn save-btn">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+              <polyline points="17 21 17 13 7 13 7 21"></polyline>
+              <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            <span>Save</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Time Scrubber Bar -->
+      <div class="dash-time-scrubber">
+        <div class="scrubber-zoom-controls">
+          <button class="zoom-btn" title="Zoom In">+</button>
+          <span class="zoom-divider"></span>
+          <button class="zoom-btn" title="Zoom Out">−</button>
+        </div>
+
+        <!-- Ticks Track -->
+        <div class="scrubber-track">
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">12:30</span></div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">12:35</span></div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">12:40</span></div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">12:45</span></div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">12:50</span></div>
+          <div class="time-tick active-range-tick">
+            <span class="tick-line"></span>
+            <span class="tick-txt">12:55</span>
+          </div>
+          <div class="time-tick active-selection">
+            <div class="scrubber-blue-badge">100+</div>
+            <span class="tick-line tick-line-active"></span>
+            <span class="tick-txt">13:00</span>
+          </div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">13:05</span></div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">13:10</span></div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">13:15</span></div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">13:20</span></div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">13:25</span></div>
+          <div class="time-tick"><span class="tick-line"></span><span class="tick-txt">13:30</span></div>
+        </div>
+
+        <!-- Layout Mode Toggles -->
+        <div class="scrubber-view-toggles">
+          <button class="view-mode-btn active" title="Grid View">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <rect x="3" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="3" width="7" height="7" rx="1.5"></rect>
+              <rect x="3" y="14" width="7" height="7" rx="1.5"></rect>
+              <rect x="14" y="14" width="7" height="7" rx="1.5"></rect>
+            </svg>
+          </button>
+          <button class="view-mode-btn" title="Column View">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <rect x="4" y="4" width="6" height="16" rx="1.5"></rect>
+              <rect x="14" y="4" width="6" height="16" rx="1.5"></rect>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+
+      <!-- Main Topology Interactive Map -->
+      <div class="dash-map-viewport" id="dashMapViewport">
+
+
+
+        <!-- Top Floating AI Status Banner -->
+        <div class="canvas-ai-live-banner" id="canvasAiLiveBanner">
+          <div class="ai-core-pulse"></div>
+          <div class="ai-status-details">
+            <div class="ai-title-row">
+              <span class="ai-name">AI NEURAL AGENT ACTIVE</span>
+              <span class="ai-badge-live">99.8% PRECISION</span>
+            </div>
+            <div class="ai-sub-row">
+              <span class="ai-stream-metric">Monitoring 48 P&amp;ID Nodes</span>
+              <span class="ai-sep">•</span>
+              <span class="ai-anomaly-status" id="aiAnomalyStatusText">Process Nominal — 0 Faults</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Floating Red Anomaly Beacon Marker (Shown on Component / Line when Anomaly occurs) -->
+        <div class="ai-anomaly-marker-beacon" id="anomalyBeacon" style="display: none;">
+          <span class="beacon-pulse"></span>
+          <span class="beacon-icon">⚠️</span>
+          <span class="beacon-text">AI PROCESS ISSUE DETECTED</span>
+        </div>
+
+        <!-- High-Precision AI Anomaly Diagnostic Popup HUD (Shown when hovering over the flagged component/line) -->
+        <div class="ai-anomaly-diagnostic-popup" id="aiAnomalyPopup" style="display: none;">
+          <div class="popup-header">
+            <div class="popup-alert-tag">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                <path d="M12 2L1 21h22L12 2zm0 3.99L19.53 19H4.47L12 5.99zM11 10v4h2v-4h-2zm0 6v2h2v-2h-2z" />
+              </svg>
+              <span>AI PROCESS ANOMALY DETECTED</span>
+            </div>
+            <span class="popup-severity-badge" id="popupSeverity">CRITICAL</span>
+          </div>
+          <div class="popup-body">
+            <div class="popup-component-name" id="popupComponentName">Pre-Filter B (5 Micron Particulate)</div>
+            <div class="popup-metric-row">
+              <span class="popup-metric-lbl">Current Parameter:</span>
+              <span class="popup-metric-val font-mono-alert" id="popupMetricVal">ΔP: 2.94 psi (High Spike)</span>
+            </div>
+            <div class="popup-metric-row">
+              <span class="popup-metric-lbl">Nominal Baseline:</span>
+              <span class="popup-metric-val" id="popupMetricNorm">0.90 psi (Limit 1.40 psi)</span>
+            </div>
+            <div class="popup-explanation" id="popupExplanation">
+              AI Vision &amp; Differential telemetry detected coalescing filter particulate loading exceeding ISO Class
+              2 threshold. Risk of line contamination downstream to Dyeing Vessel #3.
+            </div>
+          </div>
+          <div class="popup-footer">
+            <button class="popup-resolve-btn" id="btnAutoResolveAi">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              <span>AUTO-RESOLVE VIA AI COPILOT</span>
+            </button>
+          </div>
+        </div>
+
+
+
+        <svg class="scada-pid-diagram" id="scadaSvgRoot" viewBox="0 0 1060 920" width="100%" height="100%"
+          xmlns="http://www.w3.org/2000/svg">
+
+          <defs>
+            <!-- Background Technical Grid -->
+            <pattern id="scadaDotGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="2" cy="2" r="0.8" fill="#94A3B8" opacity="0.35" />
+            </pattern>
+            <pattern id="carbonHatch" width="6" height="6" patternTransform="rotate(45 0 0)"
+              patternUnits="userSpaceOnUse">
+              <line x1="0" y1="0" x2="0" y2="6" stroke="#475569" stroke-width="1.2" opacity="0.4" />
+            </pattern>
+            <pattern id="sterileHatch" width="4" height="4" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="2" x2="4" y2="2" stroke="#64748B" stroke-width="0.8" opacity="0.35" />
+            </pattern>
+            <pattern id="intakeMesh" width="8" height="8" patternUnits="userSpaceOnUse">
+              <path d="M 0 0 L 8 8 M 8 0 L 0 8" stroke="#64748B" stroke-width="0.8" opacity="0.4" />
+            </pattern>
+
+            <!-- Metallic Gradients -->
+            <linearGradient id="vesselGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#E2E8F0" />
+              <stop offset="25%" stop-color="#FFFFFF" />
+              <stop offset="60%" stop-color="#CBD5E1" />
+              <stop offset="100%" stop-color="#94A3B8" />
+            </linearGradient>
+
+            <linearGradient id="domeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#FFFFFF" />
+              <stop offset="40%" stop-color="#E2E8F0" />
+              <stop offset="100%" stop-color="#94A3B8" />
+            </linearGradient>
+
+            <linearGradient id="screwGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#F1F5F9" />
+              <stop offset="50%" stop-color="#CBD5E1" />
+              <stop offset="100%" stop-color="#94A3B8" />
+            </linearGradient>
+
+            <linearGradient id="motorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#94A3B8" />
+              <stop offset="30%" stop-color="#64748B" />
+              <stop offset="70%" stop-color="#475569" />
+              <stop offset="100%" stop-color="#334155" />
+            </linearGradient>
+
+            <linearGradient id="liquidGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#BAE6FD" stop-opacity="0.9" />
+              <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.95" />
+            </linearGradient>
+
+            <!-- Filter for interactive hover glow -->
+            <filter id="valveGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#22C55E" flood-opacity="0.5" />
+            </filter>
+          </defs>
+
+          <rect width="1060" height="920" fill="#D8DCE1" />
+          <rect width="1060" height="920" fill="url(#scadaDotGrid)" />
+
+          <!-- Header Banner -->
+          <g id="headerBanner">
+            <text x="510" y="18" font-family="'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="13.5"
+              font-weight="700" fill="#1A202C" text-anchor="middle" letter-spacing="0.3">
+              TEX//STACK Processing Plant — Color Intelligence &amp; Continuous Dyeing Operations
+            </text>
+            <!-- Digital SCADA Timestamp Badge -->
+            <rect x="946" y="14" width="96" height="28" rx="4" fill="#20252C" stroke="#4A5568" stroke-width="1.5" />
+            <text id="scadaClockDisplay" x="994" y="33" font-family="'JetBrains Mono', 'Courier New', monospace"
+              font-size="15" font-weight="700" fill="#F1F5F9" text-anchor="middle" letter-spacing="1">
+              01:55:46
+            </text>
+          </g>
+
+
+          <!-- ================= INTAKE SECTION ================= -->
+          <g id="intakeSection" class="interactive-intake" cursor="pointer"
+            data-info="Textile Pre-Treatment &amp; Conditioning Stage">
+            <!-- Intake Unit Box -->
+            <rect x="36" y="58" width="128" height="54" rx="4" fill="#E2E8F0" stroke="#64748B" stroke-width="1.5" />
+            <text x="100" y="72" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Conditioning Intake</text>
+
+            <!-- In_Temp Box -->
+            <rect x="42" y="77" width="54" height="28" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
+            <text x="69" y="88" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#64748B"
+              text-anchor="middle">Fabric_Temp</text>
+            <text id="scadaInTemp" x="69" y="100" font-family="sans-serif" font-size="10" font-weight="700"
+              fill="#0F172A" text-anchor="middle">24.1°C</text>
+
+            <!-- In_RH Box -->
+            <rect x="102" y="77" width="54" height="28" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
+            <text x="129" y="88" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#64748B"
+              text-anchor="middle">Bath_pH</text>
+            <text id="scadaInRH" x="129" y="100" font-family="sans-serif" font-size="10" font-weight="700"
+              fill="#0F172A" text-anchor="middle">6.4</text>
+
+            <!-- Conduits from Intake Unit to Module -->
+            <rect x="72" y="112" width="6" height="34" fill="#94A3B8" stroke="#475569" stroke-width="1" />
+            <rect x="122" y="112" width="6" height="34" fill="#94A3B8" stroke="#475569" stroke-width="1" />
+
+            <!-- Intake Pre-Treatment Module -->
+            <polygon points="12,168 48,158 48,226 12,216" fill="url(#vesselGrad)" stroke="#475569" stroke-width="1.5" />
+            <line x1="24" y1="164" x2="24" y2="220" stroke="#64748B" stroke-width="1" />
+            <line x1="36" y1="161" x2="36" y2="223" stroke="#64748B" stroke-width="1" />
+
+            <rect x="48" y="146" width="94" height="92" rx="4" fill="url(#vesselGrad)" stroke="#334155"
+              stroke-width="2" />
+            <rect x="54" y="152" width="82" height="80" fill="url(#intakeMesh)" />
+            <polyline points="56,156 95,192 134,156" fill="none" stroke="#1E293B" stroke-width="1.5" />
+            <polyline points="56,228 95,192 134,228" fill="none" stroke="#1E293B" stroke-width="1.5" />
+            <polygon points="90,192 98,188 98,196" fill="#1E293B" />
+
+            <rect x="86" y="238" width="18" height="14" fill="#64748B" stroke="#334155" stroke-width="1.2" />
+            <circle cx="95" cy="255" r="4" fill="#475569" />
+
+            <text x="95" y="274" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Pre-Scouring</text>
+            <text x="95" y="287" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
+              text-anchor="middle">&amp; Conditioning</text>
+            <text x="95" y="300" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Module</text>
+
+            <!-- Main Intake Pipe: "Dye Feed Line A" -->
+            <rect x="142" y="186" width="90" height="12" fill="#94A3B8" stroke="#334155" stroke-width="1.5" />
+            <!-- Animated pneumatic flow indicator on Dye Feed Line A -->
+            <line x1="144" y1="192" x2="230" y2="192" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="2"
+              stroke-dasharray="4,6" />
+            <text x="187" y="178" font-family="sans-serif" font-size="9.5" font-weight="700" fill="#334155"
+              text-anchor="middle">Dye Feed Line A</text>
+
+            <rect x="182" y="198" width="8" height="28" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+
+            <!-- Bypass line dropping down towards Mixing Vessel Alpha -->
+            <path d="M 175,198 L 175,395 L 115,395 L 115,565 L 180,565" fill="none" stroke="#334155" stroke-width="8" />
+            <path d="M 175,198 L 175,395 L 115,395 L 115,565 L 180,565" fill="none" class="pipe-flow-anim"
+              stroke="#38BDF8" stroke-width="2" stroke-dasharray="4,6" />
+          </g>
+
+
+          <!-- Horizontal sensor coupling from Filter A into Active Vessel (Image 4) -->
+          <rect id="pipe_filterA_vessel_stem" class="interactive-pipe" data-pipe="Filter A to Active Vessel Coupling"
+            x="186" y="246" width="46" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1.2" />
+          <line x1="186" y1="250" x2="232" y2="250" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="1.5"
+            stroke-dasharray="3,5" />
+          <rect x="228" y="244" width="4" height="12" fill="#475569" stroke="#1E293B" stroke-width="1" />
+
+          <g class="scada-gauge interactive-gauge" id="dialFilterA" data-label="Dye Filter A" data-cx="186"
+            data-cy="250" cursor="pointer">
+            <circle cx="186" cy="250" r="24" fill="#64748B" stroke="#334155" stroke-width="1.5" />
+            <circle cx="186" cy="250" r="22" fill="#FFFFFF" stroke="#475569" stroke-width="1" />
+
+            <line x1="171.9" y1="264.1" x2="174.7" y2="261.3" stroke="#334155" stroke-width="1.2" />
+            <line x1="166.7" y1="255.2" x2="170.5" y2="254.1" stroke="#334155" stroke-width="1.2" />
+            <line x1="166.7" y1="244.8" x2="170.5" y2="245.9" stroke="#334155" stroke-width="1.2" />
+            <line x1="171.9" y1="235.9" x2="174.7" y2="238.7" stroke="#334155" stroke-width="1.2" />
+            <line x1="180.8" y1="230.7" x2="181.9" y2="234.5" stroke="#334155" stroke-width="1.2" />
+            <line x1="191.2" y1="230.7" x2="190.1" y2="234.5" stroke="#334155" stroke-width="1.2" />
+            <line x1="200.1" y1="235.9" x2="197.3" y2="238.7" stroke="#334155" stroke-width="1.2" />
+            <line x1="205.3" y1="244.8" x2="201.5" y2="245.9" stroke="#334155" stroke-width="1.2" />
+            <line x1="205.3" y1="255.2" x2="201.5" y2="254.1" stroke="#334155" stroke-width="1.2" />
+            <line x1="200.1" y1="264.1" x2="197.3" y2="261.3" stroke="#334155" stroke-width="1.2" />
+            <line id="needleFilterA" class="gauge-needle" x1="186" y1="250" x2="186" y2="233"
+              transform="rotate(-35, 186, 250)" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" />
+            <circle cx="186" cy="250" r="3.5" fill="#1E293B" stroke="#FFFFFF" stroke-width="0.8" />
+            <text x="186" y="285" font-family="sans-serif" font-size="10.5" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Dye Filter A</text>
+            <text id="scadaFilterADiff" x="186" y="298" font-family="sans-serif" font-size="9.5" font-weight="600"
+              fill="#475569" text-anchor="middle">Diff: 1.8 psi</text>
+          </g>
+
+          <g class="scada-sparkline interactive-sparkline" id="sparkFilterA" cursor="pointer"
+            data-title="Dye Filter A Differential Pressure Trend" data-id="DP-FLTR-A"
+            data-param="ΔP: 1.8 psi (Clean Baseline)" data-norm="Norm: < 2.0 psi | Limit: 3.5 psi"
+            data-desc="Coalescing micro-filtration differential tracking inlet liquor clarity"
+            data-status="CLEAN / NORMAL" data-statustype="status-ok">
+            <rect x="146" y="316" width="80" height="32" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
+            <line x1="146" y1="332.0" x2="226" y2="332.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
+            <polyline id="sparkFilterA_poly"
+              points="150.0,339.2 156.5,334.4 163.1,336.8 169.6,329.6 176.2,332.0 182.7,327.2 189.3,334.4 195.8,324.8 202.4,329.6 208.9,332.0 215.5,327.2 222.0,336.8"
+              fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round" />
+            <circle class="spark-marker" id="sparkFilterA_dot" cx="195.8" cy="324.8" r="2.5" fill="#DC2626"
+              stroke="#FFFFFF" stroke-width="1" />
+          </g>
+
+          <!-- ================= MODULAR FILTER BANK ================= -->
+          <g id="filterBankSection">
+            <text x="350" y="66" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Modular Multi-Stage</text>
+            <text x="350" y="80" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Dye Liquor Refining Bank</text>
+
+            <!-- ============ ACTIVE VESSEL ============ -->
+            <g class="interactive-vessel" data-vessel="Active Filter Vessel (Online)">
+              <text x="286" y="118" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
+                text-anchor="middle">Active</text>
+              <path d="M 232,142 C 232,118 340,118 340,142 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
+              <ellipse cx="286" cy="142" rx="54" ry="7" fill="#CBD5E1" stroke="#334155" stroke-width="1" />
+              <rect x="232" y="142" width="108" height="128" fill="url(#vesselGrad)" stroke="#334155"
+                stroke-width="2" />
+              <path d="M 232,270 C 232,292 340,292 340,270 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
+              <ellipse cx="286" cy="270" rx="54" ry="7" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+
+              <rect x="238" y="148" width="30" height="114" rx="2" fill="#E2E8F0" stroke="#64748B" stroke-width="1"
+                stroke-dasharray="2,2" />
+              <text x="253" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
+                transform="rotate(-90 253 210)" text-anchor="middle" letter-spacing="0.5">Micro-Filtration</text>
+
+              <rect x="271" y="148" width="30" height="114" rx="2" fill="url(#carbonHatch)" stroke="#64748B"
+                stroke-width="1" />
+              <text x="286" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#1E293B"
+                transform="rotate(-90 286 210)" text-anchor="middle" letter-spacing="0.5">Carbon Adsorption</text>
+
+              <rect x="304" y="148" width="30" height="114" rx="2" fill="url(#sterileHatch)" stroke="#64748B"
+                stroke-width="1" />
+              <text x="319" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
+                transform="rotate(-90 319 210)" text-anchor="middle" letter-spacing="0.5">Liquor Refining</text>
+            </g>
+
+            <!-- ============ STANDBY VESSEL ============ -->
+            <g class="interactive-vessel" data-vessel="Standby Filter Vessel (Auto-Switch Ready)">
+              <text x="418" y="118" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
+                text-anchor="middle">Standby</text>
+              <path d="M 364,142 C 364,118 472,118 472,142 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
+              <ellipse cx="418" cy="142" rx="54" ry="7" fill="#CBD5E1" stroke="#334155" stroke-width="1" />
+              <rect x="364" y="142" width="108" height="128" fill="url(#vesselGrad)" stroke="#334155"
+                stroke-width="2" />
+              <path d="M 364,270 C 364,292 472,292 472,270 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
+              <ellipse cx="418" cy="270" rx="54" ry="7" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+
+              <rect x="370" y="148" width="30" height="114" rx="2" fill="url(#carbonHatch)" stroke="#64748B"
+                stroke-width="1" />
+              <text x="385" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#1E293B"
+                transform="rotate(-90 385 210)" text-anchor="middle" letter-spacing="0.5">Carbon Adsorption</text>
+
+              <rect x="403" y="148" width="30" height="114" rx="2" fill="url(#sterileHatch)" stroke="#64748B"
+                stroke-width="1" />
+              <text x="418" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
+                transform="rotate(-90 418 210)" text-anchor="middle" letter-spacing="0.5">Liquor Refining</text>
+
+              <rect x="436" y="148" width="30" height="114" rx="2" fill="#E2E8F0" stroke="#64748B" stroke-width="1"
+                stroke-dasharray="2,2" />
+              <text x="451" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
+                transform="rotate(-90 451 210)" text-anchor="middle" letter-spacing="0.5">Polishing</text>
+            </g>
+
+            <!-- Bottom Drain / Purge Lines -->
+            <rect x="282" y="285" width="8" height="52" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+            <rect x="414" y="285" width="8" height="52" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+
+            <text x="270" y="322" font-family="sans-serif" font-size="14" font-weight="700" fill="#2563EB">↓</text>
+            <text x="402" y="322" font-family="sans-serif" font-size="14" font-weight="700" fill="#2563EB">↓</text>
+
+            <text x="254" y="302" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
+              text-anchor="middle">Purge</text>
+            <text x="254" y="312" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
+              text-anchor="middle">Valves</text>
+
+            <text x="386" y="302" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
+              text-anchor="middle">Purge</text>
+            <text x="386" y="312" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
+              text-anchor="middle">Valves</text>
+          </g>
+
+
+          <g class="pid-valve interactive-valve valve-open" id="valvePurgeActive" data-valve-id="valvePurgeActive"
+            data-state="open" transform="translate(286,335)" cursor="pointer">
+            <line class="valve-stem" x1="0" y1="0" x2="0" y2="-11.9" stroke="#0F172A" stroke-width="1.19" />
+            <circle class="valve-actuator" cx="0" cy="-14.45" r="5.1" stroke="#0F172A" stroke-width="1.19" />
+            <polygon class="valve-body-left" points="-11.9,-6.8 0,0 -11.9,6.8" stroke="#0F172A" stroke-width="1.19" />
+            <polygon class="valve-body-right" points="11.9,-6.8 0,0 11.9,6.8" stroke="#0F172A" stroke-width="1.19" />
+          </g>
+
+          <g class="pid-valve interactive-valve valve-open" id="valvePurgeStandby" data-valve-id="valvePurgeStandby"
+            data-state="open" transform="translate(418,335)" cursor="pointer">
+            <line class="valve-stem" x1="0" y1="0" x2="0" y2="-11.9" stroke="#0F172A" stroke-width="1.19" />
+            <circle class="valve-actuator" cx="0" cy="-14.45" r="5.1" stroke="#0F172A" stroke-width="1.19" />
+            <polygon class="valve-body-left" points="-11.9,-6.8 0,0 -11.9,6.8" stroke="#0F172A" stroke-width="1.19" />
+            <polygon class="valve-body-right" points="11.9,-6.8 0,0 11.9,6.8" stroke="#0F172A" stroke-width="1.19" />
+          </g>
+
+          <path d="M 286,345 L 286,370 L 418,370 L 418,345" fill="none" stroke="#334155" stroke-width="4" />
+          <line x1="352" y1="370" x2="352" y2="400" stroke="#334155" stroke-width="4" />
+
+
+          <g class="pid-valve interactive-valve valve-open" id="valvePurgeCrossover" data-valve-id="valvePurgeCrossover"
+            data-state="open" transform="translate(352,385)" cursor="pointer">
+            <line class="valve-stem" x1="0" y1="0" x2="0" y2="-11.9" stroke="#0F172A" stroke-width="1.19" />
+            <circle class="valve-actuator" cx="0" cy="-14.45" r="5.1" stroke="#0F172A" stroke-width="1.19" />
+            <polygon class="valve-body-left" points="-11.9,-6.8 0,0 -11.9,6.8" stroke="#0F172A" stroke-width="1.19" />
+            <polygon class="valve-body-right" points="11.9,-6.8 0,0 11.9,6.8" stroke="#0F172A" stroke-width="1.19" />
+          </g>
+
+          <!-- Exit Header Pipe -->
+          <rect id="pipe_filterB_header" class="interactive-pipe" data-pipe="Exit Header Line (Filter B to Manifold)"
+            x="472" y="186" width="260" height="12" fill="#94A3B8" stroke="#334155" stroke-width="1.5" />
+          <line x1="474" y1="192" x2="728" y2="192" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="2"
+            stroke-dasharray="4,6" />
+          <!-- Blue Flow Arrow -->
+          <polygon points="508,188 518,192 508,196" fill="#2563EB" pointer-events="none" />
+          <rect x="502" y="190" width="8" height="4" fill="#2563EB" pointer-events="none" />
+
+          <rect id="pipe_filterB_stem" class="interactive-pipe" data-pipe="Filter B Gauge Sensor Tap" x="522" y="198"
+            width="8" height="28" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+
+          <!-- Horizontal sensor coupling from Standby Vessel to Filter B (Image 4) -->
+          <rect id="pipe_filterB_vessel_stem" class="interactive-pipe" data-pipe="Standby Vessel to Filter B Sensor Tap"
+            x="472" y="246" width="54" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1.2" />
+          <line x1="472" y1="250" x2="526" y2="250" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="1.5"
+            stroke-dasharray="3,5" />
+          <rect x="472" y="244" width="4" height="12" fill="#475569" stroke="#1E293B" stroke-width="1" />
+
+          <g class="scada-gauge interactive-gauge" id="dialFilterB" data-label="Dye Filter B" data-cx="526"
+            data-cy="250" cursor="pointer">
+            <circle cx="526" cy="250" r="24" fill="#64748B" stroke="#334155" stroke-width="1.5" />
+            <circle cx="526" cy="250" r="22" fill="#FFFFFF" stroke="#475569" stroke-width="1" />
+
+            <line x1="511.9" y1="264.1" x2="514.7" y2="261.3" stroke="#334155" stroke-width="1.2" />
+            <line x1="506.7" y1="255.2" x2="510.5" y2="254.1" stroke="#334155" stroke-width="1.2" />
+            <line x1="506.7" y1="244.8" x2="510.5" y2="245.9" stroke="#334155" stroke-width="1.2" />
+            <line x1="511.9" y1="235.9" x2="514.7" y2="238.7" stroke="#334155" stroke-width="1.2" />
+            <line x1="520.8" y1="230.7" x2="521.9" y2="234.5" stroke="#334155" stroke-width="1.2" />
+            <line x1="531.2" y1="230.7" x2="530.1" y2="234.5" stroke="#334155" stroke-width="1.2" />
+            <line x1="540.1" y1="235.9" x2="537.3" y2="238.7" stroke="#334155" stroke-width="1.2" />
+            <line x1="545.3" y1="244.8" x2="541.5" y2="245.9" stroke="#334155" stroke-width="1.2" />
+            <line x1="545.3" y1="255.2" x2="541.5" y2="254.1" stroke="#334155" stroke-width="1.2" />
+            <line x1="540.1" y1="264.1" x2="537.3" y2="261.3" stroke="#334155" stroke-width="1.2" />
+            <line id="needleFilterB" class="gauge-needle" x1="526" y1="250" x2="526" y2="233"
+              transform="rotate(-55, 526, 250)" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" />
+            <circle cx="526" cy="250" r="3.5" fill="#1E293B" stroke="#FFFFFF" stroke-width="0.8" />
+            <text x="526" y="285" font-family="sans-serif" font-size="10.5" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Dye Filter B</text>
+            <text id="scadaFilterBDiff" x="526" y="298" font-family="sans-serif" font-size="9.5" font-weight="600"
+              fill="#475569" text-anchor="middle">Diff: 0.9 psi</text>
+          </g>
+
+          <g class="scada-sparkline interactive-sparkline" id="sparkFilterB" cursor="pointer"
+            data-title="Dye Filter B Differential Pressure Trend" data-id="DP-FLTR-B"
+            data-param="ΔP: 0.9 psi (Active Monitoring)" data-norm="Norm: 0.90 psi | Limit: 1.40 psi"
+            data-desc="Refined dye liquor micro-filtration stage differential telemetry" data-status="ONLINE OPTIMAL"
+            data-statustype="status-ok">
+            <rect x="484" y="316" width="74" height="32" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
+            <line x1="484" y1="332.0" x2="558" y2="332.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
+            <polyline id="sparkFilterB_poly"
+              points="488.0,334.4 494.5,333.2 501.0,334.4 507.5,332.0 514.0,333.9 520.5,332.5 527.0,333.4 533.5,331.5 540.0,334.2 546.5,333.7 553.0,332.7"
+              fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round" />
+          </g>
+
+          <!-- ================= RADIAL EFFICIENCY INDEX ================= -->
+          <g id="radialEfficiencyIndex" class="interactive-radar" cursor="pointer">
+            <text x="632" y="42" font-family="sans-serif" font-size="12" font-weight="800" fill="#1E293B"
+              text-anchor="middle">Spectral Efficiency &amp; Quality Index</text>
+
+            <polygon
+              points="632.0,105.4 638.8,108.2 641.6,115.0 638.8,121.8 632.0,124.6 625.2,121.8 622.4,115.0 625.2,108.2"
+              fill="none" stroke="#94A3B8" stroke-width="0.8" opacity="0.6" />
+            <text x="635" y="108.4" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#64748B">10</text>
+            <polygon
+              points="632.0,95.8 645.6,101.4 651.2,115.0 645.6,128.6 632.0,134.2 618.4,128.6 612.8,115.0 618.4,101.4"
+              fill="none" stroke="#94A3B8" stroke-width="0.8" opacity="0.6" />
+            <text x="635" y="98.8" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#64748B">30</text>
+            <polygon
+              points="632.0,86.2 652.4,94.6 660.8,115.0 652.4,135.4 632.0,143.8 611.6,135.4 603.2,115.0 611.6,94.6"
+              fill="none" stroke="#94A3B8" stroke-width="0.8" opacity="0.6" />
+            <text x="635" y="89.2" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#64748B">50</text>
+            <polygon
+              points="632.0,76.6 659.2,87.8 670.4,115.0 659.2,142.2 632.0,153.4 604.8,142.2 593.6,115.0 604.8,87.8"
+              fill="none" stroke="#94A3B8" stroke-width="0.8" opacity="0.6" />
+            <text x="635" y="79.6" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#64748B">70</text>
+            <polygon
+              points="632.0,67.0 665.9,81.1 680.0,115.0 665.9,148.9 632.0,163.0 598.1,148.9 584.0,115.0 598.1,81.1"
+              fill="none" stroke="#94A3B8" stroke-width="0.8" opacity="0.6" />
+            <text x="635" y="70.0" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#64748B">90</text>
+            <line x1="632" y1="115" x2="632.0" y2="67.0" stroke="#64748B" stroke-width="0.9" />
+            <text x="632.0" y="57.0" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
+              text-anchor="middle">Color Uniformity</text>
+            <line x1="632" y1="115" x2="665.9" y2="81.1" stroke="#64748B" stroke-width="0.9" />
+            <text x="677.94" y="77.05" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
+              text-anchor="middle">Bath Temp</text>
+            <line x1="632" y1="115" x2="680.0" y2="115.0" stroke="#64748B" stroke-width="0.9" />
+            <text x="690.0" y="118.0" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
+              text-anchor="middle">Liquor Ratio</text>
+            <line x1="632" y1="115" x2="665.9" y2="148.9" stroke="#64748B" stroke-width="0.9" />
+            <text x="679.94" y="154.94" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155"
+              text-anchor="middle">Fixation</text>
+            <text x="679.94" y="162.94" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155"
+              text-anchor="middle">Yield</text>
+            <line x1="632" y1="115" x2="632.0" y2="163.0" stroke="#64748B" stroke-width="0.9" />
+            <text x="632.0" y="177.0" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
+              text-anchor="middle">Turbidity</text>
+            <line x1="632" y1="115" x2="598.1" y2="148.9" stroke="#64748B" stroke-width="0.9" />
+            <text x="584.05" y="158.94" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
+              text-anchor="middle">pH Stability</text>
+            <line x1="632" y1="115" x2="584.0" y2="115.0" stroke="#64748B" stroke-width="0.9" />
+            <text x="572.0" y="118.0" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
+              text-anchor="middle">Nozzle Drop</text>
+            <line x1="632" y1="115" x2="598.1" y2="81.1" stroke="#64748B" stroke-width="0.9" />
+            <text x="586.05" y="73.05" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155"
+              text-anchor="middle">Energy</text>
+            <text x="586.05" y="81.05" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155"
+              text-anchor="middle">Efficiency</text>
+            <polygon id="radarDataPoly"
+              points="632.0,74.2 656.4,90.6 669.4,115.0 654.1,137.1 632.0,158.2 602.1,144.9 596.0,115.0 604.2,87.2"
+              fill="rgba(37,99,235,0.2)" stroke="#2563EB" stroke-width="1.8" />
+            <circle class="radar-dot" id="radar_dot_0" data-metric="Color Uniformity" data-val="85" cx="632.0" cy="74.2"
+              r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
+            <circle class="radar-dot" id="radar_dot_1" data-metric="Bath Temp" data-val="72" cx="656.4" cy="90.6"
+              r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
+            <circle class="radar-dot" id="radar_dot_2" data-metric="Liquor Ratio" data-val="78" cx="669.4" cy="115.0"
+              r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
+            <circle class="radar-dot" id="radar_dot_3" data-metric="Fixation Yield" data-val="65" cx="654.1" cy="137.1"
+              r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
+            <circle class="radar-dot" id="radar_dot_4" data-metric="Turbidity" data-val="90" cx="632.0" cy="158.2"
+              r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
+            <circle class="radar-dot" id="radar_dot_5" data-metric="pH Stability" data-val="88" cx="602.1" cy="144.9"
+              r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
+            <circle class="radar-dot" id="radar_dot_6" data-metric="Nozzle Drop" data-val="75" cx="596.0" cy="115.0"
+              r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
+            <circle class="radar-dot" id="radar_dot_7" data-metric="Energy Efficiency" data-val="82" cx="604.2"
+              cy="87.2" r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
+          </g>
+
+          <g class="scada-sparkline interactive-sparkline" id="sparkRadarL1" cursor="pointer"
+            data-title="Spectrophotometric Color Uniformity (ΔE) Trend" data-id="TREND-COLOR-01"
+            data-param="ΔE: 0.18 (Exceeds Target)" data-norm="Tolerance Limit: ΔE &lt; 0.50"
+            data-desc="Online spectrophotometer continuous color delta tracking across dyeing lot"
+            data-status="EXCELLENT SHADE MATCH" data-statustype="status-ok">
+            <rect x="478" y="48" width="64" height="28" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
+            <text x="483" y="58" font-family="sans-serif" font-size="6.5" font-weight="700" fill="#64748B">ΔE
+              0.18</text>
+            <line x1="478" y1="62.0" x2="542" y2="62.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
+            <polyline id="sparkRadarL1_poly"
+              points="482.0,66.0 490.0,62.0 498.0,64.0 506.0,58.0 514.0,60.0 522.0,56.0 530.0,59.0 538.0,58.0"
+              fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round" />
+          </g>
+
+          <g class="scada-sparkline interactive-sparkline" id="sparkRadarL2" cursor="pointer"
+            data-title="Dye Bath Temperature Stability Trend" data-id="TREND-TEMP-02"
+            data-param="68.4°C Constant (±0.2°C)" data-norm="Recipe Target: 68.0°C"
+            data-desc="Thermocouple telemetry tracking closed-loop steam heat exchanger"
+            data-status="THERMAL EQUILIBRIUM" data-statustype="status-ok">
+            <rect x="478" y="142" width="64" height="28" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
+            <text x="483" y="152" font-family="sans-serif" font-size="6.5" font-weight="700"
+              fill="#64748B">68.4°C</text>
+            <line x1="478" y1="156.0" x2="542" y2="156.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
+            <polyline id="sparkRadarL2_poly"
+              points="482.0,162.0 490.0,158.0 498.0,160.0 506.0,156.0 514.0,158.0 522.0,148.0 530.0,149.0 538.0,160.0"
+              fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round" />
+            <circle class="spark-marker" id="sparkRadarL2_dot" cx="522.0" cy="148.0" r="2.5" fill="#DC2626"
+              stroke="#FFFFFF" stroke-width="1" />
+          </g>
+
+          <g class="scada-sparkline interactive-sparkline" id="sparkRadarR1" cursor="pointer"
+            data-title="Liquor Circulation Flow Velocity Trend" data-id="TREND-FLOW-01" data-param="142 L/min Flow Rate"
+            data-norm="Nominal: 140 L/min"
+            data-desc="Electromagnetic flow meter tracking continuous dye liquor circulation" data-status="LAMINAR FLOW"
+            data-statustype="status-ok">
+            <rect x="744" y="46" width="64" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
+            <text x="748" y="55" font-family="sans-serif" font-size="6" font-weight="700" fill="#64748B">142 L/m</text>
+            <line x1="744" y1="59.0" x2="808" y2="59.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
+            <polyline id="sparkRadarR1_poly"
+              points="748.0,60.8 757.3,57.2 766.7,58.1 776.0,56.3 785.3,59.0 794.7,55.4 804.0,57.2" fill="none"
+              stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round" />
+          </g>
+
+          <g class="scada-sparkline interactive-sparkline" id="sparkRadarR2" cursor="pointer"
+            data-title="Dye Bath pH Stabilization Curve" data-id="TREND-PH-02" data-param="pH 6.20 ± 0.05"
+            data-norm="Set Point: pH 6.20"
+            data-desc="Industrial glass electrode pH sensor tracking acid/alkali auto-dosing"
+            data-status="BUFFER NOMINAL" data-statustype="status-ok">
+            <rect x="744" y="82" width="64" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
+            <text x="748" y="91" font-family="sans-serif" font-size="6" font-weight="700" fill="#64748B">pH 6.2</text>
+            <line x1="744" y1="95.0" x2="808" y2="95.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
+            <polyline id="sparkRadarR2_poly"
+              points="748.0,98.6 757.3,96.8 766.7,97.7 776.0,90.5 785.3,89.6 794.7,96.8 804.0,95.9" fill="none"
+              stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round" />
+            <circle class="spark-marker" id="sparkRadarR2_dot" cx="785.3" cy="89.6" r="2.5" fill="#DC2626"
+              stroke="#FFFFFF" stroke-width="1" />
+          </g>
+
+          <g class="scada-sparkline interactive-sparkline" id="sparkRadarR3" cursor="pointer"
+            data-title="Fixation Rate &amp; Exhaustion Yield Trend" data-id="TREND-YIELD-03"
+            data-param="98.6% Exhaustion" data-norm="Standard Target: > 96.0%"
+            data-desc="Colorimetric bath depletion monitoring dye uptake onto fabric fiber matrix"
+            data-status="HIGH UPTAKE" data-statustype="status-ok">
+            <rect x="744" y="118" width="64" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
+            <text x="748" y="127" font-family="sans-serif" font-size="6" font-weight="700" fill="#64748B">98.6%</text>
+            <line x1="744" y1="131.0" x2="808" y2="131.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
+            <polyline id="sparkRadarR3_poly"
+              points="748.0,131.0 757.3,130.1 766.7,129.2 776.0,129.6 785.3,128.8 794.7,129.4 804.0,128.7" fill="none"
+              stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round" />
+          </g>
+
+          <!-- ================= IMAGE 4 TREND LINE CHART BOX ================= -->
+          <g class="scada-sparkline interactive-sparkline" id="sparkDesorptionTop" cursor="pointer"
+            data-title="Continuous Dye Liquor Flow Stability Trend" data-id="TREND-HDR-01"
+            data-param="Flow: 142 L/min (±0.5%)" data-norm="Target: 140 L/min Nominal"
+            data-desc="Real-time multi-nozzle liquor delivery pressure and flow rate curve" data-status="STABLE NOMINAL"
+            data-statustype="status-ok">
+            <rect x="570" y="200" width="144" height="42" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" />
+            <line x1="570" y1="221" x2="714" y2="221" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
+            <polyline id="sparkDesorptionTop_poly"
+              points="574,224 584,220 594,223 604,217 614,220 624,218 634,222 644,219 654,221 664,215 674,219 684,216 694,218 704,214 710,216"
+              fill="none" stroke="#2563EB" stroke-width="1.6" stroke-linejoin="round" />
+            <circle id="sparkDesorptionTop_dot" cx="704" cy="214" r="2.5" fill="#DC2626" stroke="#FFFFFF"
+              stroke-width="1" />
+          </g>
+
+          <!-- ================= SCADA HMI INSET MONITOR ================= -->
+          <g id="scadaHmiCard" class="interactive-hmi" transform="translate(570, 248)" cursor="pointer">
+            <rect x="0" y="0" width="144" height="108" rx="5" fill="#1C2128" stroke="#374151" stroke-width="2"
+              filter="drop-shadow(0 4px 6px rgba(0,0,0,0.3))" />
+
+            <rect x="0" y="0" width="144" height="16" rx="5 5 0 0" fill="#2D333B" />
+            <circle cx="9" cy="8" r="3" fill="#22C55E" class="hmi-led led-green" />
+            <circle cx="18" cy="8" r="3" fill="#EAB308" class="hmi-led led-yellow" />
+            <circle cx="27" cy="8" r="3" fill="#EF4444" class="hmi-led led-red" />
+            <text x="38" y="11" font-family="sans-serif" font-size="7" font-weight="600" fill="#9CA3AF">AATCC / ISO 105
+              Class 1</text>
+
+            <!-- Circular Gauge 99.7% -->
+            <circle cx="42" cy="48" r="21" fill="none" stroke="#374151" stroke-width="4.5" />
+            <path id="hmiArcGauge" d="M 42 27 A 21 21 0 1 1 23 57" fill="none" stroke="#22C55E" stroke-width="4.5"
+              stroke-linecap="round" />
+            <text id="hmiAirPurityVal" x="42" y="50" font-family="sans-serif" font-size="10.5" font-weight="800"
+              fill="#F3F4F6" text-anchor="middle">99.7%</text>
+            <text x="42" y="60" font-family="sans-serif" font-size="7" font-weight="600" fill="#9CA3AF"
+              text-anchor="middle">Dye Purity</text>
+
+            <!-- Mini Sparkline in Monitor -->
+            <g id="sparkAirPurity" class="interactive-sparkline" cursor="pointer"
+              data-title="Dye Liquor Spectral Purity History (24h)" data-id="ISO-CLASS-1"
+              data-param="Purity: 99.7% Continuous" data-norm="Standard: 99.5% Minimum"
+              data-desc="Continuous spectral optical monitoring for pharmaceutical and textile grade liquor purity"
+              data-status="CLASS 1 VERIFIED" data-statustype="status-ok">
+              <rect x="76" y="24" width="60" height="24" rx="2" fill="#0D1117" stroke="#30363D" />
+              <polyline points="79,38 87,34 95,36 103,30 111,32 119,28 131,33" fill="none" stroke="#38BDF8"
+                stroke-width="1.2" />
+            </g>
+
+            <!-- Status Rows -->
+            <text id="hmiDewPointTxt" x="10" y="80" font-family="monospace" font-size="6.5" fill="#E5E7EB">Spectro ΔE:
+              0.18</text>
+            <text id="hmiOilTxt" x="10" y="90" font-family="monospace" font-size="6.5" fill="#E5E7EB">Aux Residual:
+              &lt;0.01%</text>
+            <text id="hmiParticleTxt" x="10" y="100" font-family="monospace" font-size="6.5"
+              fill="#E5E7EB">Micro-Solids: 0.01µm</text>
+
+            <!-- Interactive Action Button -->
+            <g id="hmiActionBtn" cursor="pointer">
+              <rect x="98" y="78" width="40" height="18" rx="3" fill="#EA580C" class="hmi-btn-bg" />
+              <text id="hmiBtnTxt" x="118" y="90" font-family="sans-serif" font-size="7.5" font-weight="700"
+                fill="#FFFFFF" text-anchor="middle">ONLINE</text>
+            </g>
+          </g>
+
+
+          <!-- ================= COMPRESSOR ARRAY SECTION ================= -->
+          <g id="compressorSection">
+            <text x="918" y="74" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
+              text-anchor="end">Jet System</text>
+            <text x="918" y="88" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
+              text-anchor="end">Pressure:</text>
+            <text id="scadaSysPressText" x="918" y="103" font-family="sans-serif" font-size="13.5" font-weight="800"
+              fill="#0F172A" text-anchor="end">7.9 bar</text>
+
+
+            <g class="scada-gauge interactive-gauge" id="dialSysPressTop" data-label="" data-cx="962" data-cy="85"
+              cursor="pointer">
+              <circle cx="962" cy="85" r="28" fill="#64748B" stroke="#334155" stroke-width="1.5" />
+              <circle cx="962" cy="85" r="26" fill="#FFFFFF" stroke="#475569" stroke-width="1" />
+
+              <path d="M 978.2634559672906 68.7365440327094
+                     A 23 23 0 0 1 978.2634559672906 101.2634559672906" fill="none" stroke="#EF4444"
+                stroke-width="4" />
+              <line x1="945.0" y1="102.0" x2="947.9" y2="99.1" stroke="#334155" stroke-width="1.2" />
+              <line x1="938.8" y1="91.2" x2="942.7" y2="90.2" stroke="#334155" stroke-width="1.2" />
+              <line x1="938.8" y1="78.8" x2="942.7" y2="79.8" stroke="#334155" stroke-width="1.2" />
+              <line x1="945.0" y1="68.0" x2="947.9" y2="70.9" stroke="#334155" stroke-width="1.2" />
+              <line x1="955.8" y1="61.8" x2="956.8" y2="65.7" stroke="#334155" stroke-width="1.2" />
+              <line x1="968.2" y1="61.8" x2="967.2" y2="65.7" stroke="#334155" stroke-width="1.2" />
+              <line x1="979.0" y1="68.0" x2="976.1" y2="70.9" stroke="#334155" stroke-width="1.2" />
+              <line x1="985.2" y1="78.8" x2="981.3" y2="79.8" stroke="#334155" stroke-width="1.2" />
+              <line x1="985.2" y1="91.2" x2="981.3" y2="90.2" stroke="#334155" stroke-width="1.2" />
+              <line x1="979.0" y1="102.0" x2="976.1" y2="99.1" stroke="#334155" stroke-width="1.2" />
+              <line id="needleSysPressTop" class="gauge-needle" x1="962" y1="85" x2="962" y2="65"
+                transform="rotate(42, 962, 85)" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" />
+              <circle cx="962" cy="85" r="3.8" fill="#1E293B" stroke="#FFFFFF" stroke-width="0.8" />
+
+
+            </g>
+
+            <!-- Section Title -->
+            <text x="942" y="146" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Continuous Jet Dyeing &amp; Steaming Array</text>
+          </g>
+
+
+          <g class="scada-compressor-unit interactive-compressor" id="compressor_1" data-comp="1" data-rpm="1450 RPM"
+            cursor="pointer">
+            <rect x="822" y="209" width="160" height="9" rx="2" fill="#64748B" stroke="#334155" stroke-width="1.2" />
+            <rect x="836" y="218" width="18" height="5" fill="#475569" />
+            <rect x="948" y="218" width="18" height="5" fill="#475569" />
+
+            <rect class="comp-screw-housing" x="826" y="169" width="76" height="38" rx="6" fill="url(#screwGrad)"
+              stroke="#334155" stroke-width="2" />
+            <line class="comp-rotor-line" x1="832" y1="171" x2="846" y2="205" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="840" y1="171" x2="854" y2="205" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="848" y1="171" x2="862" y2="205" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="856" y1="171" x2="870" y2="205" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="864" y1="171" x2="878" y2="205" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="872" y1="171" x2="886" y2="205" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="880" y1="171" x2="894" y2="205" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="888" y1="171" x2="902" y2="205" stroke="#475569" stroke-width="2.5" />
+            <rect x="902" y="179" width="10" height="18" fill="#475569" stroke="#1E293B" stroke-width="1" />
+
+            <rect class="comp-motor-housing" x="912" y="161" width="58" height="48" rx="4" fill="url(#motorGrad)"
+              stroke="#1E293B" stroke-width="2" />
+            <line x1="914" y1="163" x2="914" y2="209" stroke="#334155" stroke-width="2" />
+            <line x1="920" y1="163" x2="920" y2="209" stroke="#334155" stroke-width="2" />
+            <line x1="926" y1="163" x2="926" y2="209" stroke="#334155" stroke-width="2" />
+            <line x1="932" y1="163" x2="932" y2="209" stroke="#334155" stroke-width="2" />
+            <line x1="938" y1="163" x2="938" y2="209" stroke="#334155" stroke-width="2" />
+            <line x1="944" y1="163" x2="944" y2="209" stroke="#334155" stroke-width="2" />
+            <line x1="950" y1="163" x2="950" y2="209" stroke="#334155" stroke-width="2" />
+            <line x1="956" y1="163" x2="956" y2="209" stroke="#334155" stroke-width="2" />
+            <line x1="962" y1="163" x2="962" y2="209" stroke="#334155" stroke-width="2" />
+            <rect x="928" y="156" width="18" height="7" rx="1" fill="#475569" stroke="#1E293B" />
+
+            <rect x="978" y="183" width="16" height="26" rx="2" fill="#2563EB" stroke="#1D4ED8" stroke-width="1.2" />
+            <line x1="970" y1="195" x2="978" y2="195" stroke="#1E293B" stroke-width="2" />
+
+            <text class="comp-title-txt" x="914" y="233" font-family="sans-serif" font-size="11" font-weight="700"
+              fill="#1E293B" text-anchor="middle">Jet Dyeing Chamber 1</text>
+          </g>
+
+          <g class="scada-compressor-unit interactive-compressor" id="compressor_2" data-comp="2" data-rpm="1410 RPM"
+            cursor="pointer">
+            <rect x="822" y="299" width="160" height="9" rx="2" fill="#64748B" stroke="#334155" stroke-width="1.2" />
+            <rect x="836" y="308" width="18" height="5" fill="#475569" />
+            <rect x="948" y="308" width="18" height="5" fill="#475569" />
+
+            <rect class="comp-screw-housing" x="826" y="259" width="76" height="38" rx="6" fill="url(#screwGrad)"
+              stroke="#334155" stroke-width="2" />
+            <line class="comp-rotor-line" x1="832" y1="261" x2="846" y2="295" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="840" y1="261" x2="854" y2="295" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="848" y1="261" x2="862" y2="295" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="856" y1="261" x2="870" y2="295" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="864" y1="261" x2="878" y2="295" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="872" y1="261" x2="886" y2="295" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="880" y1="261" x2="894" y2="295" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="888" y1="261" x2="902" y2="295" stroke="#475569" stroke-width="2.5" />
+            <rect x="902" y="269" width="10" height="18" fill="#475569" stroke="#1E293B" stroke-width="1" />
+
+            <rect class="comp-motor-housing" x="912" y="251" width="58" height="48" rx="4" fill="url(#motorGrad)"
+              stroke="#1E293B" stroke-width="2" />
+            <line x1="914" y1="253" x2="914" y2="299" stroke="#334155" stroke-width="2" />
+            <line x1="920" y1="253" x2="920" y2="299" stroke="#334155" stroke-width="2" />
+            <line x1="926" y1="253" x2="926" y2="299" stroke="#334155" stroke-width="2" />
+            <line x1="932" y1="253" x2="932" y2="299" stroke="#334155" stroke-width="2" />
+            <line x1="938" y1="253" x2="938" y2="299" stroke="#334155" stroke-width="2" />
+            <line x1="944" y1="253" x2="944" y2="299" stroke="#334155" stroke-width="2" />
+            <line x1="950" y1="253" x2="950" y2="299" stroke="#334155" stroke-width="2" />
+            <line x1="956" y1="253" x2="956" y2="299" stroke="#334155" stroke-width="2" />
+            <line x1="962" y1="253" x2="962" y2="299" stroke="#334155" stroke-width="2" />
+            <rect x="928" y="246" width="18" height="7" rx="1" fill="#475569" stroke="#1E293B" />
+
+            <rect x="978" y="273" width="16" height="26" rx="2" fill="#2563EB" stroke="#1D4ED8" stroke-width="1.2" />
+            <line x1="970" y1="285" x2="978" y2="285" stroke="#1E293B" stroke-width="2" />
+
+            <text class="comp-title-txt" x="914" y="323" font-family="sans-serif" font-size="11" font-weight="700"
+              fill="#1E293B" text-anchor="middle">Jet Dyeing Chamber 2</text>
+          </g>
+
+          <g class="scada-compressor-unit interactive-compressor" id="compressor_3" data-comp="3" data-rpm="899 RPM"
+            cursor="pointer">
+            <rect x="822" y="389" width="160" height="9" rx="2" fill="#64748B" stroke="#334155" stroke-width="1.2" />
+            <rect x="836" y="398" width="18" height="5" fill="#475569" />
+            <rect x="948" y="398" width="18" height="5" fill="#475569" />
+
+            <rect class="comp-screw-housing" x="826" y="349" width="76" height="38" rx="6" fill="url(#screwGrad)"
+              stroke="#334155" stroke-width="2" />
+            <line class="comp-rotor-line" x1="832" y1="351" x2="846" y2="385" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="840" y1="351" x2="854" y2="385" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="848" y1="351" x2="862" y2="385" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="856" y1="351" x2="870" y2="385" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="864" y1="351" x2="878" y2="385" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="872" y1="351" x2="886" y2="385" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="880" y1="351" x2="894" y2="385" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="888" y1="351" x2="902" y2="385" stroke="#475569" stroke-width="2.5" />
+            <rect x="902" y="359" width="10" height="18" fill="#475569" stroke="#1E293B" stroke-width="1" />
+
+            <rect class="comp-motor-housing" x="912" y="341" width="58" height="48" rx="4" fill="url(#motorGrad)"
+              stroke="#1E293B" stroke-width="2" />
+            <line x1="914" y1="343" x2="914" y2="389" stroke="#334155" stroke-width="2" />
+            <line x1="920" y1="343" x2="920" y2="389" stroke="#334155" stroke-width="2" />
+            <line x1="926" y1="343" x2="926" y2="389" stroke="#334155" stroke-width="2" />
+            <line x1="932" y1="343" x2="932" y2="389" stroke="#334155" stroke-width="2" />
+            <line x1="938" y1="343" x2="938" y2="389" stroke="#334155" stroke-width="2" />
+            <line x1="944" y1="343" x2="944" y2="389" stroke="#334155" stroke-width="2" />
+            <line x1="950" y1="343" x2="950" y2="389" stroke="#334155" stroke-width="2" />
+            <line x1="956" y1="343" x2="956" y2="389" stroke="#334155" stroke-width="2" />
+            <line x1="962" y1="343" x2="962" y2="389" stroke="#334155" stroke-width="2" />
+            <rect x="928" y="336" width="18" height="7" rx="1" fill="#475569" stroke="#1E293B" />
+
+            <rect x="978" y="363" width="16" height="26" rx="2" fill="#2563EB" stroke="#1D4ED8" stroke-width="1.2" />
+            <line x1="970" y1="375" x2="978" y2="375" stroke="#1E293B" stroke-width="2" />
+
+            <text class="comp-title-txt" x="914" y="413" font-family="sans-serif" font-size="11" font-weight="700"
+              fill="#1E293B" text-anchor="middle">Jet Dyeing Chamber 3</text>
+          </g>
+
+          <g class="scada-compressor-unit interactive-compressor" id="compressor_4" data-comp="4" data-rpm="1450 RPM"
+            cursor="pointer">
+            <rect x="822" y="479" width="160" height="9" rx="2" fill="#64748B" stroke="#334155" stroke-width="1.2" />
+            <rect x="836" y="488" width="18" height="5" fill="#475569" />
+            <rect x="948" y="488" width="18" height="5" fill="#475569" />
+
+            <rect class="comp-screw-housing" x="826" y="439" width="76" height="38" rx="6" fill="url(#screwGrad)"
+              stroke="#334155" stroke-width="2" />
+            <line class="comp-rotor-line" x1="832" y1="441" x2="846" y2="475" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="840" y1="441" x2="854" y2="475" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="848" y1="441" x2="862" y2="475" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="856" y1="441" x2="870" y2="475" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="864" y1="441" x2="878" y2="475" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="872" y1="441" x2="886" y2="475" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="880" y1="441" x2="894" y2="475" stroke="#475569" stroke-width="2.5" />
+            <line class="comp-rotor-line" x1="888" y1="441" x2="902" y2="475" stroke="#475569" stroke-width="2.5" />
+            <rect x="902" y="449" width="10" height="18" fill="#475569" stroke="#1E293B" stroke-width="1" />
+
+            <rect class="comp-motor-housing" x="912" y="431" width="58" height="48" rx="4" fill="url(#motorGrad)"
+              stroke="#1E293B" stroke-width="2" />
+            <line x1="914" y1="433" x2="914" y2="479" stroke="#334155" stroke-width="2" />
+            <line x1="920" y1="433" x2="920" y2="479" stroke="#334155" stroke-width="2" />
+            <line x1="926" y1="433" x2="926" y2="479" stroke="#334155" stroke-width="2" />
+            <line x1="932" y1="433" x2="932" y2="479" stroke="#334155" stroke-width="2" />
+            <line x1="938" y1="433" x2="938" y2="479" stroke="#334155" stroke-width="2" />
+            <line x1="944" y1="433" x2="944" y2="479" stroke="#334155" stroke-width="2" />
+            <line x1="950" y1="433" x2="950" y2="479" stroke="#334155" stroke-width="2" />
+            <line x1="956" y1="433" x2="956" y2="479" stroke="#334155" stroke-width="2" />
+            <line x1="962" y1="433" x2="962" y2="479" stroke="#334155" stroke-width="2" />
+            <rect x="928" y="426" width="18" height="7" rx="1" fill="#475569" stroke="#1E293B" />
+
+            <rect x="978" y="453" width="16" height="26" rx="2" fill="#2563EB" stroke="#1D4ED8" stroke-width="1.2" />
+            <line x1="970" y1="465" x2="978" y2="465" stroke="#1E293B" stroke-width="2" />
+
+            <text class="comp-title-txt" x="914" y="503" font-family="sans-serif" font-size="11" font-weight="700"
+              fill="#1E293B" text-anchor="middle">Jet Dyeing Chamber 4</text>
+          </g>
+
+          <!-- Compressor Piping Manifolds -->
+          <g id="compressorPiping">
+            <line x1="732" y1="192" x2="780" y2="192" stroke="#334155" stroke-width="10" />
+
+
+            <g class="pid-valve interactive-valve valve-open" id="valveHeaderJunction"
+              data-valve-id="valveHeaderJunction" data-state="open" transform="translate(754,192)" cursor="pointer">
+              <line class="valve-stem" x1="0" y1="0" x2="0" y2="-14.0" stroke="#0F172A" stroke-width="1.4" />
+              <circle class="valve-actuator" cx="0" cy="-17.0" r="6.0" stroke="#0F172A" stroke-width="1.4" />
+              <polygon class="valve-body-left" points="-14.0,-8.0 0,0 -14.0,8.0" stroke="#0F172A" stroke-width="1.4" />
+              <polygon class="valve-body-right" points="14.0,-8.0 0,0 14.0,8.0" stroke="#0F172A" stroke-width="1.4" />
+            </g>
+
+            <!-- Vertical Green Manifold -->
+            <rect x="775" y="192" width="10" height="340" fill="#16A34A" stroke="#14532D" stroke-width="1.5" />
+            <line x1="780" y1="192" x2="780" y2="532" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="2"
+              stroke-dasharray="4,6" />
+            <text x="765" y="260" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
+              transform="rotate(-90 765 260)" text-anchor="middle">316L SS Liquor Header</text>
+            <text x="765" y="440" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
+              transform="rotate(-90 765 440)" text-anchor="middle">316L SS Liquor Header</text>
+
+            <!-- Branch pipes to each Compressor -->
+            <!-- Comp 1 Branch -->
+            <rect x="785" y="188" width="41" height="8" fill="#16A34A" stroke="#14532D" stroke-width="1" />
+            <line x1="785" y1="192" x2="826" y2="192" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="1.5"
+              stroke-dasharray="3,5" />
+            <text id="tagComp1Rpm" x="805" y="184" font-family="sans-serif" font-size="8" font-weight="700"
+              fill="#14532D" text-anchor="middle">CH-1</text>
+
+            <!-- Comp 2 Branch -->
+            <rect x="785" y="278" width="41" height="8" fill="#16A34A" stroke="#14532D" stroke-width="1" />
+            <line x1="785" y1="282" x2="826" y2="282" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="1.5"
+              stroke-dasharray="3,5" />
+            <text id="tagComp2Rpm" x="805" y="274" font-family="sans-serif" font-size="8" font-weight="700"
+              fill="#14532D" text-anchor="middle">CH-2</text>
+
+            <!-- Comp 3 Branch -->
+            <rect x="785" y="368" width="41" height="8" fill="#16A34A" stroke="#14532D" stroke-width="1" />
+            <line x1="785" y1="372" x2="826" y2="372" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="1.5"
+              stroke-dasharray="3,5" />
+            <text id="tagComp3Rpm" x="805" y="364" font-family="sans-serif" font-size="8" font-weight="700"
+              fill="#14532D" text-anchor="middle">CH-3</text>
+
+            <!-- Comp 4 Branch -->
+            <rect x="785" y="458" width="41" height="8" fill="#16A34A" stroke="#14532D" stroke-width="1" />
+            <line x1="785" y1="462" x2="826" y2="462" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="1.5"
+              stroke-dasharray="3,5" />
+            <text id="tagComp4Rpm" x="805" y="454" font-family="sans-serif" font-size="8" font-weight="700"
+              fill="#14532D" text-anchor="middle">CH-4</text>
+
+
+            <g class="pid-valve interactive-valve valve-closed" id="valveManifoldMidRed"
+              data-valve-id="valveManifoldMidRed" data-state="closed" transform="translate(780,390)" cursor="pointer">
+              <line class="valve-stem" x1="0" y1="0" x2="14.0" y2="0" stroke="#0F172A" stroke-width="1.4" />
+              <circle class="valve-actuator" cx="17.0" cy="0" r="6.0" stroke="#0F172A" stroke-width="1.4" />
+              <polygon class="valve-body-top" points="-8.0,-14.0 0,0 8.0,-14.0" stroke="#0F172A" stroke-width="1.4" />
+              <polygon class="valve-body-bottom" points="-8.0,14.0 0,0 8.0,14.0" stroke="#0F172A" stroke-width="1.4" />
+            </g>
+
+            <!-- Rightmost Vertical Green Pipe running down from discharge -->
+            <rect x="1005" y="192" width="10" height="340" fill="#16A34A" stroke="#14532D" stroke-width="1.5" />
+            <line x1="1010" y1="192" x2="1010" y2="532" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="2"
+              stroke-dasharray="4,6" />
+            <text x="1025" y="295" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B"
+              transform="rotate(90 1025 295)" text-anchor="middle">MICRO-REFINING LINE</text>
+            <text x="1025" y="415" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
+              transform="rotate(90 1025 415)" text-anchor="middle">316L SS RETURN</text>
+
+            <!-- Bottom Distribution Line (Blue) leading from header all the way through buffer tank to Beta -->
+            <rect x="525" y="527" width="490" height="10" fill="#2563EB" stroke="#1D4ED8" stroke-width="1.5" />
+            <line x1="1005" y1="532" x2="525" y2="532" class="pipe-flow-anim" stroke="#93C5FD" stroke-width="2"
+              stroke-dasharray="4,6" />
+            <text x="760" y="547" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B">Dye Liquor
+              Circulation Loop</text>
+            <polygon points="770,529 780,532 770,535" fill="#2563EB" />
+          </g>
+
+
+          <!-- ================= RECEIVER TANKS SECTION ================= -->
+          <g id="receiverTanksSection">
+            <text x="70" y="444" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Feed</text>
+            <text x="70" y="456" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Pressure</text>
+
+
+            <!-- Connection pipe linking dialSysPressL1 to vertical process line at x=115 (Image 2) -->
+            <rect id="pipe_sysPressL1_conn" class="interactive-pipe" data-pipe="Feed Pressure Sensor Tap L1" x="70"
+              y="476" width="45" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1.2" />
+            <line x1="70" y1="480" x2="115" y2="480" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="1.5"
+              stroke-dasharray="3,5" />
+            <rect x="111" y="474" width="4" height="12" fill="#475569" stroke="#1E293B" stroke-width="1" />
+
+            <g class="scada-gauge interactive-gauge" id="dialSysPressL1" data-label="Main Feed Pressure" data-cx="70"
+              data-cy="480" cursor="pointer">
+              <circle cx="70" cy="480" r="24" fill="#64748B" stroke="#334155" stroke-width="1.5" />
+              <circle cx="70" cy="480" r="22" fill="#FFFFFF" stroke="#475569" stroke-width="1" />
+
+              <line x1="55.9" y1="494.1" x2="58.7" y2="491.3" stroke="#334155" stroke-width="1.2" />
+              <line x1="50.7" y1="485.2" x2="54.5" y2="484.1" stroke="#334155" stroke-width="1.2" />
+              <line x1="50.7" y1="474.8" x2="54.5" y2="475.9" stroke="#334155" stroke-width="1.2" />
+              <line x1="55.9" y1="465.9" x2="58.7" y2="468.7" stroke="#334155" stroke-width="1.2" />
+              <line x1="64.8" y1="460.7" x2="65.9" y2="464.5" stroke="#334155" stroke-width="1.2" />
+              <line x1="75.2" y1="460.7" x2="74.1" y2="464.5" stroke="#334155" stroke-width="1.2" />
+              <line x1="84.1" y1="465.9" x2="81.3" y2="468.7" stroke="#334155" stroke-width="1.2" />
+              <line x1="89.3" y1="474.8" x2="85.5" y2="475.9" stroke="#334155" stroke-width="1.2" />
+              <line x1="89.3" y1="485.2" x2="85.5" y2="484.1" stroke="#334155" stroke-width="1.2" />
+              <line x1="84.1" y1="494.1" x2="81.3" y2="491.3" stroke="#334155" stroke-width="1.2" />
+              <line id="needleSysPressL1" class="gauge-needle" x1="70" y1="480" x2="70" y2="463"
+                transform="rotate(-45, 70, 480)" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" />
+              <circle cx="70" cy="480" r="3.5" fill="#1E293B" stroke="#FFFFFF" stroke-width="0.8" />
+            </g>
+
+            <!-- Connection pipe linking dialSysPressL2 to horizontal process line at x=115 (Image 2) -->
+            <rect id="pipe_sysPressL2_conn" class="interactive-pipe" data-pipe="Return Pressure Sensor Tap L2" x="70"
+              y="556" width="45" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1.2" />
+            <line x1="70" y1="560" x2="115" y2="560" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="1.5"
+              stroke-dasharray="3,5" />
+            <rect x="111" y="554" width="4" height="12" fill="#475569" stroke="#1E293B" stroke-width="1" />
+
+            <g class="scada-gauge interactive-gauge" id="dialSysPressL2" data-label="Return Header Pressure"
+              data-cx="70" data-cy="560" cursor="pointer">
+              <circle cx="70" cy="560" r="26" fill="#64748B" stroke="#334155" stroke-width="1.5" />
+              <circle cx="70" cy="560" r="24" fill="#FFFFFF" stroke="#475569" stroke-width="1" />
+
+              <path d="M 84.8492424049175 545.1507575950825
+                 A 21 21 0 0 1 84.8492424049175 574.8492424049175" fill="none" stroke="#EF4444" stroke-width="4" />
+              <line x1="54.4" y1="575.6" x2="57.3" y2="572.7" stroke="#334155" stroke-width="1.2" />
+              <line x1="48.7" y1="565.7" x2="52.6" y2="564.7" stroke="#334155" stroke-width="1.2" />
+              <line x1="48.7" y1="554.3" x2="52.6" y2="555.3" stroke="#334155" stroke-width="1.2" />
+              <line x1="54.4" y1="544.4" x2="57.3" y2="547.3" stroke="#334155" stroke-width="1.2" />
+              <line x1="64.3" y1="538.7" x2="65.3" y2="542.6" stroke="#334155" stroke-width="1.2" />
+              <line x1="75.7" y1="538.7" x2="74.7" y2="542.6" stroke="#334155" stroke-width="1.2" />
+              <line x1="85.6" y1="544.4" x2="82.7" y2="547.3" stroke="#334155" stroke-width="1.2" />
+              <line x1="91.3" y1="554.3" x2="87.4" y2="555.3" stroke="#334155" stroke-width="1.2" />
+              <line x1="91.3" y1="565.7" x2="87.4" y2="564.7" stroke="#334155" stroke-width="1.2" />
+              <line x1="85.6" y1="575.6" x2="82.7" y2="572.7" stroke="#334155" stroke-width="1.2" />
+              <line id="needleSysPressL2" class="gauge-needle" x1="70" y1="560" x2="70" y2="541"
+                transform="rotate(45, 70, 560)" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" />
+              <circle cx="70" cy="560" r="3.6" fill="#1E293B" stroke="#FFFFFF" stroke-width="0.8" />
+              <text x="70" y="597" font-family="sans-serif" font-size="10.5" font-weight="700" fill="#1E293B"
+                text-anchor="middle">Return</text>
+              <text id="scadaSysPressL2" x="70" y="610" font-family="sans-serif" font-size="9.5" font-weight="600"
+                fill="#475569" text-anchor="middle">7.9 bar</text>
+            </g>
+
+            <!-- Pipe entering Alpha from the left -->
+            <line x1="115" y1="565" x2="238" y2="565" stroke="#334155" stroke-width="10" />
+            <line x1="115" y1="565" x2="238" y2="565" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="2"
+              stroke-dasharray="4,6" />
+            <text x="145" y="582" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B">316L SS Feed
+              Line</text>
+
+
+            <g class="pid-valve interactive-valve valve-open" id="valveAlphaInlet" data-valve-id="valveAlphaInlet"
+              data-state="open" transform="translate(190,565)" cursor="pointer">
+              <line class="valve-stem" x1="0" y1="0" x2="0" y2="-14.0" stroke="#0F172A" stroke-width="1.4" />
+              <circle class="valve-actuator" cx="0" cy="-17.0" r="6.0" stroke="#0F172A" stroke-width="1.4" />
+              <polygon class="valve-body-left" points="-14.0,-8.0 0,0 -14.0,8.0" stroke="#0F172A" stroke-width="1.4" />
+              <polygon class="valve-body-right" points="14.0,-8.0 0,0 14.0,8.0" stroke="#0F172A" stroke-width="1.4" />
+            </g>
+
+            <g class="scada-tank interactive-tank" id="tank_Alpha" data-tank="Alpha" cursor="pointer">
+              <text x="286.0" y="398" font-family="sans-serif" font-size="13" font-weight="700" fill="#1E293B"
+                text-anchor="middle">Mixing Vessel</text>
+              <text x="286.0" y="414" font-family="sans-serif" font-size="14" font-weight="800" fill="#0F172A"
+                text-anchor="middle">Alpha</text>
+
+              <g transform="translate(272.0,428)">
+                <line x1="0" y1="12" x2="0" y2="0" stroke="#334155" stroke-width="2" />
+                <polygon points="-4,-2 4,-2 0,6" fill="#DC2626" stroke="#0F172A" />
+                <path d="M 0,0 L -8,-8" stroke="#DC2626" stroke-width="2" />
+              </g>
+              <g transform="translate(300.0,428)">
+                <line x1="0" y1="12" x2="0" y2="0" stroke="#334155" stroke-width="2" />
+                <polygon points="-4,-2 4,-2 0,6" fill="#DC2626" stroke="#0F172A" />
+                <path d="M 0,0 L 8,-8" stroke="#DC2626" stroke-width="2" />
+              </g>
+              <text x="251.0" y="428" font-family="sans-serif" font-size="8" font-weight="600" fill="#334155"
+                text-anchor="middle">Relief</text>
+              <text x="251.0" y="438" font-family="sans-serif" font-size="8" font-weight="600" fill="#334155"
+                text-anchor="middle">PSVs</text>
+
+              <path d="M 238,460 C 238,424 334,424 334,460 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
+              <ellipse cx="286.0" cy="460" rx="48.0" ry="8" fill="#CBD5E1" stroke="#334155" stroke-width="1" />
+              <rect x="238" y="460" width="96" height="200" fill="url(#vesselGrad)" stroke="#334155" stroke-width="2" />
+              <ellipse cx="286.0" cy="660" rx="48.0" ry="8" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+              <path d="M 238,660 C 238,688 334,688 334,660 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
+
+              <line x1="244" y1="480" x2="303" y2="500" stroke="#64748B" stroke-width="2" />
+              <line x1="328" y1="530" x2="268" y2="550" stroke="#64748B" stroke-width="2" />
+              <line x1="244" y1="580" x2="303" y2="600" stroke="#64748B" stroke-width="2" />
+
+
+              <path id="waterPool_Alpha" class="tank-water-pool"
+                d="M 240,640 Q 286.0,635 332,640 L 332,660 C 332,686 240,686 240,660 Z" fill="url(#liquidGrad)" />
+              <circle class="tank-bubble b1" cx="271.0" cy="660" r="2" fill="#FFFFFF" opacity="0.8" />
+              <circle class="tank-bubble b2" cx="291.0" cy="655" r="2.5" fill="#FFFFFF" opacity="0.8" />
+              <circle class="tank-bubble b3" cx="306.0" cy="668" r="1.8" fill="#FFFFFF" opacity="0.8" />
+
+
+              <g transform="translate(306,490)">
+                <rect x="0" y="0" width="12" height="110" rx="3" fill="#FFFFFF" stroke="#334155" stroke-width="1.2" />
+                <rect id="sight_Alpha" class="tank-sight-fill" x="2" y="35" width="8" height="73" fill="#3B82F6"
+                  opacity="0.8" />
+                <line x1="12" y1="15" x2="18" y2="15" stroke="#1E293B" stroke-width="1.2" />
+                <text x="21" y="18" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155">Upper</text>
+
+                <line x1="12" y1="55" x2="18" y2="55" stroke="#1E293B" stroke-width="1.2" />
+                <text x="21" y="58" font-family="sans-serif" font-size="7" font-weight="600"
+                  fill="#334155">Middle</text>
+
+                <line x1="12" y1="95" x2="18" y2="95" stroke="#1E293B" stroke-width="1.2" />
+                <text x="21" y="98" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155">Lower</text>
+              </g>
+
+              <polygon points="246,672 256,672 252,698 240,698" fill="#475569" stroke="#1E293B" stroke-width="1" />
+              <polygon points="326,672 316,672 320,698 332,698" fill="#475569" stroke="#1E293B" stroke-width="1" />
+              <line x1="236" y1="698" x2="336" y2="698" stroke="#334155" stroke-width="2" />
+
+              <rect x="280.0" y="682" width="12" height="24" fill="#64748B" stroke="#334155" stroke-width="1" />
+            </g>
+
+            <!-- Alpha Trend Card (Left) -->
+            <g transform="translate(138, 470)">
+              <rect x="0" y="0" width="92" height="52" rx="4" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1" />
+              <text id="scadaAlphaBar" x="46" y="16" font-family="sans-serif" font-size="11.5" font-weight="800"
+                fill="#0F172A" text-anchor="middle">8.2 bar</text>
+            </g>
+
+
+            <g class="scada-sparkline interactive-sparkline" id="sparkAlpha" cursor="pointer"
+              data-title="Vessel Alpha Dye Liquor Concentration" data-id="TREND-VESSEL-A"
+              data-param="Bath Temp: 98.5°C | Reactive Dye" data-norm="Dosing Profile: 45 min linear ramp"
+              data-desc="Real-time spectral absorbance &amp; liquor concentration profile" data-status="DOSING ACTIVE"
+              data-statustype="status-ok">
+              <rect x="142" y="492" width="84" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
+              <line x1="142" y1="505.0" x2="226" y2="505.0" stroke="#E2E8F0" stroke-width="0.8"
+                stroke-dasharray="2,2" />
+              <polyline id="sparkAlpha_poly"
+                points="146.0,506.8 154.4,503.2 162.9,508.6 171.3,499.6 179.8,501.4 188.2,503.2 196.7,497.8 205.1,498.7 213.6,500.5 222.0,499.6"
+                fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round" />
+              <circle class="spark-marker" id="sparkAlpha_dot" cx="196.7" cy="497.8" r="2.5" fill="#DC2626"
+                stroke="#FFFFFF" stroke-width="1" />
+            </g>
+
+            <g class="scada-tank interactive-tank" id="tank_Beta" data-tank="Beta" cursor="pointer">
+              <text x="414.0" y="398" font-family="sans-serif" font-size="13" font-weight="700" fill="#1E293B"
+                text-anchor="middle">Mixing Vessel</text>
+              <text x="414.0" y="414" font-family="sans-serif" font-size="14" font-weight="800" fill="#0F172A"
+                text-anchor="middle">Beta</text>
+
+              <g transform="translate(400.0,428)">
+                <line x1="0" y1="12" x2="0" y2="0" stroke="#334155" stroke-width="2" />
+                <polygon points="-4,-2 4,-2 0,6" fill="#DC2626" stroke="#0F172A" />
+                <path d="M 0,0 L -8,-8" stroke="#DC2626" stroke-width="2" />
+              </g>
+              <g transform="translate(428.0,428)">
+                <line x1="0" y1="12" x2="0" y2="0" stroke="#334155" stroke-width="2" />
+                <polygon points="-4,-2 4,-2 0,6" fill="#DC2626" stroke="#0F172A" />
+                <path d="M 0,0 L 8,-8" stroke="#DC2626" stroke-width="2" />
+              </g>
+              <text x="449.0" y="428" font-family="sans-serif" font-size="8" font-weight="600" fill="#334155"
+                text-anchor="middle">Relief</text>
+              <text x="449.0" y="438" font-family="sans-serif" font-size="8" font-weight="600" fill="#334155"
+                text-anchor="middle">PSVs</text>
+
+              <path d="M 366,460 C 366,424 462,424 462,460 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
+              <ellipse cx="414.0" cy="460" rx="48.0" ry="8" fill="#CBD5E1" stroke="#334155" stroke-width="1" />
+              <rect x="366" y="460" width="96" height="200" fill="url(#vesselGrad)" stroke="#334155" stroke-width="2" />
+              <ellipse cx="414.0" cy="660" rx="48.0" ry="8" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+              <path d="M 366,660 C 366,688 462,688 462,660 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
+
+              <line x1="372" y1="480" x2="431" y2="500" stroke="#64748B" stroke-width="2" />
+              <line x1="456" y1="530" x2="396" y2="550" stroke="#64748B" stroke-width="2" />
+              <line x1="372" y1="580" x2="431" y2="600" stroke="#64748B" stroke-width="2" />
+
+
+              <path id="waterPool_Beta" class="tank-water-pool"
+                d="M 368,640 Q 414.0,635 460,640 L 460,660 C 460,686 368,686 368,660 Z" fill="url(#liquidGrad)" />
+              <circle class="tank-bubble b1" cx="399.0" cy="660" r="2" fill="#FFFFFF" opacity="0.8" />
+              <circle class="tank-bubble b2" cx="419.0" cy="655" r="2.5" fill="#FFFFFF" opacity="0.8" />
+              <circle class="tank-bubble b3" cx="434.0" cy="668" r="1.8" fill="#FFFFFF" opacity="0.8" />
+
+
+              <g transform="translate(434,490)">
+                <rect x="0" y="0" width="12" height="110" rx="3" fill="#FFFFFF" stroke="#334155" stroke-width="1.2" />
+                <rect id="sight_Beta" class="tank-sight-fill" x="2" y="35" width="8" height="73" fill="#3B82F6"
+                  opacity="0.8" />
+                <line x1="12" y1="15" x2="18" y2="15" stroke="#1E293B" stroke-width="1.2" />
+                <text x="21" y="18" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155">Upper</text>
+
+                <line x1="12" y1="55" x2="18" y2="55" stroke="#1E293B" stroke-width="1.2" />
+                <text x="21" y="58" font-family="sans-serif" font-size="7" font-weight="600"
+                  fill="#334155">Middle</text>
+
+                <line x1="12" y1="95" x2="18" y2="95" stroke="#1E293B" stroke-width="1.2" />
+                <text x="21" y="98" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155">Lower</text>
+              </g>
+
+              <polygon points="374,672 384,672 380,698 368,698" fill="#475569" stroke="#1E293B" stroke-width="1" />
+              <polygon points="454,672 444,672 448,698 460,698" fill="#475569" stroke="#1E293B" stroke-width="1" />
+              <line x1="364" y1="698" x2="464" y2="698" stroke="#334155" stroke-width="2" />
+
+              <rect x="408.0" y="682" width="12" height="24" fill="#64748B" stroke="#334155" stroke-width="1" />
+            </g>
+
+            <!-- Beta Trend Card (Right) -->
+            <g transform="translate(468, 470)">
+              <rect x="0" y="0" width="92" height="52" rx="4" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1" />
+              <text id="scadaBetaBar" x="46" y="16" font-family="sans-serif" font-size="11.5" font-weight="800"
+                fill="#0F172A" text-anchor="middle">8.1 bar</text>
+            </g>
+
+
+            <g class="scada-sparkline interactive-sparkline" id="sparkBeta" cursor="pointer"
+              data-title="Vessel Beta Fixation Liquor Saturation" data-id="TREND-VESSEL-B"
+              data-param="Alkali Concentration: 18 g/L" data-norm="Optimal pH Threshold: 10.8 - 11.2"
+              data-desc="Color kitchen fixation alkali dosing and circulation telemetry"
+              data-status="CIRCULATION NOMINAL" data-statustype="status-ok">
+              <rect x="472" y="492" width="84" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
+              <line x1="472" y1="505.0" x2="556" y2="505.0" stroke="#E2E8F0" stroke-width="0.8"
+                stroke-dasharray="2,2" />
+              <polyline id="sparkBeta_poly"
+                points="476.0,505.0 486.9,504.6 497.7,504.8 508.6,504.5 519.4,504.6 530.3,504.3 541.1,504.6 552.0,504.1"
+                fill="none" stroke="#2563EB" stroke-width="1.5" stroke-linejoin="round" />
+              <circle class="spark-marker" id="sparkBeta_dot" cx="530.3" cy="504.3" r="2.5" fill="#DC2626"
+                stroke="#FFFFFF" stroke-width="1" />
+            </g>
+
+            <rect x="334" y="490" width="32" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+            <rect x="334" y="605" width="32" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1" />
+            <text x="350" y="650" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
+              transform="rotate(-90 350 650)" text-anchor="middle">316L SS Intertie</text>
+
+            <!-- Outlet pipe exiting Beta into bottom distribution loop -->
+            <line x1="462" y1="532" x2="525" y2="532" stroke="#334155" stroke-width="10" />
+            <text x="510" y="555" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B">Circulation
+              Outlet</text>
+
+
+            <g class="pid-valve interactive-valve valve-closed" id="valveBetaOutlet" data-valve-id="valveBetaOutlet"
+              data-state="closed" transform="translate(485,532)" cursor="pointer">
+              <line class="valve-stem" x1="0" y1="0" x2="0" y2="-14.0" stroke="#0F172A" stroke-width="1.4" />
+              <circle class="valve-actuator" cx="0" cy="-17.0" r="6.0" stroke="#0F172A" stroke-width="1.4" />
+              <polygon class="valve-body-left" points="-14.0,-8.0 0,0 -14.0,8.0" stroke="#0F172A" stroke-width="1.4" />
+              <polygon class="valve-body-right" points="14.0,-8.0 0,0 14.0,8.0" stroke="#0F172A" stroke-width="1.4" />
+            </g>
+
+            <g class="pid-valve interactive-valve valve-open" id="valveAlphaBetaCross"
+              data-valve-id="valveAlphaBetaCross" data-state="open" transform="translate(350,494)" cursor="pointer">
+              <line class="valve-stem" x1="0" y1="0" x2="0" y2="-11.9" stroke="#0F172A" stroke-width="1.19" />
+              <circle class="valve-actuator" cx="0" cy="-14.45" r="5.1" stroke="#0F172A" stroke-width="1.19" />
+              <polygon class="valve-body-left" points="-11.9,-6.8 0,0 -11.9,6.8" stroke="#0F172A" stroke-width="1.19" />
+              <polygon class="valve-body-right" points="11.9,-6.8 0,0 11.9,6.8" stroke="#0F172A" stroke-width="1.19" />
+            </g>
+          </g>
+
+          <!-- ================= SECONDARY BUFFER TANK ================= -->
+          <g id="secondaryBufferTank" class="scada-tank interactive-tank" data-tank="Secondary Buffer"
+            transform="translate(580, 440)" cursor="pointer">
+            <text x="34" y="-12" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Auxiliary Dye</text>
+            <text x="34" y="2" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Buffer Tank</text>
+
+            <path d="M 0,20 C 0,0 68,0 68,20 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="1.8" />
+            <rect x="0" y="20" width="68" height="80" fill="url(#vesselGrad)" stroke="#334155" stroke-width="1.8" />
+            <path d="M 0,100 C 0,118 68,118 68,100 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="1.8" />
+
+            <rect x="46" y="32" width="10" height="56" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1" />
+            <rect id="sight_Buffer" class="tank-sight-fill" x="48" y="50" width="6" height="36" fill="#3B82F6" />
+            <line x1="56" y1="40" x2="62" y2="40" stroke="#1E293B" stroke-width="1" />
+            <text x="64" y="42" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#334155">Upper</text>
+            <line x1="56" y1="60" x2="62" y2="60" stroke="#1E293B" stroke-width="1" />
+            <text x="64" y="62" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#334155">Middle</text>
+            <line x1="56" y1="80" x2="62" y2="80" stroke="#1E293B" stroke-width="1" />
+            <text x="64" y="82" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#334155">Lower</text>
+
+            <polygon points="8,108 14,108 12,126 4,126" fill="#475569" stroke="#1E293B" />
+            <polygon points="60,108 54,108 56,126 64,126" fill="#475569" stroke="#1E293B" />
+
+            <line x1="34" y1="108" x2="34" y2="135" stroke="#2563EB" stroke-width="6" />
+          </g>
+
+
+          <!-- ================= AUTO-DRAIN SYSTEM ================= -->
+          <g id="autoDrainSection">
+            <!-- Drain piping from Mixing Vessel Alpha (x=286) to Chemical Recovery Tank -->
+            <path d="M 286,686 L 286,756 L 350,756" fill="none" stroke="#334155" stroke-width="6" />
+            <path d="M 286,686 L 286,756 L 350,756" fill="none" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="2"
+              stroke-dasharray="4,6" />
+
+            <!-- Flow arrow & Pipe Label cleanly positioned below the horizontal pipe -->
+            <polygon points="286,725 281,714 291,714" fill="#2563EB" />
+            <text x="290" y="770" font-family="sans-serif" font-size="8" font-weight="700" fill="#1E293B">316L SS
+              Drain</text>
+
+            <!-- Highlighted Yellow Box: Chemical Recovery Tank (Cleanly positioned below Beta with 0 overlap) -->
+            <g id="autoDrainTankBox" class="interactive-tank" data-tank="Auto-Chemical Recovery &amp; Drain Tank"
+              cursor="pointer">
+              <rect x="350" y="722" width="186" height="150" rx="4" fill="#F8E44C" stroke="#CA8A04" stroke-width="2" />
+
+              <!-- Horizontal feed pipe entering tank through valve -->
+              <line x1="350" y1="756" x2="442" y2="756" stroke="#334155" stroke-width="6" />
+              <line x1="350" y1="756" x2="442" y2="756" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="2"
+                stroke-dasharray="4,6" />
+
+              <!-- Inlet Valve positioned on pipe inside the yellow box -->
+              <g class="pid-valve interactive-valve valve-open" id="valveAutoDrainInlet"
+                data-valve-id="valveAutoDrainInlet" data-state="open" transform="translate(388,756)" cursor="pointer">
+                <line class="valve-stem" x1="0" y1="0" x2="0" y2="-14.0" stroke="#0F172A" stroke-width="1.4" />
+                <circle class="valve-actuator" cx="0" cy="-17.0" r="6.0" stroke="#0F172A" stroke-width="1.4" />
+                <polygon class="valve-body-left" points="-14.0,-8.0 0,0 -14.0,8.0" stroke="#0F172A"
+                  stroke-width="1.4" />
+                <polygon class="valve-body-right" points="14.0,-8.0 0,0 14.0,8.0" stroke="#0F172A" stroke-width="1.4" />
+              </g>
+
+              <!-- Clean 3-line title below the valve with 0 cutoff -->
+              <text x="388" y="810" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
+                text-anchor="middle">Chemical</text>
+              <text x="388" y="828" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
+                text-anchor="middle">Recovery</text>
+              <text x="388" y="846" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
+                text-anchor="middle">Tank</text>
+
+              <!-- Recovery Tank Graphic in right half of the yellow box -->
+              <g transform="translate(442, 734)">
+                <rect x="-4" y="20" width="6" height="6" fill="#475569" stroke="#1E293B" stroke-width="1" />
+                <path d="M 0,20 C 0,0 76,0 76,20 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="1.8" />
+                <rect x="0" y="20" width="76" height="74" fill="url(#vesselGrad)" stroke="#334155" stroke-width="1.8" />
+                <path d="M 0,94 C 0,110 76,110 76,94 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="1.8" />
+                <rect x="52" y="30" width="12" height="60" rx="2" fill="#FFFFFF" stroke="#334155" stroke-width="1" />
+                <rect id="sight_AutoDrain" class="tank-sight-fill" x="54" y="44" width="8" height="44" fill="#3B82F6" />
+                <rect id="waterPool_AutoDrain" x="2" y="55" width="72" height="38" fill="url(#liquidGrad)"
+                  opacity="0.6" />
+                <line x1="38" y1="104" x2="38" y2="114" stroke="#1E293B" stroke-width="2" />
+                <circle cx="38" cy="116" r="3" fill="#64748B" />
+              </g>
+            </g>
+
+            <!-- Floating SCADA Window: Chemical Recovery & Drain with Interactive Logic Circuit -->
+            <g id="autoDrainDialog" transform="translate(24, 668)">
+              <rect x="0" y="0" width="210" height="194" rx="4" fill="#EAEFF4" stroke="#64748B" stroke-width="1.5"
+                filter="drop-shadow(0 6px 12px rgba(0,0,0,0.15))" />
+
+              <rect x="0" y="0" width="210" height="24" rx="4 4 0 0" fill="#CBD5E1" stroke="#94A3B8" stroke-width="1" />
+              <text x="10" y="16" font-family="sans-serif" font-size="10" font-weight="700" fill="#1E293B">Chemical
+                Recovery &amp; Drain</text>
+
+              <!-- Interactive Window Buttons -->
+              <g transform="translate(162, 7)">
+                <g id="btnWinMinimize" cursor="pointer">
+                  <rect x="-3" y="0" width="14" height="14" fill="transparent" />
+                  <line x1="0" y1="8" x2="8" y2="8" stroke="#475569" stroke-width="1.5" />
+                </g>
+                <g id="btnWinMaximize" cursor="pointer">
+                  <rect x="11" y="0" width="14" height="14" fill="transparent" />
+                  <rect x="14" y="2" width="7" height="7" fill="none" stroke="#475569" stroke-width="1.5" />
+                </g>
+                <g id="btnWinClose" cursor="pointer">
+                  <rect x="25" y="0" width="14" height="14" fill="transparent" />
+                  <line x1="28" y1="2" x2="35" y2="9" stroke="#475569" stroke-width="1.5" />
+                  <line x1="35" y1="2" x2="28" y2="9" stroke="#475569" stroke-width="1.5" />
+                </g>
+              </g>
+
+              <!-- Form Rows -->
+              <text x="12" y="44" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Recovery
+                Cycle:</text>
+              <rect x="88" y="32" width="60" height="18" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
+              <text id="scadaAutoDrainDuration" x="136" y="45" font-family="monospace" font-size="10" font-weight="700"
+                fill="#0F172A" text-anchor="end">20</text>
+              <text x="154" y="44" font-family="sans-serif" font-size="9" font-weight="600" fill="#475569">min</text>
+              <circle cx="192" cy="41" r="5" fill="#CBD5E1" stroke="#64748B" stroke-width="1" />
+
+              <text x="12" y="66" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Dosing
+                Interval:</text>
+              <rect x="88" y="54" width="60" height="18" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
+              <text id="scadaAutoDrainCycle" x="136" y="67" font-family="monospace" font-size="10" font-weight="700"
+                fill="#0F172A" text-anchor="end">200</text>
+              <text x="154" y="66" font-family="sans-serif" font-size="9" font-weight="600" fill="#475569">sec</text>
+              <circle id="cycleLedIndicator" cx="192" cy="63" r="5" fill="#22C55E" stroke="#16A34A" stroke-width="1" />
+
+              <text x="12" y="88" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Bath Level
+                High:</text>
+              <rect id="highStatusBar" x="88" y="76" width="84" height="18" rx="2" fill="#BFDBFE" stroke="#60A5FA" />
+              <circle cx="192" cy="85" r="5" fill="#CBD5E1" stroke="#64748B" stroke-width="1" />
+
+              <text x="12" y="110" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Sludge
+                Residual:</text>
+              <rect x="88" y="98" width="60" height="18" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
+              <text id="scadaAutoDrainLow" x="136" y="111" font-family="monospace" font-size="10" font-weight="700"
+                fill="#0F172A" text-anchor="end">0.0</text>
+              <text x="154" y="110" font-family="sans-serif" font-size="10" font-weight="700" fill="#475569">%</text>
+
+              <line x1="8" y1="126" x2="202" y2="126" stroke="#CBD5E1" stroke-width="1" />
+
+              <!-- Interactive Digital Logic Circuit -->
+              <g transform="translate(14, 134)" id="interactiveLogicCircuit">
+                <!-- Interactive Input Toggle (0 / 1) -->
+                <g id="logicInputToggle" cursor="pointer" class="interactive-logic-btn">
+                  <rect x="-4" y="6" width="16" height="16" rx="3" fill="#FFFFFF" stroke="#2563EB" stroke-width="1.2" />
+                  <text id="logicInputVal" x="4" y="18" font-family="monospace" font-size="11" font-weight="700"
+                    fill="#2563EB" text-anchor="middle">0</text>
+                </g>
+                <line id="wire_input" class="logic-wire" x1="12" y1="14" x2="26" y2="14" stroke="#1E293B"
+                  stroke-width="1.5" />
+
+                <!-- NOT Gate -->
+                <polygon id="gate_not" points="26,8 40,14 26,20" fill="#FFFFFF" stroke="#1E293B" stroke-width="1.2" />
+                <circle id="gate_not_bubble" cx="43" cy="14" r="2.5" fill="#FFFFFF" stroke="#1E293B"
+                  stroke-width="1.2" />
+                <line id="wire_not_out" class="logic-wire" x1="46" y1="14" x2="62" y2="14" stroke="#1E293B"
+                  stroke-width="1.5" />
+
+                <!-- Split into top AND gate & bottom branch -->
+                <line id="wire_split_v" class="logic-wire" x1="56" y1="14" x2="56" y2="40" stroke="#1E293B"
+                  stroke-width="1.5" />
+                <line id="wire_split_h" class="logic-wire" x1="56" y1="40" x2="72" y2="40" stroke="#1E293B"
+                  stroke-width="1.5" />
+
+                <!-- Top AND Gate -->
+                <g transform="translate(62, 4)">
+                  <path id="gate_and_top" d="M 0,0 L 14,0 A 10 10 0 0 1 14,20 L 0,20 Z" fill="#FFFFFF" stroke="#1E293B"
+                    stroke-width="1.2" />
+                  <line id="wire_and_top_out" class="logic-wire" x1="24" y1="10" x2="42" y2="10" stroke="#1E293B"
+                    stroke-width="1.5" />
+                </g>
+
+                <!-- Lower AND Gate -->
+                <g transform="translate(72, 30)">
+                  <path id="gate_and_bot" d="M 0,0 L 14,0 A 10 10 0 0 1 14,20 L 0,20 Z" fill="#FFFFFF" stroke="#1E293B"
+                    stroke-width="1.2" />
+                  <line id="wire_and_bot_out" class="logic-wire" x1="24" y1="10" x2="34" y2="10" stroke="#1E293B"
+                    stroke-width="1.5" />
+                </g>
+
+                <!-- Bottom OR / NAND Converging Gate -->
+                <g transform="translate(114, 18)">
+                  <line id="wire_or_in1" class="logic-wire" x1="-10" y1="-4" x2="0" y2="4" stroke="#1E293B"
+                    stroke-width="1.5" />
+                  <line id="wire_or_in2" class="logic-wire" x1="-8" y1="22" x2="0" y2="14" stroke="#1E293B"
+                    stroke-width="1.5" />
+                  <path id="gate_or" d="M 0,0 Q 6,9 0,18 Q 18,18 24,9 Q 18,0 0,0 Z" fill="#FFFFFF" stroke="#1E293B"
+                    stroke-width="1.2" />
+                  <line id="wire_output" class="logic-wire" x1="24" y1="9" x2="55" y2="9" stroke="#1E293B"
+                    stroke-width="1.8" />
+                  <circle id="wire_output_dot" cx="56" cy="9" r="3" fill="#1E293B" />
+                </g>
+              </g>
+            </g>
+          </g>
+
+
+          <!-- ================= COMPRESSOR TELEMETRY STATIONS ================= -->
+          <g id="telemetryStations" transform="translate(0, 595)">
+
+
+            <g class="telemetry-col interactive-telemetry-station" id="station_1" data-station="1"
+              data-title="Chamber 1">
+              <text x="600" y="14" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
+                text-anchor="middle">Chamber 1</text>
+              <text id="scadaComp1Rpm" x="600" y="28" font-family="sans-serif" font-size="11.5" font-weight="700"
+                fill="#334155" text-anchor="middle">1450 RPM</text>
+
+              <rect x="572" y="36" width="14" height="60" rx="3" fill="#E2E8F0" stroke="#475569" stroke-width="1.2" />
+              <rect id="telSight_0" class="station-sight-fill" x="574" y="48" width="10" height="46" fill="#93C5FD"
+                opacity="0.6" />
+
+              <text x="579" y="45" font-family="sans-serif" font-size="7.5" font-weight="700" fill="#1E293B"
+                text-anchor="middle">bar</text>
+
+              <polygon class="setpoint-triangle" points="568,50 562,46 562,54" fill="#64748B" cursor="pointer" />
+              <polygon class="setpoint-triangle" points="568,84 562,80 562,88" fill="#64748B" cursor="pointer" />
+
+              <rect id="telBar_0_0" class="telemetry-bar" data-station="1" data-bar="1" data-height="60" x="592" y="36"
+                width="8" height="60" rx="1.5" fill="#3B82F6" cursor="pointer" />
+              <rect id="telBar_0_1" class="telemetry-bar" data-station="1" data-bar="2" data-height="45" x="603" y="51"
+                width="8" height="45" rx="1.5" fill="#1D4ED8" cursor="pointer" />
+              <rect id="telBar_0_2" class="telemetry-bar" data-station="1" data-bar="3" data-height="65" x="614" y="31"
+                width="8" height="65" rx="1.5" fill="#22C55E" cursor="pointer" />
+              <rect id="telBar_0_3" class="telemetry-bar" data-station="1" data-bar="4" data-height="24" x="625" y="72"
+                width="8" height="24" rx="1.5" fill="#DC2626" cursor="pointer" />
+              <text x="608" y="112" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
+                text-anchor="middle">Bath Temp</text>
+            </g>
+
+            <g class="telemetry-col interactive-telemetry-station" id="station_2" data-station="2"
+              data-title="Chamber 2">
+              <text x="718" y="14" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
+                text-anchor="middle">Chamber 2</text>
+              <text id="scadaComp2Rpm" x="718" y="28" font-family="sans-serif" font-size="11.5" font-weight="700"
+                fill="#334155" text-anchor="middle">1410 RPM</text>
+
+              <rect x="690" y="36" width="14" height="60" rx="3" fill="#E2E8F0" stroke="#475569" stroke-width="1.2" />
+              <rect id="telSight_1" class="station-sight-fill" x="692" y="48" width="10" height="46" fill="#93C5FD"
+                opacity="0.6" />
+              <rect x="690" y="78" width="14" height="18" fill="#EF4444" rx="2" />
+              <text x="697" y="45" font-family="sans-serif" font-size="7.5" font-weight="700" fill="#1E293B"
+                text-anchor="middle">bar</text>
+
+              <polygon class="setpoint-triangle" points="686,50 680,46 680,54" fill="#64748B" cursor="pointer" />
+              <polygon class="setpoint-triangle" points="686,84 680,80 680,88" fill="#64748B" cursor="pointer" />
+
+              <rect id="telBar_1_0" class="telemetry-bar" data-station="2" data-bar="1" data-height="48" x="710" y="48"
+                width="8" height="48" rx="1.5" fill="#3B82F6" cursor="pointer" />
+              <rect id="telBar_1_1" class="telemetry-bar" data-station="2" data-bar="2" data-height="62" x="721" y="34"
+                width="8" height="62" rx="1.5" fill="#1D4ED8" cursor="pointer" />
+              <rect id="telBar_1_2" class="telemetry-bar" data-station="2" data-bar="3" data-height="68" x="732" y="28"
+                width="8" height="68" rx="1.5" fill="#22C55E" cursor="pointer" />
+              <rect id="telBar_1_3" class="telemetry-bar" data-station="2" data-bar="4" data-height="30" x="743" y="66"
+                width="8" height="30" rx="1.5" fill="#DC2626" cursor="pointer" />
+              <text x="726" y="112" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
+                text-anchor="middle">Bath Temp</text>
+            </g>
+
+            <g class="telemetry-col interactive-telemetry-station" id="station_3" data-station="3"
+              data-title="Chamber 3">
+              <text x="836" y="14" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
+                text-anchor="middle">Chamber 3</text>
+              <text id="scadaComp3Rpm" x="836" y="28" font-family="sans-serif" font-size="11.5" font-weight="700"
+                fill="#334155" text-anchor="middle">899 RPM</text>
+
+              <rect x="808" y="36" width="14" height="60" rx="3" fill="#E2E8F0" stroke="#475569" stroke-width="1.2" />
+              <rect id="telSight_2" class="station-sight-fill" x="810" y="48" width="10" height="46" fill="#93C5FD"
+                opacity="0.6" />
+
+              <text x="815" y="45" font-family="sans-serif" font-size="7.5" font-weight="700" fill="#1E293B"
+                text-anchor="middle">bar</text>
+
+              <polygon class="setpoint-triangle" points="804,50 798,46 798,54" fill="#64748B" cursor="pointer" />
+              <polygon class="setpoint-triangle" points="804,84 798,80 798,88" fill="#64748B" cursor="pointer" />
+
+              <rect id="telBar_2_0" class="telemetry-bar" data-station="3" data-bar="1" data-height="32" x="828" y="64"
+                width="8" height="32" rx="1.5" fill="#3B82F6" cursor="pointer" />
+              <rect id="telBar_2_1" class="telemetry-bar" data-station="3" data-bar="2" data-height="58" x="839" y="38"
+                width="8" height="58" rx="1.5" fill="#1D4ED8" cursor="pointer" />
+              <rect id="telBar_2_2" class="telemetry-bar" data-station="3" data-bar="3" data-height="62" x="850" y="34"
+                width="8" height="62" rx="1.5" fill="#22C55E" cursor="pointer" />
+              <rect id="telBar_2_3" class="telemetry-bar" data-station="3" data-bar="4" data-height="20" x="861" y="76"
+                width="8" height="20" rx="1.5" fill="#DC2626" cursor="pointer" />
+              <text x="844" y="112" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
+                text-anchor="middle">Bath Temp</text>
+            </g>
+
+            <g class="telemetry-col interactive-telemetry-station" id="station_4" data-station="4"
+              data-title="Chamber 4">
+              <text x="954" y="14" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
+                text-anchor="middle">Chamber 4</text>
+              <text id="scadaComp4Rpm" x="954" y="28" font-family="sans-serif" font-size="11.5" font-weight="700"
+                fill="#334155" text-anchor="middle">1450 RPM</text>
+
+              <rect x="926" y="36" width="14" height="60" rx="3" fill="#E2E8F0" stroke="#475569" stroke-width="1.2" />
+              <rect id="telSight_3" class="station-sight-fill" x="928" y="48" width="10" height="46" fill="#93C5FD"
+                opacity="0.6" />
+
+              <text x="933" y="45" font-family="sans-serif" font-size="7.5" font-weight="700" fill="#1E293B"
+                text-anchor="middle">bar</text>
+
+              <polygon class="setpoint-triangle" points="922,50 916,46 916,54" fill="#64748B" cursor="pointer" />
+              <polygon class="setpoint-triangle" points="922,84 916,80 916,88" fill="#64748B" cursor="pointer" />
+
+              <rect id="telBar_3_0" class="telemetry-bar" data-station="4" data-bar="1" data-height="52" x="946" y="44"
+                width="8" height="52" rx="1.5" fill="#3B82F6" cursor="pointer" />
+              <rect id="telBar_3_1" class="telemetry-bar" data-station="4" data-bar="2" data-height="66" x="957" y="30"
+                width="8" height="66" rx="1.5" fill="#22C55E" cursor="pointer" />
+              <rect id="telBar_3_2" class="telemetry-bar" data-station="4" data-bar="3" data-height="50" x="968" y="46"
+                width="8" height="50" rx="1.5" fill="#EAB308" cursor="pointer" />
+              <rect id="telBar_3_3" class="telemetry-bar" data-station="4" data-bar="4" data-height="42" x="979" y="54"
+                width="8" height="42" rx="1.5" fill="#EA580C" cursor="pointer" />
+
+              <text x="948" y="112" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
+                text-anchor="middle">Dosing</text>
+              <text x="978" y="112" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
+                text-anchor="middle">Rate %</text>
+
+            </g>
+
+            <text x="997" y="28" font-family="sans-serif" font-size="11" font-weight="700" fill="#334155">RPM</text>
+          </g>
+
+        </svg>
+      </div>
+
+      <!-- Bottom Collapsible Chevron -->
+      <div class="bottom-drawer-handle">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+
+      <!-- Bottom Split View Panels -->
+      <div class="dash-bottom-panels">
+
+        <!-- Left Panel: TCP Throughput Chart -->
+        <div class="dash-card panel-chart">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                <rect x="3" y="12" width="4" height="8" rx="1"></rect>
+                <rect x="10" y="8" width="4" height="12" rx="1"></rect>
+                <rect x="17" y="4" width="4" height="16" rx="1"></rect>
+              </svg>
+              <h3 class="panel-title">TCP Throughput</h3>
+            </div>
+            <div class="chart-legends">
+              <div class="legend-item"><span class="legend-box box-pink"></span><span>High</span><strong
+                  class="legend-val">439</strong></div>
+              <div class="legend-item"><span class="legend-box box-orange"></span><span>Medium</span><strong
+                  class="legend-val">146</strong></div>
+              <div class="legend-item"><span class="legend-box box-blue"></span><span>Low</span><strong
+                  class="legend-val">2.3k</strong></div>
+            </div>
+          </div>
+
+          <div class="chart-content-area">
+            <!-- Y Axis -->
+            <div class="chart-y-axis">
+              <span>800</span>
+              <span>600</span>
+              <span>400</span>
+              <span>200</span>
+            </div>
+
+            <!-- Stacked Bars Grid -->
+            <div class="chart-bars-wrap">
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 25%;"></div>
+                  <div class="bar-orange" style="height: 35%;"></div>
+                  <div class="bar-blue" style="height: 40%;"></div>
+                </div><span class="bar-x-lbl">12:30</span>
+              </div>
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 35%;"></div>
+                  <div class="bar-orange" style="height: 25%;"></div>
+                  <div class="bar-blue" style="height: 40%;"></div>
+                </div><span class="bar-x-lbl">12:35</span>
+              </div>
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 20%;"></div>
+                  <div class="bar-orange" style="height: 45%;"></div>
+                  <div class="bar-blue" style="height: 35%;"></div>
+                </div><span class="bar-x-lbl">12:40</span>
+              </div>
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 30%;"></div>
+                  <div class="bar-orange" style="height: 30%;"></div>
+                  <div class="bar-blue" style="height: 40%;"></div>
+                </div><span class="bar-x-lbl">12:45</span>
+              </div>
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 15%;"></div>
+                  <div class="bar-orange" style="height: 25%;"></div>
+                  <div class="bar-blue" style="height: 60%;"></div>
+                </div><span class="bar-x-lbl">12:50</span>
+              </div>
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 22%;"></div>
+                  <div class="bar-orange" style="height: 28%;"></div>
+                  <div class="bar-blue" style="height: 50%;"></div>
+                </div><span class="bar-x-lbl">12:55</span>
+              </div>
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 35%;"></div>
+                  <div class="bar-orange" style="height: 30%;"></div>
+                  <div class="bar-blue" style="height: 35%;"></div>
+                </div><span class="bar-x-lbl">13:00</span>
+              </div>
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 25%;"></div>
+                  <div class="bar-orange" style="height: 35%;"></div>
+                  <div class="bar-blue" style="height: 40%;"></div>
+                </div><span class="bar-x-lbl">13:05</span>
+              </div>
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 40%;"></div>
+                  <div class="bar-orange" style="height: 30%;"></div>
+                  <div class="bar-blue" style="height: 30%;"></div>
+                </div><span class="bar-x-lbl">13:10</span>
+              </div>
+              <div class="bar-col">
+                <div class="stacked-bar">
+                  <div class="bar-pink" style="height: 20%;"></div>
+                  <div class="bar-orange" style="height: 30%;"></div>
+                  <div class="bar-blue" style="height: 50%;"></div>
+                </div><span class="bar-x-lbl">13:15</span>
+              </div>
+
+              <!-- Floating Alerts Badge (Over chart) -->
+              <div class="floating-alerts-badge">
+                <div class="alerts-badge-top">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="#2860EB">
+                    <path d="M12 2L3 6v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V6l-9-4z"></path>
+                  </svg>
+                  <span>Alerts</span>
+                </div>
+                <div class="alerts-count">52</div>
+                <div class="alerts-status">Excellent</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Service Overview Table -->
+        <div class="dash-card panel-table">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path
+                  d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                </path>
+              </svg>
+              <h3 class="panel-title">Service Overview</h3>
+            </div>
+            <div class="panel-action-icons">
+              <button class="panel-icon-btn" title="Open External">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <line x1="10" y1="14" x2="21" y2="3"></line>
+                </svg>
+              </button>
+              <button class="panel-icon-btn" title="Expand">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 3 21 3 21 9"></polyline>
+                  <polyline points="9 21 3 21 3 15"></polyline>
+                  <line x1="21" y1="3" x2="14" y2="10"></line>
+                  <line x1="3" y1="21" x2="10" y2="14"></line>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="table-responsive-wrapper">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th class="th-chk"><input type="checkbox" checked /></th>
+                  <th>Service</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Status</th>
+                  <th>Current (kbps) <span class="sort-arr">▾</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><input type="checkbox" checked /></td>
+                  <td><span class="srv-dot dot-blue">−</span></td>
+                  <td class="font-mono-sub">sdkeng-client-sip...</td>
+                  <td class="font-mono-sub">5-16-app.agent.datadog.com</td>
+                  <td><span class="status-pill status-alert">Alert</span></td>
+                  <td class="font-mono-val">510</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" checked /></td>
+                  <td><span class="srv-dot dot-green">−</span></td>
+                  <td class="font-mono-sub">sawmill.dev</td>
+                  <td class="font-mono-sub">sdkeng-client-sip-proxy.dev</td>
+                  <td><span class="status-pill status-alert">Alert</span></td>
+                  <td class="font-mono-val">214</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" checked /></td>
+                  <td><span class="srv-dot dot-pink">−</span></td>
+                  <td class="font-mono-sub">ad.out.twilio.com</td>
+                  <td class="font-mono-sub">5-16-0-app.agent.datadogh...</td>
+                  <td><span class="status-pill status-warn">Warn</span></td>
+                  <td class="font-mono-val">127</td>
+                </tr>
+                <tr>
+                  <td><input type="checkbox" checked /></td>
+                  <td><span class="srv-dot dot-orange">−</span></td>
+                  <td class="font-mono-sub">sdkeng-client-sip...</td>
+                  <td class="font-mono-sub">sdkeng-client-sip-proxy.dev</td>
+                  <td><span class="status-pill status-warn">Warn</span></td>
+                  <td class="font-mono-val">83</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
