@@ -428,24 +428,17 @@ function initCard3DTilt() {
     });
   }
 
-  // Back & Return buttons for Color Intelligence Inspection Views
+  // Back buttons for Color Intelligence Inspection Views
   [
-    ["btnBackFromDyeing", "btnReturnToColorSuite"],
-    ["btnBackFromPrinting", "btnReturnToColorSuiteFromPrinting"],
-    ["btnBackFromBleaching", "btnReturnToColorSuiteFromBleaching"],
-    ["btnBackFromMercerizing", "btnReturnToColorSuiteFromMercerizing"],
-    ["btnBackFromStenter", "btnReturnToColorSuiteFromStenter"]
-  ].forEach(([backId, returnId]) => {
+    "btnBackFromDyeing",
+    "btnBackFromPrinting",
+    "btnBackFromBleaching",
+    "btnBackFromMercerizing",
+    "btnBackFromStenter"
+  ].forEach((backId) => {
     const bBtn = document.getElementById(backId);
     if (bBtn) {
       bBtn.addEventListener("click", () => {
-        sfx.playClick();
-        showColorIntelligenceSubView();
-      });
-    }
-    const rBtn = document.getElementById(returnId);
-    if (rBtn) {
-      rBtn.addEventListener("click", () => {
         sfx.playClick();
         showColorIntelligenceSubView();
       });
