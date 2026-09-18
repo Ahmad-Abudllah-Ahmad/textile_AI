@@ -295,15 +295,15 @@
         <div class="card-glare"></div>
       </button>
 
-      <!-- 05: STENTER -->
-      <button class="sector-card sub-card-btn" data-module="color-intelligence" data-sub="stenter" aria-label="Stenter">
+      <!-- 05: FINISH -->
+      <button class="sector-card sub-card-btn" data-module="color-intelligence" data-sub="finish" aria-label="Finish">
         <div class="card-glow-bg glow-purple-card"></div>
         <div class="card-border border-purple"></div>
-        <img src="assets/sub_stenter.jpg" alt="Stenter Operations" class="card-cover-img" loading="eager" />
+        <img src="assets/sub_stenter.jpg" alt="Finish Operations" class="card-cover-img" loading="eager" />
         <div class="card-overlay"></div>
         <div class="card-content-overlay">
           <span class="card-phase-num">05</span>
-          <h2 class="card-title title-purple">STENTER</h2>
+          <h2 class="card-title title-purple">FINISH</h2>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -996,9 +996,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 50 C 40 46, 75 54, 115 42 C 155 30, 185 48, 225 40 C 265 32, 295 44, 340 36 L 340 70 L 0 70 Z" fill="url(#prnGradDeltaE)" />
-              <path d="M 0 50 C 40 46, 75 54, 115 42 C 155 30, 185 48, 225 40 C 265 32, 295 44, 340 36" fill="none" stroke="#EC4899" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="340" cy="36" r="4.5" fill="#EC4899" stroke="#FFFFFF" stroke-width="2" />
+              <path id="prnSparkPathDeltaE" d="M 0 50 C 40 46, 75 54, 115 42 C 155 30, 185 48, 225 40 C 265 32, 295 44, 340 36" fill="none" stroke="#EC4899" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="prnSparkDotDeltaE" cx="340" cy="36" r="4.5" fill="#EC4899" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="prnSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(236, 72, 153, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="prnSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#EC4899" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="prnSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="prnSparkValDeltaE">ΔE 0.19</span>
+              <span class="tip-label">Tolerance: &lt; 0.50 PASS</span>
+            </div>
           </div>
         </div>
 
@@ -1018,9 +1025,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 54 C 45 50, 85 44, 130 36 C 175 28, 215 22, 260 16 C 290 12, 315 10, 340 8 L 340 70 L 0 70 Z" fill="url(#prnGradCorrection)" />
-              <path d="M 0 54 C 45 50, 85 44, 130 36 C 175 28, 215 22, 260 16 C 290 12, 315 10, 340 8" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="340" cy="8" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <path id="prnSparkPathCorrection" d="M 0 54 C 45 50, 85 44, 130 36 C 175 28, 215 22, 260 16 C 290 12, 315 10, 340 8" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="prnSparkDotCorrection" cx="340" cy="8" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="prnSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6, 182, 212, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="prnSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="prnSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="prnSparkValCorrection">99.6%</span>
+              <span class="tip-label">Target: 98.0%</span>
+            </div>
           </div>
         </div>
 
@@ -1040,9 +1054,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 56 C 40 56, 70 52, 100 38 C 130 24, 160 14, 200 16 C 240 18, 270 32, 300 42 C 320 48, 335 50, 340 50 L 340 70 L 0 70 Z" fill="url(#prnGradDosing)" />
-              <path d="M 0 56 C 40 56, 70 52, 100 38 C 130 24, 160 14, 200 16 C 240 18, 270 32, 300 42 C 320 48, 335 50, 340 50" fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="200" cy="16" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" />
+              <path id="prnSparkPathDosing" d="M 0 56 C 40 56, 70 52, 100 38 C 130 24, 160 14, 200 16 C 240 18, 270 32, 300 42 C 320 48, 335 50, 340 50" fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="prnSparkDotDosing" cx="200" cy="16" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="prnSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(168, 85, 247, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="prnSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="prnSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="prnSparkValDosing">18.5 dPa·s</span>
+              <span class="tip-label">Dynamic Viscosity Setpoint</span>
+            </div>
           </div>
         </div>
       </section>
@@ -1207,8 +1228,8 @@
               </div>
             </div>
 
-            <div class="comparison-graph-viewport">
-              <svg class="comparison-chart-svg" viewBox="0 0 540 135" preserveAspectRatio="none">
+            <div class="comparison-graph-viewport" id="prnComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="prnComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="prnGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stop-color="rgba(236, 72, 153, 0.28)" />
@@ -1233,6 +1254,7 @@
                 <g id="prnLiveSensorMarker">
                   <line id="prnLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="rgba(236, 72, 153, 0.45)" stroke-width="1.2" stroke-dasharray="2 2" />
                   <circle id="prnLiveScanDot" cx="280" cy="52" r="4" fill="#EC4899" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="prnTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
                 </g>
                 <g id="prnWavelengthAxisLabels">
                   <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">400nm</text>
@@ -1245,6 +1267,14 @@
                 </g>
                 <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#prnSpectrumRibbonGrad)" opacity="0.8" />
               </svg>
+
+              <!-- Floating Interactive Chart Tooltip -->
+              <div class="comp-chart-tooltip" id="prnCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="prnCompTipHeader">λ 540nm (Green)</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Target:</span> <strong id="prnCompTipTarget">32.4%</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #EC4899; box-shadow: 0 0 8px rgba(236,72,153,0.8);"></span><span>Live Feed:</span> <strong id="prnCompTipLive">32.7%</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="prnCompTipDiff">+0.3% (PASS)</strong></div>
+              </div>
 
               <div class="comp-chart-footer">
                 <div class="comp-legend-items">
@@ -1345,9 +1375,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 55 C 40 50, 70 48, 110 38 C 150 28, 180 32, 220 26 C 260 20, 290 22, 340 16 L 340 70 L 0 70 Z" fill="url(#blcGradDeltaE)" />
-              <path d="M 0 55 C 40 50, 70 48, 110 38 C 150 28, 180 32, 220 26 C 260 20, 290 22, 340 16" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="340" cy="16" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+              <path id="blcSparkPathDeltaE" d="M 0 55 C 40 50, 70 48, 110 38 C 150 28, 180 32, 220 26 C 260 20, 290 22, 340 16" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="blcSparkDotDeltaE" cx="340" cy="16" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="blcSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16, 185, 129, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="blcSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="blcSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="blcSparkValDeltaE">88.4 Wb</span>
+              <span class="tip-label">Target: &gt; 86.0 Wb PASS</span>
+            </div>
           </div>
         </div>
 
@@ -1367,9 +1404,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#blcGradCorrection)" />
-              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <path id="blcSparkPathCorrection" d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="blcSparkDotCorrection" cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="blcSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6, 182, 212, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="blcSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="blcSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="blcSparkValCorrection">99.1%</span>
+              <span class="tip-label">Target: 98.0%</span>
+            </div>
           </div>
         </div>
 
@@ -1389,9 +1433,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#blcGradDosing)" />
-              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#14B8A6" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="200" cy="16" r="4.5" fill="#14B8A6" stroke="#FFFFFF" stroke-width="2" />
+              <path id="blcSparkPathDosing" d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#14B8A6" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="blcSparkDotDosing" cx="200" cy="16" r="4.5" fill="#14B8A6" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="blcSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(20, 184, 166, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="blcSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#14B8A6" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="blcSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="blcSparkValDosing">14.2 g/kg</span>
+              <span class="tip-label">H₂O₂ Steady-State Feed</span>
+            </div>
           </div>
         </div>
       </section>
@@ -1535,8 +1586,8 @@
               </div>
             </div>
 
-            <div class="comparison-graph-viewport">
-              <svg class="comparison-chart-svg" viewBox="0 0 540 135" preserveAspectRatio="none">
+            <div class="comparison-graph-viewport" id="blcComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="blcComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="blcGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stop-color="rgba(16, 185, 129, 0.28)" /><stop offset="100%" stop-color="rgba(16, 185, 129, 0.02)" />
@@ -1560,6 +1611,7 @@
                 <g id="blcLiveSensorMarker">
                   <line id="blcLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="rgba(16, 185, 129, 0.45)" stroke-width="1.2" stroke-dasharray="2 2" />
                   <circle id="blcLiveScanDot" cx="280" cy="52" r="4" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="blcTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
                 </g>
                 <g id="blcWavelengthAxisLabels">
                   <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">400nm</text>
@@ -1572,6 +1624,14 @@
                 </g>
                 <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#blcSpectrumRibbonGrad)" opacity="0.8" />
               </svg>
+
+              <!-- Floating Interactive Chart Tooltip -->
+              <div class="comp-chart-tooltip" id="blcCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="blcCompTipHeader">λ 440nm (Blue)</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Target:</span> <strong id="blcCompTipTarget">88.5%</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #10B981; box-shadow: 0 0 8px rgba(16,185,129,0.8);"></span><span>Live Feed:</span> <strong id="blcCompTipLive">88.8%</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="blcCompTipDiff">+0.3% (PASS)</strong></div>
+              </div>
 
               <div class="comp-chart-footer">
                 <div class="comp-legend-items">
@@ -1670,9 +1730,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 54 C 40 48, 70 52, 110 40 C 150 28, 180 38, 220 30 C 260 22, 290 26, 340 20 L 340 70 L 0 70 Z" fill="url(#mrcGradDeltaE)" />
-              <path d="M 0 54 C 40 48, 70 52, 110 40 C 150 28, 180 38, 220 30 C 260 22, 290 26, 340 20" fill="none" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="340" cy="20" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" />
+              <path id="mrcSparkPathDeltaE" d="M 0 54 C 40 48, 70 52, 110 40 C 150 28, 180 38, 220 30 C 260 22, 290 26, 340 20" fill="none" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="mrcSparkDotDeltaE" cx="340" cy="20" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="mrcSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(245, 158, 11, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="mrcSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="mrcSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="mrcSparkValDeltaE">142.6 BAN</span>
+              <span class="tip-label">Target: &gt; 140 BAN PASS</span>
+            </div>
           </div>
         </div>
 
@@ -1692,9 +1759,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#mrcGradCorrection)" />
-              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#F97316" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="340" cy="10" r="4.5" fill="#F97316" stroke="#FFFFFF" stroke-width="2" />
+              <path id="mrcSparkPathCorrection" d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#F97316" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="mrcSparkDotCorrection" cx="340" cy="10" r="4.5" fill="#F97316" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="mrcSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(249, 115, 22, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="mrcSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#F97316" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="mrcSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="mrcSparkValCorrection">99.4%</span>
+              <span class="tip-label">Target: 98.0%</span>
+            </div>
           </div>
         </div>
 
@@ -1714,9 +1788,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#mrcGradDosing)" />
-              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#D97706" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="200" cy="16" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="2" />
+              <path id="mrcSparkPathDosing" d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#D97706" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="mrcSparkDotDosing" cx="200" cy="16" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="mrcSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(217, 119, 6, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="mrcSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="mrcSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="mrcSparkValDosing">28.2 °Bé</span>
+              <span class="tip-label">Optimum Caustic Lye</span>
+            </div>
           </div>
         </div>
       </section>
@@ -1860,8 +1941,8 @@
               </div>
             </div>
 
-            <div class="comparison-graph-viewport">
-              <svg class="comparison-chart-svg" viewBox="0 0 540 135" preserveAspectRatio="none">
+            <div class="comparison-graph-viewport" id="mrcComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="mrcComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="mrcGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stop-color="rgba(245, 158, 11, 0.28)" /><stop offset="100%" stop-color="rgba(245, 158, 11, 0.02)" />
@@ -1885,6 +1966,7 @@
                 <g id="mrcLiveSensorMarker">
                   <line id="mrcLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="rgba(245, 158, 11, 0.45)" stroke-width="1.2" stroke-dasharray="2 2" />
                   <circle id="mrcLiveScanDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="mrcTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
                 </g>
                 <g id="mrcWavelengthAxisLabels">
                   <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">400nm</text>
@@ -1897,6 +1979,14 @@
                 </g>
                 <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#mrcSpectrumRibbonGrad)" opacity="0.8" />
               </svg>
+
+              <!-- Floating Interactive Chart Tooltip -->
+              <div class="comp-chart-tooltip" id="mrcCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="mrcCompTipHeader">λ 560nm (Yellow-Green)</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Target:</span> <strong id="mrcCompTipTarget">34.2%</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #D97706; box-shadow: 0 0 8px rgba(217,119,6,0.8);"></span><span>Live Feed:</span> <strong id="mrcCompTipLive">34.5%</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="mrcCompTipDiff">+0.3% (PASS)</strong></div>
+              </div>
 
               <div class="comp-chart-footer">
                 <div class="comp-legend-items">
@@ -1947,7 +2037,7 @@
   </div>
 
   <!-- =========================================================================
-       VIEW 2A-5: COLOR INTELLIGENCE AI FOR STENTER
+       VIEW 2A-5: COLOR INTELLIGENCE AI FOR FINISH
        ========================================================================= -->
   <div class="dyeing-inspection-container" id="stenterColorInspectionView" style="display: none;">
     <header class="inspection-header-bar">
@@ -1965,7 +2055,7 @@
           </svg>
         </div>
         <div class="inspection-title-group">
-          <h1 class="inspection-main-title">Color Intelligence AI — Stenter Stabilization &amp; Shade Inspection</h1>
+          <h1 class="inspection-main-title">Color Intelligence AI — Finish Stabilization &amp; Shade Inspection</h1>
           <p class="inspection-subtitle">Inline Thermo-Fixation Shade Drift, Optical Moisture Detection &amp; Bow/Skew Stabilization</p>
         </div>
       </div>
@@ -1995,9 +2085,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34 L 340 70 L 0 70 Z" fill="url(#stnGradDeltaE)" />
-              <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34" fill="none" stroke="#8B5CF6" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="340" cy="34" r="4.5" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="2" />
+              <path id="stnSparkPathDeltaE" d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34" fill="none" stroke="#8B5CF6" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="stnSparkDotDeltaE" cx="340" cy="34" r="4.5" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="stnSparkCrosshairDeltaE" x1="0" y1="0" x2="0" y2="70" stroke="rgba(139, 92, 246, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="stnSparkHoverDotDeltaE" cx="0" cy="0" r="4.5" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="stnSparkTipDeltaE" style="display: none;">
+              <span class="tip-value" id="stnSparkValDeltaE">ΔE 0.17</span>
+              <span class="tip-label">Tolerance: &lt; 0.50 PASS</span>
+            </div>
           </div>
         </div>
 
@@ -2017,9 +2114,16 @@
                 </linearGradient>
               </defs>
               <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#stnGradCorrection)" />
-              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#6366F1" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="340" cy="10" r="4.5" fill="#6366F1" stroke="#FFFFFF" stroke-width="2" />
+              <path id="stnSparkPathCorrection" d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#6366F1" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="stnSparkDotCorrection" cx="340" cy="10" r="4.5" fill="#6366F1" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="stnSparkCrosshairCorrection" x1="0" y1="0" x2="0" y2="70" stroke="rgba(99, 102, 241, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="stnSparkHoverDotCorrection" cx="0" cy="0" r="4.5" fill="#6366F1" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="stnSparkTipCorrection" style="display: none;">
+              <span class="tip-value" id="stnSparkValCorrection">99.5%</span>
+              <span class="tip-label">Target: 98.0%</span>
+            </div>
           </div>
         </div>
 
@@ -2039,20 +2143,27 @@
                 </linearGradient>
               </defs>
               <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#stnGradDosing)" />
-              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round" />
-              <circle cx="200" cy="16" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" />
+              <path id="stnSparkPathDosing" d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round" />
+              <circle id="stnSparkDotDosing" cx="200" cy="16" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" />
+              <!-- Interactive Hover Crosshair & Tracker Dot -->
+              <line class="spark-crosshair" id="stnSparkCrosshairDosing" x1="0" y1="0" x2="0" y2="70" stroke="rgba(168, 85, 247, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle id="stnSparkHoverDotDosing" cx="0" cy="0" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
             </svg>
+            <div class="spark-tooltip" id="stnSparkTipDosing" style="display: none;">
+              <span class="tip-value" id="stnSparkValDosing">4.2% H₂O</span>
+              <span class="tip-label">Moisture Equilibrium</span>
+            </div>
           </div>
         </div>
       </section>
 
       <section class="inspection-details-row">
-        <!-- Component 1: Stenter Sensor Feed -->
+        <!-- Component 1: Finish Sensor Feed -->
         <div class="inspect-detail-card sensor-feed-card">
           <div class="detail-card-header">
             <div class="feed-header-left">
               <span class="live-dot-pulse"></span>
-              <h2 class="detail-card-title">Live In-Line Stenter Spectrophotometer Sensor Feed</h2>
+              <h2 class="detail-card-title">Live In-Line Finish Spectrophotometer Sensor Feed</h2>
             </div>
             <div class="feed-header-meta">
               <span class="meta-tag-feed">IR + D65 OPTIC</span>
@@ -2062,7 +2173,7 @@
           </div>
 
           <div class="sensor-feed-viewport">
-            <img src="assets/fabric_stenter_feed.jpg" alt="In-Line Stenter Fabric Feed" class="sensor-feed-img" />
+            <img src="assets/fabric_stenter_feed.jpg" alt="In-Line Finish Fabric Feed" class="sensor-feed-img" />
             <div class="feed-scan-laser"></div>
             <div class="feed-reticle-overlay">
               <div class="reticle-box">
@@ -2077,9 +2188,9 @@
             </div>
 
             <div class="feed-hud-top-left">
-              <div class="hud-item"><span class="hud-key">SPECTRO HEAD:</span> ST-2200 (THERMO-OPTIC)</div>
-              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> POLY-COTTON TWILL (240 GSM)</div>
-              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> #STN-7701-KHAKI</div>
+              <div class="hud-item"><span class="hud-key">SPECTRO HEAD:</span> FNS-920 (HEAT-ZONE STABILIZED)</div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> FINISHED MERCERIZED TWILL (240 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> #FNS-8802-FINAL</div>
             </div>
 
             <div class="feed-hud-bottom-right">
@@ -2185,8 +2296,8 @@
               </div>
             </div>
 
-            <div class="comparison-graph-viewport">
-              <svg class="comparison-chart-svg" viewBox="0 0 540 135" preserveAspectRatio="none">
+            <div class="comparison-graph-viewport" id="stnComparisonGraphViewport">
+              <svg class="comparison-chart-svg" id="stnComparisonChartSvg" viewBox="0 0 540 135" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="stnGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" stop-color="rgba(139, 92, 246, 0.28)" /><stop offset="100%" stop-color="rgba(139, 92, 246, 0.02)" />
@@ -2210,6 +2321,7 @@
                 <g id="stnLiveSensorMarker">
                   <line id="stnLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="rgba(139, 92, 246, 0.45)" stroke-width="1.2" stroke-dasharray="2 2" />
                   <circle id="stnLiveScanDot" cx="280" cy="52" r="4" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="2" />
+                  <circle id="stnTargetHoverDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0" />
                 </g>
                 <g id="stnWavelengthAxisLabels">
                   <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">400nm</text>
@@ -2222,6 +2334,14 @@
                 </g>
                 <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#stnSpectrumRibbonGrad)" opacity="0.8" />
               </svg>
+
+              <!-- Floating Interactive Chart Tooltip -->
+              <div class="comp-chart-tooltip" id="stnCompChartTooltip" style="display: none;">
+                <div class="tip-header" id="stnCompTipHeader">λ 580nm (Yellow-Amber)</div>
+                <div class="tip-row"><span class="tip-dot dot-target"></span><span>Target:</span> <strong id="stnCompTipTarget">29.1%</strong></div>
+                <div class="tip-row"><span class="tip-dot dot-live" style="background: #8B5CF6; box-shadow: 0 0 8px rgba(139,92,246,0.8);"></span><span>Live Feed:</span> <strong id="stnCompTipLive">29.4%</strong></div>
+                <div class="tip-row tip-diff-row"><span>Difference:</span> <strong id="stnCompTipDiff">+0.3% (PASS)</strong></div>
+              </div>
 
               <div class="comp-chart-footer">
                 <div class="comp-legend-items">
@@ -2249,7 +2369,7 @@
           </div>
 
           <div class="recipe-offsets-section">
-            <div class="section-micro-title">AUTONOMOUS STENTER DOSING OFFSETS</div>
+            <div class="section-micro-title">AUTONOMOUS FINISH DOSING OFFSETS</div>
             <div class="offsets-list">
               <div class="offset-item"><span class="dye-name">Hydrophilic Softener Emulsion</span><span class="dye-conc">25.0 g/L</span><span class="offset-pill pill-pos">+0.4 g/L auto-dispensed</span></div>
               <div class="offset-item"><span class="dye-name">Cross-Linking Anti-Shrink Resin</span><span class="dye-conc">40.0 g/L</span><span class="offset-pill pill-zero">0.00% on target</span></div>

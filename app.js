@@ -228,7 +228,7 @@ function showStenterColorInspectionView() {
   stnView.style.display = "flex";
   window.scrollTo({ top: 0, behavior: "smooth" });
 
-  history.pushState(null, "", "#color-intelligence-stenter");
+  history.pushState(null, "", "#color-intelligence-finish");
 }
 
 function openModuleDashboard(moduleKey = "predictive-maintenance") {
@@ -275,6 +275,7 @@ window.showPrintingColorInspectionView = showPrintingColorInspectionView;
 window.showBleachingColorInspectionView = showBleachingColorInspectionView;
 window.showMercerizingColorInspectionView = showMercerizingColorInspectionView;
 window.showStenterColorInspectionView = showStenterColorInspectionView;
+window.showFinishColorInspectionView = showStenterColorInspectionView;
 window.openModuleDashboard = openModuleDashboard;
 window.showDashboardView = showDashboardView;
 window.hideDashboardView = hideDashboardView;
@@ -331,7 +332,7 @@ function initCard3DTilt() {
         showBleachingColorInspectionView();
       } else if (moduleId === "color-intelligence" && subId === "mercerizing") {
         showMercerizingColorInspectionView();
-      } else if (moduleId === "color-intelligence" && subId === "stenter") {
+      } else if (moduleId === "color-intelligence" && (subId === "stenter" || subId === "finish")) {
         showStenterColorInspectionView();
       } else if (moduleId === "fabric-vision" && !subId) {
         showFabricInspectionSubView();
@@ -365,7 +366,7 @@ function initCard3DTilt() {
           showBleachingColorInspectionView();
         } else if (moduleId === "color-intelligence" && subId === "mercerizing") {
           showMercerizingColorInspectionView();
-        } else if (moduleId === "color-intelligence" && subId === "stenter") {
+        } else if (moduleId === "color-intelligence" && (subId === "stenter" || subId === "finish")) {
           showStenterColorInspectionView();
         } else if (moduleId === "fabric-vision" && !subId) {
           showFabricInspectionSubView();
@@ -527,13 +528,13 @@ function setupDashboardInteractions() {
       showBleachingColorInspectionView();
     } else if (hash === "#color-intelligence-mercerizing" || hash === "#mercerizing-inspection") {
       showMercerizingColorInspectionView();
-    } else if (hash === "#color-intelligence-stenter" || hash === "#stenter-inspection") {
+    } else if (hash === "#color-intelligence-stenter" || hash === "#stenter-inspection" || hash === "#color-intelligence-finish" || hash === "#finish-inspection") {
       showStenterColorInspectionView();
     } else if (hash === "#processing-predictive-maintenance" || hash === "#predictive-maintenance") {
       openModuleDashboard("predictive-maintenance");
-    } else if (hash === "#color-intelligence-suite") {
+    } else if (hash === "#color-intelligence-suite" || hash === "#color-intelligence") {
       showColorIntelligenceSubView();
-    } else if (hash === "#fabric-inspection-suite") {
+    } else if (hash === "#fabric-inspection-suite" || hash === "#fabric-vision") {
       showFabricInspectionSubView();
     } else if (hash === "#processing" || hash === "#processing-modules") {
       showProcessingModulesView();
@@ -1762,6 +1763,71 @@ function setupAiSidebarTabs() {
   window.activateTab = function(tabKey) {};
 }
 
+function getWavelengthColorName(wl) {
+  if (wl < 430) return "Violet";
+  if (wl < 470) return "Blue";
+  if (wl < 500) return "Cyan-Blue";
+  if (wl < 540) return "Green";
+  if (wl < 585) return "Yellow-Green";
+  if (wl < 620) return "Yellow-Amber";
+  if (wl < 660) return "Orange";
+  return "Deep Red";
+}
+
+function setupSparklineHover(wrapId, pathId, crosshairId, dotId, tipId, valId, formatter) {
+  const wrap = document.getElementById(wrapId);
+  const path = document.getElementById(pathId);
+  const crosshair = document.getElementById(crosshairId);
+  const dot = document.getElementById(dotId);
+  const tip = document.getElementById(tipId);
+  const valEl = document.getElementById(valId);
+
+  if (!wrap || !path || !crosshair || !dot || !tip) return;
+
+  function getPathPointAtX(pathEl, targetX) {
+    const totalLen = pathEl.getTotalLength();
+    let start = 0, end = totalLen;
+    for (let i = 0; i < 16; i++) {
+      const mid = (start + end) / 2;
+      const p = pathEl.getPointAtLength(mid);
+      if (p.x < targetX) start = mid;
+      else end = mid;
+    }
+    return pathEl.getPointAtLength((start + end) / 2);
+  }
+
+  wrap.addEventListener("mousemove", (e) => {
+    const rect = wrap.getBoundingClientRect();
+    const mouseX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+    const t = mouseX / rect.width;
+    const targetSvgX = t * 340;
+    const pt = getPathPointAtX(path, targetSvgX);
+
+    crosshair.setAttribute("x1", pt.x.toFixed(1));
+    crosshair.setAttribute("x2", pt.x.toFixed(1));
+    crosshair.style.opacity = "1";
+
+    dot.setAttribute("cx", pt.x.toFixed(1));
+    dot.setAttribute("cy", pt.y.toFixed(1));
+    dot.style.opacity = "1";
+
+    if (valEl && formatter) {
+      valEl.textContent = formatter(t, pt.y);
+    }
+
+    tip.style.display = "flex";
+    tip.style.left = `${mouseX}px`;
+    const tipTop = (pt.y / 70) * rect.height - 10;
+    tip.style.top = `${Math.max(12, tipTop)}px`;
+  });
+
+  wrap.addEventListener("mouseleave", () => {
+    crosshair.style.opacity = "0";
+    dot.style.opacity = "0";
+    tip.style.display = "none";
+  });
+}
+
 // ==========================================================================
 // 9. DYEING COLOR INSPECTION AI INTERACTION LOGIC (CIELAB & CLOSED LOOP)
 // ==========================================================================
@@ -2348,17 +2414,6 @@ function setupDyeingColorInspectionInteractions() {
   let isCompHovering = false;
   let compHoverSvgX = 280;
 
-  function getWavelengthColorName(wl) {
-    if (wl < 430) return "Violet";
-    if (wl < 470) return "Blue";
-    if (wl < 500) return "Cyan-Blue";
-    if (wl < 540) return "Green";
-    if (wl < 585) return "Yellow-Green";
-    if (wl < 620) return "Yellow-Amber";
-    if (wl < 660) return "Orange";
-    return "Deep Red";
-  }
-
   if (compViewport && compSvg) {
     compViewport.addEventListener("mousemove", (e) => {
       const rect = compSvg.getBoundingClientRect();
@@ -2375,59 +2430,6 @@ function setupDyeingColorInspectionInteractions() {
   }
 
   // Bind Sparkline Hover Helpers for 3 Top Metric Cards
-  function setupSparklineHover(wrapId, pathId, crosshairId, dotId, tipId, valId, formatter) {
-    const wrap = document.getElementById(wrapId);
-    const path = document.getElementById(pathId);
-    const crosshair = document.getElementById(crosshairId);
-    const dot = document.getElementById(dotId);
-    const tip = document.getElementById(tipId);
-    const valEl = document.getElementById(valId);
-
-    if (!wrap || !path || !crosshair || !dot || !tip) return;
-
-    function getPathPointAtX(pathEl, targetX) {
-      const totalLen = pathEl.getTotalLength();
-      let start = 0, end = totalLen;
-      for (let i = 0; i < 16; i++) {
-        const mid = (start + end) / 2;
-        const p = pathEl.getPointAtLength(mid);
-        if (p.x < targetX) start = mid;
-        else end = mid;
-      }
-      return pathEl.getPointAtLength((start + end) / 2);
-    }
-
-    wrap.addEventListener("mousemove", (e) => {
-      const rect = wrap.getBoundingClientRect();
-      const mouseX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
-      const t = mouseX / rect.width;
-      const targetSvgX = t * 340;
-      const pt = getPathPointAtX(path, targetSvgX);
-
-      crosshair.setAttribute("x1", pt.x.toFixed(1));
-      crosshair.setAttribute("x2", pt.x.toFixed(1));
-      crosshair.style.opacity = "1";
-
-      dot.setAttribute("cx", pt.x.toFixed(1));
-      dot.setAttribute("cy", pt.y.toFixed(1));
-      dot.style.opacity = "1";
-
-      if (valEl && formatter) {
-        valEl.textContent = formatter(t, pt.y);
-      }
-
-      tip.style.display = "flex";
-      tip.style.left = `${mouseX}px`;
-      const tipTop = (pt.y / 70) * rect.height - 10;
-      tip.style.top = `${Math.max(12, tipTop)}px`;
-    });
-
-    wrap.addEventListener("mouseleave", () => {
-      crosshair.style.opacity = "0";
-      dot.style.opacity = "0";
-      tip.style.display = "none";
-    });
-  }
 
   setupSparklineHover(
     "sparkWrapDeltaE",
@@ -2739,6 +2741,64 @@ function createInspectionDashboardController(cfg) {
   const getYForReflectance = (pct) => chartBaselineY - (Math.max(0, Math.min(95, pct)) / 80) * (chartBaselineY - chartTopY);
   const getXForWavelength = (wl) => chartXStart + ((wl - 400) / 300) * chartWidth;
 
+  const compViewport = document.getElementById(`${p}ComparisonGraphViewport`);
+  const compSvg = document.getElementById(`${p}ComparisonChartSvg`);
+  const compChartTooltip = document.getElementById(`${p}CompChartTooltip`);
+  const targetHoverDot = document.getElementById(`${p}TargetHoverDot`);
+  const compTipHeader = document.getElementById(`${p}CompTipHeader`);
+  const compTipTarget = document.getElementById(`${p}CompTipTarget`);
+  const compTipLive = document.getElementById(`${p}CompTipLive`);
+  const compTipDiff = document.getElementById(`${p}CompTipDiff`);
+
+  let isCompHovering = false;
+  let compHoverSvgX = 280;
+
+  if (compViewport && compSvg) {
+    compViewport.addEventListener("mousemove", (e) => {
+      const rect = compSvg.getBoundingClientRect();
+      const mouseX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+      compHoverSvgX = Math.max(chartXStart, Math.min(chartXEnd, (mouseX / rect.width) * 540));
+      isCompHovering = true;
+    });
+
+    compViewport.addEventListener("mouseleave", () => {
+      isCompHovering = false;
+      if (compChartTooltip) compChartTooltip.style.display = "none";
+      if (targetHoverDot) targetHoverDot.style.opacity = "0";
+    });
+  }
+
+  // Bind Sparkline Hover Helpers for 3 Top Metric Cards
+  if (cfg.sparkFormatters && cfg.sparkFormatters.length === 3) {
+    setupSparklineHover(
+      `${p}SparkWrapDeltaE`,
+      `${p}SparkPathDeltaE`,
+      `${p}SparkCrosshairDeltaE`,
+      `${p}SparkHoverDotDeltaE`,
+      `${p}SparkTipDeltaE`,
+      `${p}SparkValDeltaE`,
+      cfg.sparkFormatters[0]
+    );
+    setupSparklineHover(
+      `${p}SparkWrapCorrection`,
+      `${p}SparkPathCorrection`,
+      `${p}SparkCrosshairCorrection`,
+      `${p}SparkHoverDotCorrection`,
+      `${p}SparkTipCorrection`,
+      `${p}SparkValCorrection`,
+      cfg.sparkFormatters[1]
+    );
+    setupSparklineHover(
+      `${p}SparkWrapDosing`,
+      `${p}SparkPathDosing`,
+      `${p}SparkCrosshairDosing`,
+      `${p}SparkHoverDotDosing`,
+      `${p}SparkTipDosing`,
+      `${p}SparkValDosing`,
+      cfg.sparkFormatters[2]
+    );
+  }
+
   let scanPhase = 0;
   let lastStreamTick = 0;
 
@@ -2800,18 +2860,73 @@ function createInspectionDashboardController(cfg) {
       deltaAreaD += " Z";
       if (deltaAreaPath) deltaAreaPath.setAttribute("d", deltaAreaD);
 
-      const scanXRatio = (Math.sin(scanPhase * 0.4) + 1) / 2;
-      const scanX = chartXStart + scanXRatio * chartWidth;
-      const scanIndex = Math.min(livePts.length - 1, Math.floor(scanXRatio * (livePts.length - 1)));
-      const scanY = livePts[scanIndex].y;
+      if (isCompHovering) {
+        const hoverXRatio = Math.max(0, Math.min(1, (compHoverSvgX - chartXStart) / chartWidth));
+        const wl = Math.round(400 + hoverXRatio * 300);
 
-      if (liveScanDot) {
-        liveScanDot.setAttribute("cx", scanX.toFixed(1));
-        liveScanDot.setAttribute("cy", scanY.toFixed(1));
-      }
-      if (liveScanVerticalLine) {
-        liveScanVerticalLine.setAttribute("x1", scanX.toFixed(1));
-        liveScanVerticalLine.setAttribute("x2", scanX.toFixed(1));
+        const peakDist = Math.abs(wl - cfg.peakWl);
+        const primaryPeak = 38 * Math.exp(-Math.pow(peakDist, 2) / (2 * Math.pow(42, 2)));
+        const targetReflectance = baseReflectance + primaryPeak * (targetRNorm * 0.4 + targetGNorm * 0.3 + targetBNorm * 0.3);
+        const targetY = getYForReflectance(targetReflectance);
+
+        const sensorDrift = Math.sin(scanPhase * 0.8 + ((wl - 400) / 20) * 0.4) * 0.7 + Math.cos(scanPhase * 1.5 + ((wl - 400) / 20) * 0.2) * 0.3;
+        const liveReflectance = Math.max(1, targetReflectance + 0.35 + sensorDrift);
+        const liveY = getYForReflectance(liveReflectance);
+
+        if (liveScanDot) {
+          liveScanDot.setAttribute("cx", compHoverSvgX.toFixed(1));
+          liveScanDot.setAttribute("cy", liveY.toFixed(1));
+        }
+        if (targetHoverDot) {
+          targetHoverDot.setAttribute("cx", compHoverSvgX.toFixed(1));
+          targetHoverDot.setAttribute("cy", targetY.toFixed(1));
+          targetHoverDot.style.opacity = "1";
+        }
+        if (liveScanVerticalLine) {
+          liveScanVerticalLine.setAttribute("x1", compHoverSvgX.toFixed(1));
+          liveScanVerticalLine.setAttribute("x2", compHoverSvgX.toFixed(1));
+          liveScanVerticalLine.setAttribute("y1", "12");
+          liveScanVerticalLine.setAttribute("y2", "94");
+        }
+
+        const diff = liveReflectance - targetReflectance;
+        const diffSign = diff >= 0 ? "+" : "";
+        const isPass = Math.abs(diff) < 1.5;
+        if (compTipHeader) compTipHeader.textContent = `λ ${wl}nm (${getWavelengthColorName(wl)})`;
+        if (compTipTarget) compTipTarget.textContent = `${targetReflectance.toFixed(1)}%`;
+        if (compTipLive) compTipLive.textContent = `${liveReflectance.toFixed(1)}%`;
+        if (compTipDiff) {
+          compTipDiff.textContent = `${diffSign}${diff.toFixed(2)}% (${isPass ? "PASS" : "WARN"})`;
+          compTipDiff.style.color = isPass ? "#10B981" : "#F59E0B";
+        }
+
+        if (compViewport && compChartTooltip) {
+          const vRect = compViewport.getBoundingClientRect();
+          const screenX = (compHoverSvgX / 540) * vRect.width;
+          const screenY = (Math.min(targetY, liveY) / 135) * vRect.height;
+          compChartTooltip.style.display = "block";
+          compChartTooltip.style.left = `${screenX}px`;
+          compChartTooltip.style.top = `${Math.max(16, screenY - 6)}px`;
+        }
+      } else {
+        if (targetHoverDot) targetHoverDot.style.opacity = "0";
+        if (compChartTooltip) compChartTooltip.style.display = "none";
+
+        const scanXRatio = (Math.sin(scanPhase * 0.4) + 1) / 2;
+        const scanX = chartXStart + scanXRatio * chartWidth;
+        const scanIndex = Math.min(livePts.length - 1, Math.floor(scanXRatio * (livePts.length - 1)));
+        const scanY = livePts[scanIndex].y;
+
+        if (liveScanDot) {
+          liveScanDot.setAttribute("cx", scanX.toFixed(1));
+          liveScanDot.setAttribute("cy", scanY.toFixed(1));
+        }
+        if (liveScanVerticalLine) {
+          liveScanVerticalLine.setAttribute("x1", scanX.toFixed(1));
+          liveScanVerticalLine.setAttribute("x2", scanX.toFixed(1));
+          liveScanVerticalLine.setAttribute("y1", "12");
+          liveScanVerticalLine.setAttribute("y2", "94");
+        }
       }
 
       if (statSpectralFit) {
@@ -2840,15 +2955,60 @@ function createInspectionDashboardController(cfg) {
       }
       if (liveFeedCurvePath) liveFeedCurvePath.setAttribute("d", streamD);
 
-      const leadX = chartXEnd;
-      const leadY = zeroY - (streamHistory[streamHistory.length - 1] / 0.5) * (zeroY - upperTolY);
-      if (liveScanDot) {
-        liveScanDot.setAttribute("cx", leadX.toFixed(1));
-        liveScanDot.setAttribute("cy", leadY.toFixed(1));
-      }
-      if (liveScanVerticalLine) {
-        liveScanVerticalLine.setAttribute("x1", leadX.toFixed(1));
-        liveScanVerticalLine.setAttribute("x2", leadX.toFixed(1));
+      if (isCompHovering) {
+        const hoverXRatio = Math.max(0, Math.min(1, (compHoverSvgX - chartXStart) / chartWidth));
+        const streamIdx = Math.max(0, Math.min(streamHistory.length - 1, Math.floor(hoverXRatio * (streamHistory.length - 1))));
+        const val = streamHistory[streamIdx];
+        const hoverY = zeroY - (val / 0.5) * (zeroY - upperTolY);
+
+        if (liveScanDot) {
+          liveScanDot.setAttribute("cx", compHoverSvgX.toFixed(1));
+          liveScanDot.setAttribute("cy", hoverY.toFixed(1));
+        }
+        if (targetHoverDot) {
+          targetHoverDot.setAttribute("cx", compHoverSvgX.toFixed(1));
+          targetHoverDot.setAttribute("cy", zeroY);
+          targetHoverDot.style.opacity = "1";
+        }
+        if (liveScanVerticalLine) {
+          liveScanVerticalLine.setAttribute("x1", compHoverSvgX.toFixed(1));
+          liveScanVerticalLine.setAttribute("x2", compHoverSvgX.toFixed(1));
+          liveScanVerticalLine.setAttribute("y1", "12");
+          liveScanVerticalLine.setAttribute("y2", "94");
+        }
+
+        const secAgo = ((1 - hoverXRatio) * 40).toFixed(0);
+        if (compTipHeader) compTipHeader.textContent = `T - ${secAgo}s (In-Line Stream)`;
+        if (compTipTarget) compTipTarget.textContent = `ΔE 0.00`;
+        if (compTipLive) compTipLive.textContent = `ΔE ${val.toFixed(2)}`;
+        if (compTipDiff) {
+          const tolLimit = parseFloat(inputTol?.value) || cfg.defaultTol || 0.50;
+          compTipDiff.textContent = `Tol < ${tolLimit.toFixed(2)} (PASS)`;
+          compTipDiff.style.color = val <= tolLimit ? "#10B981" : "#EF4444";
+        }
+
+        if (compViewport && compChartTooltip) {
+          const vRect = compViewport.getBoundingClientRect();
+          const screenX = (compHoverSvgX / 540) * vRect.width;
+          const screenY = (hoverY / 135) * vRect.height;
+          compChartTooltip.style.display = "block";
+          compChartTooltip.style.left = `${screenX}px`;
+          compChartTooltip.style.top = `${Math.max(16, screenY - 6)}px`;
+        }
+      } else {
+        if (targetHoverDot) targetHoverDot.style.opacity = "0";
+        if (compChartTooltip) compChartTooltip.style.display = "none";
+
+        const leadX = chartXEnd;
+        const leadY = zeroY - (streamHistory[streamHistory.length - 1] / 0.5) * (zeroY - upperTolY);
+        if (liveScanDot) {
+          liveScanDot.setAttribute("cx", leadX.toFixed(1));
+          liveScanDot.setAttribute("cy", leadY.toFixed(1));
+        }
+        if (liveScanVerticalLine) {
+          liveScanVerticalLine.setAttribute("x1", leadX.toFixed(1));
+          liveScanVerticalLine.setAttribute("x2", leadX.toFixed(1));
+        }
       }
     }
 
@@ -2873,7 +3033,7 @@ function initApp() {
   setupAiSidebarTabs();
   setupDyeingColorInspectionInteractions();
 
-  // Setup Printing, Bleaching, Mercerizing, and Stenter Dashboards
+  // Setup Printing, Bleaching, Mercerizing, and Finish Dashboards
   createInspectionDashboardController({
     viewId: "printingColorInspectionView",
     prefix: "prn",
@@ -2894,7 +3054,12 @@ function initApp() {
     peakWl: 540,
     baseReflectance: 12,
     calibratingText: "Zeroing Multi-Spectral Sensor...",
-    correctedText: "Paste Dosing Correction Applied!"
+    correctedText: "Paste Dosing Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `ΔE ${(0.22 - t * 0.04 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
+      (t, y) => `${(98.8 + t * 0.9).toFixed(1)}%`,
+      (t, y) => `${(18.2 + (70 - y) / 70 * 0.6).toFixed(1)} dPa·s`
+    ]
   });
 
   createInspectionDashboardController({
@@ -2917,7 +3082,12 @@ function initApp() {
     peakWl: 440,
     baseReflectance: 35,
     calibratingText: "Zeroing Whiteness Reference...",
-    correctedText: "Peroxide Dosing Correction Applied!"
+    correctedText: "Peroxide Dosing Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `${(86.2 + t * 2.4).toFixed(1)} Wb`,
+      (t, y) => `${(98.2 + t * 1.0).toFixed(1)}%`,
+      (t, y) => `${(13.8 + (70 - y) / 70 * 0.8).toFixed(1)} g/kg`
+    ]
   });
 
   createInspectionDashboardController({
@@ -2940,7 +3110,12 @@ function initApp() {
     peakWl: 580,
     baseReflectance: 22,
     calibratingText: "Zeroing Specular Gloss Sensor...",
-    correctedText: "Caustic Dosing Correction Applied!"
+    correctedText: "Caustic Dosing Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `${(139.5 + t * 3.4).toFixed(1)} BAN`,
+      (t, y) => `${(98.5 + t * 1.1).toFixed(1)}%`,
+      (t, y) => `${(27.8 + (70 - y) / 70 * 0.7).toFixed(1)} °Bé`
+    ]
   });
 
   createInspectionDashboardController({
@@ -2962,8 +3137,13 @@ function initApp() {
     },
     peakWl: 580,
     baseReflectance: 10,
-    calibratingText: "Zeroing Thermal Pyrometer & Optic...",
-    correctedText: "Thermal Dosing Correction Applied!"
+    calibratingText: "Zeroing Finish Pyrometer & Optic...",
+    correctedText: "Finish Dosing Correction Applied!",
+    sparkFormatters: [
+      (t, y) => `ΔE ${(0.23 - t * 0.07 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
+      (t, y) => `${(98.9 + t * 0.7).toFixed(1)}%`,
+      (t, y) => `${(4.0 + (70 - y) / 70 * 0.4).toFixed(1)}% H₂O`
+    ]
   });
 }
 

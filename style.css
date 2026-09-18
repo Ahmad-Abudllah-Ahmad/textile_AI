@@ -2441,7 +2441,8 @@ html, body {
 .sub-card-btn[data-sub="printing"]:hover { box-shadow: 0 28px 65px -10px rgba(255, 107, 159, 0.35); }
 .sub-card-btn[data-sub="bleaching"]:hover { box-shadow: 0 28px 65px -10px rgba(5, 150, 105, 0.35); }
 .sub-card-btn[data-sub="mercerizing"]:hover { box-shadow: 0 28px 65px -10px rgba(217, 119, 6, 0.35); }
-.sub-card-btn[data-sub="stenter"]:hover { box-shadow: 0 28px 65px -10px rgba(124, 58, 237, 0.35); }
+.sub-card-btn[data-sub="stenter"]:hover,
+.sub-card-btn[data-module="color-intelligence"][data-sub="finish"]:hover { box-shadow: 0 28px 65px -10px rgba(124, 58, 237, 0.35); }
 .sub-card-btn[data-sub="greige"]:hover { box-shadow: 0 28px 65px -10px rgba(217, 119, 6, 0.35); }
 .sub-card-btn[data-sub="pretreatment"]:hover { box-shadow: 0 28px 65px -10px rgba(37, 99, 235, 0.35); }
 .sub-card-btn[data-sub="folding"]:hover { box-shadow: 0 28px 65px -10px rgba(124, 58, 237, 0.35); }
