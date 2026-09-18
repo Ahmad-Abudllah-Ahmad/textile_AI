@@ -2705,6 +2705,9 @@ html, body {
 .energy-container .detail-card-header { flex: 0 0 auto; margin-bottom: 6px; }
 
 .energy-fit-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.94fr) minmax(0, 1.15fr);
+  gap: 12px;
   flex: 1 1 0;
   min-height: 0;
   overflow: hidden;
@@ -2883,6 +2886,228 @@ html, body {
 }
 
 .energy-container .inspect-actions-row { flex: 0 0 auto; margin-top: 6px; }
+
+/* Middle AI Feature: Continuous Desired Optimization & Live Feed Match */
+.energy-ai-match-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+}
+
+.energy-ai-block {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 4px 9px 5px;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  background: #F8FAFC;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
+}
+
+.energy-ai-block:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+  transform: translateY(-1px);
+}
+
+.energy-ai-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.energy-ai-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.energy-ai-dot.dot-peak { background: #D97706; box-shadow: 0 0 6px rgba(217, 119, 6, 0.5); }
+.energy-ai-dot.dot-header { background: #06B6D4; box-shadow: 0 0 6px rgba(6, 182, 212, 0.5); }
+.energy-ai-dot.dot-thermal { background: #10B981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
+.energy-ai-dot.dot-tariff { background: #8B5CF6; box-shadow: 0 0 6px rgba(139, 92, 246, 0.5); }
+.energy-ai-dot.dot-leak { background: #14B8A6; box-shadow: 0 0 6px rgba(20, 184, 166, 0.5); }
+
+.energy-match-pill {
+  font-family: var(--font-mono);
+  font-size: 0.52rem;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  letter-spacing: 0.02em;
+  transition: all 0.3s ease;
+}
+
+.energy-match-pill.pill-optimal {
+  background: rgba(16, 185, 129, 0.14);
+  color: #059669;
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+.energy-match-pill.pill-converged {
+  background: rgba(6, 182, 212, 0.14);
+  color: #0891B2;
+  border-color: rgba(6, 182, 212, 0.3);
+}
+
+.energy-match-pill.pill-tuning {
+  background: rgba(245, 158, 11, 0.14);
+  color: #D97706;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+.energy-ai-compare-row {
+  display: grid;
+  grid-template-columns: 78px 1fr 78px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 3px;
+}
+
+.ai-compare-val-box {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.desired-box {
+  text-align: left;
+}
+
+.desired-box .ai-lbl {
+  color: #D97706;
+  font-size: 0.44rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+}
+
+.desired-box .ai-val {
+  color: #0F172A;
+  font-size: 0.70rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.live-box {
+  text-align: right;
+}
+
+.live-box .ai-lbl {
+  color: #0284C7;
+  font-size: 0.44rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+}
+
+.live-box .ai-val {
+  color: #0284C7;
+  font-size: 0.70rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+}
+
+.ai-match-bar-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  justify-content: center;
+}
+
+.ai-match-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: #E2E8F0;
+  overflow: hidden;
+}
+
+.ai-match-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #06B6D4, #10B981);
+  transition: width 0.35s ease-out;
+}
+
+.ai-target-marker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #F59E0B;
+  box-shadow: 0 0 4px #F59E0B;
+  z-index: 2;
+}
+
+.ai-match-sub-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.48rem;
+  font-family: var(--font-mono);
+}
+
+.ai-variance {
+  color: #64748B;
+  font-weight: 700;
+}
+
+.ai-status-label {
+  color: #059669;
+  font-weight: 700;
+}
+
+.energy-ai-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  padding-top: 5px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.energy-ai-telemetry-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.50rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: #0284C7;
+  background: #F0F9FF;
+  border: 1px solid #BAE6FD;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.ai-tune-quick-btn {
+  padding: 3px 10px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  border-radius: 6px;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-tune-quick-btn:hover {
+  background: #0284C7;
+  color: #FFFFFF;
+  border-color: #0284C7;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
 
 #energyChartTip {
   position: fixed;

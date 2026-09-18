@@ -5082,6 +5082,10 @@ function setupEnergyUtilitiesInteractions() {
   const tipB = tip ? tip.querySelector(".energy-tip-b") : null;
   const chartStack = document.getElementById("energyChartStack");
   const readingStack = document.getElementById("energyReadingStack");
+  const aiMatchStack = document.getElementById("energyAiMatchStack");
+  const overallMatchBadge = document.getElementById("energyOverallMatchBadge");
+  const quickTuneBtn = document.getElementById("btnAiQuickTune");
+  const aiStatusText = document.getElementById("energyAiStatusText");
   if (!energyView || !chartStack || !readingStack) return;
 
   const XS = [48, 118, 188, 258, 328, 398, 468];
@@ -5468,6 +5472,44 @@ function setupEnergyUtilitiesInteractions() {
           </div>
         </article>`;
     }).join("");
+
+    if (aiMatchStack) {
+      aiMatchStack.innerHTML = caseKeys.map((key) => {
+        const scene = scenarios[key];
+        const match = computeAiMatch(key);
+        return `
+        <article class="energy-stack-block energy-ai-block" data-energy-ai-row="${key}">
+          <div class="energy-stack-head">
+            <div class="energy-ai-title-wrap">
+              <span class="energy-ai-dot dot-${key}"></span>
+              <h3>${scene.title}</h3>
+            </div>
+            <span class="energy-match-pill ${match.pillClass}" data-ai-match-pill="${key}">${match.matchPct.toFixed(1)}% MATCH</span>
+          </div>
+          <div class="energy-ai-compare-row">
+            <div class="ai-compare-val-box desired-box">
+              <span class="ai-lbl">DESIRED OPTIMAL</span>
+              <strong class="ai-val" data-ai-desired="${key}">${scene.set}</strong>
+            </div>
+            <div class="ai-match-bar-wrap">
+              <div class="ai-match-track">
+                <div class="ai-match-fill" data-ai-fill="${key}" style="width: ${match.livePosPct}%;"></div>
+                <div class="ai-target-marker" data-ai-marker="${key}" style="left: ${match.targetPosPct}%;"></div>
+              </div>
+              <div class="ai-match-sub-info">
+                <span class="ai-variance" data-ai-var="${key}">${match.diffText}</span>
+                <span class="ai-status-label" data-ai-status="${key}">${match.status}</span>
+              </div>
+            </div>
+            <div class="ai-compare-val-box live-box">
+              <span class="ai-lbl">LIVE FEED</span>
+              <strong class="ai-val" data-ai-live="${key}">${formatVal(scene, match.liveVal)}</strong>
+            </div>
+          </div>
+        </article>`;
+      }).join("");
+      updateOverallMatch();
+    }
   }
 
   function hideEnergyTip() {
@@ -5626,6 +5668,94 @@ function setupEnergyUtilitiesInteractions() {
     }
   }
 
+  function computeAiMatch(key) {
+    const scene = scenarios[key];
+    const liveVal = scene.live[scene.cursor];
+    const desiredVal = parseFloat(scene.set) || scene.target[scene.cursor];
+    const diff = liveVal - desiredVal;
+    const span = (scene.max - scene.min) || 1;
+    const devRatio = Math.abs(diff) / span;
+    const matchPct = Math.max(70, Math.min(100, 100 - devRatio * 75));
+    const diffSign = diff > 0.005 ? "+" : (diff < -0.005 ? "−" : "±");
+    const diffDecimals = scene.unit === "bar" ? 2 : (scene.unit === "%" ? 1 : 2);
+    const diffText = `Δ ${diffSign}${Math.abs(diff).toFixed(diffDecimals)} ${scene.unit}`;
+
+    let status = "Optimal Lock";
+    let pillClass = "pill-optimal";
+    if (devRatio > 0.16) {
+      status = "AI Auto-Tuning";
+      pillClass = "pill-tuning";
+    } else if (devRatio > 0.04) {
+      status = "Within Band";
+      pillClass = "pill-converged";
+    }
+
+    const targetPosPct = clamp(((desiredVal - scene.min) / span) * 100, 2, 98);
+    const livePosPct = clamp(((liveVal - scene.min) / span) * 100, 5, 100);
+
+    return {
+      liveVal,
+      desiredVal,
+      diffText,
+      matchPct,
+      status,
+      pillClass,
+      targetPosPct,
+      livePosPct
+    };
+  }
+
+  function updateOverallMatch() {
+    if (!overallMatchBadge) return;
+    let sum = 0;
+    caseKeys.forEach((k) => {
+      sum += computeAiMatch(k).matchPct;
+    });
+    const avg = (sum / caseKeys.length).toFixed(1);
+    overallMatchBadge.textContent = `${avg}% OPTIMAL MATCH`;
+    if (avg >= 95) {
+      overallMatchBadge.className = "inspect-badge badge-emerald";
+    } else if (avg >= 88) {
+      overallMatchBadge.className = "inspect-badge badge-cyan";
+    } else {
+      overallMatchBadge.className = "inspect-badge badge-amber";
+    }
+  }
+
+  function updateAiMatch(key) {
+    if (!aiMatchStack) return;
+    const row = energyView.querySelector(`[data-energy-ai-row="${key}"]`);
+    if (!row) return;
+    const scene = scenarios[key];
+    const match = computeAiMatch(key);
+
+    const liveEl = row.querySelector(`[data-ai-live="${key}"]`);
+    if (liveEl) liveEl.textContent = formatVal(scene, match.liveVal);
+
+    const desiredEl = row.querySelector(`[data-ai-desired="${key}"]`);
+    if (desiredEl) desiredEl.textContent = scene.set;
+
+    const varEl = row.querySelector(`[data-ai-var="${key}"]`);
+    if (varEl) varEl.textContent = match.diffText;
+
+    const pillEl = row.querySelector(`[data-ai-match-pill="${key}"]`);
+    if (pillEl) {
+      pillEl.textContent = `${match.matchPct.toFixed(1)}% MATCH`;
+      pillEl.className = `energy-match-pill ${match.pillClass}`;
+    }
+
+    const statusEl = row.querySelector(`[data-ai-status="${key}"]`);
+    if (statusEl) statusEl.textContent = match.status;
+
+    const fillEl = row.querySelector(`[data-ai-fill="${key}"]`);
+    if (fillEl) fillEl.style.width = `${match.livePosPct}%`;
+
+    const markerEl = row.querySelector(`[data-ai-marker="${key}"]`);
+    if (markerEl) markerEl.style.left = `${match.targetPosPct}%`;
+
+    updateOverallMatch();
+  }
+
   function updateChart(key) {
     const scene = scenarios[key];
     const i = scene.cursor;
@@ -5658,6 +5788,7 @@ function setupEnergyUtilitiesInteractions() {
       }
       updateChart(key);
       updateReadings(key);
+      updateAiMatch(key);
     });
 
     aux.peak.steam = clamp(8.4 + Math.sin(t * 1.1) * 0.08, 8.2, 8.7);
@@ -5720,6 +5851,7 @@ function setupEnergyUtilitiesInteractions() {
       sfx.playClick();
       updateChart(key);
       updateReadings(key);
+      updateAiMatch(key);
     });
   });
 
@@ -5738,7 +5870,51 @@ function setupEnergyUtilitiesInteractions() {
     sfx.playClick();
     updateChart(key);
     updateReadings(key);
+    updateAiMatch(key);
   });
+
+  // Direct AI Match Row Click: step live feed towards desired optimization
+  if (aiMatchStack) {
+    aiMatchStack.addEventListener("click", (event) => {
+      const row = event.target.closest("[data-energy-ai-row]");
+      if (!row) return;
+      const key = row.dataset.energyAiRow;
+      const scene = scenarios[key];
+      if (!scene) return;
+      const curr = scene.live[scene.cursor];
+      const target = parseFloat(scene.set) || scene.target[scene.cursor];
+      const step = (target - curr) * 0.55;
+      scene.live[scene.cursor] = clamp(curr + (Math.abs(step) < 0.02 ? (target - curr) : step), scene.min, scene.max);
+      liveBase[key][scene.cursor] = scene.live[scene.cursor];
+      sfx.playClick();
+      updateChart(key);
+      updateReadings(key);
+      updateAiMatch(key);
+    });
+  }
+
+  // Quick Auto-Tune button
+  if (quickTuneBtn) {
+    quickTuneBtn.addEventListener("click", () => {
+      sfx.playClick();
+      quickTuneBtn.textContent = "Tuned ✓";
+      if (aiStatusText) aiStatusText.textContent = "AI CONVERGENCE OPTIMAL · 99.4%";
+      caseKeys.forEach((key) => {
+        const scene = scenarios[key];
+        const desired = parseFloat(scene.set) || scene.target[scene.cursor];
+        const curr = scene.live[scene.cursor];
+        scene.live[scene.cursor] = curr + (desired - curr) * 0.85;
+        liveBase[key][scene.cursor] = scene.live[scene.cursor];
+        updateChart(key);
+        updateReadings(key);
+        updateAiMatch(key);
+      });
+      window.setTimeout(() => {
+        quickTuneBtn.textContent = "Auto-Tune";
+        if (aiStatusText) aiStatusText.textContent = "CLOSED-LOOP AI OPTIMIZING";
+      }, 2000);
+    });
+  }
 
   if (rebalanceBtn) {
     rebalanceBtn.addEventListener("click", () => {
@@ -5754,6 +5930,7 @@ function setupEnergyUtilitiesInteractions() {
         liveBase[key] = scenarios[key].live.slice();
         updateChart(key);
         updateReadings(key);
+        updateAiMatch(key);
       });
       window.setTimeout(() => { rebalanceBtn.textContent = "Rebalance"; }, 1600);
     });
@@ -5769,6 +5946,7 @@ function setupEnergyUtilitiesInteractions() {
         liveBase[key] = scenarios[key].target.slice();
         updateChart(key);
         updateReadings(key);
+        updateAiMatch(key);
       });
       applyBtn.disabled = true;
       window.setTimeout(() => {
