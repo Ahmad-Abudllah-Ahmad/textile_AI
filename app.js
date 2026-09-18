@@ -104,6 +104,10 @@ function hideAllViews() {
     document.getElementById("colorIntelligenceSubView"),
     document.getElementById("fabricInspectionSubView"),
     document.getElementById("dyeingColorInspectionView"),
+    document.getElementById("printingColorInspectionView"),
+    document.getElementById("bleachingColorInspectionView"),
+    document.getElementById("mercerizingColorInspectionView"),
+    document.getElementById("stenterColorInspectionView"),
     document.getElementById("dashboardView")
   ];
   views.forEach((v) => {
@@ -175,6 +179,58 @@ function showDyeingColorInspectionView() {
   history.pushState(null, "", "#color-intelligence-dyeing");
 }
 
+function showPrintingColorInspectionView() {
+  const prnView = document.getElementById("printingColorInspectionView");
+  if (!prnView) return;
+
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "color-intelligence";
+  prnView.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  history.pushState(null, "", "#color-intelligence-printing");
+}
+
+function showBleachingColorInspectionView() {
+  const blcView = document.getElementById("bleachingColorInspectionView");
+  if (!blcView) return;
+
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "color-intelligence";
+  blcView.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  history.pushState(null, "", "#color-intelligence-bleaching");
+}
+
+function showMercerizingColorInspectionView() {
+  const mrcView = document.getElementById("mercerizingColorInspectionView");
+  if (!mrcView) return;
+
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "color-intelligence";
+  mrcView.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  history.pushState(null, "", "#color-intelligence-mercerizing");
+}
+
+function showStenterColorInspectionView() {
+  const stnView = document.getElementById("stenterColorInspectionView");
+  if (!stnView) return;
+
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "color-intelligence";
+  stnView.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  history.pushState(null, "", "#color-intelligence-stenter");
+}
+
 function openModuleDashboard(moduleKey = "predictive-maintenance") {
   const dashView = document.getElementById("dashboardView");
   if (!dashView) return;
@@ -215,6 +271,10 @@ window.hideProcessingModulesView = hideProcessingModulesView;
 window.showColorIntelligenceSubView = showColorIntelligenceSubView;
 window.showFabricInspectionSubView = showFabricInspectionSubView;
 window.showDyeingColorInspectionView = showDyeingColorInspectionView;
+window.showPrintingColorInspectionView = showPrintingColorInspectionView;
+window.showBleachingColorInspectionView = showBleachingColorInspectionView;
+window.showMercerizingColorInspectionView = showMercerizingColorInspectionView;
+window.showStenterColorInspectionView = showStenterColorInspectionView;
 window.openModuleDashboard = openModuleDashboard;
 window.showDashboardView = showDashboardView;
 window.hideDashboardView = hideDashboardView;
@@ -265,8 +325,20 @@ function initCard3DTilt() {
         showColorIntelligenceSubView();
       } else if (moduleId === "color-intelligence" && subId === "dyeing") {
         showDyeingColorInspectionView();
+      } else if (moduleId === "color-intelligence" && subId === "printing") {
+        showPrintingColorInspectionView();
+      } else if (moduleId === "color-intelligence" && subId === "bleaching") {
+        showBleachingColorInspectionView();
+      } else if (moduleId === "color-intelligence" && subId === "mercerizing") {
+        showMercerizingColorInspectionView();
+      } else if (moduleId === "color-intelligence" && subId === "stenter") {
+        showStenterColorInspectionView();
       } else if (moduleId === "fabric-vision" && !subId) {
         showFabricInspectionSubView();
+      } else if (moduleId === "fabric-vision" && subId === "dyeing") {
+        showDyeingColorInspectionView();
+      } else if (moduleId === "fabric-vision" && subId === "printing") {
+        showPrintingColorInspectionView();
       } else if (moduleId === "predictive-maintenance") {
         openModuleDashboard("predictive-maintenance");
       }
@@ -287,8 +359,20 @@ function initCard3DTilt() {
           showColorIntelligenceSubView();
         } else if (moduleId === "color-intelligence" && subId === "dyeing") {
           showDyeingColorInspectionView();
+        } else if (moduleId === "color-intelligence" && subId === "printing") {
+          showPrintingColorInspectionView();
+        } else if (moduleId === "color-intelligence" && subId === "bleaching") {
+          showBleachingColorInspectionView();
+        } else if (moduleId === "color-intelligence" && subId === "mercerizing") {
+          showMercerizingColorInspectionView();
+        } else if (moduleId === "color-intelligence" && subId === "stenter") {
+          showStenterColorInspectionView();
         } else if (moduleId === "fabric-vision" && !subId) {
           showFabricInspectionSubView();
+        } else if (moduleId === "fabric-vision" && subId === "dyeing") {
+          showDyeingColorInspectionView();
+        } else if (moduleId === "fabric-vision" && subId === "printing") {
+          showPrintingColorInspectionView();
         } else if (moduleId === "predictive-maintenance") {
           openModuleDashboard("predictive-maintenance");
         }
@@ -313,33 +397,50 @@ function initCard3DTilt() {
     btnBackFv.addEventListener("click", showProcessingModulesView);
   }
 
-  // Back button on Dyeing Inspection View
-  const btnBackDyeing = document.getElementById("btnBackFromDyeing");
-  if (btnBackDyeing) {
-    btnBackDyeing.addEventListener("click", () => {
-      sfx.playClick();
-      showColorIntelligenceSubView();
-    });
-  }
-
-  const btnReturnColorSuite = document.getElementById("btnReturnToColorSuite");
-  if (btnReturnColorSuite) {
-    btnReturnColorSuite.addEventListener("click", () => {
-      sfx.playClick();
-      showColorIntelligenceSubView();
-    });
-  }
+  // Back & Return buttons for Color Intelligence Inspection Views
+  [
+    ["btnBackFromDyeing", "btnReturnToColorSuite"],
+    ["btnBackFromPrinting", "btnReturnToColorSuiteFromPrinting"],
+    ["btnBackFromBleaching", "btnReturnToColorSuiteFromBleaching"],
+    ["btnBackFromMercerizing", "btnReturnToColorSuiteFromMercerizing"],
+    ["btnBackFromStenter", "btnReturnToColorSuiteFromStenter"]
+  ].forEach(([backId, returnId]) => {
+    const bBtn = document.getElementById(backId);
+    if (bBtn) {
+      bBtn.addEventListener("click", () => {
+        sfx.playClick();
+        showColorIntelligenceSubView();
+      });
+    }
+    const rBtn = document.getElementById(returnId);
+    if (rBtn) {
+      rBtn.addEventListener("click", () => {
+        sfx.playClick();
+        showColorIntelligenceSubView();
+      });
+    }
+  });
 
   // Global ESC handler for hierarchical back navigation
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       const dyeingView = document.getElementById("dyeingColorInspectionView");
+      const prnView = document.getElementById("printingColorInspectionView");
+      const blcView = document.getElementById("bleachingColorInspectionView");
+      const mrcView = document.getElementById("mercerizingColorInspectionView");
+      const stnView = document.getElementById("stenterColorInspectionView");
       const dashView = document.getElementById("dashboardView");
       const ciView = document.getElementById("colorIntelligenceSubView");
       const fvView = document.getElementById("fabricInspectionSubView");
       const procView = document.getElementById("processingModulesView");
 
-      if (dyeingView && dyeingView.style.display !== "none") {
+      if (
+        (dyeingView && dyeingView.style.display !== "none") ||
+        (prnView && prnView.style.display !== "none") ||
+        (blcView && blcView.style.display !== "none") ||
+        (mrcView && mrcView.style.display !== "none") ||
+        (stnView && stnView.style.display !== "none")
+      ) {
         sfx.playClick();
         showColorIntelligenceSubView();
       } else if (dashView && dashView.style.display !== "none") {
@@ -420,6 +521,14 @@ function setupDashboardInteractions() {
     const hash = window.location.hash.toLowerCase();
     if (hash === "#color-intelligence-dyeing" || hash === "#dyeing-inspection") {
       showDyeingColorInspectionView();
+    } else if (hash === "#color-intelligence-printing" || hash === "#printing-inspection") {
+      showPrintingColorInspectionView();
+    } else if (hash === "#color-intelligence-bleaching" || hash === "#bleaching-inspection") {
+      showBleachingColorInspectionView();
+    } else if (hash === "#color-intelligence-mercerizing" || hash === "#mercerizing-inspection") {
+      showMercerizingColorInspectionView();
+    } else if (hash === "#color-intelligence-stenter" || hash === "#stenter-inspection") {
+      showStenterColorInspectionView();
     } else if (hash === "#processing-predictive-maintenance" || hash === "#predictive-maintenance") {
       openModuleDashboard("predictive-maintenance");
     } else if (hash === "#color-intelligence-suite") {
@@ -2383,6 +2492,374 @@ function setupDyeingColorInspectionInteractions() {
 }
 
 // ==========================================================================
+// 9B. MODULAR CONTROLLER FOR PROCESS INSPECTION VIEWS (PRINTING, BLEACHING, MERCERIZING, STENTER)
+// ==========================================================================
+function createInspectionDashboardController(cfg) {
+  const p = cfg.prefix;
+  const inputL = document.getElementById(`${p}InputTargetL`);
+  const inputA = document.getElementById(`${p}InputTargetA`);
+  const inputB = document.getElementById(`${p}InputTargetB`);
+  const inputTol = document.getElementById(`${p}InputToleranceLimit`);
+
+  const targetSwatch = document.getElementById(`${p}TargetSwatchPreview`);
+  const targetColorName = document.getElementById(`${p}TargetColorName`);
+  const targetHexDisplay = document.getElementById(`${p}TargetHexDisplay`);
+  const targetCielabDisplay = document.getElementById(`${p}TargetCielabDisplay`);
+  const targetSrgbPicker = document.getElementById(`${p}TargetSrgbPicker`);
+
+  const liveDeltaEVal = document.getElementById(`${p}LiveDeltaEVal`);
+  const deltaMatchStatus = document.getElementById(`${p}DeltaMatchStatus`);
+  const shadeChips = document.querySelectorAll(`.${p}-shade-dot`);
+
+  const btnRecalibrate = document.getElementById(`${p}BtnRecalibrateSensor`);
+  const btnApplyCorrection = document.getElementById(`${p}BtnApplyColorCorrection`);
+
+  const btnTabSpectral = document.getElementById(`${p}BtnTabSpectral`);
+  const btnTabDeltaStream = document.getElementById(`${p}BtnTabDeltaStream`);
+  const targetCurvePath = document.getElementById(`${p}TargetCurvePath`);
+  const liveFeedCurvePath = document.getElementById(`${p}LiveFeedCurvePath`);
+  const deltaAreaPath = document.getElementById(`${p}DeltaAreaPath`);
+  const liveScanDot = document.getElementById(`${p}LiveScanDot`);
+  const liveScanVerticalLine = document.getElementById(`${p}LiveScanVerticalLine`);
+  const wavelengthLabelsGroup = document.getElementById(`${p}WavelengthAxisLabels`);
+
+  const statPeakWavelength = document.getElementById(`${p}StatPeakWavelength`);
+  const statSpectralFit = document.getElementById(`${p}StatSpectralFit`);
+  const statLiveDeltaE = document.getElementById(`${p}StatLiveDeltaE`);
+
+  const measured = cfg.measured;
+  let currentChartMode = "spectral";
+  let currentTargetColor = { ...cfg.defaultTarget };
+  let streamHistory = [];
+  const streamCapacity = 40;
+  for (let i = 0; i < streamCapacity; i++) {
+    streamHistory.push(0.16);
+  }
+
+  function hexToRgb(hex) {
+    hex = (hex || cfg.defaultHex).replace("#", "").trim();
+    if (hex.length === 3) hex = hex.split("").map((c) => c + c).join("");
+    const num = parseInt(hex, 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+  }
+
+  function rgbToLab(r, g, b) {
+    let rNorm = r / 255, gNorm = g / 255, bNorm = b / 255;
+    const linearize = (c) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+    let rLin = linearize(rNorm), gLin = linearize(gNorm), bLin = linearize(bNorm);
+    let X = (rLin * 0.4124564 + gLin * 0.3575761 + bLin * 0.1804375) * 100;
+    let Y = (rLin * 0.2126729 + gLin * 0.7151522 + bLin * 0.0721750) * 100;
+    let Z = (rLin * 0.0193339 + gLin * 0.1191920 + bLin * 0.9503041) * 100;
+    const Xn = 95.047, Yn = 100.000, Zn = 108.883;
+    const f = (t) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116);
+    let L = 116 * f(Y / Yn) - 16;
+    let a = 500 * (f(X / Xn) - f(Y / Yn));
+    let bVal = 200 * (f(Y / Yn) - f(Z / Zn));
+    return { L, a, b: bVal };
+  }
+
+  function labToHex(L, a, bVal) {
+    let y = (L + 16) / 116;
+    let x = a / 500 + y;
+    let z = y - bVal / 200;
+    const fn = (t) => (t * t * t > 0.008856 ? t * t * t : (t - 16 / 116) / 7.787);
+    let X = (95.047 * fn(x)) / 100;
+    let Y = (100.0 * fn(y)) / 100;
+    let Z = (108.883 * fn(z)) / 100;
+    let r = X * 3.2406 + Y * -1.5372 + Z * -0.4986;
+    let g = X * -0.9689 + Y * 1.8758 + Z * 0.0415;
+    let bl = X * 0.0557 + Y * -0.204 + Z * 1.057;
+    const gamma = (c) => (c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055);
+    const clampByte = (c) => Math.min(255, Math.max(0, Math.round(gamma(c) * 255)));
+    const toHex2 = (n) => n.toString(16).padStart(2, "0").toUpperCase();
+    return `#${toHex2(clampByte(r))}${toHex2(clampByte(g))}${toHex2(clampByte(bl))}`;
+  }
+
+  function applyColorFromHex(hex, explicitName = null) {
+    hex = hex.toUpperCase();
+    const rgb = hexToRgb(hex);
+    currentTargetColor = { r: rgb.r, g: rgb.g, b: rgb.b, hex };
+    const lab = rgbToLab(rgb.r, rgb.g, rgb.b);
+
+    if (inputL) inputL.value = lab.L.toFixed(2);
+    if (inputA) inputA.value = lab.a.toFixed(2);
+    if (inputB) inputB.value = lab.b.toFixed(2);
+
+    if (targetSrgbPicker) targetSrgbPicker.value = hex;
+    if (targetSwatch) targetSwatch.style.backgroundColor = hex;
+    if (targetHexDisplay) targetHexDisplay.textContent = `HEX: ${hex}`;
+    if (targetCielabDisplay) {
+      targetCielabDisplay.textContent = `L*: ${lab.L.toFixed(2)} • a*: ${lab.a.toFixed(2)} • b*: ${lab.b.toFixed(2)}`;
+    }
+    if (targetColorName) {
+      targetColorName.textContent = explicitName || cfg.shadeMap[hex] || `Standard Shade ${hex}`;
+    }
+
+    updateCalculations();
+  }
+
+  function updateCalculations() {
+    if (!inputL || !inputA || !inputB || !inputTol) return;
+    const targetL = parseFloat(inputL.value) || cfg.defaultL;
+    const targetA = parseFloat(inputA.value) || cfg.defaultA;
+    const targetB = parseFloat(inputB.value) || cfg.defaultB;
+    const tolerance = parseFloat(inputTol.value) || cfg.defaultTol;
+
+    const dL = targetL - measured.L;
+    const da = targetA - measured.a;
+    const db = targetB - measured.b;
+    const deltaE = Math.sqrt(dL * dL + da * da + db * db);
+
+    if (liveDeltaEVal) liveDeltaEVal.textContent = deltaE.toFixed(2);
+    const hexColor = labToHex(targetL, targetA, targetB);
+    const rgb = hexToRgb(hexColor);
+    currentTargetColor = { r: rgb.r, g: rgb.g, b: rgb.b, hex: hexColor };
+
+    if (targetSwatch) targetSwatch.style.backgroundColor = hexColor;
+    if (targetHexDisplay) targetHexDisplay.textContent = `HEX: ${hexColor}`;
+    if (targetSrgbPicker && targetSrgbPicker.value.toUpperCase() !== hexColor.toUpperCase()) {
+      targetSrgbPicker.value = hexColor;
+    }
+    if (targetCielabDisplay) {
+      targetCielabDisplay.textContent = `L*: ${targetL.toFixed(2)} • a*: ${targetA.toFixed(2)} • b*: ${targetB.toFixed(2)}`;
+    }
+    if (deltaMatchStatus) {
+      if (deltaE <= tolerance) {
+        deltaMatchStatus.textContent = "✓ MATCH";
+        deltaMatchStatus.style.color = "#10B981";
+      } else {
+        deltaMatchStatus.textContent = "⚠ OUT OF SPEC";
+        deltaMatchStatus.style.color = "#EF4444";
+      }
+    }
+    if (statLiveDeltaE) statLiveDeltaE.textContent = deltaE.toFixed(2);
+  }
+
+  if (targetSrgbPicker) {
+    targetSrgbPicker.addEventListener("input", (e) => applyColorFromHex(e.target.value));
+    targetSrgbPicker.addEventListener("change", (e) => applyColorFromHex(e.target.value));
+  }
+
+  shadeChips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      sfx.playClick();
+      const hex = chip.getAttribute("data-hex");
+      const name = chip.getAttribute("data-name");
+      if (hex) applyColorFromHex(hex, name);
+    });
+  });
+
+  [inputL, inputA, inputB, inputTol].forEach((input) => {
+    if (input) {
+      input.addEventListener("input", updateCalculations);
+      input.addEventListener("change", updateCalculations);
+    }
+  });
+
+  if (btnRecalibrate) {
+    btnRecalibrate.addEventListener("click", () => {
+      sfx.playClick();
+      const originalHtml = btnRecalibrate.innerHTML;
+      btnRecalibrate.innerHTML = `
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="spin-icon">
+          <line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line>
+          <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+        </svg>
+        <span>${cfg.calibratingText || "Zeroing Reference..."}</span>
+      `;
+      btnRecalibrate.style.pointerEvents = "none";
+      setTimeout(() => {
+        btnRecalibrate.innerHTML = originalHtml;
+        btnRecalibrate.style.pointerEvents = "auto";
+      }, 1000);
+    });
+  }
+
+  if (btnApplyCorrection) {
+    btnApplyCorrection.addEventListener("click", () => {
+      sfx.playClick();
+      const originalText = btnApplyCorrection.innerHTML;
+      btnApplyCorrection.innerHTML = `
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+        <span>${cfg.correctedText || "Correction Applied!"}</span>
+      `;
+      btnApplyCorrection.style.background = "linear-gradient(135deg, #059669, #10B981)";
+      setTimeout(() => {
+        btnApplyCorrection.innerHTML = originalText;
+        btnApplyCorrection.style.background = "";
+      }, 1500);
+    });
+  }
+
+  if (btnTabSpectral && btnTabDeltaStream) {
+    btnTabSpectral.addEventListener("click", () => {
+      sfx.playClick();
+      currentChartMode = "spectral";
+      btnTabSpectral.classList.add("active");
+      btnTabDeltaStream.classList.remove("active");
+      if (wavelengthLabelsGroup) wavelengthLabelsGroup.style.display = "block";
+    });
+    btnTabDeltaStream.addEventListener("click", () => {
+      sfx.playClick();
+      currentChartMode = "stream";
+      btnTabDeltaStream.classList.add("active");
+      btnTabSpectral.classList.remove("active");
+      if (wavelengthLabelsGroup) wavelengthLabelsGroup.style.display = "none";
+    });
+  }
+
+  // Reflectance Spectrum bar
+  const spectrumBar = document.getElementById(`${p}SpectrumBarGradient`);
+  const spectrumIndicator = document.getElementById(`${p}SpectrumIndicator`);
+  const spectrumTooltip = document.getElementById(`${p}SpectrumTooltip`);
+  if (spectrumBar && spectrumIndicator) {
+    spectrumBar.addEventListener("mousemove", (e) => {
+      const rect = spectrumBar.getBoundingClientRect();
+      const mouseX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+      const t = mouseX / rect.width;
+      const wl = Math.round(400 + t * 300);
+      spectrumIndicator.style.left = `${(t * 100).toFixed(1)}%`;
+      if (spectrumTooltip) {
+        spectrumTooltip.textContent = `λ ${wl}nm`;
+        spectrumTooltip.style.display = "block";
+        spectrumTooltip.style.left = `${(t * 100).toFixed(1)}%`;
+      }
+    });
+    spectrumBar.addEventListener("mouseleave", () => {
+      spectrumIndicator.style.left = "45%";
+      if (spectrumTooltip) spectrumTooltip.style.display = "none";
+    });
+  }
+
+  // Comparison Render Loop
+  const wavelengths = [400, 420, 440, 460, 480, 500, 520, 540, 560, 580, 600, 620, 640, 660, 680, 700];
+  const chartXStart = 45, chartXEnd = 525, chartWidth = 480, chartBaselineY = 86, chartTopY = 16;
+  const getYForReflectance = (pct) => chartBaselineY - (Math.max(0, Math.min(95, pct)) / 80) * (chartBaselineY - chartTopY);
+  const getXForWavelength = (wl) => chartXStart + ((wl - 400) / 300) * chartWidth;
+
+  let scanPhase = 0;
+  let lastStreamTick = 0;
+
+  function renderLoop(timestamp) {
+    const view = document.getElementById(cfg.viewId);
+    if (!view || view.style.display === "none") {
+      requestAnimationFrame(renderLoop);
+      return;
+    }
+
+    scanPhase += 0.035;
+    const targetRNorm = currentTargetColor.r / 255;
+    const targetGNorm = currentTargetColor.g / 255;
+    const targetBNorm = currentTargetColor.b / 255;
+    const baseReflectance = cfg.baseReflectance || 12;
+
+    if (statPeakWavelength) statPeakWavelength.textContent = `${cfg.peakWl}nm`;
+
+    if (currentChartMode === "spectral") {
+      const targetPts = [];
+      const livePts = [];
+
+      for (let i = 0; i < wavelengths.length; i++) {
+        const wl = wavelengths[i];
+        const x = getXForWavelength(wl);
+        const peakDist = Math.abs(wl - cfg.peakWl);
+        const primaryPeak = 38 * Math.exp(-Math.pow(peakDist, 2) / (2 * Math.pow(42, 2)));
+        const targetReflectance = baseReflectance + primaryPeak * (targetRNorm * 0.4 + targetGNorm * 0.3 + targetBNorm * 0.3);
+        const targetY = getYForReflectance(targetReflectance);
+        targetPts.push({ x, y: targetY });
+
+        const sensorDrift = Math.sin(scanPhase * 0.8 + i * 0.4) * 0.7 + Math.cos(scanPhase * 1.5 + i * 0.2) * 0.3;
+        const liveReflectance = Math.max(1, targetReflectance + 0.35 + sensorDrift);
+        const liveY = getYForReflectance(liveReflectance);
+        livePts.push({ x, y: liveY });
+      }
+
+      let targetPathD = `M ${targetPts[0].x} ${targetPts[0].y}`;
+      for (let i = 0; i < targetPts.length - 1; i++) {
+        const xc = (targetPts[i].x + targetPts[i + 1].x) / 2;
+        const yc = (targetPts[i].y + targetPts[i + 1].y) / 2;
+        targetPathD += ` Q ${targetPts[i].x} ${targetPts[i].y} ${xc} ${yc}`;
+      }
+      targetPathD += ` L ${targetPts[targetPts.length - 1].x} ${targetPts[targetPts.length - 1].y}`;
+      if (targetCurvePath) targetCurvePath.setAttribute("d", targetPathD);
+
+      let livePathD = `M ${livePts[0].x} ${livePts[0].y}`;
+      for (let i = 0; i < livePts.length - 1; i++) {
+        const xc = (livePts[i].x + livePts[i + 1].x) / 2;
+        const yc = (livePts[i].y + livePts[i + 1].y) / 2;
+        livePathD += ` Q ${livePts[i].x} ${livePts[i].y} ${xc} ${yc}`;
+      }
+      livePathD += ` L ${livePts[livePts.length - 1].x} ${livePts[livePts.length - 1].y}`;
+      if (liveFeedCurvePath) liveFeedCurvePath.setAttribute("d", livePathD);
+
+      let deltaAreaD = `M ${targetPts[0].x} ${targetPts[0].y}`;
+      for (let i = 1; i < targetPts.length; i++) deltaAreaD += ` L ${targetPts[i].x} ${targetPts[i].y}`;
+      for (let i = livePts.length - 1; i >= 0; i--) deltaAreaD += ` L ${livePts[i].x} ${livePts[i].y}`;
+      deltaAreaD += " Z";
+      if (deltaAreaPath) deltaAreaPath.setAttribute("d", deltaAreaD);
+
+      const scanXRatio = (Math.sin(scanPhase * 0.4) + 1) / 2;
+      const scanX = chartXStart + scanXRatio * chartWidth;
+      const scanIndex = Math.min(livePts.length - 1, Math.floor(scanXRatio * (livePts.length - 1)));
+      const scanY = livePts[scanIndex].y;
+
+      if (liveScanDot) {
+        liveScanDot.setAttribute("cx", scanX.toFixed(1));
+        liveScanDot.setAttribute("cy", scanY.toFixed(1));
+      }
+      if (liveScanVerticalLine) {
+        liveScanVerticalLine.setAttribute("x1", scanX.toFixed(1));
+        liveScanVerticalLine.setAttribute("x2", scanX.toFixed(1));
+      }
+
+      if (statSpectralFit) {
+        const fit = Math.min(99.6, Math.max(97.8, 99.0 + Math.sin(scanPhase * 0.5) * 0.25));
+        statSpectralFit.textContent = `${fit.toFixed(1)}%`;
+      }
+    } else {
+      if (timestamp - lastStreamTick > 60) {
+        lastStreamTick = timestamp;
+        const currentDelta = parseFloat(liveDeltaEVal?.textContent) || 0.16;
+        const liveSample = Math.max(0.05, currentDelta + (Math.random() - 0.5) * 0.04);
+        streamHistory.push(liveSample);
+        if (streamHistory.length > streamCapacity) streamHistory.shift();
+      }
+
+      const zeroY = 52, upperTolY = 28, lowerTolY = 76;
+      if (targetCurvePath) targetCurvePath.setAttribute("d", `M ${chartXStart} ${zeroY} L ${chartXEnd} ${zeroY}`);
+      if (deltaAreaPath) deltaAreaPath.setAttribute("d", `M ${chartXStart} ${upperTolY} L ${chartXEnd} ${upperTolY} L ${chartXEnd} ${lowerTolY} L ${chartXStart} ${lowerTolY} Z`);
+
+      const dx = chartWidth / (streamCapacity - 1);
+      let streamD = "";
+      for (let i = 0; i < streamHistory.length; i++) {
+        const x = chartXStart + i * dx;
+        const y = zeroY - (streamHistory[i] / 0.5) * (zeroY - upperTolY);
+        streamD += (i === 0 ? "M " : " L ") + `${x.toFixed(1)} ${y.toFixed(1)}`;
+      }
+      if (liveFeedCurvePath) liveFeedCurvePath.setAttribute("d", streamD);
+
+      const leadX = chartXEnd;
+      const leadY = zeroY - (streamHistory[streamHistory.length - 1] / 0.5) * (zeroY - upperTolY);
+      if (liveScanDot) {
+        liveScanDot.setAttribute("cx", leadX.toFixed(1));
+        liveScanDot.setAttribute("cy", leadY.toFixed(1));
+      }
+      if (liveScanVerticalLine) {
+        liveScanVerticalLine.setAttribute("x1", leadX.toFixed(1));
+        liveScanVerticalLine.setAttribute("x2", leadX.toFixed(1));
+      }
+    }
+
+    requestAnimationFrame(renderLoop);
+  }
+
+  updateCalculations();
+  requestAnimationFrame(renderLoop);
+}
+
+// ==========================================================================
 // 10. INITIALIZATION
 // ==========================================================================
 function initApp() {
@@ -2395,6 +2872,99 @@ function initApp() {
   setupAiAnomalyInteractivity();
   setupAiSidebarTabs();
   setupDyeingColorInspectionInteractions();
+
+  // Setup Printing, Bleaching, Mercerizing, and Stenter Dashboards
+  createInspectionDashboardController({
+    viewId: "printingColorInspectionView",
+    prefix: "prn",
+    defaultL: 48.20,
+    defaultA: 62.40,
+    defaultB: -8.50,
+    defaultTol: 0.50,
+    defaultHex: "#C026D3",
+    defaultName: "Reactive Magenta #704",
+    measured: { L: 48.32, a: 62.25, b: -8.36, hex: "#BD25CF" },
+    shadeMap: {
+      "#C026D3": "Reactive Magenta #704",
+      "#0891B2": "Cyan Blue #610",
+      "#EAB308": "Golden Yellow #302",
+      "#18181B": "Jet Black #900",
+      "#7C3AED": "Deep Violet #931"
+    },
+    peakWl: 540,
+    baseReflectance: 12,
+    calibratingText: "Zeroing Multi-Spectral Sensor...",
+    correctedText: "Paste Dosing Correction Applied!"
+  });
+
+  createInspectionDashboardController({
+    viewId: "bleachingColorInspectionView",
+    prefix: "blc",
+    defaultL: 96.50,
+    defaultA: -0.28,
+    defaultB: 1.10,
+    defaultTol: 0.40,
+    defaultHex: "#FAFAFA",
+    defaultName: "Optical White Standard #010",
+    measured: { L: 96.42, a: -0.31, b: 1.18, hex: "#F8F9FA" },
+    shadeMap: {
+      "#FAFAFA": "Optic White #010",
+      "#F5F5F0": "Natural Bleach #020",
+      "#F1F5F9": "Pearl White #030",
+      "#FDFBF7": "Soft Ivory #040",
+      "#FFFFFF": "Ultra White #050"
+    },
+    peakWl: 440,
+    baseReflectance: 35,
+    calibratingText: "Zeroing Whiteness Reference...",
+    correctedText: "Peroxide Dosing Correction Applied!"
+  });
+
+  createInspectionDashboardController({
+    viewId: "mercerizingColorInspectionView",
+    prefix: "mrc",
+    defaultL: 72.90,
+    defaultA: -0.60,
+    defaultB: 4.15,
+    defaultTol: 0.50,
+    defaultHex: "#D6D0C4",
+    defaultName: "Mercerized Pearl Sateen #330",
+    measured: { L: 72.82, a: -0.64, b: 4.22, hex: "#D4CEC2" },
+    shadeMap: {
+      "#D6D0C4": "Pearl Sateen #330",
+      "#DFD9CC": "High Luster Ecru #332",
+      "#E8E2D5": "Champagne #335",
+      "#C9C1B0": "Soft Sand #340",
+      "#BEB5A2": "Raw Mercerized #350"
+    },
+    peakWl: 580,
+    baseReflectance: 22,
+    calibratingText: "Zeroing Specular Gloss Sensor...",
+    correctedText: "Caustic Dosing Correction Applied!"
+  });
+
+  createInspectionDashboardController({
+    viewId: "stenterColorInspectionView",
+    prefix: "stn",
+    defaultL: 42.00,
+    defaultA: 1.50,
+    defaultB: 14.70,
+    defaultTol: 0.50,
+    defaultHex: "#6E6652",
+    defaultName: "Military Khaki Twill #520",
+    measured: { L: 42.11, a: 1.46, b: 14.62, hex: "#6C6450" },
+    shadeMap: {
+      "#6E6652": "Khaki Twill #520",
+      "#595444": "Olive Taupe #522",
+      "#73674A": "Field Drab #525",
+      "#9C8C70": "Desert Tan #530",
+      "#4A4D3E": "Forest Khaki #540"
+    },
+    peakWl: 580,
+    baseReflectance: 10,
+    calibratingText: "Zeroing Thermal Pyrometer & Optic...",
+    correctedText: "Thermal Dosing Correction Applied!"
+  });
 }
 
 if (document.readyState === "loading") {

@@ -940,6 +940,1338 @@
   </div>
 
   <!-- =========================================================================
+       VIEW 2A-2: COLOR INTELLIGENCE AI FOR PRINTING
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="printingColorInspectionView" style="display: none;">
+    <!-- Top Control Bar -->
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromPrinting" aria-label="Back to Color Intelligence Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+
+        <div class="inspection-brand-icon" style="background: rgba(236, 72, 153, 0.1); color: #EC4899;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Color Intelligence AI — Printing Color &amp; Registration Inspection</h1>
+          <p class="inspection-subtitle">Multi-Spectral Pattern Delta-E, Real-Time Color Gamut Fit &amp; Screen Paste Auto-Dosing</p>
+        </div>
+      </div>
+
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToColorSuiteFromPrinting">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+          <span>Return to Color Intelligence Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="inspection-content-body">
+      <!-- 3 TOP METRIC CARDS WITH CURVED LINE CHARTS -->
+      <section class="inspection-metrics-row">
+        <!-- Card 1: Print Color Match Index -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Print Color Match Index</span>
+            <span class="inspect-badge badge-emerald">EXCELLENT</span>
+          </div>
+          <div class="metric-huge-val">ΔE 0.19</div>
+          <div class="metric-chart-wrap" id="prnSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="prnGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(236, 72, 153, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(236, 72, 153, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 50 C 40 46, 75 54, 115 42 C 155 30, 185 48, 225 40 C 265 32, 295 44, 340 36 L 340 70 L 0 70 Z" fill="url(#prnGradDeltaE)" />
+              <path d="M 0 50 C 40 46, 75 54, 115 42 C 155 30, 185 48, 225 40 C 265 32, 295 44, 340 36" fill="none" stroke="#EC4899" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="340" cy="36" r="4.5" fill="#EC4899" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 2: Pattern Registration Accuracy -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Pattern Registration Accuracy</span>
+            <span class="inspect-badge badge-cyan">FIRST TIME RIGHT</span>
+          </div>
+          <div class="metric-huge-val">99.6%</div>
+          <div class="metric-chart-wrap" id="prnSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="prnGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6, 182, 212, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(6, 182, 212, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 54 C 45 50, 85 44, 130 36 C 175 28, 215 22, 260 16 C 290 12, 315 10, 340 8 L 340 70 L 0 70 Z" fill="url(#prnGradCorrection)" />
+              <path d="M 0 54 C 45 50, 85 44, 130 36 C 175 28, 215 22, 260 16 C 290 12, 315 10, 340 8" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="340" cy="8" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 3: Viscosity & Paste Dosing -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Viscosity &amp; Paste Dosing</span>
+            <span class="inspect-badge badge-purple">OPTIMIZED</span>
+          </div>
+          <div class="metric-huge-val">18.5 dPa·s</div>
+          <div class="metric-chart-wrap" id="prnSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="prnGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(168, 85, 247, 0.3)" />
+                  <stop offset="100%" stop-color="rgba(168, 85, 247, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 56 C 40 56, 70 52, 100 38 C 130 24, 160 14, 200 16 C 240 18, 270 32, 300 42 C 320 48, 335 50, 340 50 L 340 70 L 0 70 Z" fill="url(#prnGradDosing)" />
+              <path d="M 0 56 C 40 56, 70 52, 100 38 C 130 24, 160 14, 200 16 C 240 18, 270 32, 300 42 C 320 48, 335 50, 340 50" fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="200" cy="16" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <!-- BOTTOM 2 COMPONENTS: LIVE FEED & USER COLOR DATA -->
+      <section class="inspection-details-row">
+        <!-- Component 1 (Left): Live Fabric Feed Passing Through Sensor -->
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Multi-Spectral Print Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <span class="meta-tag-feed">D65 / UV-CUT</span>
+              <span class="meta-tag-feed">38.0 m/min</span>
+              <span class="meta-tag-feed tag-online">60 FPS ONLINE</span>
+            </div>
+          </div>
+
+          <!-- Video Stream Container with Visual Overlays -->
+          <div class="sensor-feed-viewport">
+            <img src="assets/fabric_printing_feed.jpg" alt="In-Line Printing Fabric Feed" class="sensor-feed-img" />
+            <div class="feed-scan-laser"></div>
+            <!-- Optical Sensor Measurement Reticle -->
+            <div class="feed-reticle-overlay">
+              <div class="reticle-box">
+                <div class="reticle-corner tl"></div>
+                <div class="reticle-corner tr"></div>
+                <div class="reticle-corner bl"></div>
+                <div class="reticle-corner br"></div>
+                <div class="reticle-crosshair"></div>
+                <div class="reticle-spot-pulse"></div>
+              </div>
+              <div class="reticle-data-badge">
+                <span class="lbl">SCANNING SPOT</span>
+                <span class="val">Ø 25mm • 10° OBSERVER</span>
+              </div>
+            </div>
+
+            <!-- Top Left Metadata Overlay -->
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">SPECTRO HEAD:</span> MSP-750 (MULTI-SPECTRAL)</div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> PRINTED COMBED POPLIN (135 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> #PRN-4410-MULTI</div>
+            </div>
+
+            <!-- Bottom Right Coordinates HUD Overlay -->
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">L*</strong> 48.20</span>
+                <span class="cielab-pill"><strong class="cielab-k">a*</strong> 62.40</span>
+                <span class="cielab-pill"><strong class="cielab-k">b*</strong> -8.50</span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE ΔE: <strong>0.19</strong></span>
+                <span class="hud-delta-status">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mini Reflectance Spectrum Bar (400 - 700 nm) -->
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>400nm (Violet)</span>
+              <span>480nm (Cyan)</span>
+              <span>550nm (Green)</span>
+              <span>620nm (Yellow)</span>
+              <span>700nm (Red)</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="prnSpectrumBarGradient">
+              <div class="spectrum-indicator" id="prnSpectrumIndicator" style="left: 45%;"></div>
+              <div class="spectrum-tooltip" id="prnSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component 2 (Right): User Actual Color Data & Formulation Calibration -->
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Master Standard vs Actual Measured Color Data</h2>
+            <span class="inspect-badge badge-emerald">TOLERANCE ΔE &lt; 0.50 PASS</span>
+          </div>
+
+          <!-- Side-by-Side Color Swatch Comparison -->
+          <div class="swatch-comparison-grid">
+            <div class="swatch-card target-swatch">
+              <label class="swatch-preview-box-wrap" for="prnTargetSrgbPicker" title="Click to select any color in sRGB">
+                <div class="swatch-preview-box" id="prnTargetSwatchPreview" style="background-color: #C026D3;">
+                  <span class="swatch-type-tag">TARGET STANDARD</span>
+                  <div class="swatch-picker-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#FFFFFF" stroke-width="2.5">
+                      <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+                      <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                      <path d="M2 2l7.586 7.586"></path>
+                      <circle cx="11" cy="11" r="2"></circle>
+                    </svg>
+                  </div>
+                </div>
+                <input type="color" id="prnTargetSrgbPicker" value="#C026D3" class="srgb-hidden-input" />
+              </label>
+
+              <div class="swatch-info-meta">
+                <div class="swatch-name-row">
+                  <span class="swatch-name" id="prnTargetColorName">Reactive Magenta #704</span>
+                  <label class="pick-srgb-chip-btn" for="prnTargetSrgbPicker" title="Open sRGB color picker">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M12 8v8M8 12h8"></path>
+                    </svg>
+                    <span>Pick sRGB</span>
+                  </label>
+                </div>
+                <div class="swatch-cielab-text" id="prnTargetCielabDisplay">L*: 48.20 • a*: 62.40 • b*: -8.50</div>
+                <div class="swatch-hex-row">
+                  <span class="swatch-hex-text" id="prnTargetHexDisplay">HEX: #C026D3</span>
+                  <div class="quick-shades-list">
+                    <button type="button" class="shade-dot prn-shade-dot" data-hex="#C026D3" data-name="Reactive Magenta #704" style="background: #C026D3;" title="Reactive Magenta"></button>
+                    <button type="button" class="shade-dot prn-shade-dot" data-hex="#0891B2" data-name="Cyan Blue #610" style="background: #0891B2;" title="Cyan Blue"></button>
+                    <button type="button" class="shade-dot prn-shade-dot" data-hex="#EAB308" data-name="Golden Yellow #302" style="background: #EAB308;" title="Golden Yellow"></button>
+                    <button type="button" class="shade-dot prn-shade-dot" data-hex="#18181B" data-name="Jet Black #900" style="background: #18181B;" title="Jet Black"></button>
+                    <button type="button" class="shade-dot prn-shade-dot" data-hex="#7C3AED" data-name="Deep Violet #931" style="background: #7C3AED;" title="Deep Violet"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Central Delta Comparison Badge -->
+            <div class="swatch-delta-connector">
+              <div class="delta-circle-badge">
+                <span class="delta-label">DIFF</span>
+                <span class="delta-num" id="prnLiveDeltaEVal">0.19</span>
+                <span class="delta-unit">ΔE</span>
+              </div>
+              <span class="delta-ok-check" id="prnDeltaMatchStatus">✓ MATCH</span>
+            </div>
+
+            <!-- Live Measured Substrate Swatch -->
+            <div class="swatch-card measured-swatch">
+              <div class="swatch-preview-box" id="prnMeasuredSwatchPreview" style="background-color: #BD25CF;">
+                <span class="swatch-type-tag">IN-LINE MEASURED</span>
+              </div>
+              <div class="swatch-info-meta">
+                <div class="swatch-name">Live Printed Substrate Feed</div>
+                <div class="swatch-cielab-text">L*: 48.32 • a*: 62.25 • b*: -8.36</div>
+                <div class="swatch-hex-text" id="prnMeasuredHexDisplay">HEX: #BD25CF</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time Comparison Chart -->
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">In-Line Sensor Stream vs Target Standard Spectral Comparison</span>
+                <span class="live-stream-badge">LIVE 60 FPS</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="prnBtnTabSpectral">Spectral Reflectance (400–700nm)</button>
+                <button type="button" class="chart-tab-btn" id="prnBtnTabDeltaStream">Real-Time ΔE Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport">
+              <svg class="comparison-chart-svg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="prnGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(236, 72, 153, 0.28)" />
+                    <stop offset="100%" stop-color="rgba(236, 72, 153, 0.02)" />
+                  </linearGradient>
+                  <linearGradient id="prnSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80%</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">40%</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">0%</text>
+                <path id="prnDeltaAreaPath" fill="url(#prnGradDeltaCorridor)" d="" />
+                <path id="prnTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="prnLiveFeedCurvePath" fill="none" stroke="#EC4899" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="prnLiveSensorMarker">
+                  <line id="prnLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="rgba(236, 72, 153, 0.45)" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="prnLiveScanDot" cx="280" cy="52" r="4" fill="#EC4899" stroke="#FFFFFF" stroke-width="2" />
+                </g>
+                <g id="prnWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">400nm</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">450nm</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">500nm</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">550nm</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">600nm</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">650nm</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">700nm</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#prnSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Target Standard (Rλ)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#EC4899;"></span><span>Live In-Line Feed (Rλ)</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box" style="background:rgba(236,72,153,0.28);"></span><span>Tolerance (±0.50 ΔE)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">PEAK λ:</strong> <span id="prnStatPeakWavelength">540nm</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SPECTRAL FIT:</strong> <span id="prnStatSpectralFit">98.8%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE ΔE:</strong> <span id="prnStatLiveDeltaE">0.19</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- User Actual Color Data Input Fields -->
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET COLOR DATA CALIBRATION (CIELAB)</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="prnInputTargetL">Lightness (L*)</label><div class="input-with-stepper"><input type="number" id="prnInputTargetL" value="48.20" step="0.10" min="0" max="100" /></div></div>
+              <div class="input-field-wrap"><label for="prnInputTargetA">Red / Green (a*)</label><div class="input-with-stepper"><input type="number" id="prnInputTargetA" value="62.40" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="prnInputTargetB">Yellow / Blue (b*)</label><div class="input-with-stepper"><input type="number" id="prnInputTargetB" value="-8.50" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="prnInputToleranceLimit">Tolerance (ΔE)</label><div class="input-with-stepper"><input type="number" id="prnInputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <!-- Autonomous Paste Offsets & Action Buttons -->
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS PRINT PASTE DISPENSE OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">C.I. Reactive Red 218</span><span class="dye-conc">3.45% paste</span><span class="offset-pill pill-pos">+0.02% auto-dispensed</span></div>
+              <div class="offset-item"><span class="dye-name">Synthetic Thickener Base</span><span class="dye-conc">18.5 dPa·s</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+              <div class="offset-item"><span class="dye-name">Fixing Agent &amp; Urea</span><span class="dye-conc">25.0 g/kg</span><span class="offset-pill pill-neg">-0.01% auto-dispensed</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="prnBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="prnBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Recipe Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 2A-3: COLOR INTELLIGENCE AI FOR BLEACHING (WHITE PART PROCESS)
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="bleachingColorInspectionView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromBleaching" aria-label="Back to Color Intelligence Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon" style="background: rgba(16, 185, 129, 0.1); color: #10B981;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Color Intelligence AI — Bleaching Whiteness &amp; Purity Inspection</h1>
+          <p class="inspection-subtitle">Inline Berger Whiteness (Wb) Index, CIELAB Base Cleanness &amp; Continuous Peroxide Control</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToColorSuiteFromBleaching">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Return to Color Intelligence Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <!-- Card 1: Berger Whiteness Index -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Berger Whiteness Index (Wb)</span>
+            <span class="inspect-badge badge-emerald">PREMIUM WHITE</span>
+          </div>
+          <div class="metric-huge-val">88.4 Wb</div>
+          <div class="metric-chart-wrap" id="blcSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="blcGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16, 185, 129, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(16, 185, 129, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 40 50, 70 48, 110 38 C 150 28, 180 32, 220 26 C 260 20, 290 22, 340 16 L 340 70 L 0 70 Z" fill="url(#blcGradDeltaE)" />
+              <path d="M 0 55 C 40 50, 70 48, 110 38 C 150 28, 180 32, 220 26 C 260 20, 290 22, 340 16" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="340" cy="16" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 2: Peroxide Reaction Efficiency -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Peroxide Reaction Efficiency</span>
+            <span class="inspect-badge badge-cyan">FIRST TIME RIGHT</span>
+          </div>
+          <div class="metric-huge-val">99.1%</div>
+          <div class="metric-chart-wrap" id="blcSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="blcGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6, 182, 212, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(6, 182, 212, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#blcGradCorrection)" />
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 3: Hydrogen Peroxide Dosing -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Hydrogen Peroxide Dosing</span>
+            <span class="inspect-badge badge-emerald">OPTIMIZED</span>
+          </div>
+          <div class="metric-huge-val">14.2 g/kg</div>
+          <div class="metric-chart-wrap" id="blcSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="blcGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(20, 184, 166, 0.3)" />
+                  <stop offset="100%" stop-color="rgba(20, 184, 166, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#blcGradDosing)" />
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#14B8A6" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="200" cy="16" r="4.5" fill="#14B8A6" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row">
+        <!-- Component 1: Live Bleached Feed -->
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Whiteness Spectrophotometer Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <span class="meta-tag-feed">D65 + UV (BERGER)</span>
+              <span class="meta-tag-feed">65.0 m/min</span>
+              <span class="meta-tag-feed tag-online">60 FPS ONLINE</span>
+            </div>
+          </div>
+
+          <div class="sensor-feed-viewport">
+            <img src="assets/fabric_bleaching_feed.jpg" alt="In-Line Bleaching Fabric Feed" class="sensor-feed-img" />
+            <div class="feed-scan-laser"></div>
+            <div class="feed-reticle-overlay">
+              <div class="reticle-box">
+                <div class="reticle-corner tl"></div><div class="reticle-corner tr"></div>
+                <div class="reticle-corner bl"></div><div class="reticle-corner br"></div>
+                <div class="reticle-crosshair"></div><div class="reticle-spot-pulse"></div>
+              </div>
+              <div class="reticle-data-badge">
+                <span class="lbl">SCANNING SPOT</span>
+                <span class="val">Ø 25mm • 10° OBSERVER</span>
+              </div>
+            </div>
+
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">SPECTRO HEAD:</span> WX-400 (DUAL-UV D65)</div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> 100% BLEACHED COTTON (210 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> #BLC-1092-WHITE</div>
+            </div>
+
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">L*</strong> 96.50</span>
+                <span class="cielab-pill"><strong class="cielab-k">a*</strong> -0.28</span>
+                <span class="cielab-pill"><strong class="cielab-k">b*</strong> 1.10</span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE ΔE: <strong>0.14</strong></span>
+                <span class="hud-delta-status">PASS (TOL &lt; 0.40)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>400nm (Violet)</span><span>480nm (Cyan)</span><span>550nm (Green)</span><span>620nm (Yellow)</span><span>700nm (Red)</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="blcSpectrumBarGradient">
+              <div class="spectrum-indicator" id="blcSpectrumIndicator" style="left: 20%;"></div>
+              <div class="spectrum-tooltip" id="blcSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component 2: Whiteness Calibration -->
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Master Standard vs Actual Measured Color Data</h2>
+            <span class="inspect-badge badge-emerald">TOLERANCE ΔE &lt; 0.40 PASS</span>
+          </div>
+
+          <div class="swatch-comparison-grid">
+            <div class="swatch-card target-swatch">
+              <label class="swatch-preview-box-wrap" for="blcTargetSrgbPicker" title="Click to select any color in sRGB">
+                <div class="swatch-preview-box" id="blcTargetSwatchPreview" style="background-color: #FAFAFA; border: 1px solid #E2E8F0;">
+                  <span class="swatch-type-tag" style="color: #475569;">TARGET STANDARD</span>
+                  <div class="swatch-picker-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#64748B" stroke-width="2.5">
+                      <path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                      <circle cx="11" cy="11" r="2"></circle>
+                    </svg>
+                  </div>
+                </div>
+                <input type="color" id="blcTargetSrgbPicker" value="#FAFAFA" class="srgb-hidden-input" />
+              </label>
+
+              <div class="swatch-info-meta">
+                <div class="swatch-name-row">
+                  <span class="swatch-name" id="blcTargetColorName">Optical White Standard #010</span>
+                  <label class="pick-srgb-chip-btn" for="blcTargetSrgbPicker" title="Open sRGB color picker">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                    <span>Pick sRGB</span>
+                  </label>
+                </div>
+                <div class="swatch-cielab-text" id="blcTargetCielabDisplay">L*: 96.50 • a*: -0.28 • b*: 1.10</div>
+                <div class="swatch-hex-row">
+                  <span class="swatch-hex-text" id="blcTargetHexDisplay">HEX: #FAFAFA</span>
+                  <div class="quick-shades-list">
+                    <button type="button" class="shade-dot blc-shade-dot" data-hex="#FAFAFA" data-name="Optic White #010" style="background: #FAFAFA; border: 1px solid #CBD5E1;" title="Optic White"></button>
+                    <button type="button" class="shade-dot blc-shade-dot" data-hex="#F5F5F0" data-name="Natural Bleach #020" style="background: #F5F5F0; border: 1px solid #CBD5E1;" title="Natural Bleach"></button>
+                    <button type="button" class="shade-dot blc-shade-dot" data-hex="#F1F5F9" data-name="Pearl White #030" style="background: #F1F5F9; border: 1px solid #CBD5E1;" title="Pearl White"></button>
+                    <button type="button" class="shade-dot blc-shade-dot" data-hex="#FDFBF7" data-name="Soft Ivory #040" style="background: #FDFBF7; border: 1px solid #CBD5E1;" title="Soft Ivory"></button>
+                    <button type="button" class="shade-dot blc-shade-dot" data-hex="#FFFFFF" data-name="Ultra White #050" style="background: #FFFFFF; border: 1px solid #CBD5E1;" title="Ultra White"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swatch-delta-connector">
+              <div class="delta-circle-badge">
+                <span class="delta-label">DIFF</span>
+                <span class="delta-num" id="blcLiveDeltaEVal">0.14</span>
+                <span class="delta-unit">ΔE</span>
+              </div>
+              <span class="delta-ok-check" id="blcDeltaMatchStatus">✓ MATCH</span>
+            </div>
+
+            <div class="swatch-card measured-swatch">
+              <div class="swatch-preview-box" id="blcMeasuredSwatchPreview" style="background-color: #F8F9FA; border: 1px solid #E2E8F0;">
+                <span class="swatch-type-tag" style="color: #475569;">IN-LINE MEASURED</span>
+              </div>
+              <div class="swatch-info-meta">
+                <div class="swatch-name">Live Bleached Substrate Feed</div>
+                <div class="swatch-cielab-text">L*: 96.42 • a*: -0.31 • b*: 1.18</div>
+                <div class="swatch-hex-text" id="blcMeasuredHexDisplay">HEX: #F8F9FA</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison Graph -->
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">In-Line Sensor Stream vs Target Standard Spectral Comparison</span>
+                <span class="live-stream-badge">LIVE 60 FPS</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="blcBtnTabSpectral">Spectral Reflectance (400–700nm)</button>
+                <button type="button" class="chart-tab-btn" id="blcBtnTabDeltaStream">Real-Time ΔE Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport">
+              <svg class="comparison-chart-svg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="blcGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(16, 185, 129, 0.28)" /><stop offset="100%" stop-color="rgba(16, 185, 129, 0.02)" />
+                  </linearGradient>
+                  <linearGradient id="blcSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">100%</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80%</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">60%</text>
+                <path id="blcDeltaAreaPath" fill="url(#blcGradDeltaCorridor)" d="" />
+                <path id="blcTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="blcLiveFeedCurvePath" fill="none" stroke="#10B981" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="blcLiveSensorMarker">
+                  <line id="blcLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="rgba(16, 185, 129, 0.45)" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="blcLiveScanDot" cx="280" cy="52" r="4" fill="#10B981" stroke="#FFFFFF" stroke-width="2" />
+                </g>
+                <g id="blcWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">400nm</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">450nm</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">500nm</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">550nm</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">600nm</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">650nm</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">700nm</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#blcSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Target Standard (Rλ)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#10B981;"></span><span>Live In-Line Feed (Rλ)</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box"></span><span>Tolerance (±0.40 ΔE)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">PEAK λ:</strong> <span id="blcStatPeakWavelength">440nm</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SPECTRAL FIT:</strong> <span id="blcStatSpectralFit">99.4%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE ΔE:</strong> <span id="blcStatLiveDeltaE">0.14</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET COLOR DATA CALIBRATION (CIELAB)</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="blcInputTargetL">Lightness (L*)</label><div class="input-with-stepper"><input type="number" id="blcInputTargetL" value="96.50" step="0.10" min="0" max="100" /></div></div>
+              <div class="input-field-wrap"><label for="blcInputTargetA">Red / Green (a*)</label><div class="input-with-stepper"><input type="number" id="blcInputTargetA" value="-0.28" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="blcInputTargetB">Yellow / Blue (b*)</label><div class="input-with-stepper"><input type="number" id="blcInputTargetB" value="1.10" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="blcInputToleranceLimit">Tolerance (ΔE)</label><div class="input-with-stepper"><input type="number" id="blcInputToleranceLimit" value="0.40" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS BLEACH LIQUOR DISPENSE OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">Hydrogen Peroxide 50% (H₂O₂)</span><span class="dye-conc">14.2 g/kg</span><span class="offset-pill pill-pos">+0.05 g/kg auto-dispensed</span></div>
+              <div class="offset-item"><span class="dye-name">Sodium Hydroxide (NaOH)</span><span class="dye-conc">8.5 g/kg</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+              <div class="offset-item"><span class="dye-name">Organic Peroxide Stabilizer</span><span class="dye-conc">3.2 g/kg</span><span class="offset-pill pill-neg">-0.02 g/kg auto-dispensed</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="blcBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="blcBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Recipe Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 2A-4: COLOR INTELLIGENCE AI FOR MERCERIZING
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="mercerizingColorInspectionView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromMercerizing" aria-label="Back to Color Intelligence Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon" style="background: rgba(245, 158, 11, 0.1); color: #F59E0B;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Color Intelligence AI — Mercerizing Luster &amp; Affinity Inspection</h1>
+          <p class="inspection-subtitle">Specular Luster Ratio, Barium Activity Number (BAN) &amp; Caustic Penetration Closed-Loop</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToColorSuiteFromMercerizing">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Return to Color Intelligence Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <!-- Card 1: BAN Index -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Barium Activity Number (BAN)</span>
+            <span class="inspect-badge badge-amber">SUPERIOR LUSTER</span>
+          </div>
+          <div class="metric-huge-val">142.6 BAN</div>
+          <div class="metric-chart-wrap" id="mrcSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="mrcGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(245, 158, 11, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(245, 158, 11, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 54 C 40 48, 70 52, 110 40 C 150 28, 180 38, 220 30 C 260 22, 290 26, 340 20 L 340 70 L 0 70 Z" fill="url(#mrcGradDeltaE)" />
+              <path d="M 0 54 C 40 48, 70 52, 110 40 C 150 28, 180 38, 220 30 C 260 22, 290 26, 340 20" fill="none" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="340" cy="20" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 2: Caustic Impregnation Uniformity -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Caustic Impregnation Uniformity</span>
+            <span class="inspect-badge badge-cyan">FIRST TIME RIGHT</span>
+          </div>
+          <div class="metric-huge-val">99.4%</div>
+          <div class="metric-chart-wrap" id="mrcSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="mrcGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(249, 115, 22, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(249, 115, 22, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#mrcGradCorrection)" />
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#F97316" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="340" cy="10" r="4.5" fill="#F97316" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 3: Lye Concentration & Wetting -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Lye Concentration &amp; Wetting</span>
+            <span class="inspect-badge badge-amber">OPTIMIZED</span>
+          </div>
+          <div class="metric-huge-val">28.2 °Bé</div>
+          <div class="metric-chart-wrap" id="mrcSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="mrcGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(217, 119, 6, 0.3)" />
+                  <stop offset="100%" stop-color="rgba(217, 119, 6, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#mrcGradDosing)" />
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#D97706" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="200" cy="16" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row">
+        <!-- Component 1: Mercerizing Feed -->
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Luster Spectrophotometer Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <span class="meta-tag-feed">SCI / SCE DUAL</span>
+              <span class="meta-tag-feed">48.0 m/min</span>
+              <span class="meta-tag-feed tag-online">60 FPS ONLINE</span>
+            </div>
+          </div>
+
+          <div class="sensor-feed-viewport">
+            <img src="assets/fabric_mercerizing_feed.jpg" alt="In-Line Mercerizing Fabric Feed" class="sensor-feed-img" />
+            <div class="feed-scan-laser"></div>
+            <div class="feed-reticle-overlay">
+              <div class="reticle-box">
+                <div class="reticle-corner tl"></div><div class="reticle-corner tr"></div>
+                <div class="reticle-corner bl"></div><div class="reticle-corner br"></div>
+                <div class="reticle-crosshair"></div><div class="reticle-spot-pulse"></div>
+              </div>
+              <div class="reticle-data-badge">
+                <span class="lbl">SCANNING SPOT</span>
+                <span class="val">Ø 25mm • 10° OBSERVER</span>
+              </div>
+            </div>
+
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">SPECTRO HEAD:</span> MR-900 (SPECULAR LUSTER)</div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> COMBED COTTON SATEEN (160 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> #MRC-3304-SATEEN</div>
+            </div>
+
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">L*</strong> 72.90</span>
+                <span class="cielab-pill"><strong class="cielab-k">a*</strong> -0.60</span>
+                <span class="cielab-pill"><strong class="cielab-k">b*</strong> 4.15</span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE ΔE: <strong>0.16</strong></span>
+                <span class="hud-delta-status">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>400nm (Violet)</span><span>480nm (Cyan)</span><span>550nm (Green)</span><span>620nm (Yellow)</span><span>700nm (Red)</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="mrcSpectrumBarGradient">
+              <div class="spectrum-indicator" id="mrcSpectrumIndicator" style="left: 58%;"></div>
+              <div class="spectrum-tooltip" id="mrcSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component 2: Master vs Measured -->
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Master Standard vs Actual Measured Color Data</h2>
+            <span class="inspect-badge badge-emerald">TOLERANCE ΔE &lt; 0.50 PASS</span>
+          </div>
+
+          <div class="swatch-comparison-grid">
+            <div class="swatch-card target-swatch">
+              <label class="swatch-preview-box-wrap" for="mrcTargetSrgbPicker" title="Click to select any color in sRGB">
+                <div class="swatch-preview-box" id="mrcTargetSwatchPreview" style="background-color: #D6D0C4;">
+                  <span class="swatch-type-tag">TARGET STANDARD</span>
+                  <div class="swatch-picker-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#FFFFFF" stroke-width="2.5">
+                      <path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                      <circle cx="11" cy="11" r="2"></circle>
+                    </svg>
+                  </div>
+                </div>
+                <input type="color" id="mrcTargetSrgbPicker" value="#D6D0C4" class="srgb-hidden-input" />
+              </label>
+
+              <div class="swatch-info-meta">
+                <div class="swatch-name-row">
+                  <span class="swatch-name" id="mrcTargetColorName">Mercerized Pearl Sateen #330</span>
+                  <label class="pick-srgb-chip-btn" for="mrcTargetSrgbPicker" title="Open sRGB color picker">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                    <span>Pick sRGB</span>
+                  </label>
+                </div>
+                <div class="swatch-cielab-text" id="mrcTargetCielabDisplay">L*: 72.90 • a*: -0.60 • b*: 4.15</div>
+                <div class="swatch-hex-row">
+                  <span class="swatch-hex-text" id="mrcTargetHexDisplay">HEX: #D6D0C4</span>
+                  <div class="quick-shades-list">
+                    <button type="button" class="shade-dot mrc-shade-dot" data-hex="#D6D0C4" data-name="Pearl Sateen #330" style="background: #D6D0C4;" title="Pearl Sateen"></button>
+                    <button type="button" class="shade-dot mrc-shade-dot" data-hex="#DFD9CC" data-name="High Luster Ecru #332" style="background: #DFD9CC;" title="High Luster Ecru"></button>
+                    <button type="button" class="shade-dot mrc-shade-dot" data-hex="#E8E2D5" data-name="Champagne #335" style="background: #E8E2D5;" title="Champagne"></button>
+                    <button type="button" class="shade-dot mrc-shade-dot" data-hex="#C9C1B0" data-name="Soft Sand #340" style="background: #C9C1B0;" title="Soft Sand"></button>
+                    <button type="button" class="shade-dot mrc-shade-dot" data-hex="#BEB5A2" data-name="Raw Mercerized #350" style="background: #BEB5A2;" title="Raw Mercerized"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swatch-delta-connector">
+              <div class="delta-circle-badge">
+                <span class="delta-label">DIFF</span>
+                <span class="delta-num" id="mrcLiveDeltaEVal">0.16</span>
+                <span class="delta-unit">ΔE</span>
+              </div>
+              <span class="delta-ok-check" id="mrcDeltaMatchStatus">✓ MATCH</span>
+            </div>
+
+            <div class="swatch-card measured-swatch">
+              <div class="swatch-preview-box" id="mrcMeasuredSwatchPreview" style="background-color: #D4CEC2;">
+                <span class="swatch-type-tag">IN-LINE MEASURED</span>
+              </div>
+              <div class="swatch-info-meta">
+                <div class="swatch-name">Live Mercerized Substrate Feed</div>
+                <div class="swatch-cielab-text">L*: 72.82 • a*: -0.64 • b*: 4.22</div>
+                <div class="swatch-hex-text" id="mrcMeasuredHexDisplay">HEX: #D4CEC2</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Real-Time Comparison Chart -->
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">In-Line Sensor Stream vs Target Standard Spectral Comparison</span>
+                <span class="live-stream-badge">LIVE 60 FPS</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="mrcBtnTabSpectral">Spectral Reflectance (400–700nm)</button>
+                <button type="button" class="chart-tab-btn" id="mrcBtnTabDeltaStream">Real-Time ΔE Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport">
+              <svg class="comparison-chart-svg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="mrcGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(245, 158, 11, 0.28)" /><stop offset="100%" stop-color="rgba(245, 158, 11, 0.02)" />
+                  </linearGradient>
+                  <linearGradient id="mrcSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80%</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">40%</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">0%</text>
+                <path id="mrcDeltaAreaPath" fill="url(#mrcGradDeltaCorridor)" d="" />
+                <path id="mrcTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="mrcLiveFeedCurvePath" fill="none" stroke="#D97706" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="mrcLiveSensorMarker">
+                  <line id="mrcLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="rgba(245, 158, 11, 0.45)" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="mrcLiveScanDot" cx="280" cy="52" r="4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" />
+                </g>
+                <g id="mrcWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">400nm</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">450nm</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">500nm</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">550nm</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">600nm</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">650nm</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">700nm</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#mrcSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Target Standard (Rλ)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#D97706;"></span><span>Live In-Line Feed (Rλ)</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box" style="background:rgba(245,158,11,0.28);"></span><span>Tolerance (±0.50 ΔE)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">PEAK λ:</strong> <span id="mrcStatPeakWavelength">580nm</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SPECTRAL FIT:</strong> <span id="mrcStatSpectralFit">99.1%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE ΔE:</strong> <span id="mrcStatLiveDeltaE">0.16</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET COLOR DATA CALIBRATION (CIELAB)</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="mrcInputTargetL">Lightness (L*)</label><div class="input-with-stepper"><input type="number" id="mrcInputTargetL" value="72.90" step="0.10" min="0" max="100" /></div></div>
+              <div class="input-field-wrap"><label for="mrcInputTargetA">Red / Green (a*)</label><div class="input-with-stepper"><input type="number" id="mrcInputTargetA" value="-0.60" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="mrcInputTargetB">Yellow / Blue (b*)</label><div class="input-with-stepper"><input type="number" id="mrcInputTargetB" value="4.15" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="mrcInputToleranceLimit">Tolerance (ΔE)</label><div class="input-with-stepper"><input type="number" id="mrcInputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS MERCERIZATION LIQUOR OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">Caustic Soda (NaOH 28° Bé)</span><span class="dye-conc">240 g/L</span><span class="offset-pill pill-pos">+1.2 g/L auto-dispensed</span></div>
+              <div class="offset-item"><span class="dye-name">Mercerizing Penetrant Agent</span><span class="dye-conc">5.8 g/L</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+              <div class="offset-item"><span class="dye-name">Tension Stabilization Servo</span><span class="dye-conc">3.4 kN/m</span><span class="offset-pill pill-neg">-0.05 kN auto-adjusted</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="mrcBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="mrcBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Recipe Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 2A-5: COLOR INTELLIGENCE AI FOR STENTER
+       ========================================================================= -->
+  <div class="dyeing-inspection-container" id="stenterColorInspectionView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromStenter" aria-label="Back to Color Intelligence Suite">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon" style="background: rgba(139, 92, 246, 0.1); color: #8B5CF6;">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M12 3a9 9 0 0 1 9 9 9 9 0 0 1-9 9V3z"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Color Intelligence AI — Stenter Stabilization &amp; Shade Inspection</h1>
+          <p class="inspection-subtitle">Inline Thermo-Fixation Shade Drift, Optical Moisture Detection &amp; Bow/Skew Stabilization</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button class="inspection-return-btn" id="btnReturnToColorSuiteFromStenter">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          <span>Return to Color Intelligence Suite</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <!-- Card 1: Thermo-Fixation Match -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Thermo-Fixation Shade Match</span>
+            <span class="inspect-badge badge-purple">EXCELLENT</span>
+          </div>
+          <div class="metric-huge-val">ΔE 0.17</div>
+          <div class="metric-chart-wrap" id="stnSparkWrapDeltaE">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="stnGradDeltaE" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(139, 92, 246, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(139, 92, 246, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34 L 340 70 L 0 70 Z" fill="url(#stnGradDeltaE)" />
+              <path d="M 0 52 C 40 48, 70 54, 110 42 C 150 30, 180 46, 220 38 C 260 30, 290 42, 340 34" fill="none" stroke="#8B5CF6" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="340" cy="34" r="4.5" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 2: Heat-Setting Stabilization -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Heat-Setting Stabilization</span>
+            <span class="inspect-badge badge-cyan">FIRST TIME RIGHT</span>
+          </div>
+          <div class="metric-huge-val">99.5%</div>
+          <div class="metric-chart-wrap" id="stnSparkWrapCorrection">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="stnGradCorrection" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(99, 102, 241, 0.35)" />
+                  <stop offset="100%" stop-color="rgba(99, 102, 241, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10 L 340 70 L 0 70 Z" fill="url(#stnGradCorrection)" />
+              <path d="M 0 55 C 45 52, 85 46, 130 38 C 175 30, 215 24, 260 18 C 290 14, 315 12, 340 10" fill="none" stroke="#6366F1" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="340" cy="10" r="4.5" fill="#6366F1" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+
+        <!-- Card 3: Moisture & Softener Dosing -->
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Moisture &amp; Softener Dosing</span>
+            <span class="inspect-badge badge-purple">OPTIMIZED</span>
+          </div>
+          <div class="metric-huge-val">4.2% H₂O</div>
+          <div class="metric-chart-wrap" id="stnSparkWrapDosing">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="stnGradDosing" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(168, 85, 247, 0.3)" />
+                  <stop offset="100%" stop-color="rgba(168, 85, 247, 0.0)" />
+                </linearGradient>
+              </defs>
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52 L 340 70 L 0 70 Z" fill="url(#stnGradDosing)" />
+              <path d="M 0 58 C 40 58, 70 54, 100 40 C 130 26, 160 14, 200 16 C 240 18, 270 34, 300 44 C 320 50, 335 52, 340 52" fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round" />
+              <circle cx="200" cy="16" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row">
+        <!-- Component 1: Stenter Sensor Feed -->
+        <div class="inspect-detail-card sensor-feed-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live In-Line Stenter Spectrophotometer Sensor Feed</h2>
+            </div>
+            <div class="feed-header-meta">
+              <span class="meta-tag-feed">IR + D65 OPTIC</span>
+              <span class="meta-tag-feed">55.0 m/min</span>
+              <span class="meta-tag-feed tag-online">60 FPS ONLINE</span>
+            </div>
+          </div>
+
+          <div class="sensor-feed-viewport">
+            <img src="assets/fabric_stenter_feed.jpg" alt="In-Line Stenter Fabric Feed" class="sensor-feed-img" />
+            <div class="feed-scan-laser"></div>
+            <div class="feed-reticle-overlay">
+              <div class="reticle-box">
+                <div class="reticle-corner tl"></div><div class="reticle-corner tr"></div>
+                <div class="reticle-corner bl"></div><div class="reticle-corner br"></div>
+                <div class="reticle-crosshair"></div><div class="reticle-spot-pulse"></div>
+              </div>
+              <div class="reticle-data-badge">
+                <span class="lbl">SCANNING SPOT</span>
+                <span class="val">Ø 25mm • 10° OBSERVER</span>
+              </div>
+            </div>
+
+            <div class="feed-hud-top-left">
+              <div class="hud-item"><span class="hud-key">SPECTRO HEAD:</span> ST-2200 (THERMO-OPTIC)</div>
+              <div class="hud-item"><span class="hud-key">SUBSTRATE:</span> POLY-COTTON TWILL (240 GSM)</div>
+              <div class="hud-item"><span class="hud-key">LOT BATCH:</span> #STN-7701-KHAKI</div>
+            </div>
+
+            <div class="feed-hud-bottom-right">
+              <div class="hud-cielab-row">
+                <span class="cielab-pill"><strong class="cielab-k">L*</strong> 42.00</span>
+                <span class="cielab-pill"><strong class="cielab-k">a*</strong> 1.50</span>
+                <span class="cielab-pill"><strong class="cielab-k">b*</strong> 14.70</span>
+              </div>
+              <div class="hud-delta-row">
+                <span class="hud-delta-tag">INLINE ΔE: <strong>0.15</strong></span>
+                <span class="hud-delta-status">PASS (TOL &lt; 0.50)</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="spectral-wavelength-strip">
+            <div class="spectrum-labels">
+              <span>400nm (Violet)</span><span>480nm (Cyan)</span><span>550nm (Green)</span><span>620nm (Yellow)</span><span>700nm (Red)</span>
+            </div>
+            <div class="spectrum-bar-gradient" id="stnSpectrumBarGradient">
+              <div class="spectrum-indicator" id="stnSpectrumIndicator" style="left: 55%;"></div>
+              <div class="spectrum-tooltip" id="stnSpectrumTooltip" style="display: none;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Component 2: Master vs Measured -->
+        <div class="inspect-detail-card color-data-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Master Standard vs Actual Measured Color Data</h2>
+            <span class="inspect-badge badge-emerald">TOLERANCE ΔE &lt; 0.50 PASS</span>
+          </div>
+
+          <div class="swatch-comparison-grid">
+            <div class="swatch-card target-swatch">
+              <label class="swatch-preview-box-wrap" for="stnTargetSrgbPicker" title="Click to select any color in sRGB">
+                <div class="swatch-preview-box" id="stnTargetSwatchPreview" style="background-color: #6E6652;">
+                  <span class="swatch-type-tag">TARGET STANDARD</span>
+                  <div class="swatch-picker-hint">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#FFFFFF" stroke-width="2.5">
+                      <path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+                      <circle cx="11" cy="11" r="2"></circle>
+                    </svg>
+                  </div>
+                </div>
+                <input type="color" id="stnTargetSrgbPicker" value="#6E6652" class="srgb-hidden-input" />
+              </label>
+
+              <div class="swatch-info-meta">
+                <div class="swatch-name-row">
+                  <span class="swatch-name" id="stnTargetColorName">Military Khaki Twill #520</span>
+                  <label class="pick-srgb-chip-btn" for="stnTargetSrgbPicker" title="Open sRGB color picker">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8M8 12h8"></path></svg>
+                    <span>Pick sRGB</span>
+                  </label>
+                </div>
+                <div class="swatch-cielab-text" id="stnTargetCielabDisplay">L*: 42.00 • a*: 1.50 • b*: 14.70</div>
+                <div class="swatch-hex-row">
+                  <span class="swatch-hex-text" id="stnTargetHexDisplay">HEX: #6E6652</span>
+                  <div class="quick-shades-list">
+                    <button type="button" class="shade-dot stn-shade-dot" data-hex="#6E6652" data-name="Khaki Twill #520" style="background: #6E6652;" title="Khaki Twill"></button>
+                    <button type="button" class="shade-dot stn-shade-dot" data-hex="#595444" data-name="Olive Taupe #522" style="background: #595444;" title="Olive Taupe"></button>
+                    <button type="button" class="shade-dot stn-shade-dot" data-hex="#73674A" data-name="Field Drab #525" style="background: #73674A;" title="Field Drab"></button>
+                    <button type="button" class="shade-dot stn-shade-dot" data-hex="#9C8C70" data-name="Desert Tan #530" style="background: #9C8C70;" title="Desert Tan"></button>
+                    <button type="button" class="shade-dot stn-shade-dot" data-hex="#4A4D3E" data-name="Forest Khaki #540" style="background: #4A4D3E;" title="Forest Khaki"></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="swatch-delta-connector">
+              <div class="delta-circle-badge">
+                <span class="delta-label">DIFF</span>
+                <span class="delta-num" id="stnLiveDeltaEVal">0.15</span>
+                <span class="delta-unit">ΔE</span>
+              </div>
+              <span class="delta-ok-check" id="stnDeltaMatchStatus">✓ MATCH</span>
+            </div>
+
+            <div class="swatch-card measured-swatch">
+              <div class="swatch-preview-box" id="stnMeasuredSwatchPreview" style="background-color: #6C6450;">
+                <span class="swatch-type-tag">IN-LINE MEASURED</span>
+              </div>
+              <div class="swatch-info-meta">
+                <div class="swatch-name">Live Heat-Set Substrate Feed</div>
+                <div class="swatch-cielab-text">L*: 42.11 • a*: 1.46 • b*: 14.62</div>
+                <div class="swatch-hex-text" id="stnMeasuredHexDisplay">HEX: #6C6450</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison Graph -->
+          <div class="live-comparison-chart-card">
+            <div class="comparison-chart-head">
+              <div class="chart-head-title-wrap">
+                <span class="live-dot-pulse"></span>
+                <span class="comp-chart-title">In-Line Sensor Stream vs Target Standard Spectral Comparison</span>
+                <span class="live-stream-badge">LIVE 60 FPS</span>
+              </div>
+              <div class="chart-tabs-wrap">
+                <button type="button" class="chart-tab-btn active" id="stnBtnTabSpectral">Spectral Reflectance (400–700nm)</button>
+                <button type="button" class="chart-tab-btn" id="stnBtnTabDeltaStream">Real-Time ΔE Stream</button>
+              </div>
+            </div>
+
+            <div class="comparison-graph-viewport">
+              <svg class="comparison-chart-svg" viewBox="0 0 540 135" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="stnGradDeltaCorridor" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(139, 92, 246, 0.28)" /><stop offset="100%" stop-color="rgba(139, 92, 246, 0.02)" />
+                  </linearGradient>
+                  <linearGradient id="stnSpectrumRibbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#7C3AED" /><stop offset="16%" stop-color="#2563EB" />
+                    <stop offset="33%" stop-color="#06B6D4" /><stop offset="50%" stop-color="#10B981" />
+                    <stop offset="66%" stop-color="#F59E0B" /><stop offset="83%" stop-color="#EA580C" />
+                    <stop offset="100%" stop-color="#EF4444" />
+                  </linearGradient>
+                </defs>
+                <line x1="45" y1="18" x2="525" y2="18" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="22" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">80%</text>
+                <line x1="45" y1="52" x2="525" y2="52" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="56" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">40%</text>
+                <line x1="45" y1="86" x2="525" y2="86" stroke="rgba(226, 232, 240, 0.85)" stroke-width="1" stroke-dasharray="3 3" />
+                <text x="38" y="90" font-size="8" fill="#94A3B8" text-anchor="end" font-family="'JetBrains Mono', monospace">0%</text>
+                <path id="stnDeltaAreaPath" fill="url(#stnGradDeltaCorridor)" d="" />
+                <path id="stnTargetCurvePath" fill="none" stroke="#F59E0B" stroke-width="2.2" stroke-dasharray="5 3" stroke-linecap="round" d="" />
+                <path id="stnLiveFeedCurvePath" fill="none" stroke="#8B5CF6" stroke-width="2.6" stroke-linecap="round" d="" />
+                <g id="stnLiveSensorMarker">
+                  <line id="stnLiveScanVerticalLine" x1="280" y1="12" x2="280" y2="96" stroke="rgba(139, 92, 246, 0.45)" stroke-width="1.2" stroke-dasharray="2 2" />
+                  <circle id="stnLiveScanDot" cx="280" cy="52" r="4" fill="#8B5CF6" stroke="#FFFFFF" stroke-width="2" />
+                </g>
+                <g id="stnWavelengthAxisLabels">
+                  <text x="50" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">400nm</text>
+                  <text x="130" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">450nm</text>
+                  <text x="210" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">500nm</text>
+                  <text x="290" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">550nm</text>
+                  <text x="370" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">600nm</text>
+                  <text x="450" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">650nm</text>
+                  <text x="520" y="110" font-size="7.8" fill="#64748B" text-anchor="middle" font-family="'JetBrains Mono', monospace">700nm</text>
+                </g>
+                <rect x="45" y="96" width="480" height="3" rx="1.5" fill="url(#stnSpectrumRibbonGrad)" opacity="0.8" />
+              </svg>
+
+              <div class="comp-chart-footer">
+                <div class="comp-legend-items">
+                  <div class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Target Standard (Rλ)</span></div>
+                  <div class="comp-legend-item"><span class="legend-line" style="background:#8B5CF6;"></span><span>Live In-Line Feed (Rλ)</span></div>
+                  <div class="comp-legend-item"><span class="legend-box delta-legend-box" style="background:rgba(139,92,246,0.28);"></span><span>Tolerance (±0.50 ΔE)</span></div>
+                </div>
+                <div class="comp-live-stats">
+                  <span class="comp-stat-tag"><strong class="stat-lbl">PEAK λ:</strong> <span id="stnStatPeakWavelength">580nm</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">SPECTRAL FIT:</strong> <span id="stnStatSpectralFit">99.3%</span></span>
+                  <span class="comp-stat-tag"><strong class="stat-lbl">LIVE ΔE:</strong> <span id="stnStatLiveDeltaE">0.15</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="color-inputs-section">
+            <div class="section-micro-title">TARGET COLOR DATA CALIBRATION (CIELAB)</div>
+            <div class="cielab-inputs-grid">
+              <div class="input-field-wrap"><label for="stnInputTargetL">Lightness (L*)</label><div class="input-with-stepper"><input type="number" id="stnInputTargetL" value="42.00" step="0.10" min="0" max="100" /></div></div>
+              <div class="input-field-wrap"><label for="stnInputTargetA">Red / Green (a*)</label><div class="input-with-stepper"><input type="number" id="stnInputTargetA" value="1.50" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="stnInputTargetB">Yellow / Blue (b*)</label><div class="input-with-stepper"><input type="number" id="stnInputTargetB" value="14.70" step="0.10" min="-128" max="127" /></div></div>
+              <div class="input-field-wrap"><label for="stnInputToleranceLimit">Tolerance (ΔE)</label><div class="input-with-stepper"><input type="number" id="stnInputToleranceLimit" value="0.50" step="0.05" min="0.1" max="2.0" /></div></div>
+            </div>
+          </div>
+
+          <div class="recipe-offsets-section">
+            <div class="section-micro-title">AUTONOMOUS STENTER DOSING OFFSETS</div>
+            <div class="offsets-list">
+              <div class="offset-item"><span class="dye-name">Hydrophilic Softener Emulsion</span><span class="dye-conc">25.0 g/L</span><span class="offset-pill pill-pos">+0.4 g/L auto-dispensed</span></div>
+              <div class="offset-item"><span class="dye-name">Cross-Linking Anti-Shrink Resin</span><span class="dye-conc">40.0 g/L</span><span class="offset-pill pill-zero">0.00% on target</span></div>
+              <div class="offset-item"><span class="dye-name">Chamber Exhaust Dampers</span><span class="dye-conc">120 g/kg</span><span class="offset-pill pill-neg">-1.5 g/kg auto-adjusted</span></div>
+            </div>
+            <div class="inspect-actions-row">
+              <button class="inspect-btn-outline" id="stnBtnRecalibrateSensor">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                <span>Zero-Calibrate Sensor</span>
+              </button>
+              <button class="inspect-btn-primary" id="stnBtnApplyColorCorrection">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Apply Recipe Correction</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        VIEW 3: PROCESSING TELEMETRY DASHBOARD (MATCHING IMAGE 1 & 2 EXACTLY)
        ========================================================================= -->
   <div class="dashboard-container" id="dashboardView" style="display: none;">
