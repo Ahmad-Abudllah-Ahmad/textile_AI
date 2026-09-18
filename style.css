@@ -4427,6 +4427,10 @@ html, body {
   flex-direction: column;
 }
 
+.planning-container:not([style*="none"]) {
+  display: flex !important;
+}
+
 .planning-header {
   position: relative;
   flex: 0 0 auto;
@@ -4518,12 +4522,25 @@ html, body {
   max-width: 100%;
   flex: 1 1 0;
   min-height: 0;
-  overflow: hidden;
+  height: calc(100vh - 54px);
+  overflow-y: auto;
+  overflow-x: hidden;
   margin: 0;
   padding: 6px 20px 8px;
   display: flex;
   flex-direction: column;
   gap: 7px;
+  scrollbar-width: thin;
+  scrollbar-color: #CBD5E1 transparent;
+}
+
+.planning-body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.planning-body::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
 }
 
 .planning-flow-card,
@@ -4621,8 +4638,8 @@ html, body {
 #stagePlanPanel,
 .stage-plan-panel {
   padding: 6px 14px 7px;
-  flex: 1.15 1 0;
-  min-height: 0;
+  flex: 1.15 1 auto;
+  min-height: 150px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -4773,15 +4790,15 @@ html, body {
 .constraint-note { margin-top: 8px; padding: 8px; border-radius: 8px; background: #F8FAFC; }
 .constraint-note strong { font-size: .56rem; }.constraint-note p { margin-top: 2px; color: #64748B; font-size: .51rem; line-height: 1.4; }
 
-.planning-analytics-grid { display: grid; grid-template-columns: minmax(0,2.25fr) minmax(290px,.75fr); gap: 8px; flex: 1 1 0; min-height: 0; overflow: hidden; }
-.output-curve-panel,.handoff-panel { min-height: 0; height: 100%; padding: 6px 14px; display: flex; flex-direction: column; overflow: hidden; }
+.planning-analytics-grid { display: grid; grid-template-columns: minmax(0,2.25fr) minmax(290px,.75fr); gap: 8px; flex: 1 1 auto; min-height: 135px; overflow: hidden; }
+.output-curve-panel,.handoff-panel { min-height: 130px; height: 100%; padding: 6px 14px; display: flex; flex-direction: column; overflow: hidden; }
 .output-head { margin-bottom: 4px; flex: 0 0 auto; }
 .output-summary { display: flex; align-items: center; gap: 10px; }
 .output-summary > span:not(.planning-live-chip) { padding-left: 10px; border-left: 1px solid #E2E8F0; }
 .output-summary small { display: block; color: #94A3B8; font-family: var(--font-mono); font-size: .43rem; font-weight: 800; letter-spacing: .05em; }
 .output-summary strong { display: block; margin-top: 1px; color: #334155; font-family: var(--font-mono); font-size: .62rem; }
 .output-summary .output-gap strong { color: #D97706; }
-.output-chart-wrap { position: relative; flex: 1 1 0; min-height: 0; height: auto; max-height: 110px; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; background: #FBFCFE; }
+.output-chart-wrap { position: relative; flex: 1 1 auto; min-height: 65px; height: auto; max-height: 110px; border: 1px solid #E2E8F0; border-radius: 8px; overflow: hidden; background: #FBFCFE; }
 .output-chart { display: block; width: 100%; height: 100%; }
 .output-grid line { stroke: #E8EDF3; stroke-width: 1; stroke-dasharray: 4 5; }
 .output-y-labels text,.output-x-labels text { fill: #94A3B8; font-family: var(--font-mono); font-size: 8px; font-weight: 600; }
@@ -4798,7 +4815,7 @@ html, body {
 .output-key { width: 12px; height: 2px; border-radius: 2px; }.output-key.actual { background: #10B981; }.output-key.plan { background: #94A3B8; }.output-key.forecast { background: repeating-linear-gradient(90deg,#10B981 0 4px,transparent 4px 7px); }
 
 .handoff-health { padding: 3px 6px; border: 1px solid #A7F3D0; border-radius: 5px; color: #047857; background: #ECFDF5; font-family: var(--font-mono); font-size: .48rem; font-weight: 800; }
-.handoff-list { display: flex; flex-direction: column; gap: 4px; flex: 1 1 0; min-height: 0; overflow: hidden; }
+.handoff-list { display: flex; flex-direction: column; gap: 4px; flex: 1 1 auto; min-height: 0; overflow: hidden; }
 .handoff-item { padding: 4px 8px; border: 1px solid #E2E8F0; border-radius: 8px; background: #FAFCFD; transition: transform .2s var(--ease-elastic), box-shadow .2s ease; }
 .handoff-item:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(15,23,42,.08); }
 .handoff-item.is-watch { border-color: #FDE68A; background: #FFFBEB; }.handoff-item.is-safe { border-color: #BBF7D0; background: #F4FBF8; }

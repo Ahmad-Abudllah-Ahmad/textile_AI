@@ -293,7 +293,7 @@ function showProductionPlanningView() {
   sfx.playDashboardOpen();
   hideAllViews();
   currentSubModule = "production-planning";
-  planningView.style.display = "block";
+  planningView.style.display = "flex";
   window.scrollTo({ top: 0, behavior: "smooth" });
   history.pushState(null, "", "#production-planning");
 }
@@ -5035,7 +5035,9 @@ function setupProductionPlanningInteractions() {
     if (decisionTitle) decisionTitle.textContent = plan.decision[0];
     if (decisionCopy) decisionCopy.textContent = plan.decision[1];
     if (recoveryBtn) { recoveryBtn.disabled = false; recoveryBtn.textContent = "Apply recovery"; recoveryBtn.closest(".schedule-callout")?.classList.remove("is-applied"); }
-    if (shouldScroll && stagePanel) stagePanel.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (shouldScroll && stagePanel && planningView && planningView.scrollHeight > planningView.clientHeight) {
+      stagePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
   }
 
   let currentStageKey = "incoming";
