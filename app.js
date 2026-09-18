@@ -5038,11 +5038,112 @@ function setupProductionPlanningInteractions() {
     if (shouldScroll && stagePanel) stagePanel.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
+  let currentStageKey = "incoming";
+
   stageNodes.forEach((node) => node.addEventListener("click", () => {
     sfx.playClick();
+    currentStageKey = node.dataset.planStage;
     renderStagePlan(node.dataset.planStage, true);
   }));
-  renderStagePlan("dyeing", false);
+  renderStagePlan("incoming", false);
+
+  function tickPlanningLive() {
+    if (planningView && planningView.style.display === "none") return;
+    const t = Date.now() / 1000;
+
+    // 1. Fluctuating KPIs based on active stage
+    if (currentStageKey === "incoming") {
+      const confVal = (97.8 + Math.sin(t * 1.4) * 0.22).toFixed(1);
+      const kpiConf = document.getElementById("planningKpiConfidence");
+      if (kpiConf) kpiConf.textContent = `${confVal}%`;
+
+      const confNote = document.getElementById("planningKpiConfidenceNote");
+      if (confNote) {
+        const diff = (1.2 + Math.cos(t * 1.1) * 0.15).toFixed(1);
+        confNote.textContent = `+${diff}% after release`;
+      }
+
+      const qMin = Math.round(8 + Math.sin(t * 0.8) * 0.4);
+      const bVal = document.getElementById("planningKpiBottleneck");
+      if (bVal) bVal.textContent = "BT-03";
+      const bNote = document.getElementById("planningKpiBottleneckNote");
+      if (bNote) bNote.textContent = `${qMin} min batching queue`;
+
+      const cMin = Math.round(18 + Math.cos(t * 0.7) * 0.5);
+      const cVal = document.getElementById("planningKpiChangeover");
+      if (cVal) cVal.textContent = `${cMin} min`;
+      const cNote = document.getElementById("planningKpiChangeoverNote");
+      if (cNote) cNote.textContent = "Roll-family sequence";
+
+      const wipM = Math.round(23880 + Math.sin(t * 1.5) * 38);
+      const wipVal = document.getElementById("planningKpiWip");
+      if (wipVal) wipVal.textContent = "4 rolls";
+      const wipNote = document.getElementById("planningKpiWipNote");
+      if (wipNote) wipNote.textContent = `${wipM.toLocaleString()} m in route`;
+
+      const loomEm = planningView.querySelector('.machine-lane:nth-child(1) .machine-label em');
+      if (loomEm) loomEm.textContent = `Loom efficiency · ${(96 + Math.sin(t * 1.2) * 0.35).toFixed(1)}%`;
+      const scoreEm = planningView.querySelector('.machine-lane:nth-child(2) .machine-label em');
+      if (scoreEm) scoreEm.textContent = `4-point score · ${(8 + Math.cos(t * 0.9) * 0.2).toFixed(1)}/100 yd`;
+      const batchEm = planningView.querySelector('.machine-lane:nth-child(3) .machine-label em');
+      if (batchEm) batchEm.textContent = `Batch weight · ${(1420 + Math.round(Math.sin(t * 1.3) * 4)).toLocaleString()} kg`;
+      const etaEm = planningView.querySelector('.machine-lane:nth-child(4) .machine-label em');
+      if (etaEm) etaEm.textContent = `Transfer ETA · 08:24`;
+    }
+
+    // 2. Fluctuating LOT OUTPUT PROGRESS (Cumulative good metres vs plan)
+    const liveOutput = Math.round(3920 + Math.sin(t * 1.2) * 9);
+    const planM = 4180;
+    const gapM = liveOutput - planM;
+
+    const actualEl = planningView?.querySelector(".output-summary span:nth-of-type(1) strong");
+    if (actualEl) actualEl.textContent = `${liveOutput.toLocaleString()} m`;
+
+    const gapEl = planningView?.querySelector(".output-summary .output-gap strong");
+    if (gapEl) gapEl.textContent = `−${Math.abs(gapM)} m`;
+
+    const tipMetres = planningView?.querySelector(".output-chart-tip span b");
+    if (tipMetres) tipMetres.textContent = `${liveOutput.toLocaleString()} m`;
+
+    // Fluctuating SVG output graph curve
+    const liveY = 38 + Math.sin(t * 1.2) * 3.5;
+    const outputActualLine = planningView?.querySelector(".output-actual-line");
+    if (outputActualLine) outputActualLine.setAttribute("d", `M58 145 C130 136 186 126 250 116 S360 94 430 83 S545 66 620 58 C690 51 735 43 770 ${liveY.toFixed(1)}`);
+
+    const outputActualArea = planningView?.querySelector(".output-actual-area");
+    if (outputActualArea) outputActualArea.setAttribute("d", `M58 145 C130 136 186 126 250 116 S360 94 430 83 S545 66 620 58 C690 51 735 43 770 ${liveY.toFixed(1)} L770 145 Z`);
+
+    const outputForecastLine = planningView?.querySelector(".output-forecast-line");
+    if (outputForecastLine) outputForecastLine.setAttribute("d", `M770 ${liveY.toFixed(1)} C805 34 842 28 875 24`);
+
+    const outputDot = planningView?.querySelector(".output-live-dot");
+    if (outputDot) outputDot.setAttribute("cy", liveY.toFixed(1));
+
+    // 3. Fluctuating HANDOFF READINESS
+    const r1 = Math.round(82 + Math.sin(t * 0.9) * 0.7);
+    const exp1 = Math.round(11 + Math.cos(t * 0.9) * 0.4);
+    const item1Foot = planningView?.querySelector(".handoff-item:nth-child(1) .handoff-foot");
+    if (item1Foot) {
+      item1Foot.innerHTML = `<span>Readiness ${r1}%</span><b>${exp1} min exposure</b>`;
+    }
+    const item1Meter = planningView?.querySelector(".handoff-item:nth-child(1) .handoff-meter span");
+    if (item1Meter) item1Meter.style.width = `${r1}%`;
+
+    const r2 = Math.round(96 + Math.cos(t * 1.1) * 0.5);
+    const item2Foot = planningView?.querySelector(".handoff-item:nth-child(2) .handoff-foot");
+    if (item2Foot) {
+      item2Foot.innerHTML = `<span>Readiness ${r2}%</span><b>Protected</b>`;
+    }
+    const item2Meter = planningView?.querySelector(".handoff-item:nth-child(2) .handoff-meter span");
+    if (item2Meter) item2Meter.style.width = `${r2}%`;
+
+    const buf = Math.round(38 + Math.sin(t * 0.7) * 0.5);
+    const bufEl = planningView?.querySelector(".flow-risk-summary div:nth-child(3) strong");
+    if (bufEl) bufEl.textContent = `${buf} min`;
+  }
+
+  setInterval(tickPlanningLive, 1200);
+  tickPlanningLive();
 
   if (reoptimizeBtn) {
     reoptimizeBtn.addEventListener("click", () => {
@@ -5090,8 +5191,8 @@ function setupEnergyUtilitiesInteractions() {
 
   const XS = [48, 118, 188, 258, 328, 398, 468];
   const TIMES = ["06:00", "08:00", "10:00", "12:00", "14:00", "16:00", "18:00"];
-  const Y_TOP = 10;
-  const Y_BOT = 58;
+  const Y_TOP = 20;
+  const Y_BOT = 135;
 
   function mapY(value, min, max) {
     return Y_BOT - ((value - min) / (max - min || 1)) * (Y_BOT - Y_TOP);
@@ -5423,20 +5524,20 @@ function setupEnergyUtilitiesInteractions() {
             <span class="energy-live-num" data-energy-now="${key}">${formatVal(scene, scene.live[scene.cursor])} / ${scene.set}</span>
           </div>
           <div class="energy-mini-viewport" data-energy-chart="${key}">
-            <svg class="comparison-chart-svg" viewBox="0 0 500 78" preserveAspectRatio="none" role="img" aria-label="${scene.title}">
-              <line x1="40" y1="10" x2="488" y2="10" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
-              <line x1="40" y1="34" x2="488" y2="34" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
-              <line x1="40" y1="58" x2="488" y2="58" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
-              <text x="36" y="13" font-size="7" fill="#94A3B8" text-anchor="end">${scene.yLabels[0]}</text>
-              <text x="36" y="61" font-size="7" fill="#94A3B8" text-anchor="end">${scene.yLabels[3]}</text>
-              <path class="energy-target-line" fill="none" stroke="#F59E0B" stroke-width="1.8" stroke-dasharray="5 3" stroke-linecap="round" d="${linePath(scene.target, scene.min, scene.max)}"></path>
-              <path class="energy-live-line" fill="none" stroke="#06B6D4" stroke-width="2.2" stroke-linecap="round" d="${linePath(scene.live, scene.min, scene.max)}"></path>
-              <line class="energy-now-line" x1="${nowX}" y1="8" x2="${nowX}" y2="58" stroke="rgba(6,182,212,.4)" stroke-width="1" stroke-dasharray="2 2"></line>
-              <circle class="energy-now-dot" cx="${nowX}" cy="${nowY.toFixed(1)}" r="3.2" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.5"></circle>
-              <line class="energy-hover-line" x1="0" y1="6" x2="0" y2="62" stroke="rgba(15,23,42,.35)" stroke-width="1" stroke-dasharray="2 2" opacity="0"></line>
-              <circle class="energy-hover-set" cx="0" cy="0" r="3.4" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1.5" opacity="0"></circle>
-              <circle class="energy-hover-live" cx="0" cy="0" r="3.8" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.6" opacity="0"></circle>
-              <rect class="energy-hover-pad" x="40" y="4" width="448" height="62" fill="transparent"></rect>
+            <svg class="comparison-chart-svg" viewBox="0 0 500 160" preserveAspectRatio="none" role="img" aria-label="${scene.title}">
+              <line x1="40" y1="20" x2="488" y2="20" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
+              <line x1="40" y1="77" x2="488" y2="77" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
+              <line x1="40" y1="135" x2="488" y2="135" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
+              <text x="36" y="24" font-size="10" fill="#94A3B8" text-anchor="end">${scene.yLabels[0]}</text>
+              <text x="36" y="139" font-size="10" fill="#94A3B8" text-anchor="end">${scene.yLabels[3]}</text>
+              <path class="energy-target-line" fill="none" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5 3" stroke-linecap="round" d="${linePath(scene.target, scene.min, scene.max)}"></path>
+              <path class="energy-live-line" fill="none" stroke="#06B6D4" stroke-width="2.6" stroke-linecap="round" d="${linePath(scene.live, scene.min, scene.max)}"></path>
+              <line class="energy-now-line" x1="${nowX}" y1="16" x2="${nowX}" y2="138" stroke="rgba(6,182,212,.4)" stroke-width="1" stroke-dasharray="2 2"></line>
+              <circle class="energy-now-dot" cx="${nowX}" cy="${nowY.toFixed(1)}" r="3.8" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.8"></circle>
+              <line class="energy-hover-line" x1="0" y1="14" x2="0" y2="140" stroke="rgba(15,23,42,.35)" stroke-width="1" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="energy-hover-set" cx="0" cy="0" r="3.8" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1.8" opacity="0"></circle>
+              <circle class="energy-hover-live" cx="0" cy="0" r="4.2" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.8" opacity="0"></circle>
+              <rect class="energy-hover-pad" x="40" y="12" width="448" height="130" fill="transparent"></rect>
             </svg>
           </div>
         </article>`;
