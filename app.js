@@ -2368,7 +2368,8 @@ function setupDyeingColorInspectionInteractions() {
     const targetGNorm = currentTargetColor.g / 255;
     const targetBNorm = currentTargetColor.b / 255;
     const targetL = parseFloat(inputL?.value) || 24.0;
-    const baseReflectance = Math.max(3, Math.min(18, targetL * 0.22));
+    const tolerance = parseFloat(inputTol?.value) || 0.50;
+    const baseReflectance = Math.max(3, Math.min(25, targetL * 0.22));
 
     // Calculate peak wavelength for display
     let peakWl = 460;
@@ -2380,6 +2381,8 @@ function setupDyeingColorInspectionInteractions() {
       // Calculate 16 spectral reflectance points for Target Standard & Live Sensor Feed
       const targetPts = [];
       const livePts = [];
+      const mRgb = hexToRgb(measured.hex);
+      const mBase = Math.max(3, Math.min(25, measured.L * 0.22));
 
       for (let i = 0; i < wavelengths.length; i++) {
         const wl = wavelengths[i];
@@ -2395,8 +2398,11 @@ function setupDyeingColorInspectionInteractions() {
 
         // Live In-line Feed: Real fabric passing through sensor with realistic optical micro-drift
         const sensorDrift = Math.sin(scanPhase * 0.8 + i * 0.4) * 0.75 + Math.cos(scanPhase * 1.5 + i * 0.2) * 0.35;
-        const inlineOffset = 0.45; // slight in-line offset matching baseline delta-E ~0.18
-        const liveReflectance = Math.max(1, targetReflectance + inlineOffset + sensorDrift);
+        const mBlue = (mRgb.b / 255) * 48 * Math.exp(-Math.pow(wl - 460, 2) / (2 * Math.pow(38, 2)));
+        const mGreen = (mRgb.g / 255) * 44 * Math.exp(-Math.pow(wl - 535, 2) / (2 * Math.pow(42, 2)));
+        const mRed = (mRgb.r / 255) * 52 * Math.exp(-Math.pow(wl - 635, 2) / (2 * Math.pow(46, 2)));
+        const measuredReflectance = mBase + mBlue + mGreen + mRed;
+        const liveReflectance = Math.max(1, measuredReflectance + sensorDrift);
         const liveY = getYForReflectance(liveReflectance);
         livePts.push({ x, y: liveY });
       }
@@ -2519,10 +2525,11 @@ function setupDyeingColorInspectionInteractions() {
         if (streamHistory.length > streamCapacity) streamHistory.shift();
       }
 
-      // Draw baseline zero setpoint
+      // Draw baseline zero setpoint and dynamic tolerance corridor
       const zeroY = 52;
-      const upperTolY = 28; // +0.50
-      const lowerTolY = 76; // -0.50
+      const tolSpan = Math.max(6, Math.min(36, (tolerance / 0.50) * 24));
+      const upperTolY = zeroY - tolSpan;
+      const lowerTolY = zeroY + tolSpan;
 
       let targetD = `M ${chartXStart} ${zeroY} L ${chartXEnd} ${zeroY}`;
       if (targetCurvePath) targetCurvePath.setAttribute("d", targetD);
@@ -3081,19 +3088,43 @@ function createInspectionDashboardController(cfg) {
     if (currentChartMode === "spectral") {
       const targetPts = [];
       const livePts = [];
+      const targetL = parseFloat(inputL?.value) ?? cfg.defaultL;
+      const targetA = parseFloat(inputA?.value) ?? cfg.defaultA;
+      const targetB = parseFloat(inputB?.value) ?? cfg.defaultB;
+      const tolerance = parseFloat(inputTol?.value) ?? cfg.defaultTol;
 
       for (let i = 0; i < wavelengths.length; i++) {
         const wl = wavelengths[i];
         const x = getXForWavelength(wl);
-        const peakDist = Math.abs(wl - cfg.peakWl);
-        const primaryPeak = 38 * Math.exp(-Math.pow(peakDist, 2) / (2 * Math.pow(42, 2)));
-        const targetReflectance = baseReflectance + primaryPeak * (targetRNorm * 0.4 + targetGNorm * 0.3 + targetBNorm * 0.3);
-        const targetY = getYForReflectance(targetReflectance);
-        targetPts.push({ x, y: targetY });
+        let targetReflectance, liveReflectance;
 
-        const sensorDrift = Math.sin(scanPhase * 0.8 + i * 0.4) * 0.7 + Math.cos(scanPhase * 1.5 + i * 0.2) * 0.3;
-        const liveReflectance = Math.max(1, targetReflectance + 0.35 + sensorDrift);
+        if (cfg.visionMode) {
+          const posRatio = i / (wavelengths.length - 1);
+          const harmA = Math.sin(posRatio * Math.PI * 2 + scanPhase * 0.15) * (targetA * 0.35);
+          const harmB = Math.cos(posRatio * Math.PI * 3 + scanPhase * 0.1) * (targetB * 0.25);
+          targetReflectance = Math.max(0, Math.min(85, targetL + harmA + harmB));
+
+          const mHarmA = Math.sin(posRatio * Math.PI * 2) * (measured.a * 0.35);
+          const mHarmB = Math.cos(posRatio * Math.PI * 3) * (measured.b * 0.25);
+          const sensorDrift = Math.sin(scanPhase * 0.8 + i * 0.4) * 0.7 + Math.cos(scanPhase * 1.5 + i * 0.2) * 0.3;
+          liveReflectance = Math.max(0, measured.L + mHarmA + mHarmB + sensorDrift);
+        } else {
+          const peakDist = Math.abs(wl - cfg.peakWl);
+          const primaryPeak = 38 * Math.exp(-Math.pow(peakDist, 2) / (2 * Math.pow(42, 2)));
+          const baseReflectance = Math.max(2, Math.min(25, targetL * 0.25));
+          targetReflectance = baseReflectance + primaryPeak * (targetRNorm * 0.4 + targetGNorm * 0.3 + targetBNorm * 0.3);
+
+          const mHex = measured.hex || labToHex(measured.L, measured.a, measured.b);
+          const mRgb = hexToRgb(mHex);
+          const mBase = Math.max(2, Math.min(25, measured.L * 0.25));
+          const mReflectance = mBase + primaryPeak * ((mRgb.r / 255) * 0.4 + (mRgb.g / 255) * 0.3 + (mRgb.b / 255) * 0.3);
+          const sensorDrift = Math.sin(scanPhase * 0.8 + i * 0.4) * 0.7 + Math.cos(scanPhase * 1.5 + i * 0.2) * 0.3;
+          liveReflectance = Math.max(1, mReflectance + sensorDrift);
+        }
+
+        const targetY = getYForReflectance(targetReflectance);
         const liveY = getYForReflectance(liveReflectance);
+        targetPts.push({ x, y: targetY });
         livePts.push({ x, y: liveY });
       }
 
@@ -3210,7 +3241,9 @@ function createInspectionDashboardController(cfg) {
         if (streamHistory.length > streamCapacity) streamHistory.shift();
       }
 
-      const zeroY = 52, upperTolY = 28, lowerTolY = 76;
+      const tolerance = parseFloat(inputTol?.value) || cfg.defaultTol;
+      const tolSpan = Math.max(6, Math.min(36, (tolerance / (cfg.defaultTol || 0.5)) * 24));
+      const zeroY = 52, upperTolY = zeroY - tolSpan, lowerTolY = zeroY + tolSpan;
       if (targetCurvePath) targetCurvePath.setAttribute("d", `M ${chartXStart} ${zeroY} L ${chartXEnd} ${zeroY}`);
       if (deltaAreaPath) deltaAreaPath.setAttribute("d", `M ${chartXStart} ${upperTolY} L ${chartXEnd} ${upperTolY} L ${chartXEnd} ${lowerTolY} L ${chartXStart} ${lowerTolY} Z`);
 
@@ -3218,7 +3251,7 @@ function createInspectionDashboardController(cfg) {
       let streamD = "";
       for (let i = 0; i < streamHistory.length; i++) {
         const x = chartXStart + i * dx;
-        const y = zeroY - (streamHistory[i] / 0.5) * (zeroY - upperTolY);
+        const y = zeroY - (streamHistory[i] / (tolerance || 0.5)) * tolSpan;
         streamD += (i === 0 ? "M " : " L ") + `${x.toFixed(1)} ${y.toFixed(1)}`;
       }
       if (liveFeedCurvePath) liveFeedCurvePath.setAttribute("d", streamD);
@@ -5593,28 +5626,37 @@ function setupEnergyUtilitiesInteractions() {
     }
   }
 
+  function updateChart(key) {
+    const scene = scenarios[key];
+    const i = scene.cursor;
+    const viewport = energyView.querySelector(`[data-energy-chart="${key}"]`);
+    if (viewport) {
+      const livePath = viewport.querySelector(".energy-live-line");
+      const nowDot = viewport.querySelector(".energy-now-dot");
+      if (livePath) livePath.setAttribute("d", linePath(scene.live, scene.min, scene.max));
+      if (nowDot) nowDot.setAttribute("cy", mapY(scene.live[i], scene.min, scene.max).toFixed(1));
+    }
+    const nowLabel = energyView.querySelector(`[data-energy-now="${key}"]`);
+    if (nowLabel) nowLabel.textContent = `${formatVal(scene, scene.live[i])} / ${scene.set}`;
+    const readNow = energyView.querySelector(`[data-energy-read-now="${key}"]`);
+    if (readNow) readNow.textContent = `${scene.liveName} ${formatVal(scene, scene.live[i])}`;
+  }
+
   function tickLive() {
     if (energyView.style.display === "none") return;
     const t = Date.now() / 1000;
     caseKeys.forEach((key, idx) => {
       const scene = scenarios[key];
-      const amp = (scene.max - scene.min) * 0.015;
+      const amp = (scene.max - scene.min) * 0.04;
       const i = scene.cursor;
-      scene.live[i] = clamp(liveBase[key][i] + Math.sin(t * 1.4 + idx) * amp + (Math.random() - 0.5) * amp * 0.25, scene.min, scene.max);
+      scene.live[i] = clamp(liveBase[key][i] + Math.sin(t * 1.5 + idx * 1.2) * amp + (Math.random() - 0.5) * amp * 0.25, scene.min, scene.max);
       if (i > 0) {
-        scene.live[i - 1] = clamp(liveBase[key][i - 1] + Math.sin(t * 0.9 + idx) * amp * 0.45, scene.min, scene.max);
+        scene.live[i - 1] = clamp(liveBase[key][i - 1] + Math.sin(t * 1.1 + idx) * amp * 0.55, scene.min, scene.max);
       }
-      const viewport = energyView.querySelector(`[data-energy-chart="${key}"]`);
-      if (viewport) {
-        const livePath = viewport.querySelector(".energy-live-line");
-        const nowDot = viewport.querySelector(".energy-now-dot");
-        if (livePath) livePath.setAttribute("d", linePath(scene.live, scene.min, scene.max));
-        if (nowDot) nowDot.setAttribute("cy", mapY(scene.live[i], scene.min, scene.max).toFixed(1));
+      if (i < scene.live.length - 1) {
+        scene.live[i + 1] = clamp(liveBase[key][i + 1] + Math.sin(t * 0.9 + idx) * amp * 0.4, scene.min, scene.max);
       }
-      const nowLabel = energyView.querySelector(`[data-energy-now="${key}"]`);
-      if (nowLabel) nowLabel.textContent = `${formatVal(scene, scene.live[i])} / ${scene.set}`;
-      const readNow = energyView.querySelector(`[data-energy-read-now="${key}"]`);
-      if (readNow) readNow.textContent = `${scene.liveName} ${formatVal(scene, scene.live[i])}`;
+      updateChart(key);
       updateReadings(key);
     });
 
@@ -5659,10 +5701,60 @@ function setupEnergyUtilitiesInteractions() {
   tickLive();
   window.setInterval(tickLive, 1200);
 
+  // Direct Interactive Chart Click: instantly adjust the live value & graph line
+  energyView.querySelectorAll("[data-energy-chart]").forEach((viewport) => {
+    viewport.addEventListener("click", (event) => {
+      const key = viewport.dataset.energyChart;
+      const scene = scenarios[key];
+      if (!scene) return;
+      const svg = viewport.querySelector("svg");
+      const bounds = svg.getBoundingClientRect();
+      const clickY = ((event.clientY - bounds.top) / bounds.height) * 78;
+      const newVal = clamp(scene.max - ((clickY - Y_TOP) / (Y_BOT - Y_TOP)) * (scene.max - scene.min), scene.min, scene.max);
+      scene.live[scene.cursor] = newVal;
+      liveBase[key][scene.cursor] = newVal;
+      if (scene.cursor > 0) {
+        scene.live[scene.cursor - 1] = clamp(newVal + (liveBase[key][scene.cursor - 1] - liveBase[key][scene.cursor]) * 0.5, scene.min, scene.max);
+        liveBase[key][scene.cursor - 1] = scene.live[scene.cursor - 1];
+      }
+      sfx.playClick();
+      updateChart(key);
+      updateReadings(key);
+    });
+  });
+
+  // Direct Reading Meter Click: step/toggle towards setpoint and update graph line immediately
+  readingStack.addEventListener("click", (event) => {
+    const row = event.target.closest("[data-energy-reads]");
+    if (!row) return;
+    const key = row.dataset.energyReads;
+    const scene = scenarios[key];
+    if (!scene) return;
+    const curr = scene.live[scene.cursor];
+    const target = parseFloat(scene.set) || scene.target[scene.cursor];
+    const step = (target - curr) * 0.4;
+    scene.live[scene.cursor] = clamp(curr + (Math.abs(step) < 0.02 ? (target - curr) : step), scene.min, scene.max);
+    liveBase[key][scene.cursor] = scene.live[scene.cursor];
+    sfx.playClick();
+    updateChart(key);
+    updateReadings(key);
+  });
+
   if (rebalanceBtn) {
     rebalanceBtn.addEventListener("click", () => {
       sfx.playClick();
       rebalanceBtn.textContent = "Balanced ✓";
+      // Rebalance all scenarios towards their optimal baseline and dynamically bend graph lines
+      scenarios.peak.live = [1.95, 2.12, 2.28, 2.35, 2.18, 2.12, 2.05];
+      scenarios.header.live = [7.90, 7.90, 7.89, 7.90, 7.90, 7.89, 7.90];
+      scenarios.thermal.live = [92.0, 93.8, 95.4, 96.2, 96.0, 95.5, 94.8];
+      scenarios.tariff.live = [1.95, 2.05, 2.15, 2.10, 1.94, 1.88, 1.40];
+      scenarios.leak.live = [99.2, 98.6, 98.0, 98.2, 98.0, 98.2, 98.0];
+      caseKeys.forEach((key) => {
+        liveBase[key] = scenarios[key].live.slice();
+        updateChart(key);
+        updateReadings(key);
+      });
       window.setTimeout(() => { rebalanceBtn.textContent = "Rebalance"; }, 1600);
     });
   }
@@ -5671,7 +5763,18 @@ function setupEnergyUtilitiesInteractions() {
     applyBtn.addEventListener("click", () => {
       sfx.playClick();
       applyBtn.textContent = "Setpoints applied ✓";
+      // Lock live lines to target setpoint lines
+      caseKeys.forEach((key) => {
+        scenarios[key].live = scenarios[key].target.slice();
+        liveBase[key] = scenarios[key].target.slice();
+        updateChart(key);
+        updateReadings(key);
+      });
       applyBtn.disabled = true;
+      window.setTimeout(() => {
+        applyBtn.disabled = false;
+        applyBtn.textContent = "Apply setpoints";
+      }, 2500);
     });
   }
 }
