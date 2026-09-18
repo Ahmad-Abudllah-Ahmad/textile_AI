@@ -5478,20 +5478,32 @@ function setupEnergyUtilitiesInteractions() {
         const scene = scenarios[key];
         const match = computeAiMatch(key);
         return `
-        <article class="energy-stack-block energy-ai-block" data-energy-ai-row="${key}">
+        <article class="energy-stack-block energy-ai-block" data-energy-ai-row="${key}"
+          data-tip-title="${scene.title} · AI Optimization Match"
+          data-tip-a="Actual Live: ${formatVal(scene, match.liveVal)} (${match.diffText})"
+          data-tip-b="Desired Setpoint: ${scene.set} · ${match.matchPct.toFixed(1)}% Optimal (${match.status})">
           <div class="energy-stack-head">
             <div class="energy-ai-title-wrap">
               <span class="energy-ai-dot dot-${key}"></span>
               <h3>${scene.title}</h3>
             </div>
-            <span class="energy-match-pill ${match.pillClass}" data-ai-match-pill="${key}">${match.matchPct.toFixed(1)}% MATCH</span>
+            <span class="energy-match-pill ${match.pillClass}" data-ai-match-pill="${key}"
+              data-tip-title="${scene.title} · Match Score"
+              data-tip-a="Convergence Match: ${match.matchPct.toFixed(1)}% (${match.status})"
+              data-tip-b="Variance vs Target: ${match.diffText}">${match.matchPct.toFixed(1)}% MATCH</span>
           </div>
           <div class="energy-ai-compare-row">
-            <div class="ai-compare-val-box desired-box">
+            <div class="ai-compare-val-box desired-box"
+              data-tip-title="${scene.title} · Desired Optimal Setpoint"
+              data-tip-a="Target Setpoint: ${scene.set}"
+              data-tip-b="AI Strategy: Recommended baseline closed-loop setpoint">
               <span class="ai-lbl">DESIRED OPTIMAL</span>
               <strong class="ai-val" data-ai-desired="${key}">${scene.set}</strong>
             </div>
-            <div class="ai-match-bar-wrap">
+            <div class="ai-match-bar-wrap"
+              data-tip-title="${scene.title} · Closed-Loop Convergence Match"
+              data-tip-a="Match: ${match.matchPct.toFixed(1)}% · ${match.status}"
+              data-tip-b="Target: ${scene.set} | Live Feed: ${formatVal(scene, match.liveVal)} (${match.diffText})">
               <div class="ai-match-track">
                 <div class="ai-match-fill" data-ai-fill="${key}" style="width: ${match.livePosPct}%;"></div>
                 <div class="ai-target-marker" data-ai-marker="${key}" style="left: ${match.targetPosPct}%;"></div>
@@ -5501,7 +5513,10 @@ function setupEnergyUtilitiesInteractions() {
                 <span class="ai-status-label" data-ai-status="${key}">${match.status}</span>
               </div>
             </div>
-            <div class="ai-compare-val-box live-box">
+            <div class="ai-compare-val-box live-box"
+              data-tip-title="${scene.title} · Actual Live Telemetry Feed"
+              data-tip-a="Current Live Reading: ${formatVal(scene, match.liveVal)}"
+              data-tip-b="Deviation from Target: ${match.diffText} (${match.status})">
               <span class="ai-lbl">LIVE FEED</span>
               <strong class="ai-val" data-ai-live="${key}">${formatVal(scene, match.liveVal)}</strong>
             </div>
@@ -5584,12 +5599,24 @@ function setupEnergyUtilitiesInteractions() {
   }
 
   function bindVisualHover() {
-    readingStack.addEventListener("pointermove", (event) => {
-      const el = event.target.closest("[data-tip-title]");
-      if (el) showVisualTip(el, event);
-    });
-    readingStack.addEventListener("pointerleave", () => {
-      if (tip) tip.style.display = "none";
+    const hoverContainers = [
+      readingStack,
+      aiMatchStack,
+      energyView.querySelector(".energy-ai-match-card")
+    ];
+    hoverContainers.forEach((container) => {
+      if (!container) return;
+      container.addEventListener("pointermove", (event) => {
+        const el = event.target.closest("[data-tip-title]");
+        if (el) {
+          showVisualTip(el, event);
+        } else if (tip) {
+          tip.style.display = "none";
+        }
+      });
+      container.addEventListener("pointerleave", () => {
+        if (tip) tip.style.display = "none";
+      });
     });
   }
 
@@ -5713,6 +5740,8 @@ function setupEnergyUtilitiesInteractions() {
     });
     const avg = (sum / caseKeys.length).toFixed(1);
     overallMatchBadge.textContent = `${avg}% OPTIMAL MATCH`;
+    overallMatchBadge.dataset.tipA = `${avg}% Fleet Convergence Score`;
+    overallMatchBadge.dataset.tipB = `Multi-system closed-loop tracking across all 5 utilities`;
     if (avg >= 95) {
       overallMatchBadge.className = "inspect-badge badge-emerald";
     } else if (avg >= 88) {
@@ -5742,6 +5771,8 @@ function setupEnergyUtilitiesInteractions() {
     if (pillEl) {
       pillEl.textContent = `${match.matchPct.toFixed(1)}% MATCH`;
       pillEl.className = `energy-match-pill ${match.pillClass}`;
+      pillEl.dataset.tipA = `Convergence Match: ${match.matchPct.toFixed(1)}% (${match.status})`;
+      pillEl.dataset.tipB = `Variance vs Target: ${match.diffText}`;
     }
 
     const statusEl = row.querySelector(`[data-ai-status="${key}"]`);
@@ -5752,6 +5783,21 @@ function setupEnergyUtilitiesInteractions() {
 
     const markerEl = row.querySelector(`[data-ai-marker="${key}"]`);
     if (markerEl) markerEl.style.left = `${match.targetPosPct}%`;
+
+    row.dataset.tipA = `Actual Live: ${formatVal(scene, match.liveVal)} (${match.diffText})`;
+    row.dataset.tipB = `Desired Setpoint: ${scene.set} · ${match.matchPct.toFixed(1)}% Optimal (${match.status})`;
+
+    const liveBox = row.querySelector(".live-box");
+    if (liveBox) {
+      liveBox.dataset.tipA = `Current Live Reading: ${formatVal(scene, match.liveVal)}`;
+      liveBox.dataset.tipB = `Deviation from Target: ${match.diffText} (${match.status})`;
+    }
+
+    const barWrap = row.querySelector(".ai-match-bar-wrap");
+    if (barWrap) {
+      barWrap.dataset.tipA = `Match: ${match.matchPct.toFixed(1)}% · ${match.status}`;
+      barWrap.dataset.tipB = `Target: ${scene.set} | Live Feed: ${formatVal(scene, match.liveVal)} (${match.diffText})`;
+    }
 
     updateOverallMatch();
   }

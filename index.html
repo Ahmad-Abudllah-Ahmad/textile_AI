@@ -4511,16 +4511,25 @@
               <h2 class="detail-card-title">AI Desired Optimization &amp; Live Match</h2>
             </div>
             <div class="feed-header-meta">
-              <span class="inspect-badge badge-emerald" id="energyOverallMatchBadge">96.8% OPTIMAL MATCH</span>
+              <span class="inspect-badge badge-emerald" id="energyOverallMatchBadge"
+                data-tip-title="AI Fleet Optimization Match"
+                data-tip-a="96.8% Aggregate Convergence"
+                data-tip-b="Real-time multi-system closed-loop tracking">96.8% OPTIMAL MATCH</span>
             </div>
           </div>
           <div class="energy-stack" id="energyAiMatchStack"></div>
           <div class="inspect-actions-row energy-ai-actions-row">
-            <div class="energy-ai-telemetry-chip">
+            <div class="energy-ai-telemetry-chip"
+              data-tip-title="Closed-Loop AI Controller"
+              data-tip-a="Adaptive sub-second optimization active"
+              data-tip-b="Continuous setpoint-to-feed variance minimization">
               <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 3"></path></svg>
               <span id="energyAiStatusText">CLOSED-LOOP AI OPTIMIZING</span>
             </div>
-            <button type="button" class="inspect-btn-outline ai-tune-quick-btn" id="btnAiQuickTune">Auto-Tune</button>
+            <button type="button" class="inspect-btn-outline ai-tune-quick-btn" id="btnAiQuickTune"
+              data-tip-title="AI One-Touch Auto-Tune"
+              data-tip-a="Action: Rapid closed-loop realignment"
+              data-tip-b="Automatically steps all 5 utilities to desired optimal setpoints">Auto-Tune</button>
           </div>
         </div>
       </section>

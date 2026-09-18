@@ -3191,7 +3191,15 @@ html, body {
   z-index: 200;
   pointer-events: none;
   transform: none;
-  max-width: min(280px, calc(100vw - 20px));
+  max-width: min(340px, calc(100vw - 20px));
+}
+
+.energy-ai-block,
+.energy-ai-block *,
+.energy-ai-telemetry-chip,
+.ai-tune-quick-btn,
+#energyOverallMatchBadge {
+  cursor: pointer;
 }
 
 .metric-huge-val {
