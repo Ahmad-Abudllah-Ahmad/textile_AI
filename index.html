@@ -4490,23 +4490,20 @@
         </div>
       </section>
 
-      <section class="inspection-details-row energy-fit-row">
-        <div class="inspect-detail-card energy-stack-card">
+      <!-- Top Section: Setpoints & Utility Readings and AI Desired Optimization & Live Match -->
+      <section class="energy-top-row">
+        <div class="inspect-detail-card energy-stack-card energy-readings-card">
           <div class="detail-card-header">
-            <div class="feed-header-left">
-              <span class="live-dot-pulse"></span>
-              <h2 class="detail-card-title">Live vs setpoint</h2>
-            </div>
-            <div class="feed-header-meta">
-              <span class="comp-legend-item"><span class="legend-line live-legend-line"></span><span>Live</span></span>
-              <span class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Setpoint</span></span>
-              <span class="meta-tag-feed tag-online" id="energyLiveClock">LIVE 14:32:00</span>
-            </div>
+            <h2 class="detail-card-title">Setpoints &amp; utility readings</h2>
+            <span class="inspect-badge badge-emerald">WITHIN BAND</span>
           </div>
-          <div class="energy-stack" id="energyChartStack"></div>
+          <div class="energy-stack" id="energyReadingStack"></div>
+          <div class="inspect-actions-row">
+            <button type="button" class="inspect-btn-outline" id="btnRebalanceUtilities">Rebalance</button>
+            <button type="button" class="inspect-btn-primary" id="btnApplyUtilitySetpoints">Apply setpoints</button>
+          </div>
         </div>
 
-        <!-- Middle AI Feature: Desired Optimisation & Live Feed Match -->
         <div class="inspect-detail-card energy-stack-card energy-ai-match-card">
           <div class="detail-card-header">
             <div class="feed-header-left">
@@ -4526,17 +4523,23 @@
             <button type="button" class="inspect-btn-outline ai-tune-quick-btn" id="btnAiQuickTune">Auto-Tune</button>
           </div>
         </div>
+      </section>
 
-        <div class="inspect-detail-card energy-stack-card">
+      <!-- Bottom Section: Live vs Setpoint Line Charts -->
+      <section class="energy-bottom-row">
+        <div class="inspect-detail-card energy-chart-card">
           <div class="detail-card-header">
-            <h2 class="detail-card-title">Setpoints &amp; utility readings</h2>
-            <span class="inspect-badge badge-emerald">WITHIN BAND</span>
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live vs setpoint</h2>
+            </div>
+            <div class="feed-header-meta">
+              <span class="comp-legend-item"><span class="legend-line live-legend-line"></span><span>Live</span></span>
+              <span class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Setpoint</span></span>
+              <span class="meta-tag-feed tag-online" id="energyLiveClock">LIVE 14:32:00</span>
+            </div>
           </div>
-          <div class="energy-stack" id="energyReadingStack"></div>
-          <div class="inspect-actions-row">
-            <button type="button" class="inspect-btn-outline" id="btnRebalanceUtilities">Rebalance</button>
-            <button type="button" class="inspect-btn-primary" id="btnApplyUtilitySetpoints">Apply setpoints</button>
-          </div>
+          <div class="energy-chart-grid" id="energyChartStack"></div>
         </div>
       </section>
       <div class="comp-chart-tooltip" id="energyChartTip" style="display: none;">
