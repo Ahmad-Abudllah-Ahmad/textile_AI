@@ -2356,7 +2356,314 @@
   </div>
 
   <!-- =========================================================================
-       VIEW 3: PROCESSING TELEMETRY DASHBOARD (MATCHING IMAGE 1 & 2 EXACTLY)
+       VIEW 3: PRODUCTION PLANNING & SCHEDULING AI
+       ========================================================================= -->
+  <div class="planning-container" id="productionPlanningView" style="display: none;">
+    <header class="inspection-header-bar planning-header">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromPlanning" aria-label="Back to Processing Modules">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon planning-brand-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="17" rx="2"></rect>
+            <path d="M8 2v4M16 2v4M3 9h18M7 13h3M14 13h3M7 17h3"></path>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Production Planning &amp; Scheduling AI</h1>
+          <p class="inspection-subtitle">Live lot routing, constraint-aware sequencing &amp; delay recovery</p>
+        </div>
+      </div>
+      <div class="planning-header-actions">
+        <div class="planning-live-chip"><span></span> LIVE PLAN · SHIFT A</div>
+        <div class="planning-sync-copy">Optimized 14:32<br><strong>Next review in 08 min</strong></div>
+        <button class="planning-primary-btn" id="btnReoptimizePlan">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 11a8 8 0 1 0-2.34 5.66"></path><polyline points="20 4 20 11 13 11"></polyline></svg>
+          Re-optimize plan
+        </button>
+      </div>
+    </header>
+
+    <main class="planning-body">
+      <section class="planning-kpi-row" aria-label="Selected department planning indicators">
+        <article class="planning-kpi"><span>ON-TIME CONFIDENCE</span><strong id="planningKpiConfidence">91.6%</strong><em class="positive" id="planningKpiConfidenceNote">+4.8% after recovery</em></article>
+        <article class="planning-kpi"><span>CURRENT BOTTLENECK</span><strong id="planningKpiBottleneck">JD-04</strong><em class="warning" id="planningKpiBottleneckNote">18 min behind plan</em></article>
+        <article class="planning-kpi"><span>CHANGEOVER SAVED</span><strong id="planningKpiChangeover">42 min</strong><em class="positive" id="planningKpiChangeoverNote">Light → dark sequence</em></article>
+        <article class="planning-kpi"><span>WIP AHEAD</span><strong id="planningKpiWip">3 lots</strong><em id="planningKpiWipNote">18,460 m in route</em></article>
+      </section>
+
+      <section class="planning-flow-card" aria-label="Live fabric route">
+        <div class="planning-section-head">
+          <div>
+            <span class="planning-eyebrow">LIVE MATERIAL FLOW</span>
+            <h2>Lot TEX-8821 · Royal Navy · 6,240 m</h2>
+          </div>
+          <div class="planning-order-meta">
+            <span>Buyer · Northstar Home</span>
+            <span class="planning-due-chip">Dispatch due 18 Sep · 18:30</span>
+          </div>
+        </div>
+
+        <div class="fabric-flow-track">
+          <button type="button" class="fabric-flow-node is-complete" data-plan-stage="incoming">
+            <div class="flow-node-state"><span class="flow-state-dot"></span> INCOMING</div>
+            <div class="flow-node-main"><span class="flow-node-icon">01</span><div><strong>Greige release</strong><small>Weaving · Loom L-18</small></div></div>
+            <div class="flow-node-foot"><span>6,240 m verified</span><b>08:12 ✓</b></div>
+          </button>
+          <div class="fabric-flow-connector is-complete"><span class="fabric-roll"></span></div>
+          <button type="button" class="fabric-flow-node is-complete" data-plan-stage="pretreatment">
+            <div class="flow-node-state"><span class="flow-state-dot"></span> PREPARED</div>
+            <div class="flow-node-main"><span class="flow-node-icon">02</span><div><strong>Pretreatment</strong><small>Range PT-02 · Eligible</small></div></div>
+            <div class="flow-node-foot"><span>Released early</span><b>10:04 ✓</b></div>
+          </button>
+          <div class="fabric-flow-connector is-live"><span class="fabric-roll"></span></div>
+          <button type="button" class="fabric-flow-node is-live is-selected" data-plan-stage="dyeing" aria-current="step">
+            <div class="flow-node-state"><span class="flow-state-dot"></span> IN PROCESS</div>
+            <div class="flow-node-main"><span class="flow-node-icon">03</span><div><strong>Jet dyeing</strong><small>JD-04 · Recipe RN-8821</small></div></div>
+            <div class="flow-progress"><span style="width: 68%"></span></div>
+            <div class="flow-node-foot"><span>68% · 46 min left</span><b class="is-late">+18 min</b></div>
+          </button>
+          <div class="fabric-flow-connector"><span class="fabric-roll"></span></div>
+          <button type="button" class="fabric-flow-node is-next" data-plan-stage="printing">
+            <div class="flow-node-state"><span class="flow-state-dot"></span> OPTIONAL ROUTE</div>
+            <div class="flow-node-main"><span class="flow-node-icon">04</span><div><strong>Printing</strong><small>RP-02 · Screen route</small></div></div>
+            <div class="flow-node-foot"><span>Route available</span><b>15:10</b></div>
+          </button>
+          <div class="fabric-flow-connector"><span class="fabric-roll"></span></div>
+          <button type="button" class="fabric-flow-node is-next" data-plan-stage="finishing">
+            <div class="flow-node-state"><span class="flow-state-dot"></span> NEXT</div>
+            <div class="flow-node-main"><span class="flow-node-icon">05</span><div><strong>Finishing</strong><small>ST-02 · Reserved</small></div></div>
+            <div class="flow-node-foot"><span>Slot protected</span><b>15:05</b></div>
+          </button>
+          <div class="fabric-flow-connector"><span class="fabric-roll"></span></div>
+          <button type="button" class="fabric-flow-node is-outgoing" data-plan-stage="inspection">
+            <div class="flow-node-state"><span class="flow-state-dot"></span> OUTGOING</div>
+            <div class="flow-node-main"><span class="flow-node-icon">06</span><div><strong>Final inspection</strong><small>FI-01 · A-frame pack</small></div></div>
+            <div class="flow-node-foot"><span>Forecast ready</span><b>17:42</b></div>
+          </button>
+        </div>
+      </section>
+
+      <section class="planning-panel schedule-panel" id="stagePlanPanel" aria-live="polite">
+        <div class="planning-section-head compact">
+          <div>
+            <span class="planning-eyebrow" id="departmentScheduleEyebrow">DYEING DEPARTMENT · LIVE ROUTE</span>
+            <h2 id="departmentScheduleTitle">Dyeing stages &amp; machine plan</h2>
+          </div>
+          <div class="schedule-legend"><span><i class="legend-plan"></i>Planned</span><span><i class="legend-live"></i>Active lot</span><span><i class="legend-risk"></i>At risk</span></div>
+        </div>
+
+        <div class="schedule-time-axis" id="departmentTimeAxis"><span></span><b>10:00</b><b>11:00</b><b>12:00</b><b>13:00</b><b>14:00</b><b>15:00</b></div>
+        <div class="machine-lanes" id="departmentMachineLanes"></div>
+
+        <div class="schedule-callout">
+          <span class="callout-icon">AI</span>
+          <div><strong id="departmentDecisionTitle">Jet sequence protects the finishing slot.</strong><p id="departmentDecisionCopy">Keep TEX-8821 on JD-04, then route through wash-off before the protected ST-02 handoff.</p></div>
+          <button id="btnApplyRecovery">Apply recovery</button>
+        </div>
+      </section>
+
+      <section class="planning-analytics-grid">
+        <article class="planning-panel output-curve-panel">
+          <div class="planning-section-head compact output-head">
+            <div><span class="planning-eyebrow">LOT OUTPUT PROGRESS</span><h2>Cumulative good metres vs plan</h2></div>
+            <div class="output-summary">
+              <span><small>ACTUAL</small><strong>3,920 m</strong></span>
+              <span><small>PLAN</small><strong>4,180 m</strong></span>
+              <span class="output-gap"><small>GAP</small><strong>−260 m</strong></span>
+              <span class="planning-live-chip mini"><span></span> LIVE 30 SEC</span>
+            </div>
+          </div>
+          <div class="output-chart-wrap">
+            <svg class="output-chart" viewBox="0 0 900 190" preserveAspectRatio="none" role="img" aria-label="Cumulative good fabric metres compared with the production plan">
+              <defs><linearGradient id="outputArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10B981" stop-opacity=".2"></stop><stop offset="100%" stop-color="#10B981" stop-opacity="0"></stop></linearGradient></defs>
+              <g class="output-grid"><line x1="58" y1="25" x2="875" y2="25"></line><line x1="58" y1="65" x2="875" y2="65"></line><line x1="58" y1="105" x2="875" y2="105"></line><line x1="58" y1="145" x2="875" y2="145"></line></g>
+              <g class="output-y-labels"><text x="10" y="29">6,000m</text><text x="10" y="69">4,000m</text><text x="10" y="109">2,000m</text><text x="36" y="149">0</text></g>
+              <path class="output-plan-line" d="M58 145 C140 132 185 119 250 108 S365 82 430 70 S555 48 620 38 S760 27 875 23"></path>
+              <path class="output-actual-area" d="M58 145 C130 136 186 126 250 116 S360 94 430 83 S545 66 620 58 C690 51 735 43 770 38 L770 145 Z"></path>
+              <path class="output-actual-line" d="M58 145 C130 136 186 126 250 116 S360 94 430 83 S545 66 620 58 C690 51 735 43 770 38"></path>
+              <path class="output-forecast-line" d="M770 38 C805 34 842 28 875 24"></path>
+              <line class="output-now-line" x1="770" y1="20" x2="770" y2="145"></line><circle class="output-live-dot" cx="770" cy="38" r="5"></circle>
+              <g class="output-x-labels"><text x="58" y="174">08:00</text><text x="215" y="174">10:00</text><text x="378" y="174">12:00</text><text x="540" y="174">14:00</text><text x="704" y="174">16:00</text><text x="840" y="174">18:00</text></g>
+            </svg>
+            <div class="output-chart-tip"><strong>14:32 · JD-04</strong><span>Good output <b>3,920 m</b></span><span>Projected completion 17:42</span></div>
+          </div>
+          <div class="output-chart-footer"><span><i class="output-key actual"></i>Good metres completed</span><span><i class="output-key plan"></i>Planned curve</span><span><i class="output-key forecast"></i>AI forecast</span><strong>Forecast: 6,240 m before dispatch cut-off</strong></div>
+        </article>
+
+        <aside class="planning-panel handoff-panel">
+          <div class="planning-section-head compact">
+            <div><span class="planning-eyebrow">HANDOFF READINESS</span><h2>Downstream flow protection</h2></div>
+            <span class="handoff-health">2/2 protected</span>
+          </div>
+          <div class="handoff-list">
+            <article class="handoff-item is-watch">
+              <div class="handoff-route"><span>JD-04</span><i></i><span>ST-02</span></div>
+              <div class="handoff-copy"><strong>Finishing slot at risk</strong><small>Predicted arrival 15:16 · reserved 15:05</small></div>
+              <div class="handoff-meter"><span style="width:82%"></span></div>
+              <div class="handoff-foot"><span>Readiness 82%</span><b>11 min exposure</b></div>
+            </article>
+            <article class="handoff-item is-safe">
+              <div class="handoff-route"><span>ST-02</span><i></i><span>FI-01</span></div>
+              <div class="handoff-copy"><strong>Inspection capacity secured</strong><small>38 min transfer buffer · team available</small></div>
+              <div class="handoff-meter"><span style="width:96%"></span></div>
+              <div class="handoff-foot"><span>Readiness 96%</span><b>Protected</b></div>
+            </article>
+          </div>
+          <div class="flow-risk-summary">
+            <div><span>STARVATION RISK</span><strong>Low</strong></div>
+            <div><span>BLOCKING RISK</span><strong>None</strong></div>
+            <div><span>TRANSFER BUFFER</span><strong>38 min</strong></div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 3B: ENERGY & UTILITIES OPTIMIZATION AI
+       ========================================================================= -->
+  <div class="dyeing-inspection-container energy-container" id="energyUtilitiesView" style="display: none;">
+    <header class="inspection-header-bar energy-header">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromEnergy" aria-label="Back to Processing Modules">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-brand-icon energy-brand-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+        </div>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Energy &amp; Utilities Optimization AI</h1>
+          <p class="inspection-subtitle">Gas, steam, electricity, compressed air &amp; thermal recovery · live mill balance</p>
+        </div>
+      </div>
+      <div class="energy-header-actions">
+        <div class="energy-live-chip"><span></span> LIVE UTILITIES · SHIFT A</div>
+      </div>
+    </header>
+
+    <div class="inspection-content-body">
+      <section class="inspection-metrics-row">
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Specific Energy Consumption</span>
+            <span class="inspect-badge badge-emerald">−14.2% YOY</span>
+          </div>
+          <div class="metric-huge-val energy-live-num" id="energyKpiSec">0.114 kWh/kg</div>
+          <div class="metric-chart-wrap" id="energySparkSec">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradEnergySec" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16, 185, 129, 0.35)"></stop>
+                  <stop offset="100%" stop-color="rgba(16, 185, 129, 0)"></stop>
+                </linearGradient>
+              </defs>
+              <path d="M 0 52 C 40 50, 80 46, 120 38 C 170 28, 210 24, 260 18 C 300 14, 325 12, 340 10 L 340 70 L 0 70 Z" fill="url(#gradEnergySec)"></path>
+              <path d="M 0 52 C 40 50, 80 46, 120 38 C 170 28, 210 24, 260 18 C 300 14, 325 12, 340 10" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round"></path>
+              <circle cx="340" cy="10" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2"></circle>
+              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16,185,129,.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="energy-spark-hover" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" style="display:none;"><span class="tip-value"></span><span class="tip-label">SEC trend</span></div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Thermal Waste Heat Recovery</span>
+            <span class="inspect-badge badge-cyan">HEX ON</span>
+          </div>
+          <div class="metric-huge-val energy-live-num" id="energyKpiHex">94.6%</div>
+          <div class="metric-chart-wrap" id="energySparkHex">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradEnergyHex" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6, 182, 212, 0.35)"></stop>
+                  <stop offset="100%" stop-color="rgba(6, 182, 212, 0)"></stop>
+                </linearGradient>
+              </defs>
+              <path d="M 0 40 C 50 36, 90 34, 140 28 C 190 22, 230 18, 280 14 C 310 12, 330 10, 340 10 L 340 70 L 0 70 Z" fill="url(#gradEnergyHex)"></path>
+              <path d="M 0 40 C 50 36, 90 34, 140 28 C 190 22, 230 18, 280 14 C 310 12, 330 10, 340 10" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round"></path>
+              <circle cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2"></circle>
+              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6,182,212,.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="energy-spark-hover" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" style="display:none;"><span class="tip-value"></span><span class="tip-label">Recovery trend</span></div>
+          </div>
+        </div>
+
+        <div class="inspect-metric-card">
+          <div class="card-head-row">
+            <span class="metric-card-title">Compressed Air Header</span>
+            <span class="inspect-badge badge-amber">7.90 BAR HELD</span>
+          </div>
+          <div class="metric-huge-val energy-live-num" id="energyKpiAir">7.90 bar</div>
+          <div class="metric-chart-wrap" id="energySparkAir">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradEnergyAir" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(217, 119, 6, 0.30)"></stop>
+                  <stop offset="100%" stop-color="rgba(217, 119, 6, 0)"></stop>
+                </linearGradient>
+              </defs>
+              <path d="M 0 28 C 40 26, 80 30, 120 28 C 160 26, 200 30, 240 28 C 280 26, 315 28, 340 27 L 340 70 L 0 70 Z" fill="url(#gradEnergyAir)"></path>
+              <path d="M 0 28 C 40 26, 80 30, 120 28 C 160 26, 200 30, 240 28 C 280 26, 315 28, 340 27" fill="none" stroke="#D97706" stroke-width="2.4" stroke-linecap="round"></path>
+              <circle cx="340" cy="27" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="2"></circle>
+              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(217,119,6,.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="energy-spark-hover" cx="0" cy="0" r="4.5" fill="#D97706" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" style="display:none;"><span class="tip-value"></span><span class="tip-label">Header trend</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="inspection-details-row energy-fit-row">
+        <div class="inspect-detail-card energy-stack-card">
+          <div class="detail-card-header">
+            <div class="feed-header-left">
+              <span class="live-dot-pulse"></span>
+              <h2 class="detail-card-title">Live vs setpoint</h2>
+            </div>
+            <div class="feed-header-meta">
+              <span class="comp-legend-item"><span class="legend-line live-legend-line"></span><span>Live</span></span>
+              <span class="comp-legend-item"><span class="legend-line target-legend-line"></span><span>Setpoint</span></span>
+              <span class="meta-tag-feed tag-online" id="energyLiveClock">LIVE 14:32:00</span>
+            </div>
+          </div>
+          <div class="energy-stack" id="energyChartStack"></div>
+        </div>
+
+        <div class="inspect-detail-card energy-stack-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Setpoints &amp; utility readings</h2>
+            <span class="inspect-badge badge-emerald">WITHIN BAND</span>
+          </div>
+          <div class="energy-stack" id="energyReadingStack"></div>
+          <div class="inspect-actions-row">
+            <button type="button" class="inspect-btn-outline" id="btnRebalanceUtilities">Rebalance</button>
+            <button type="button" class="inspect-btn-primary" id="btnApplyUtilitySetpoints">Apply setpoints</button>
+          </div>
+        </div>
+      </section>
+      <div class="comp-chart-tooltip" id="energyChartTip" style="display: none;">
+        <div class="tip-header"></div>
+        <div class="tip-row"><span class="tip-dot dot-live"></span><span class="energy-tip-a"></span></div>
+        <div class="tip-row"><span class="tip-dot dot-target"></span><span class="energy-tip-b"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 4: PROCESSING TELEMETRY DASHBOARD (PREDICTIVE MAINTENANCE)
        ========================================================================= -->
   <div class="dashboard-container" id="dashboardView" style="display: none;">
     <!-- Dashboard Content Area -->
