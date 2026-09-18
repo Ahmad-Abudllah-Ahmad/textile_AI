@@ -999,6 +999,29 @@ function setupScadaInteractivity() {
     container.appendChild(hud);
   }
 
+  function positionHud(x, y) {
+    if (!hud || !container) return;
+    const cWidth = container.clientWidth || 1060;
+    const cHeight = container.clientHeight || 920;
+    const hWidth = hud.offsetWidth || 280;
+    const hHeight = hud.offsetHeight || 190;
+
+    // Horizontal clamping within SCADA container
+    const clampedX = Math.max(hWidth / 2 + 12, Math.min(cWidth - hWidth / 2 - 12, x));
+    hud.style.left = `${clampedX}px`;
+
+    // Vertical clearance check: need at least hHeight + 24px above to not cut off
+    const needHeight = hHeight + 24;
+    if (y < needHeight) {
+      hud.classList.add("pos-below");
+      const maxTop = cHeight - hHeight - 20;
+      hud.style.top = `${Math.min(maxTop, Math.max(10, y))}px`;
+    } else {
+      hud.classList.remove("pos-below");
+      hud.style.top = `${Math.max(needHeight, Math.min(cHeight - 20, y))}px`;
+    }
+  }
+
   function showHud(x, y, title, tag, rows, statusText = "OPTIMAL", statusType = "status-ok") {
     let rowsHtml = "";
     rows.forEach(([lbl, val]) => {
@@ -1014,21 +1037,8 @@ function setupScadaInteractivity() {
       <span class="hud-status-badge ${statusType}">${statusText}</span>
     `;
 
-    // Clamp horizontal position so tooltip never clips outside left or right edges
-    const cWidth = container ? container.clientWidth : 1060;
-    const clampedX = Math.max(165, Math.min(cWidth - 165, x));
-    hud.style.left = `${clampedX}px`;
-
-    // If near the top edge, flip below the element so text is never cut off
-    if (y < 125) {
-      hud.classList.add("pos-below");
-      hud.style.top = `${y}px`;
-    } else {
-      hud.classList.remove("pos-below");
-      hud.style.top = `${y}px`;
-    }
-
     hud.classList.add("visible");
+    positionHud(x, y);
   }
 
   function hideHud() {
@@ -1154,6 +1164,13 @@ function setupScadaInteractivity() {
         isRun ? "OPTIMAL" : "OFFLINE",
         isRun ? "status-ok" : "status-warn"
       );
+    });
+
+    comp.addEventListener("mousemove", (e) => {
+      if (container && hud.classList.contains("visible")) {
+        const cRect = container.getBoundingClientRect();
+        positionHud(e.clientX - cRect.left, e.clientY - cRect.top);
+      }
     });
 
     comp.addEventListener("mouseleave", hideHud);
@@ -1438,8 +1455,7 @@ function setupScadaInteractivity() {
 
   // 13. Interactive Line Charts & Sparklines Hover HUD Popups
   document.querySelectorAll(".interactive-sparkline").forEach((spark) => {
-    spark.addEventListener("mouseenter", () => {
-      sfx.playHover();
+    function showSparkHud(e) {
       const title = spark.getAttribute("data-title") || "Telemetry Trend Chart";
       const id = spark.getAttribute("data-id") || "TREND-01";
       const param = spark.getAttribute("data-param") || "Live Signal";
@@ -1448,11 +1464,21 @@ function setupScadaInteractivity() {
       const statusText = spark.getAttribute("data-status") || "OPTIMAL";
       const statusType = spark.getAttribute("data-statustype") || "status-ok";
 
-      const rect = spark.getBoundingClientRect();
-      const cRect = container.getBoundingClientRect();
+      let mx, my;
+      if (e && container) {
+        const cRect = container.getBoundingClientRect();
+        mx = e.clientX - cRect.left;
+        my = e.clientY - cRect.top;
+      } else {
+        const rect = spark.getBoundingClientRect();
+        const cRect = container.getBoundingClientRect();
+        mx = rect.left - cRect.left + rect.width / 2;
+        my = rect.top - cRect.top;
+      }
+
       showHud(
-        rect.left - cRect.left + rect.width / 2,
-        rect.top - cRect.top,
+        mx,
+        my,
         title,
         id,
         [
@@ -1463,6 +1489,19 @@ function setupScadaInteractivity() {
         statusText,
         statusType
       );
+    }
+
+    spark.addEventListener("mouseenter", (e) => {
+      sfx.playHover();
+      showSparkHud(e);
+    });
+    spark.addEventListener("mousemove", (e) => {
+      if (container && hud.classList.contains("visible")) {
+        const cRect = container.getBoundingClientRect();
+        positionHud(e.clientX - cRect.left, e.clientY - cRect.top);
+      } else {
+        showSparkHud(e);
+      }
     });
     spark.addEventListener("mouseleave", hideHud);
   });
@@ -4987,22 +5026,65 @@ function setupProductionPlanningInteractions() {
       const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
       const isPast = xRatio <= 0.72;
       const metres = Math.round(58 + xRatio * (6240 - 58));
-      chartTip.style.left = `${Math.max(8, Math.min(rect.width - 165, e.clientX - rect.left - 75))}px`;
+
+      const tipW = chartTip.offsetWidth || 165;
+      const tipH = chartTip.offsetHeight || 50;
+      const posX = e.clientX - rect.left;
+      const posY = e.clientY - rect.top;
+
+      let tipLeft = posX - tipW / 2;
+      tipLeft = Math.max(8, Math.min(rect.width - tipW - 8, tipLeft));
+
+      let tipTop = posY - tipH - 12;
+      if (tipTop < 6) {
+        tipTop = posY + 16;
+      }
+      tipTop = Math.max(6, Math.min(rect.height - tipH - 6, tipTop));
+
+      chartTip.style.left = `${tipLeft}px`;
+      chartTip.style.top = `${tipTop}px`;
       chartTip.innerHTML = `<strong>${timeStr} · ${isPast ? 'Recorded Output' : 'AI Forecast'}</strong><span>${isPast ? 'Good output' : 'Projected output'}: <b>${metres.toLocaleString()} m</b></span><span>${isPast ? 'Quality verified ✓' : 'Dispatch due 18:30'}</span>`;
     });
     chartWrap.addEventListener("mouseleave", () => {
       chartTip.style.left = "71%";
+      chartTip.style.top = "10px";
       const actualVal = planningView?.querySelector(".output-summary span:nth-of-type(1) strong")?.textContent || "3,920 m";
       chartTip.innerHTML = `<strong>14:32 · JD-04</strong><span>Good output <b>${actualVal}</b></span><span>Projected completion 17:42</span>`;
     });
   }
 
   function positionPlanningTooltip(target, event) {
+    if (!target) return;
     const rect = target.getBoundingClientRect();
-    const anchorX = event?.clientX || rect.left + rect.width / 2;
-    const anchorY = event?.clientY || rect.top;
-    planningTooltip.style.left = `${Math.min(anchorX + 14, window.innerWidth - 335)}px`;
-    planningTooltip.style.top = `${Math.max(12, anchorY - 10)}px`;
+    const pad = 12;
+    const gap = 12;
+    const width = planningTooltip.offsetWidth || 280;
+    const height = planningTooltip.offsetHeight || 65;
+
+    const cursorX = (event && typeof event.clientX === "number") ? event.clientX : (rect.left + rect.width / 2);
+    const cursorY = (event && typeof event.clientY === "number") ? event.clientY : rect.top;
+
+    let left = cursorX + 12;
+    if (left + width > window.innerWidth - pad) {
+      left = cursorX - width - 12;
+    }
+    left = Math.max(pad, Math.min(window.innerWidth - width - pad, left));
+
+    let top = cursorY - height - gap;
+    let isBelow = false;
+    if (top < pad) {
+      top = (event && typeof event.clientY === "number") ? (event.clientY + gap + 8) : (rect.bottom + gap);
+      isBelow = true;
+      if (top + height > window.innerHeight - pad) {
+        top = Math.max(pad, window.innerHeight - height - pad);
+      }
+    } else if (top + height > window.innerHeight - pad) {
+      top = window.innerHeight - height - pad;
+    }
+
+    planningTooltip.style.left = `${left}px`;
+    planningTooltip.style.top = `${top}px`;
+    planningTooltip.classList.toggle("pos-below", isBelow);
   }
 
   function showPlanningTooltip(target, event) {
