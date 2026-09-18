@@ -5441,7 +5441,7 @@ function setupEnergyUtilitiesInteractions() {
   }
 
   function meterArc(pct) {
-    const circ = 2 * Math.PI * 26;
+    const circ = 2 * Math.PI * 35;
     const dash = (clamp(pct, 0, 100) / 100) * circ;
     return `${dash.toFixed(1)} ${(circ - dash).toFixed(1)}`;
   }
@@ -5563,10 +5563,10 @@ function setupEnergyUtilitiesInteractions() {
             </div>
             <div class="energy-meter-mini" data-tip-title="${scene.title} meter" data-tip-a="${visual.meter.value} ${visual.meter.unit}" data-tip-b="${visual.meter.label}">
               <svg viewBox="0 0 80 80" aria-label="${scene.title} meter">
-                <circle cx="40" cy="40" r="26" fill="none" stroke="#E2E8F0" stroke-width="8"></circle>
-                <circle class="energy-meter-arc" cx="40" cy="40" r="26" fill="none" stroke="${visual.meter.color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${meterArc(visual.meter.pct)}" transform="rotate(-90 40 40)"></circle>
-                <text class="energy-meter-val" x="40" y="38" text-anchor="middle">${visual.meter.value}</text>
-                <text class="energy-meter-unit" x="40" y="50" text-anchor="middle">${visual.meter.unit}</text>
+                <circle cx="40" cy="40" r="35" fill="none" stroke="#E2E8F0" stroke-width="8"></circle>
+                <circle class="energy-meter-arc" cx="40" cy="40" r="35" fill="none" stroke="${visual.meter.color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${meterArc(visual.meter.pct)}" transform="rotate(-90 40 40)"></circle>
+                <text class="energy-meter-val" x="40" y="38.5" text-anchor="middle">${visual.meter.value}</text>
+                <text class="energy-meter-unit" x="40" y="50.5" text-anchor="middle">${visual.meter.unit}</text>
               </svg>
               <small>${visual.meter.label}</small>
             </div>

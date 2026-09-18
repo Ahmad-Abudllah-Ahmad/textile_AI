@@ -2815,7 +2815,7 @@ html, body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 4px 8px 5px;
+  padding: 3px 8px 3px;
   border: 1px solid #E2E8F0;
   border-radius: 10px;
   background: #F8FAFC;
@@ -2826,7 +2826,7 @@ html, body {
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 2px;
+  margin-bottom: 1px;
   flex: 0 0 auto;
   min-width: 0;
 }
@@ -2937,28 +2937,27 @@ html, body {
   min-width: 0;
   min-height: 0;
   height: 100%;
-  overflow: hidden;
+  overflow: visible;
   cursor: pointer;
 }
 
 .energy-meter-mini svg {
   display: block;
   width: auto;
-  height: calc(100% - 12px);
-  max-width: 72px;
+  height: calc(100% - 9px);
   max-height: 100%;
   min-width: 0;
   min-height: 0;
   aspect-ratio: 1;
   overflow: visible;
 }
-.energy-meter-val { fill: #0F172A; font-family: var(--font-lufga); font-size: 11px; font-weight: 800; }
-.energy-meter-unit { fill: #94A3B8; font-family: var(--font-mono); font-size: 6px; font-weight: 800; }
+.energy-meter-val { fill: #0F172A; font-family: var(--font-lufga); font-size: 14.5px; font-weight: 800; }
+.energy-meter-unit { fill: #94A3B8; font-family: var(--font-mono); font-size: 7.5px; font-weight: 800; }
 .energy-meter-mini small {
   flex: 0 0 auto;
   color: #64748B;
   font-family: var(--font-mono);
-  font-size: .38rem;
+  font-size: .4rem;
   font-weight: 800;
   letter-spacing: .03em;
   word-spacing: 0.12em;
