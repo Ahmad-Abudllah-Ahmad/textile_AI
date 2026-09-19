@@ -981,6 +981,10 @@ function initScadaRealTimeEngine() {
       const purity = (99.7 + Math.sin(t * 0.9) * 0.04).toFixed(1);
       purityEl.textContent = `${purity}%`;
     }
+
+    if (typeof window._tickScadaHud === "function") {
+      window._tickScadaHud();
+    }
   }, 1000);
 }
 
@@ -998,6 +1002,8 @@ function setupScadaInteractivity() {
     hud.className = "scada-hud-tooltip";
     container.appendChild(hud);
   }
+
+  let activeHudUpdater = null;
 
   function positionHud(x, y) {
     if (!hud || !container) return;
@@ -1022,7 +1028,7 @@ function setupScadaInteractivity() {
     }
   }
 
-  function showHud(x, y, title, tag, rows, statusText = "OPTIMAL", statusType = "status-ok") {
+  function renderHudHtml(title, tag, rows, statusText = "OPTIMAL", statusType = "status-ok") {
     let rowsHtml = "";
     rows.forEach(([lbl, val]) => {
       if (lbl === "Description" || lbl === "Diagnostic") {
@@ -1036,14 +1042,25 @@ function setupScadaInteractivity() {
       ${rowsHtml}
       <span class="hud-status-badge ${statusType}">${statusText}</span>
     `;
+  }
 
+  function showHud(x, y, title, tag, rows, statusText = "OPTIMAL", statusType = "status-ok", updater = null) {
+    activeHudUpdater = updater;
+    renderHudHtml(title, tag, rows, statusText, statusType);
     hud.classList.add("visible");
     positionHud(x, y);
   }
 
   function hideHud() {
+    activeHudUpdater = null;
     hud.classList.remove("visible");
   }
+
+  window._tickScadaHud = function() {
+    if (hud && hud.classList.contains("visible") && typeof activeHudUpdater === "function") {
+      activeHudUpdater();
+    }
+  };
 
   // 1. Interactive P&ID Valves Click & Hover
   const valves = document.querySelectorAll(".interactive-valve");
@@ -1144,25 +1161,44 @@ function setupScadaInteractivity() {
       );
     });
 
+    function getCompData(compNum) {
+      const isRun = scadaState.compRunning[compNum];
+      const rpm = scadaState.compRPMs[compNum];
+      const t = Date.now() / 1000;
+      const vib = isRun ? `${(1.2 + Math.sin(t * 1.5 + compNum) * 0.08).toFixed(2)} mm/s RMS (Good)` : "0.0 mm/s";
+      return {
+        title: `Continuous Jet Dyeing Chamber ${compNum + 1}`,
+        tag: `JET-CHAMBER-0${compNum + 1}`,
+        rows: [
+          ["Status", isRun ? "Running (100% Load)" : "Standby"],
+          ["Telemetry Speed", `${rpm} m/min`],
+          ["Vibration", vib],
+          ["Command", "Click to Start / Stop Chamber"]
+        ],
+        statusText: isRun ? "OPTIMAL" : "OFFLINE",
+        statusType: isRun ? "status-ok" : "status-warn"
+      };
+    }
+
     comp.addEventListener("mouseenter", () => {
       sfx.playHover();
       const compNum = parseInt(comp.getAttribute("data-comp"), 10) - 1;
-      const isRun = scadaState.compRunning[compNum];
       const rect = comp.getBoundingClientRect();
       const cRect = container.getBoundingClientRect();
+      const updater = () => {
+        const d = getCompData(compNum);
+        renderHudHtml(d.title, d.tag, d.rows, d.statusText, d.statusType);
+      };
+      const d = getCompData(compNum);
       showHud(
         rect.left - cRect.left + rect.width / 2,
         rect.top - cRect.top,
-        `Continuous Jet Dyeing Chamber ${compNum + 1}`,
-        `JET-CHAMBER-0${compNum + 1}`,
-        [
-          ["Status", isRun ? "Running (100% Load)" : "Standby"],
-          ["Telemetry Speed", `${scadaState.compRPMs[compNum]} m/min`],
-          ["Vibration", isRun ? "1.2 mm/s RMS (Good)" : "0.0 mm/s"],
-          ["Command", "Click to Start / Stop Chamber"]
-        ],
-        isRun ? "OPTIMAL" : "OFFLINE",
-        isRun ? "status-ok" : "status-warn"
+        d.title,
+        d.tag,
+        d.rows,
+        d.statusText,
+        d.statusType,
+        updater
       );
     });
 
@@ -1241,62 +1277,108 @@ function setupScadaInteractivity() {
 
   // 5. Interactive Receiver & Buffer Tanks
   document.querySelectorAll(".interactive-tank").forEach((tank) => {
+    function getTankData(name) {
+      const p = name === "Alpha" ? scadaState.alphaBar : name === "Beta" ? scadaState.betaBar : scadaState.sysPress;
+      const t = Date.now() / 1000;
+      const temp = (68.4 + Math.sin(t * 0.8) * 0.4).toFixed(1);
+      return {
+        title: name === "Secondary Buffer" ? "Secondary Dye Liquor Buffer Tank" : name === "Auto-Drain Condensate Tank" ? "Auto-Chemical Recovery & Drain Tank" : `Color Kitchen Mixing Vessel ${name}`,
+        tag: `TK-${name.toUpperCase().replace(/[^A-Z0-9]/g, '-')}`,
+        rows: [
+          ["Internal Pressure", `${p} bar`],
+          ["Vessel Capacity", "5,000 Liters (Dye Prep)"],
+          ["Color Uniformity", "ΔE 0.18 (Optimal)"],
+          ["Liquor pH / Temp", `6.2 pH • ${temp}°C`]
+        ],
+        statusText: "NORMAL CHARGED",
+        statusType: "status-ok"
+      };
+    }
+
     tank.addEventListener("mouseenter", () => {
       sfx.playHover();
       const name = tank.getAttribute("data-tank") || "Vessel";
       const rect = tank.getBoundingClientRect();
       const cRect = container.getBoundingClientRect();
-      const p = name === "Alpha" ? scadaState.alphaBar : name === "Beta" ? scadaState.betaBar : "7.85";
+      const updater = () => {
+        const d = getTankData(name);
+        renderHudHtml(d.title, d.tag, d.rows, d.statusText, d.statusType);
+      };
+      const d = getTankData(name);
       showHud(
         rect.left - cRect.left + rect.width / 2,
         rect.top - cRect.top,
-        name === "Secondary Buffer" ? "Secondary Dye Liquor Buffer Tank" : name === "Auto-Drain Condensate Tank" ? "Auto-Chemical Recovery & Drain Tank" : `Color Kitchen Mixing Vessel ${name}`,
-        `TK-${name.toUpperCase().replace(/[^A-Z0-9]/g, '-')}`,
-        [
-          ["Internal Pressure", `${p} bar`],
-          ["Vessel Capacity", "5,000 Liters (Dye Prep)"],
-          ["Color Uniformity", "ΔE 0.18 (Optimal)"],
-          ["Liquor pH / Temp", "6.2 pH • 68.4°C"]
-        ],
-        "NORMAL CHARGED",
-        "status-ok"
+        d.title,
+        d.tag,
+        d.rows,
+        d.statusText,
+        d.statusType,
+        updater
       );
+    });
+    tank.addEventListener("mousemove", (e) => {
+      if (container && hud.classList.contains("visible")) {
+        const cRect = container.getBoundingClientRect();
+        positionHud(e.clientX - cRect.left, e.clientY - cRect.top);
+      }
     });
     tank.addEventListener("mouseleave", hideHud);
   });
 
   // 6. Interactive Radar Chart Dots
   document.querySelectorAll(".radar-dot").forEach((dot) => {
-    dot.addEventListener("mouseenter", () => {
-      sfx.playHover();
+    function getRadarDotData() {
       const metric = dot.getAttribute("data-metric");
-      const val = dot.getAttribute("data-val");
-      const rect = dot.getBoundingClientRect();
-      const cRect = container.getBoundingClientRect();
-      showHud(
-        rect.left - cRect.left,
-        rect.top - cRect.top,
-        "Radial Quality Index",
-        metric.toUpperCase(),
-        [
+      const idx = ["liquorRatio", "bathTemp", "phStability", "fixationYield", "exhaustionRate"].indexOf(metric);
+      const val = idx >= 0 && scadaState.radarValues ? scadaState.radarValues[idx] : dot.getAttribute("data-val");
+      return {
+        title: "Radial Quality Index",
+        tag: metric.toUpperCase(),
+        rows: [
           ["Index Score", `${val} / 100`],
           ["Compliance", "ISO 8573-1 Standard"],
           ["Target Threshold", ">= 75.0% Pass"]
         ],
-        parseInt(val, 10) >= 70 ? "PASSED (CLASS 0)" : "WARNING",
-        parseInt(val, 10) >= 70 ? "status-ok" : "status-warn"
+        statusText: parseInt(val, 10) >= 70 ? "PASSED (CLASS 0)" : "WARNING",
+        statusType: parseInt(val, 10) >= 70 ? "status-ok" : "status-warn"
+      };
+    }
+
+    dot.addEventListener("mouseenter", () => {
+      sfx.playHover();
+      const rect = dot.getBoundingClientRect();
+      const cRect = container.getBoundingClientRect();
+      const updater = () => {
+        const d = getRadarDotData();
+        renderHudHtml(d.title, d.tag, d.rows, d.statusText, d.statusType);
+      };
+      const d = getRadarDotData();
+      showHud(
+        rect.left - cRect.left,
+        rect.top - cRect.top,
+        d.title,
+        d.tag,
+        d.rows,
+        d.statusText,
+        d.statusType,
+        updater
       );
+    });
+    dot.addEventListener("mousemove", (e) => {
+      if (container && hud.classList.contains("visible")) {
+        const cRect = container.getBoundingClientRect();
+        positionHud(e.clientX - cRect.left, e.clientY - cRect.top);
+      }
     });
     dot.addEventListener("mouseleave", hideHud);
   });
 
   // 7. Interactive Gauges Hover (All Pressure & Differential Meters)
   document.querySelectorAll(".interactive-gauge").forEach((gauge) => {
-    gauge.addEventListener("mouseenter", () => {
-      sfx.playHover();
+    function getGaugeData() {
       const lbl = gauge.getAttribute("data-label") || "Pressure Gauge";
       const id = gauge.id;
-      let val = "7.92 bar";
+      let val = `${scadaState.sysPress} bar`;
       let detail = "Main Header Pressure";
       if (id === "dialFilterA") {
         val = `Diff: ${scadaState.filterADiff} psi`;
@@ -1308,22 +1390,44 @@ function setupScadaInteractivity() {
         val = `${scadaState.sysPress} bar`;
         detail = "Instrument Loop Header Calibration";
       }
-
-      const rect = gauge.getBoundingClientRect();
-      const cRect = container.getBoundingClientRect();
-      showHud(
-        rect.left - cRect.left + rect.width / 2,
-        rect.top - cRect.top,
-        lbl,
-        id.toUpperCase(),
-        [
+      return {
+        title: lbl,
+        tag: id.toUpperCase(),
+        rows: [
           ["Live Value", val],
           ["Calibration", "ISO/IEC 17025 Certified"],
           ["Target Spec", detail]
         ],
-        aiAnomalyActive && id === "dialFilterB" ? "CRITICAL ANOMALY" : "CALIBRATED OK",
-        aiAnomalyActive && id === "dialFilterB" ? "status-alert" : "status-ok"
+        statusText: aiAnomalyActive && id === "dialFilterB" ? "CRITICAL ANOMALY" : "CALIBRATED OK",
+        statusType: aiAnomalyActive && id === "dialFilterB" ? "status-alert" : "status-ok"
+      };
+    }
+
+    gauge.addEventListener("mouseenter", () => {
+      sfx.playHover();
+      const rect = gauge.getBoundingClientRect();
+      const cRect = container.getBoundingClientRect();
+      const updater = () => {
+        const d = getGaugeData();
+        renderHudHtml(d.title, d.tag, d.rows, d.statusText, d.statusType);
+      };
+      const d = getGaugeData();
+      showHud(
+        rect.left - cRect.left + rect.width / 2,
+        rect.top - cRect.top,
+        d.title,
+        d.tag,
+        d.rows,
+        d.statusText,
+        d.statusType,
+        updater
       );
+    });
+    gauge.addEventListener("mousemove", (e) => {
+      if (container && hud.classList.contains("visible")) {
+        const cRect = container.getBoundingClientRect();
+        positionHud(e.clientX - cRect.left, e.clientY - cRect.top);
+      }
     });
     gauge.addEventListener("mouseleave", hideHud);
   });
@@ -1331,24 +1435,46 @@ function setupScadaInteractivity() {
   // 8. Interactive Intake Duct
   const intake = document.getElementById("intakeSection");
   if (intake) {
-    intake.addEventListener("mouseenter", () => {
-      sfx.playHover();
-      const rect = intake.getBoundingClientRect();
-      const cRect = container.getBoundingClientRect();
-      showHud(
-        rect.left - cRect.left + rect.width / 2,
-        rect.top - cRect.top,
-        "Pre-Scouring & Conditioning Intake",
-        "INTAKE-01-SCOUR",
-        [
+    function getIntakeData() {
+      return {
+        title: "Pre-Scouring & Conditioning Intake",
+        tag: "INTAKE-01-SCOUR",
+        rows: [
           ["Fabric Temp", `${scadaState.inTemp}°C`],
           ["Bath pH Level", "6.4 pH (Pre-Treat)"],
           ["Conditioning Medium", "Softened Permeate Water"],
           ["AI Intake Control", "Thermal stabilization active"]
         ],
-        "NOMINAL FLOW",
-        "status-ok"
+        statusText: "NOMINAL FLOW",
+        statusType: "status-ok"
+      };
+    }
+
+    intake.addEventListener("mouseenter", () => {
+      sfx.playHover();
+      const rect = intake.getBoundingClientRect();
+      const cRect = container.getBoundingClientRect();
+      const updater = () => {
+        const d = getIntakeData();
+        renderHudHtml(d.title, d.tag, d.rows, d.statusText, d.statusType);
+      };
+      const d = getIntakeData();
+      showHud(
+        rect.left - cRect.left + rect.width / 2,
+        rect.top - cRect.top,
+        d.title,
+        d.tag,
+        d.rows,
+        d.statusText,
+        d.statusType,
+        updater
       );
+    });
+    intake.addEventListener("mousemove", (e) => {
+      if (container && hud.classList.contains("visible")) {
+        const cRect = container.getBoundingClientRect();
+        positionHud(e.clientX - cRect.left, e.clientY - cRect.top);
+      }
     });
     intake.addEventListener("mouseleave", hideHud);
   }
@@ -1366,7 +1492,7 @@ function setupScadaInteractivity() {
         name,
         "DYE-FLTR-ASME",
         [
-          ["Operating Pressure", "7.92 bar"],
+          ["Operating Pressure", `${scadaState.sysPress} bar`],
           ["Max Design Pressure", "16.0 bar @ 135°C"],
           ["Liquor Refining Life", "94.2% (7,200 hrs remaining)"]
         ],
@@ -1374,31 +1500,62 @@ function setupScadaInteractivity() {
         "status-ok"
       );
     });
+    vessel.addEventListener("mousemove", (e) => {
+      if (container && hud.classList.contains("visible")) {
+        const cRect = container.getBoundingClientRect();
+        positionHud(e.clientX - cRect.left, e.clientY - cRect.top);
+      }
+    });
     vessel.addEventListener("mouseleave", hideHud);
   });
 
   // 10. Interactive Telemetry Stations (Chamber 1-4 Bars & Sight Glasses)
   document.querySelectorAll(".interactive-telemetry-station").forEach((st) => {
-    st.addEventListener("mouseenter", () => {
-      sfx.playHover();
+    function getStationData() {
       const sNum = parseInt(st.getAttribute("data-station"), 10);
       const title = st.getAttribute("data-title") || `Chamber ${sNum}`;
+      const t = Date.now() / 1000;
+      const sight = Math.round(78 + Math.sin(t * 1.1 + sNum) * 1.5);
+      const qual = (98.6 + Math.cos(t * 0.7 + sNum) * 0.15).toFixed(1);
+      return {
+        title: `${title} Telemetry`,
+        tag: `CHAMBER-0${sNum}`,
+        rows: [
+          ["Pump Speed", `${scadaState.compRPMs[sNum - 1]} RPM`],
+          ["Liquor Level", `${sight}% (Optimal Sight Band)`],
+          ["Chamber Status", scadaState.compRunning[sNum - 1] ? "Active Circulation" : "Standby"],
+          ["AI Quality Index", `${qual}% (Level Dyeing Nominal)`]
+        ],
+        statusText: scadaState.compRunning[sNum - 1] ? "ONLINE" : "STANDBY",
+        statusType: scadaState.compRunning[sNum - 1] ? "status-ok" : "status-warn"
+      };
+    }
+
+    st.addEventListener("mouseenter", () => {
+      sfx.playHover();
       const rect = st.getBoundingClientRect();
       const cRect = container.getBoundingClientRect();
+      const updater = () => {
+        const d = getStationData();
+        renderHudHtml(d.title, d.tag, d.rows, d.statusText, d.statusType);
+      };
+      const d = getStationData();
       showHud(
         rect.left - cRect.left + rect.width / 2,
         rect.top - cRect.top,
-        `${title} Telemetry`,
-        `CHAMBER-0${sNum}`,
-        [
-          ["Pump Speed", `${scadaState.compRPMs[sNum - 1]} RPM`],
-          ["Liquor Level", "78% (Optimal Sight Band)"],
-          ["Chamber Status", scadaState.compRunning[sNum - 1] ? "Active Circulation" : "Standby"],
-          ["AI Quality Index", "98.6% (Level Dyeing Nominal)"]
-        ],
-        scadaState.compRunning[sNum - 1] ? "ONLINE" : "STANDBY",
-        scadaState.compRunning[sNum - 1] ? "status-ok" : "status-warn"
+        d.title,
+        d.tag,
+        d.rows,
+        d.statusText,
+        d.statusType,
+        updater
       );
+    });
+    st.addEventListener("mousemove", (e) => {
+      if (container && hud.classList.contains("visible")) {
+        const cRect = container.getBoundingClientRect();
+        positionHud(e.clientX - cRect.left, e.clientY - cRect.top);
+      }
     });
     st.addEventListener("mouseleave", hideHud);
   });
@@ -1455,15 +1612,46 @@ function setupScadaInteractivity() {
 
   // 13. Interactive Line Charts & Sparklines Hover HUD Popups
   document.querySelectorAll(".interactive-sparkline").forEach((spark) => {
-    function showSparkHud(e) {
+    function getSparkData() {
       const title = spark.getAttribute("data-title") || "Telemetry Trend Chart";
       const id = spark.getAttribute("data-id") || "TREND-01";
-      const param = spark.getAttribute("data-param") || "Live Signal";
       const norm = spark.getAttribute("data-norm") || "Nominal Range";
       const desc = spark.getAttribute("data-desc") || "Real-time process telemetry";
       const statusText = spark.getAttribute("data-status") || "OPTIMAL";
       const statusType = spark.getAttribute("data-statustype") || "status-ok";
+      const t = Date.now() / 1000;
 
+      let liveVal = spark.getAttribute("data-param") || "Live Signal";
+      if (spark.id === "sparkRadarR1") {
+        liveVal = `Flow: ${(142 + Math.sin(t * 1.4) * 1.5).toFixed(1)} L/min`;
+      } else if (spark.id === "sparkRadarR2") {
+        liveVal = `pH ${(6.20 + Math.sin(t * 1.1) * 0.04).toFixed(2)}`;
+      } else if (spark.id === "sparkRadarR3") {
+        liveVal = `${(98.6 + Math.cos(t * 1.2) * 0.2).toFixed(1)}% Exhaustion`;
+      } else if (spark.id === "sparkDesorptionTop") {
+        liveVal = `Flow: ${(142.1 + Math.sin(t * 1.3) * 0.8).toFixed(1)} L/min (±0.4%)`;
+      } else if (spark.id === "sparkAirPurity") {
+        liveVal = `Purity: ${(99.7 + Math.sin(t * 0.9) * 0.05).toFixed(2)}% Continuous`;
+      } else if (spark.id === "sparkFilterA") {
+        liveVal = `Diff: ${scadaState.filterADiff} psi`;
+      } else if (spark.id === "sparkFilterB") {
+        liveVal = aiAnomalyActive ? "Diff: 2.94 psi (ALERT)" : `Diff: ${scadaState.filterBDiff} psi`;
+      }
+
+      return {
+        title,
+        tag: id,
+        rows: [
+          ["Telemetry", liveVal],
+          ["Baseline", norm],
+          ["Description", desc]
+        ],
+        statusText,
+        statusType
+      };
+    }
+
+    function showSparkHud(e) {
       let mx, my;
       if (e && container) {
         const cRect = container.getBoundingClientRect();
@@ -1476,18 +1664,21 @@ function setupScadaInteractivity() {
         my = rect.top - cRect.top;
       }
 
+      const updater = () => {
+        const d = getSparkData();
+        renderHudHtml(d.title, d.tag, d.rows, d.statusText, d.statusType);
+      };
+
+      const d = getSparkData();
       showHud(
         mx,
         my,
-        title,
-        id,
-        [
-          ["Telemetry", param],
-          ["Baseline", norm],
-          ["Description", desc]
-        ],
-        statusText,
-        statusType
+        d.title,
+        d.tag,
+        d.rows,
+        d.statusText,
+        d.statusType,
+        updater
       );
     }
 
@@ -5015,17 +5206,21 @@ function setupProductionPlanningInteractions() {
   // Interactive hover on output chart
   const chartWrap = planningView?.querySelector(".output-chart-wrap");
   const chartTip = planningView?.querySelector(".output-chart-tip");
+  let chartHoverRatio = null;
+
   if (chartWrap && chartTip) {
     chartWrap.addEventListener("mousemove", (e) => {
       const rect = chartWrap.getBoundingClientRect();
-      const xRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      chartHoverRatio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
       const totalMinutes = 600; // 08:00 to 18:00
-      const currentMin = Math.round(xRatio * totalMinutes);
+      const currentMin = Math.round(chartHoverRatio * totalMinutes);
       const h = 8 + Math.floor(currentMin / 60);
       const m = currentMin % 60;
       const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
-      const isPast = xRatio <= 0.72;
-      const metres = Math.round(58 + xRatio * (6240 - 58));
+      const isPast = chartHoverRatio <= 0.72;
+      const actualNowMetres = parseInt(planningView?.querySelector(".output-summary span:nth-of-type(1) strong")?.textContent?.replace(/\D/g, "") || "3920", 10);
+      const liveOffset = (actualNowMetres - 3920);
+      const metres = Math.round(58 + chartHoverRatio * (6240 - 58) + (isPast ? liveOffset : 0));
 
       const tipW = chartTip.offsetWidth || 165;
       const tipH = chartTip.offsetHeight || 50;
@@ -5046,6 +5241,7 @@ function setupProductionPlanningInteractions() {
       chartTip.innerHTML = `<strong>${timeStr} · ${isPast ? 'Recorded Output' : 'AI Forecast'}</strong><span>${isPast ? 'Good output' : 'Projected output'}: <b>${metres.toLocaleString()} m</b></span><span>${isPast ? 'Quality verified ✓' : 'Dispatch due 18:30'}</span>`;
     });
     chartWrap.addEventListener("mouseleave", () => {
+      chartHoverRatio = null;
       chartTip.style.left = "71%";
       chartTip.style.top = "10px";
       const actualVal = planningView?.querySelector(".output-summary span:nth-of-type(1) strong")?.textContent || "3,920 m";
@@ -5087,8 +5283,11 @@ function setupProductionPlanningInteractions() {
     planningTooltip.classList.toggle("pos-below", isBelow);
   }
 
+  let activePlanningTooltipTarget = null;
+
   function showPlanningTooltip(target, event) {
     if (!target?.dataset.tooltip) return;
+    activePlanningTooltipTarget = target;
     planningTooltip.innerHTML = target.dataset.tooltip;
     planningTooltip.classList.add("is-visible");
     planningTooltip.setAttribute("aria-hidden", "false");
@@ -5096,6 +5295,7 @@ function setupProductionPlanningInteractions() {
   }
 
   function hidePlanningTooltip() {
+    activePlanningTooltipTarget = null;
     planningTooltip.classList.remove("is-visible");
     planningTooltip.setAttribute("aria-hidden", "true");
   }
@@ -5339,19 +5539,36 @@ function setupProductionPlanningInteractions() {
       if (wipNote) wipNote.textContent = data.wipNote;
 
       data.lanes.forEach((text, i) => {
-        const laneEm = planningView.querySelector(`.machine-lane:nth-child(${i + 1}) .machine-label em`);
-        if (laneEm) laneEm.textContent = text;
+        const lane = planningView.querySelector(`.machine-lane:nth-child(${i + 1})`);
+        if (lane) {
+          const laneEm = lane.querySelector(".machine-label em");
+          if (laneEm) laneEm.textContent = text;
+          const code = lane.querySelector(".machine-label strong")?.textContent || "";
+          const name = lane.querySelector(".machine-label span")?.textContent || "";
+          lane.dataset.tooltip = `<strong>${code} · ${name}</strong><em>Telemetry: ${text}</em><span>Status: Active sequence · Live shop-floor sensor feed.</span>`;
+        }
       });
+
+      const kpiCard1 = planningView.querySelector(".planning-kpi-row .kpi-card:nth-child(1)");
+      if (kpiCard1) kpiCard1.dataset.tooltip = `<strong>ON-TIME CONFIDENCE · ${data.conf}</strong><em>${data.confNote}</em><span>AI Confidence Index · Constraint-aware live factory schedule telemetry.</span>`;
+      const kpiCard2 = planningView.querySelector(".planning-kpi-row .kpi-card:nth-child(2)");
+      if (kpiCard2) kpiCard2.dataset.tooltip = `<strong>CURRENT BOTTLENECK · ${data.bCode}</strong><em>${data.bNote}</em><span>Active constraint holding back takt time across current sequence.</span>`;
+      const kpiCard3 = planningView.querySelector(".planning-kpi-row .kpi-card:nth-child(3)");
+      if (kpiCard3) kpiCard3.dataset.tooltip = `<strong>CHANGEOVER SAVED · ${data.cTime}</strong><em>${data.cNote}</em><span>AI matrix sequencing buffer saved against unsorted batch setup.</span>`;
+      const kpiCard4 = planningView.querySelector(".planning-kpi-row .kpi-card:nth-child(4)");
+      if (kpiCard4) kpiCard4.dataset.tooltip = `<strong>WIP AHEAD · ${data.wip}</strong><em>${data.wipNote}</em><span>Work-in-progress fabric lots actively en route to next stage.</span>`;
     }
 
     // Fluctuating progress on active dyeing step 03 node
     const dyeingNode = planningView?.querySelector('.fabric-flow-node[data-plan-stage="dyeing"]');
     if (dyeingNode) {
       const prog = (68 + Math.sin(t * 1.2) * 0.5).toFixed(1);
+      const minLeft = Math.round(46 - (prog - 68) * 3);
       const progBar = dyeingNode.querySelector(".flow-progress span");
       if (progBar) progBar.style.width = `${prog}%`;
       const progFoot = dyeingNode.querySelector(".flow-node-foot span");
-      if (progFoot) progFoot.textContent = `${Math.round(prog)}% · 46 min left`;
+      if (progFoot) progFoot.textContent = `${Math.round(prog)}% · ${minLeft} min left`;
+      dyeingNode.dataset.tooltip = `<strong>03 · Jet dyeing</strong><em>JD-04 · Recipe RN-8821</em><span>Progress: ${prog}% · ${minLeft} min left · Real-time liquor sync</span>`;
     }
 
     // 2. Fluctuating LOT OUTPUT PROGRESS (Cumulative good metres vs plan)
@@ -5365,9 +5582,26 @@ function setupProductionPlanningInteractions() {
     const gapEl = planningView?.querySelector(".output-summary .output-gap strong");
     if (gapEl) gapEl.textContent = `−${Math.abs(gapM)} m`;
 
-    const tipMetres = planningView?.querySelector(".output-chart-tip span b");
-    if (tipMetres && !planningView?.querySelector(".output-chart-wrap:hover")) {
-      tipMetres.textContent = `${liveOutput.toLocaleString()} m`;
+    const actualCard = actualEl?.closest("span");
+    if (actualCard) actualCard.dataset.tooltip = `<strong>ACTUAL OUTPUT</strong><em>Cumulative good metres: ${liveOutput.toLocaleString()} m</em><span>Quality-verified fabric metres completed this shift.</span>`;
+    const gapCard = gapEl?.closest(".output-gap") || gapEl?.closest("span");
+    if (gapCard) gapCard.dataset.tooltip = `<strong>OUTPUT VARIANCE</strong><em>Variance: −${Math.abs(gapM)} m</em><span>Production lag currently being recovered via wash-off sync.</span>`;
+
+    // Fluctuating Output Chart Tooltip
+    if (chartTip) {
+      if (chartHoverRatio !== null) {
+        const totalMinutes = 600;
+        const currentMin = Math.round(chartHoverRatio * totalMinutes);
+        const h = 8 + Math.floor(currentMin / 60);
+        const m = currentMin % 60;
+        const timeStr = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+        const isPast = chartHoverRatio <= 0.72;
+        const liveOffset = (liveOutput - 3920);
+        const metres = Math.round(58 + chartHoverRatio * (6240 - 58) + (isPast ? liveOffset : 0));
+        chartTip.innerHTML = `<strong>${timeStr} · ${isPast ? 'Recorded Output' : 'AI Forecast'}</strong><span>${isPast ? 'Good output' : 'Projected output'}: <b>${metres.toLocaleString()} m</b></span><span>${isPast ? 'Quality verified ✓' : 'Dispatch due 18:30'}</span>`;
+      } else {
+        chartTip.innerHTML = `<strong>14:32 · JD-04</strong><span>Good output <b>${liveOutput.toLocaleString()} m</b></span><span>Projected completion 17:42</span>`;
+      }
     }
 
     // Fluctuating SVG output graph curve
@@ -5405,6 +5639,24 @@ function setupProductionPlanningInteractions() {
     const buf = Math.round(38 + Math.sin(t * 0.7) * 0.5);
     const bufEl = planningView?.querySelector(".flow-risk-summary div:nth-child(3) strong");
     if (bufEl) bufEl.textContent = `${buf} min`;
+
+    if (handoff1) {
+      handoff1.dataset.tooltip = `<strong>Dyeing to Finishing Route Protection</strong><em>JD-04 → ST-02</em><span>Readiness ${r1}% · Predicted arrival 15:16 · Reserved window 15:05 (${exp1} min exposure).</span>`;
+    }
+    if (handoff2) {
+      handoff2.dataset.tooltip = `<strong>Finishing to Inspection Capacity</strong><em>ST-02 → FI-01</em><span>Readiness ${r2}% · Inspection capacity secured · ${buf} min transfer buffer.</span>`;
+    }
+    if (risk3) {
+      risk3.dataset.tooltip = `<strong>TRANSFER BUFFER: ${buf} MIN</strong><em>Dispatch Protection</em><span>Slack time allows on-time handoff for 18:30 dispatch cut-off.</span>`;
+    }
+
+    // Synchronously update the contents of whichever hover popup window is currently visible
+    if (activePlanningTooltipTarget && planningTooltip.classList.contains("is-visible")) {
+      const liveTip = activePlanningTooltipTarget.dataset.tooltip;
+      if (liveTip && planningTooltip.innerHTML !== liveTip) {
+        planningTooltip.innerHTML = liveTip;
+      }
+    }
   }
 
   setInterval(tickPlanningLive, 1200);
