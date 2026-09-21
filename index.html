@@ -4248,10 +4248,93 @@
 
     <main class="planning-body">
       <section class="planning-kpi-row" aria-label="Selected department planning indicators">
-        <article class="planning-kpi"><span>ON-TIME CONFIDENCE</span><strong id="planningKpiConfidence">91.6%</strong><em class="positive" id="planningKpiConfidenceNote">+4.8% after recovery</em></article>
-        <article class="planning-kpi"><span>CURRENT BOTTLENECK</span><strong id="planningKpiBottleneck">JD-04</strong><em class="warning" id="planningKpiBottleneckNote">18 min behind plan</em></article>
-        <article class="planning-kpi"><span>CHANGEOVER SAVED</span><strong id="planningKpiChangeover">42 min</strong><em class="positive" id="planningKpiChangeoverNote">Light → dark sequence</em></article>
-        <article class="planning-kpi"><span>WIP AHEAD</span><strong id="planningKpiWip">3 lots</strong><em id="planningKpiWipNote">18,460 m in route</em></article>
+        <article class="planning-kpi" id="planningCardConfidence">
+          <span>ON-TIME CONFIDENCE</span>
+          <strong id="planningKpiConfidence">96.2%</strong>
+          <em class="positive" id="planningKpiConfidenceNote">+2.4% loom reservation</em>
+          <div class="metric-chart-wrap" id="planningSparkWrapConfidence">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradPlanConfidence" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(16, 185, 129, 0.35)"></stop>
+                  <stop offset="100%" stop-color="rgba(16, 185, 129, 0.0)"></stop>
+                </linearGradient>
+              </defs>
+              <path class="spark-area" d="M 0 54 C 45 50, 85 44, 130 36 C 175 28, 215 22, 260 16 C 290 12, 315 10, 340 10 L 340 70 L 0 70 Z" fill="url(#gradPlanConfidence)"></path>
+              <path class="spark-line" d="M 0 54 C 45 50, 85 44, 130 36 C 175 28, 215 22, 260 16 C 290 12, 315 10, 340 10" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round"></path>
+              <circle class="spark-dot" cx="340" cy="10" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2"></circle>
+              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16, 185, 129, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="spark-hover-dot" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" style="display: none;"><span class="tip-value">96.2%</span><span class="tip-label">Confidence trend</span></div>
+          </div>
+        </article>
+
+        <article class="planning-kpi" id="planningCardBottleneck">
+          <span>CURRENT BOTTLENECK</span>
+          <strong id="planningKpiBottleneck">FI-01</strong>
+          <em class="warning" id="planningKpiBottleneckNote">9 min inspection queue</em>
+          <div class="metric-chart-wrap" id="planningSparkWrapBottleneck">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradPlanBottleneck" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(245, 158, 11, 0.35)"></stop>
+                  <stop offset="100%" stop-color="rgba(245, 158, 11, 0.0)"></stop>
+                </linearGradient>
+              </defs>
+              <path class="spark-area" d="M 0 32 C 40 36, 80 40, 130 46 C 180 52, 220 50, 260 44 C 290 38, 315 32, 340 28 L 340 70 L 0 70 Z" fill="url(#gradPlanBottleneck)"></path>
+              <path class="spark-line" d="M 0 32 C 40 36, 80 40, 130 46 C 180 52, 220 50, 260 44 C 290 38, 315 32, 340 28" fill="none" stroke="#F59E0B" stroke-width="2.4" stroke-linecap="round"></path>
+              <circle class="spark-dot" cx="340" cy="28" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2"></circle>
+              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(245, 158, 11, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="spark-hover-dot" cx="0" cy="0" r="4.5" fill="#F59E0B" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" style="display: none;"><span class="tip-value">9 min</span><span class="tip-label">Queue lag</span></div>
+          </div>
+        </article>
+
+        <article class="planning-kpi" id="planningCardChangeover">
+          <span>CHANGEOVER SAVED</span>
+          <strong id="planningKpiChangeover">16 min</strong>
+          <em class="positive" id="planningKpiChangeoverNote">Grouped dispatch sequence</em>
+          <div class="metric-chart-wrap" id="planningSparkWrapChangeover">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradPlanChangeover" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(6, 182, 212, 0.35)"></stop>
+                  <stop offset="100%" stop-color="rgba(6, 182, 212, 0.0)"></stop>
+                </linearGradient>
+              </defs>
+              <path class="spark-area" d="M 0 56 C 40 52, 80 44, 130 36 C 180 28, 220 22, 260 16 C 295 12, 320 10, 340 10 L 340 70 L 0 70 Z" fill="url(#gradPlanChangeover)"></path>
+              <path class="spark-line" d="M 0 56 C 40 52, 80 44, 130 36 C 180 28, 220 22, 260 16 C 295 12, 320 10, 340 10" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round"></path>
+              <circle class="spark-dot" cx="340" cy="10" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2"></circle>
+              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6, 182, 212, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="spark-hover-dot" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" style="display: none;"><span class="tip-value">16 min</span><span class="tip-label">Optimization savings</span></div>
+          </div>
+        </article>
+
+        <article class="planning-kpi" id="planningCardWip">
+          <span>WIP AHEAD</span>
+          <strong id="planningKpiWip">4 rolls</strong>
+          <em id="planningKpiWipNote">21,320 m awaiting QA</em>
+          <div class="metric-chart-wrap" id="planningSparkWrapWip">
+            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="gradPlanWip" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="rgba(168, 85, 247, 0.35)"></stop>
+                  <stop offset="100%" stop-color="rgba(168, 85, 247, 0.0)"></stop>
+                </linearGradient>
+              </defs>
+              <path class="spark-area" d="M 0 50 C 45 46, 90 40, 140 32 C 190 24, 230 18, 280 14 C 310 12, 330 10, 340 10 L 340 70 L 0 70 Z" fill="url(#gradPlanWip)"></path>
+              <path class="spark-line" d="M 0 50 C 45 46, 90 40, 140 32 C 190 24, 230 18, 280 14 C 310 12, 330 10, 340 10" fill="none" stroke="#A855F7" stroke-width="2.4" stroke-linecap="round"></path>
+              <circle class="spark-dot" cx="340" cy="10" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2"></circle>
+              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(168, 85, 247, 0.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="spark-hover-dot" cx="0" cy="0" r="4.5" fill="#A855F7" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
+            </svg>
+            <div class="spark-tooltip" style="display: none;"><span class="tip-value">21,320 m</span><span class="tip-label">Velocity buffer</span></div>
+          </div>
+        </article>
       </section>
 
       <section class="planning-flow-card" aria-label="Live fabric route">
@@ -4346,6 +4429,8 @@
               <path class="output-actual-line" d="M58 145 C130 136 186 126 250 116 S360 94 430 83 S545 66 620 58 C690 51 735 43 770 38"></path>
               <path class="output-forecast-line" d="M770 38 C805 34 842 28 875 24"></path>
               <line class="output-now-line" x1="770" y1="20" x2="770" y2="145"></line><circle class="output-live-dot" cx="770" cy="38" r="5"></circle>
+              <line class="output-crosshair" x1="0" y1="20" x2="0" y2="145" stroke="rgba(16,185,129,.45)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
+              <circle class="output-hover-tracker" cx="0" cy="0" r="4.8" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
               <g class="output-x-labels"><text x="58" y="174">08:00</text><text x="215" y="174">10:00</text><text x="378" y="174">12:00</text><text x="540" y="174">14:00</text><text x="704" y="174">16:00</text><text x="840" y="174">18:00</text></g>
             </svg>
             <div class="output-chart-tip"><strong>14:32 · JD-04</strong><span>Good output <b>3,920 m</b></span><span>Projected completion 17:42</span></div>

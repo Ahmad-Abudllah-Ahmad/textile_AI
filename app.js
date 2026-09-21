@@ -5235,9 +5235,98 @@ function setupProductionPlanningInteractions() {
   const risk3 = planningView?.querySelector(".flow-risk-summary div:nth-child(3)");
   if (risk3) risk3.dataset.tooltip = "<strong>TRANSFER BUFFER: 38 MIN</strong><em>Dispatch Protection</em><span>Slack time allows on-time handoff for 18:30 dispatch cut-off.</span>";
 
+  // Bind Sparkline Hover for 4 Planning KPI Cards
+  const planningSparkConfigs = [
+    {
+      wrapId: "planningSparkWrapConfidence",
+      path: document.querySelector("#planningSparkWrapConfidence .spark-line"),
+      cross: document.querySelector("#planningSparkWrapConfidence .spark-crosshair"),
+      dot: document.querySelector("#planningSparkWrapConfidence .spark-hover-dot"),
+      tip: document.querySelector("#planningSparkWrapConfidence .spark-tooltip"),
+      val: document.querySelector("#planningSparkWrapConfidence .tip-value"),
+      formatter: (t) => `${(94.2 + t * 2.8 + Math.sin(t * 6) * 0.4).toFixed(1)}%`
+    },
+    {
+      wrapId: "planningSparkWrapBottleneck",
+      path: document.querySelector("#planningSparkWrapBottleneck .spark-line"),
+      cross: document.querySelector("#planningSparkWrapBottleneck .spark-crosshair"),
+      dot: document.querySelector("#planningSparkWrapBottleneck .spark-hover-dot"),
+      tip: document.querySelector("#planningSparkWrapBottleneck .spark-tooltip"),
+      val: document.querySelector("#planningSparkWrapBottleneck .tip-value"),
+      formatter: (t) => `${Math.round(22 - t * 13 + Math.sin(t * 8) * 1.5)} min queue lag`
+    },
+    {
+      wrapId: "planningSparkWrapChangeover",
+      path: document.querySelector("#planningSparkWrapChangeover .spark-line"),
+      cross: document.querySelector("#planningSparkWrapChangeover .spark-crosshair"),
+      dot: document.querySelector("#planningSparkWrapChangeover .spark-hover-dot"),
+      tip: document.querySelector("#planningSparkWrapChangeover .spark-tooltip"),
+      val: document.querySelector("#planningSparkWrapChangeover .tip-value"),
+      formatter: (t) => `${Math.round(10 + t * 22 + Math.sin(t * 6) * 2)} min saved`
+    },
+    {
+      wrapId: "planningSparkWrapWip",
+      path: document.querySelector("#planningSparkWrapWip .spark-line"),
+      cross: document.querySelector("#planningSparkWrapWip .spark-crosshair"),
+      dot: document.querySelector("#planningSparkWrapWip .spark-hover-dot"),
+      tip: document.querySelector("#planningSparkWrapWip .spark-tooltip"),
+      val: document.querySelector("#planningSparkWrapWip .tip-value"),
+      formatter: (t) => `${Math.round(15000 + t * 6320).toLocaleString()} m WIP`
+    }
+  ];
+
+  planningSparkConfigs.forEach((cfg) => {
+    const wrap = document.getElementById(cfg.wrapId);
+    if (!wrap || !cfg.path) return;
+
+    wrap.addEventListener("mousemove", (e) => {
+      const rect = wrap.getBoundingClientRect();
+      const mouseX = Math.max(0, Math.min(rect.width, e.clientX - rect.left));
+      const t = mouseX / rect.width;
+      const targetSvgX = t * 340;
+      if (cfg.path.getTotalLength) {
+        const len = cfg.path.getTotalLength();
+        let s = 0, end = len;
+        for (let i = 0; i < 16; i++) {
+          const mid = (s + end) / 2;
+          const p = cfg.path.getPointAtLength(mid);
+          if (p.x < targetSvgX) s = mid;
+          else end = mid;
+        }
+        const pt = cfg.path.getPointAtLength((s + end) / 2);
+        if (cfg.cross) {
+          cfg.cross.setAttribute("x1", pt.x.toFixed(1));
+          cfg.cross.setAttribute("x2", pt.x.toFixed(1));
+          cfg.cross.style.opacity = "1";
+        }
+        if (cfg.dot) {
+          cfg.dot.setAttribute("cx", pt.x.toFixed(1));
+          cfg.dot.setAttribute("cy", pt.y.toFixed(1));
+          cfg.dot.style.opacity = "1";
+        }
+        if (cfg.val) {
+          cfg.val.textContent = cfg.formatter(t);
+        }
+        if (cfg.tip) {
+          cfg.tip.style.display = "flex";
+          cfg.tip.style.left = `${mouseX}px`;
+          cfg.tip.style.top = `${Math.max(6, (pt.y / 70) * rect.height - 10)}px`;
+        }
+      }
+    });
+
+    wrap.addEventListener("mouseleave", () => {
+      if (cfg.cross) cfg.cross.style.opacity = "0";
+      if (cfg.dot) cfg.dot.style.opacity = "0";
+      if (cfg.tip) cfg.tip.style.display = "none";
+    });
+  });
+
   // Interactive hover on output chart
   const chartWrap = planningView?.querySelector(".output-chart-wrap");
   const chartTip = planningView?.querySelector(".output-chart-tip");
+  const outputCrosshair = planningView?.querySelector(".output-crosshair");
+  const outputHoverTracker = planningView?.querySelector(".output-hover-tracker");
   let chartHoverRatio = null;
 
   if (chartWrap && chartTip) {
@@ -5253,6 +5342,35 @@ function setupProductionPlanningInteractions() {
       const actualNowMetres = parseInt(planningView?.querySelector(".output-summary span:nth-of-type(1) strong")?.textContent?.replace(/\D/g, "") || "3920", 10);
       const liveOffset = (actualNowMetres - 3920);
       const metres = Math.round(58 + chartHoverRatio * (6240 - 58) + (isPast ? liveOffset : 0));
+      const planMetres = Math.round(58 + chartHoverRatio * (6240 - 58) * 1.06);
+      const diffM = metres - planMetres;
+      const diffSign = diffM > 0 ? "+" : "−";
+
+      const targetSvgX = 58 + chartHoverRatio * (875 - 58);
+      const outputLine = isPast ? planningView?.querySelector(".output-actual-line") : planningView?.querySelector(".output-forecast-line");
+      let ptY = 38;
+      if (outputLine && outputLine.getTotalLength) {
+        const len = outputLine.getTotalLength();
+        let s = 0, end = len;
+        for (let i = 0; i < 16; i++) {
+          const mid = (s + end) / 2;
+          const p = outputLine.getPointAtLength(mid);
+          if (p.x < targetSvgX) s = mid;
+          else end = mid;
+        }
+        ptY = outputLine.getPointAtLength((s + end) / 2).y;
+      }
+
+      if (outputCrosshair) {
+        outputCrosshair.setAttribute("x1", targetSvgX.toFixed(1));
+        outputCrosshair.setAttribute("x2", targetSvgX.toFixed(1));
+        outputCrosshair.style.opacity = "1";
+      }
+      if (outputHoverTracker) {
+        outputHoverTracker.setAttribute("cx", targetSvgX.toFixed(1));
+        outputHoverTracker.setAttribute("cy", ptY.toFixed(1));
+        outputHoverTracker.style.opacity = "1";
+      }
 
       const tipW = chartTip.offsetWidth || 165;
       const tipH = chartTip.offsetHeight || 50;
@@ -5270,7 +5388,7 @@ function setupProductionPlanningInteractions() {
 
       chartTip.style.left = `${tipLeft}px`;
       chartTip.style.top = `${tipTop}px`;
-      chartTip.innerHTML = `<strong>${timeStr} · ${isPast ? 'Recorded Output' : 'AI Forecast'}</strong><span>${isPast ? 'Good output' : 'Projected output'}: <b>${metres.toLocaleString()} m</b></span><span>${isPast ? 'Quality verified ✓' : 'Dispatch due 18:30'}</span>`;
+      chartTip.innerHTML = `<strong>${timeStr} · ${isPast ? 'Recorded Output' : 'AI Forecast'}</strong><span>${isPast ? 'Good output' : 'Projected output'}: <b>${metres.toLocaleString()} m</b></span><span>Variance: <b style="color:${diffM >= 0 ? '#10B981' : '#F59E0B'}">Δ ${diffSign}${Math.abs(diffM).toLocaleString()} m</b> · ${isPast ? 'Quality verified ✓' : 'Dispatch due 18:30'}</span>`;
     });
     chartWrap.addEventListener("mouseleave", () => {
       chartHoverRatio = null;
@@ -5278,6 +5396,8 @@ function setupProductionPlanningInteractions() {
       chartTip.style.top = "10px";
       const actualVal = planningView?.querySelector(".output-summary span:nth-of-type(1) strong")?.textContent || "3,920 m";
       chartTip.innerHTML = `<strong>14:32 · JD-04</strong><span>Good output <b>${actualVal}</b></span><span>Projected completion 17:42</span>`;
+      if (outputCrosshair) outputCrosshair.style.opacity = "0";
+      if (outputHoverTracker) outputHoverTracker.style.opacity = "0";
     });
   }
 
@@ -5636,16 +5756,66 @@ function setupProductionPlanningInteractions() {
       }
     }
 
-    // Fluctuating SVG output graph curve
+    // Fluctuate Planning KPI Sparkline Curves in Real Time
+    const confWrap = document.getElementById("planningSparkWrapConfidence");
+    if (confWrap) {
+      const w1 = Math.sin(t * 1.5) * 2.8;
+      const d1 = `M 0 54 C 45 ${(50 + w1 * 0.4).toFixed(1)}, 85 ${(44 - w1 * 0.3).toFixed(1)}, 130 ${(36 + w1 * 0.5).toFixed(1)} C 175 28, 215 ${(22 - w1 * 0.4).toFixed(1)}, 260 16 C 290 12, 315 ${(10 + w1 * 0.3).toFixed(1)}, 340 ${(10 + w1).toFixed(1)}`;
+      const pArea = confWrap.querySelector(".spark-area");
+      const pLine = confWrap.querySelector(".spark-line");
+      const pDot = confWrap.querySelector(".spark-dot");
+      if (pArea) pArea.setAttribute("d", `${d1} L 340 70 L 0 70 Z`);
+      if (pLine) pLine.setAttribute("d", d1);
+      if (pDot) pDot.setAttribute("cy", (10 + w1).toFixed(1));
+    }
+    const bneckWrap = document.getElementById("planningSparkWrapBottleneck");
+    if (bneckWrap) {
+      const w2 = Math.cos(t * 1.3) * 3.2;
+      const d2 = `M 0 32 C 40 ${(36 - w2 * 0.4).toFixed(1)}, 80 ${(40 + w2 * 0.5).toFixed(1)}, 130 ${(46 - w2 * 0.3).toFixed(1)} C 180 52, 220 ${(50 + w2 * 0.4).toFixed(1)}, 260 44 C 290 38, 315 ${(32 - w2 * 0.4).toFixed(1)}, 340 ${(28 + w2).toFixed(1)}`;
+      const pArea = bneckWrap.querySelector(".spark-area");
+      const pLine = bneckWrap.querySelector(".spark-line");
+      const pDot = bneckWrap.querySelector(".spark-dot");
+      if (pArea) pArea.setAttribute("d", `${d2} L 340 70 L 0 70 Z`);
+      if (pLine) pLine.setAttribute("d", d2);
+      if (pDot) pDot.setAttribute("cy", (28 + w2).toFixed(1));
+    }
+    const chgWrap = document.getElementById("planningSparkWrapChangeover");
+    if (chgWrap) {
+      const w3 = Math.sin(t * 1.6 + 1.2) * 2.6;
+      const d3 = `M 0 56 C 40 ${(52 + w3 * 0.4).toFixed(1)}, 80 ${(44 - w3 * 0.5).toFixed(1)}, 130 ${(36 + w3 * 0.3).toFixed(1)} C 180 28, 220 ${(22 - w3 * 0.4).toFixed(1)}, 260 16 C 295 12, 320 ${(10 + w3 * 0.4).toFixed(1)}, 340 ${(10 + w3).toFixed(1)}`;
+      const pArea = chgWrap.querySelector(".spark-area");
+      const pLine = chgWrap.querySelector(".spark-line");
+      const pDot = chgWrap.querySelector(".spark-dot");
+      if (pArea) pArea.setAttribute("d", `${d3} L 340 70 L 0 70 Z`);
+      if (pLine) pLine.setAttribute("d", d3);
+      if (pDot) pDot.setAttribute("cy", (10 + w3).toFixed(1));
+    }
+    const wipWrap = document.getElementById("planningSparkWrapWip");
+    if (wipWrap) {
+      const w4 = Math.sin(t * 1.2 + 2.1) * 3.0;
+      const d4 = `M 0 50 C 45 ${(46 - w4 * 0.4).toFixed(1)}, 90 ${(40 + w4 * 0.3).toFixed(1)}, 140 ${(32 - w4 * 0.5).toFixed(1)} C 190 24, 230 ${(18 + w4 * 0.4).toFixed(1)}, 280 14 C 310 12, 330 ${(10 + w4 * 0.3).toFixed(1)}, 340 ${(10 + w4).toFixed(1)}`;
+      const pArea = wipWrap.querySelector(".spark-area");
+      const pLine = wipWrap.querySelector(".spark-line");
+      const pDot = wipWrap.querySelector(".spark-dot");
+      if (pArea) pArea.setAttribute("d", `${d4} L 340 70 L 0 70 Z`);
+      if (pLine) pLine.setAttribute("d", d4);
+      if (pDot) pDot.setAttribute("cy", (10 + w4).toFixed(1));
+    }
+
+    // Fluctuating SVG output graph curve with organic multi-node cubic waves
     const liveY = 38 + Math.sin(t * 1.2) * 3.5;
+    const wOut1 = Math.sin(t * 1.4) * 2.8;
+    const wOut2 = Math.cos(t * 1.1 + 1) * 2.5;
+    const wOut3 = Math.sin(t * 1.6 + 2) * 2.2;
+    const dActual = `M58 145 C130 ${(136 + wOut1).toFixed(1)} 186 ${(126 - wOut2).toFixed(1)} 250 ${(116 + wOut1 * 0.5).toFixed(1)} S360 ${(94 - wOut3).toFixed(1)} 430 ${(83 + wOut2).toFixed(1)} S545 ${(66 - wOut1).toFixed(1)} 620 ${(58 + wOut3).toFixed(1)} C690 ${(51 - wOut2 * 0.5).toFixed(1)} 735 ${(43 + wOut1 * 0.4).toFixed(1)} 770 ${liveY.toFixed(1)}`;
     const outputActualLine = planningView?.querySelector(".output-actual-line");
-    if (outputActualLine) outputActualLine.setAttribute("d", `M58 145 C130 136 186 126 250 116 S360 94 430 83 S545 66 620 58 C690 51 735 43 770 ${liveY.toFixed(1)}`);
+    if (outputActualLine) outputActualLine.setAttribute("d", dActual);
 
     const outputActualArea = planningView?.querySelector(".output-actual-area");
-    if (outputActualArea) outputActualArea.setAttribute("d", `M58 145 C130 136 186 126 250 116 S360 94 430 83 S545 66 620 58 C690 51 735 43 770 ${liveY.toFixed(1)} L770 145 Z`);
+    if (outputActualArea) outputActualArea.setAttribute("d", `${dActual} L770 145 L58 145 Z`);
 
     const outputForecastLine = planningView?.querySelector(".output-forecast-line");
-    if (outputForecastLine) outputForecastLine.setAttribute("d", `M770 ${liveY.toFixed(1)} C805 34 842 28 875 24`);
+    if (outputForecastLine) outputForecastLine.setAttribute("d", `M770 ${liveY.toFixed(1)} C805 ${(34 - wOut1 * 0.5).toFixed(1)} 842 ${(28 + wOut2 * 0.4).toFixed(1)} 875 24`);
 
     const outputDot = planningView?.querySelector(".output-live-dot");
     if (outputDot) outputDot.setAttribute("cy", liveY.toFixed(1));
