@@ -844,11 +844,11 @@ function initScadaClock() {
 
 // Global SCADA state store
 const scadaState = {
-  inTemp: 24.1,
-  inRH: 66,
+  inTemp: 84.1,
+  inRH: 8.8,
   filterADiff: 1.80,
   filterBDiff: 0.90,
-  sysPress: 7.90,
+  sysPress: 8.20,
   alphaBar: 8.20,
   betaBar: 8.10,
   compRPMs: [1450, 1410, 899, 1450],
@@ -867,13 +867,13 @@ function initScadaRealTimeEngine() {
     tickCount++;
     const t = tickCount;
 
-    // 1. Intake Temperature & Humidity Drift
-    scadaState.inTemp = +(24.1 + Math.sin(t * 0.7) * 0.25).toFixed(1);
-    scadaState.inRH = Math.round(66 + Math.cos(t * 0.5) * 1.5);
+    // 1. Intake Feedwater Temperature & pH Drift
+    scadaState.inTemp = +(84.1 + Math.sin(t * 0.7) * 0.25).toFixed(1);
+    scadaState.inRH = +(8.8 + Math.cos(t * 0.5) * 0.05).toFixed(1);
     const inTempEl = document.getElementById("scadaInTemp");
     const inRHEl = document.getElementById("scadaInRH");
     if (inTempEl) inTempEl.textContent = `${scadaState.inTemp}°C`;
-    if (inRHEl) inRHEl.textContent = `${scadaState.inRH}%`;
+    if (inRHEl) inRHEl.textContent = `${scadaState.inRH}`;
 
     // 2. Filter Diffs & Needle angles
     scadaState.filterADiff = +(1.80 + Math.sin(t * 0.9) * 0.04).toFixed(2);
@@ -897,7 +897,7 @@ function initScadaRealTimeEngine() {
     }
 
     // 3. System Pressure
-    scadaState.sysPress = +(7.90 + Math.sin(t * 1.1) * 0.04).toFixed(2);
+    scadaState.sysPress = +(8.20 + Math.sin(t * 1.1) * 0.04).toFixed(2);
     const sysPressEl = document.getElementById("scadaSysPressText");
     const sysPressL2El = document.getElementById("scadaSysPressL2");
     if (sysPressEl) sysPressEl.textContent = `${scadaState.sysPress} bar`;
@@ -939,7 +939,7 @@ function initScadaRealTimeEngine() {
       const el = document.getElementById(`scadaComp${idx + 1}Rpm`);
       if (el) el.textContent = `${scadaState.compRPMs[idx]} RPM`;
       const tagEl = document.getElementById(`tagComp${idx + 1}Rpm`);
-      if (tagEl) tagEl.textContent = `CH-${idx + 1}`;
+      if (tagEl) tagEl.textContent = `BLR-${idx + 1}`;
     });
 
     // 6. Auto-Drain Cycle Countdown
@@ -1126,7 +1126,7 @@ function setupScadaInteractivity() {
         valveId.toUpperCase(),
         [
           ["Status", newState === "open" ? "100% Flow (OPEN)" : "ISOLATED (CLOSED)"],
-          ["Media", "Instrument Air (SCH40)"],
+          ["Media", "High-Pressure Steam (ASME SA-312)"],
           ["Actuation", "Pneumatic Fail-Safe"]
         ],
         newState === "open" ? "ACTIVE OPEN" : "ISOLATED",
@@ -1149,7 +1149,7 @@ function setupScadaInteractivity() {
         valveId.toUpperCase(),
         [
           ["Status", state === "open" ? "100% Flow (OPEN)" : "ISOLATED (CLOSED)"],
-          ["Rating", "ANSI 300 / 6\" CS"],
+          ["Rating", "ASME Class 300 / 316L SS"],
           ["Command", "Click to Toggle Open/Close"]
         ],
         state === "open" ? "ONLINE" : "CLOSED",
@@ -1180,15 +1180,15 @@ function setupScadaInteractivity() {
       showHud(
         rect.left - cRect.left + rect.width / 2,
         rect.top - cRect.top,
-        `Continuous Jet Dyeing Chamber ${compNum + 1}`,
-        `JET-CHAMBER-0${compNum + 1}`,
+        `Industrial Steam Boiler ${compNum + 1}`,
+        `BLR-UNIT-0${compNum + 1}`,
         [
-          ["Main Nozzle Pump", isRun ? "75 kW (Running)" : "0 kW (IDLE)"],
-          ["Liquor Flow Speed", isRun ? `${scadaState.compRPMs[compNum]} m/min` : "0 m/min"],
-          ["Bath Temperature", isRun ? "68.4°C" : "32.1°C (Idle)"],
-          ["Nozzle Pressure", isRun ? "7.92 bar" : "0.0 bar"]
+          ["Burner / Firing Rate", isRun ? "88.5% (High Fire)" : "0.0% (Standby)"],
+          ["Feedwater Pump", isRun ? `${scadaState.compRPMs[compNum]} RPM` : "0 RPM"],
+          ["Steam Output Temp", isRun ? "175.4°C (Sat. Steam)" : "85.0°C (Hot Standby)"],
+          ["Header Pressure", isRun ? "8.20 bar" : "0.0 bar"]
         ],
-        isRun ? "RUNNING NOMINAL" : "STANDBY IDLE",
+        isRun ? "FIRING NOMINAL" : "STANDBY IDLE",
         isRun ? "status-ok" : "status-warn"
       );
     });
@@ -1199,13 +1199,13 @@ function setupScadaInteractivity() {
       const t = Date.now() / 1000;
       const vib = isRun ? `${(1.2 + Math.sin(t * 1.5 + compNum) * 0.08).toFixed(2)} mm/s RMS (Good)` : "0.0 mm/s";
       return {
-        title: `Continuous Jet Dyeing Chamber ${compNum + 1}`,
-        tag: `JET-CHAMBER-0${compNum + 1}`,
+        title: `Industrial Steam Boiler ${compNum + 1}`,
+        tag: `BLR-UNIT-0${compNum + 1}`,
         rows: [
-          ["Status", isRun ? "Running (100% Load)" : "Standby"],
-          ["Telemetry Speed", `${rpm} m/min`],
+          ["Status", isRun ? "Active Firing (ASME Sec. I)" : "Standby Reserve"],
+          ["Feed Pump RPM", `${rpm} RPM`],
           ["Vibration", vib],
-          ["Command", "Click to Start / Stop Chamber"]
+          ["Command", "Click to Toggle Boiler Firing / Standby"]
         ],
         statusText: isRun ? "OPTIMAL" : "OFFLINE",
         statusType: isRun ? "status-ok" : "status-warn"
@@ -1312,17 +1312,19 @@ function setupScadaInteractivity() {
     function getTankData(name) {
       const p = name === "Alpha" ? scadaState.alphaBar : name === "Beta" ? scadaState.betaBar : scadaState.sysPress;
       const t = Date.now() / 1000;
-      const temp = (68.4 + Math.sin(t * 0.8) * 0.4).toFixed(1);
+      const temp = (175.4 + Math.sin(t * 0.8) * 0.4).toFixed(1);
+      const isBuffer = name === "Secondary Buffer" || name === "Flash Condensate Recovery Tank";
+      const isBlowdown = name === "Auto-Drain Condensate Tank" || name.includes("Blowdown") || name.includes("Recovery & Drain");
       return {
-        title: name === "Secondary Buffer" ? "Secondary Dye Liquor Buffer Tank" : name === "Auto-Drain Condensate Tank" ? "Auto-Chemical Recovery & Drain Tank" : `Color Kitchen Mixing Vessel ${name}`,
+        title: isBuffer ? "Flash Condensate Recovery Tank" : isBlowdown ? "Boiler Continuous Blowdown & Heat Recovery Tank" : `Steam Accumulator Vessel ${name}`,
         tag: `TK-${name.toUpperCase().replace(/[^A-Z0-9]/g, '-')}`,
         rows: [
-          ["Internal Pressure", `${p} bar`],
-          ["Vessel Capacity", "5,000 Liters (Dye Prep)"],
-          ["Color Uniformity", "ΔE 0.18 (Optimal)"],
-          ["Liquor pH / Temp", `6.2 pH • ${temp}°C`]
+          ["Operating Pressure", `${p} bar`],
+          ["Vessel Capacity", isBuffer ? "8,000 Liters (Flash Steam Recovery)" : isBlowdown ? "6,000 Liters (Heat Exchanger Loop)" : "15,000 Liters (Steam Cushion)"],
+          ["Thermal Enthalpy", "2,773 kJ/kg (Sat. Vapor)"],
+          ["Core Saturation Temp", `${temp}°C`]
         ],
-        statusText: "NORMAL CHARGED",
+        statusText: "CHARGED NOMINAL",
         statusType: "status-ok"
       };
     }
@@ -1364,14 +1366,14 @@ function setupScadaInteractivity() {
       const idx = ["liquorRatio", "bathTemp", "phStability", "fixationYield", "exhaustionRate"].indexOf(metric);
       const val = idx >= 0 && scadaState.radarValues ? scadaState.radarValues[idx] : dot.getAttribute("data-val");
       return {
-        title: "Radial Quality Index",
-        tag: metric.toUpperCase(),
+        title: "Thermal Efficiency & Steam Quality Index",
+        tag: metric ? metric.toUpperCase() : "STEAM-QUALITY",
         rows: [
           ["Index Score", `${val} / 100`],
-          ["Compliance", "ISO 8573-1 Standard"],
+          ["Compliance", "ASME Sec. I / EN 12953 Standard"],
           ["Target Threshold", ">= 75.0% Pass"]
         ],
-        statusText: parseInt(val, 10) >= 70 ? "PASSED (CLASS 0)" : "WARNING",
+        statusText: parseInt(val, 10) >= 70 ? "PASSED (CLASS 1)" : "WARNING",
         statusType: parseInt(val, 10) >= 70 ? "status-ok" : "status-warn"
       };
     }
@@ -1411,16 +1413,16 @@ function setupScadaInteractivity() {
       const lbl = gauge.getAttribute("data-label") || "Pressure Gauge";
       const id = gauge.id;
       let val = `${scadaState.sysPress} bar`;
-      let detail = "Main Header Pressure";
+      let detail = "Main Steam Header Pressure (8.2 bar)";
       if (id === "dialFilterA") {
         val = `Diff: ${scadaState.filterADiff} psi`;
-        detail = "Intake Filter A Differential (Clean)";
+        detail = "Feedwater Pre-Filter A Differential (Clean)";
       } else if (id === "dialFilterB") {
         val = aiAnomalyActive ? "Diff: 2.94 psi (ALERT)" : `Diff: ${scadaState.filterBDiff} psi`;
-        detail = "Intake Filter B Differential (Coalescing)";
+        detail = "Feedwater Demin Filter B Differential (Coalescing)";
       } else if (id === "dialSysPressTop" || id === "dialSysPressL2") {
         val = `${scadaState.sysPress} bar`;
-        detail = "Instrument Loop Header Calibration";
+        detail = "Steam Header & Return Loop Calibration";
       }
       return {
         title: lbl,
@@ -1469,13 +1471,13 @@ function setupScadaInteractivity() {
   if (intake) {
     function getIntakeData() {
       return {
-        title: "Pre-Scouring & Conditioning Intake",
-        tag: "INTAKE-01-SCOUR",
+        title: "Feedwater Intake & Economizer Pre-Heat Module",
+        tag: "FEED-WATER-INLET",
         rows: [
-          ["Fabric Temp", `${scadaState.inTemp}°C`],
-          ["Bath pH Level", "6.4 pH (Pre-Treat)"],
-          ["Conditioning Medium", "Softened Permeate Water"],
-          ["AI Intake Control", "Thermal stabilization active"]
+          ["Feedwater Temp", `${scadaState.inTemp}°C`],
+          ["Feedwater pH Level", `${scadaState.inRH} pH (Deaerated)`],
+          ["Pre-Heat Medium", "Flue Gas Economizer Tube Bank"],
+          ["ASME Deaeration", "Dissolved O2 < 7 ppb (Active)"]
         ],
         statusText: "NOMINAL FLOW",
         statusType: "status-ok"
@@ -1515,18 +1517,18 @@ function setupScadaInteractivity() {
   document.querySelectorAll(".interactive-vessel").forEach((vessel) => {
     vessel.addEventListener("mouseenter", () => {
       sfx.playHover();
-      const name = vessel.getAttribute("data-vessel") || "Refining Vessel";
+      const name = vessel.getAttribute("data-vessel") || "Treatment Vessel";
       const rect = vessel.getBoundingClientRect();
       const cRect = container.getBoundingClientRect();
       showHud(
         rect.left - cRect.left + rect.width / 2,
         rect.top - cRect.top,
         name,
-        "DYE-FLTR-ASME",
+        "FEED-DEMIN-ASME",
         [
           ["Operating Pressure", `${scadaState.sysPress} bar`],
-          ["Max Design Pressure", "16.0 bar @ 135°C"],
-          ["Liquor Refining Life", "94.2% (7,200 hrs remaining)"]
+          ["Max Design Pressure", "16.0 bar @ 220°C"],
+          ["Demin Resin Life", "94.2% (7,200 hrs remaining)"]
         ],
         "ONLINE",
         "status-ok"
@@ -1541,22 +1543,22 @@ function setupScadaInteractivity() {
     vessel.addEventListener("mouseleave", hideHud);
   });
 
-  // 10. Interactive Telemetry Stations (Chamber 1-4 Bars & Sight Glasses)
+  // 10. Interactive Telemetry Stations (Boiler 1-4 Bars & Sight Glasses)
   document.querySelectorAll(".interactive-telemetry-station").forEach((st) => {
     function getStationData() {
       const sNum = parseInt(st.getAttribute("data-station"), 10);
-      const title = st.getAttribute("data-title") || `Chamber ${sNum}`;
+      const title = st.getAttribute("data-title") || `Industrial Steam Boiler ${sNum}`;
       const t = Date.now() / 1000;
-      const sight = Math.round(78 + Math.sin(t * 1.1 + sNum) * 1.5);
-      const qual = (98.6 + Math.cos(t * 0.7 + sNum) * 0.15).toFixed(1);
+      const drumLevel = Math.round(78 + Math.sin(t * 1.1 + sNum) * 1.5);
+      const qual = (99.6 + Math.cos(t * 0.7 + sNum) * 0.1).toFixed(1);
       return {
         title: `${title} Telemetry`,
-        tag: `CHAMBER-0${sNum}`,
+        tag: `BLR-0${sNum}`,
         rows: [
-          ["Pump Speed", `${scadaState.compRPMs[sNum - 1]} RPM`],
-          ["Liquor Level", `${sight}% (Optimal Sight Band)`],
-          ["Chamber Status", scadaState.compRunning[sNum - 1] ? "Active Circulation" : "Standby"],
-          ["AI Quality Index", `${qual}% (Level Dyeing Nominal)`]
+          ["Feed Pump Speed", `${scadaState.compRPMs[sNum - 1]} RPM`],
+          ["Steam Drum Level", `${drumLevel}% (NWL Gauge Glass)`],
+          ["Boiler Operational State", scadaState.compRunning[sNum - 1] ? "Active Firing / Steam Generation" : "Standby Reserve"],
+          ["Steam Quality Index", `${qual}% Dryness Fraction`]
         ],
         statusText: scadaState.compRunning[sNum - 1] ? "ONLINE" : "STANDBY",
         statusType: scadaState.compRunning[sNum - 1] ? "status-ok" : "status-warn"
@@ -1596,7 +1598,7 @@ function setupScadaInteractivity() {
   document.querySelectorAll(".interactive-pipe").forEach((pipe) => {
     pipe.addEventListener("mouseenter", () => {
       sfx.playHover();
-      const pName = pipe.getAttribute("data-pipe") || "Dye Liquor Process Line";
+      const pName = pipe.getAttribute("data-pipe") || "Steam & Condensate Process Line";
       const isAnomaly = aiAnomalyActive && (pipe.id === "pipe_filterB_header" || pipe.id === "pipe_filterB_stem");
       if (isAnomaly) return;
       const rect = pipe.getBoundingClientRect();
@@ -1607,9 +1609,9 @@ function setupScadaInteractivity() {
         pName,
         "SCH40-316L",
         [
-          ["Media", "Refined Dye Liquor / Softened Water"],
+          ["Media", "High-Pressure Saturated Steam / Boiler Feedwater"],
           ["Velocity", isAnomaly ? "3.2 m/s (RESTRICTED FLOW)" : "6.4 m/s (Laminar)"],
-          ["Header Pressure", isAnomaly ? "5.40 bar (Loss across filter)" : "7.92 bar"],
+          ["Header Pressure", isAnomaly ? "5.40 bar (Loss across filter)" : "8.20 bar"],
           ["AI Status", isAnomaly ? "FLOW RESTRICTION FLAGGED" : "Laminar Nominal"]
         ],
         isAnomaly ? "PROCESS RESTRICTION" : "LAMINAR FLOW",
@@ -1737,13 +1739,13 @@ const simulatedAnomalies = [
   {
     componentId: "dialFilterB",
     pipeIds: ["pipe_filterB_header", "pipe_filterB_stem"],
-    componentName: "Dye Liquor Refining Filter B (Micro-Coalescing)",
-    shortName: "Dye Filter B",
+    componentName: "Feedwater Demin Filter B (Micro-Coalescing)",
+    shortName: "Feed Filter B",
     metricSpike: "ΔP: 2.94 psi (High Spike)",
     metricNorm: "0.90 psi (Limit: 1.40 psi)",
     severity: "CRITICAL",
-    explanation: "AI Vision & Differential telemetry detected coalescing filter particulate loading exceeding ISO Class 2 threshold in Dyeing Chamber #3 feed line.",
-    actionSummary: "Divert liquor flow to Standby Filter A & initiate automated backwash",
+    explanation: "AI SCADA Sentinel detected ion-exchange resin particulate fouling exceeding ASME Section I threshold in Boiler #3 feedwater train.",
+    actionSummary: "Divert feedwater stream to Standby Filter A & initiate automated backwash purge",
     normValElId: "scadaFilterBDiff",
     normVal: "Diff: 0.90 psi",
     spikeVal: "Diff: 2.94 psi (ALERT)",
@@ -1753,13 +1755,13 @@ const simulatedAnomalies = [
   {
     componentId: "compressor_3",
     pipeIds: [],
-    componentName: "Continuous Jet Dyeing Chamber 3 (Nozzle Pump Drive)",
-    shortName: "Jet Chamber 3",
+    componentName: "Industrial Steam Boiler 3 (Feedwater Pump Drive)",
+    shortName: "Steam Boiler 3",
     metricSpike: "Vibration: 4.8 mm/s RMS (Harmonic Surge)",
     metricNorm: "1.2 mm/s (ISO 10816 Limit: 2.8)",
     severity: "WARNING",
-    explanation: "AI Acoustic Sentinel detected pump cavitation and nozzle pressure fluctuations at 899 RPM. MTBF reduced to 48 hrs without AI load re-balancing.",
-    actionSummary: "Throttle motor VFD to 720 RPM & transfer base liquor flow to Chamber 1",
+    explanation: "AI Acoustic Sentinel detected multistage pump cavitation and feedwater inlet pressure drop at 899 RPM. Risk of thermal shock without AI firing re-balancing.",
+    actionSummary: "Throttle feed pump VFD & transfer steam load to Boiler 1",
     normValElId: "scadaComp3Rpm",
     normVal: "899 RPM",
     spikeVal: "899 RPM (VIB ALERT)",
@@ -1769,13 +1771,13 @@ const simulatedAnomalies = [
   {
     componentId: "tank_Beta",
     pipeIds: ["valveBetaOutlet"],
-    componentName: "Color Kitchen Mixing Vessel Beta (5,000L ASME)",
-    shortName: "Mixing Vessel Beta",
-    metricSpike: "Concentration Drift (ΔE 1.4)",
-    metricNorm: "Nominal (ΔE < 0.3)",
+    componentName: "Steam Accumulator Vessel Beta (15,000L ASME)",
+    shortName: "Accumulator Beta",
+    metricSpike: "Thermal Enthalpy Drift (ΔH 14 kJ/kg)",
+    metricNorm: "Nominal (2,773 kJ/kg)",
     severity: "HIGH RISK",
-    explanation: "AI Colorimeter detected dye concentration dispersion drift in auxiliary mixing vessel. Risk of shade un-levelness across lot #842.",
-    actionSummary: "Trigger Auto-Dosing solenoid & swap liquor circulation loop",
+    explanation: "AI Enthalpy Sentinel detected saturation temperature drop in Steam Accumulator Beta. Risk of wet steam carryover to textile dye house main header.",
+    actionSummary: "Trigger rapid steam charge intertie valve & swap header balancing loop",
     normValElId: "scadaBetaBar",
     normVal: "8.10 bar",
     spikeVal: "8.10 bar (ALERT)",

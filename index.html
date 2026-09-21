@@ -4796,7 +4796,7 @@
           <!-- Breakdown Dropdown -->
           <div class="dash-pill-box">
             <span class="pill-muted-title">Breakdown</span>
-            <span class="pill-bold-val">Dye Range > Chamber...</span>
+            <span class="pill-bold-val">Boiler House > Steam Array...</span>
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
@@ -4807,9 +4807,9 @@
             <span class="pill-muted-title">Filter</span>
             <span class="pill-bold-val">Range in <span class="badge-count">3</span></span>
             <span class="pill-separator"></span>
-            <span class="pill-bold-val">Chamber in <span class="badge-count">4</span></span>
+            <span class="pill-bold-val">Boilers in <span class="badge-count">4</span></span>
             <span class="pill-separator"></span>
-            <span class="pill-bold-val">Lot in <span class="badge-count">1</span></span>
+            <span class="pill-bold-val">Header in <span class="badge-count">1</span></span>
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
@@ -4826,7 +4826,7 @@
           <!-- Secondary Filter Pill -->
           <div class="dash-pill-box">
             <span class="pill-muted-title">Filter</span>
-            <span class="pill-bold-val">Lot in <span class="badge-count">1</span></span>
+            <span class="pill-bold-val">Header in <span class="badge-count">1</span></span>
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
@@ -4949,7 +4949,7 @@
             <span class="popup-severity-badge" id="popupSeverity">CRITICAL</span>
           </div>
           <div class="popup-body">
-            <div class="popup-component-name" id="popupComponentName">Pre-Filter B (5 Micron Particulate)</div>
+            <div class="popup-component-name" id="popupComponentName">Feedwater Demin Filter B (Micro-Coalescing)</div>
             <div class="popup-metric-row">
               <span class="popup-metric-lbl">Current Parameter:</span>
               <span class="popup-metric-val font-mono-alert" id="popupMetricVal">ΔP: 2.94 psi (High Spike)</span>
@@ -4959,8 +4959,8 @@
               <span class="popup-metric-val" id="popupMetricNorm">0.90 psi (Limit 1.40 psi)</span>
             </div>
             <div class="popup-explanation" id="popupExplanation">
-              AI Vision &amp; Differential telemetry detected coalescing filter particulate loading exceeding ISO Class
-              2 threshold. Risk of line contamination downstream to Dyeing Vessel #3.
+              AI Vision &amp; Differential telemetry detected demineralizing filter particulate loading exceeding ASME Class
+              2 threshold. Risk of scale carryover downstream to Boiler Unit #3 feed line.
             </div>
           </div>
           <div class="popup-footer">
@@ -5039,7 +5039,7 @@
           <g id="headerBanner">
             <text x="510" y="18" font-family="'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="13.5"
               font-weight="700" fill="#1A202C" text-anchor="middle" letter-spacing="0.3">
-              TEX//STACK Processing Plant — Color Intelligence &amp; Continuous Dyeing Operations
+              TEX//STACK Processing Plant — Industrial Boiler &amp; Steam Utility Operations
             </text>
             <!-- Digital SCADA Timestamp Badge -->
             <rect x="946" y="14" width="96" height="28" rx="4" fill="#20252C" stroke="#4A5568" stroke-width="1.5" />
@@ -5052,25 +5052,25 @@
 
           <!-- ================= INTAKE SECTION ================= -->
           <g id="intakeSection" class="interactive-intake" cursor="pointer"
-            data-info="Textile Pre-Treatment &amp; Conditioning Stage">
+            data-info="Boiler Feedwater Treatment &amp; Thermal Deaeration Stage">
             <!-- Intake Unit Box -->
             <rect x="36" y="58" width="128" height="54" rx="4" fill="#E2E8F0" stroke="#64748B" stroke-width="1.5" />
             <text x="100" y="72" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Conditioning Intake</text>
+              text-anchor="middle">Feedwater Intake</text>
 
             <!-- In_Temp Box -->
             <rect x="42" y="77" width="54" height="28" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
             <text x="69" y="88" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#64748B"
-              text-anchor="middle">Fabric_Temp</text>
+              text-anchor="middle">Feed_Temp</text>
             <text id="scadaInTemp" x="69" y="100" font-family="sans-serif" font-size="10" font-weight="700"
-              fill="#0F172A" text-anchor="middle">24.1°C</text>
+              fill="#0F172A" text-anchor="middle">84.1°C</text>
 
             <!-- In_RH Box -->
             <rect x="102" y="77" width="54" height="28" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
             <text x="129" y="88" font-family="sans-serif" font-size="8.5" font-weight="600" fill="#64748B"
-              text-anchor="middle">Bath_pH</text>
+              text-anchor="middle">Feed_pH</text>
             <text id="scadaInRH" x="129" y="100" font-family="sans-serif" font-size="10" font-weight="700"
-              fill="#0F172A" text-anchor="middle">6.4</text>
+              fill="#0F172A" text-anchor="middle">8.8</text>
 
             <!-- Conduits from Intake Unit to Module -->
             <rect x="72" y="112" width="6" height="34" fill="#94A3B8" stroke="#475569" stroke-width="1" />
@@ -5092,19 +5092,19 @@
             <circle cx="95" cy="255" r="4" fill="#475569" />
 
             <text x="95" y="274" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Pre-Scouring</text>
+              text-anchor="middle">Deaerator</text>
             <text x="95" y="287" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
-              text-anchor="middle">&amp; Conditioning</text>
+              text-anchor="middle">&amp; Economizer</text>
             <text x="95" y="300" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Module</text>
+              text-anchor="middle">Pre-Heat Module</text>
 
-            <!-- Main Intake Pipe: "Dye Feed Line A" -->
+            <!-- Main Intake Pipe: "Boiler Feedwater Line A" -->
             <rect x="142" y="186" width="90" height="12" fill="#94A3B8" stroke="#334155" stroke-width="1.5" />
-            <!-- Animated pneumatic flow indicator on Dye Feed Line A -->
+            <!-- Animated pneumatic flow indicator on Boiler Feedwater Line A -->
             <line x1="144" y1="192" x2="230" y2="192" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="2"
               stroke-dasharray="4,6" />
             <text x="187" y="178" font-family="sans-serif" font-size="9.5" font-weight="700" fill="#334155"
-              text-anchor="middle">Dye Feed Line A</text>
+              text-anchor="middle">Feedwater Line A</text>
 
             <rect x="182" y="198" width="8" height="28" fill="#94A3B8" stroke="#334155" stroke-width="1" />
 
@@ -5122,7 +5122,7 @@
             stroke-dasharray="3,5" />
           <rect x="228" y="244" width="4" height="12" fill="#475569" stroke="#1E293B" stroke-width="1" />
 
-          <g class="scada-gauge interactive-gauge" id="dialFilterA" data-label="Dye Filter A" data-cx="186"
+          <g class="scada-gauge interactive-gauge" id="dialFilterA" data-label="Feedwater Filter A" data-cx="186"
             data-cy="250" cursor="pointer">
             <circle cx="186" cy="250" r="24" fill="#64748B" stroke="#334155" stroke-width="1.5" />
             <circle cx="186" cy="250" r="22" fill="#FFFFFF" stroke="#475569" stroke-width="1" />
@@ -5141,15 +5141,15 @@
               transform="rotate(-35, 186, 250)" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" />
             <circle cx="186" cy="250" r="3.5" fill="#1E293B" stroke="#FFFFFF" stroke-width="0.8" />
             <text x="186" y="285" font-family="sans-serif" font-size="10.5" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Dye Filter A</text>
+              text-anchor="middle">Feed Filter A</text>
             <text id="scadaFilterADiff" x="186" y="298" font-family="sans-serif" font-size="9.5" font-weight="600"
               fill="#475569" text-anchor="middle">Diff: 1.8 psi</text>
           </g>
 
           <g class="scada-sparkline interactive-sparkline" id="sparkFilterA" cursor="pointer"
-            data-title="Dye Filter A Differential Pressure Trend" data-id="DP-FLTR-A"
+            data-title="Feedwater Filter A Differential Pressure Trend" data-id="DP-FLTR-A"
             data-param="ΔP: 1.8 psi (Clean Baseline)" data-norm="Norm: < 2.0 psi | Limit: 3.5 psi"
-            data-desc="Coalescing micro-filtration differential tracking inlet liquor clarity"
+            data-desc="High-pressure feedwater coalescing filtration differential tracking"
             data-status="CLEAN / NORMAL" data-statustype="status-ok">
             <rect x="146" y="316" width="80" height="32" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
             <line x1="146" y1="332.0" x2="226" y2="332.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
@@ -5165,10 +5165,10 @@
             <text x="350" y="66" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#1E293B"
               text-anchor="middle">Modular Multi-Stage</text>
             <text x="350" y="80" font-family="sans-serif" font-size="12.5" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Dye Liquor Refining Bank</text>
+              text-anchor="middle">Feedwater Treatment Bank</text>
 
             <!-- ============ ACTIVE VESSEL ============ -->
-            <g class="interactive-vessel" data-vessel="Active Filter Vessel (Online)">
+            <g class="interactive-vessel" data-vessel="Active Feedwater Demin Vessel (Online)">
               <text x="286" y="118" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
                 text-anchor="middle">Active</text>
               <path d="M 232,142 C 232,118 340,118 340,142 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
@@ -5181,7 +5181,7 @@
               <rect x="238" y="148" width="30" height="114" rx="2" fill="#E2E8F0" stroke="#64748B" stroke-width="1"
                 stroke-dasharray="2,2" />
               <text x="253" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
-                transform="rotate(-90 253 210)" text-anchor="middle" letter-spacing="0.5">Micro-Filtration</text>
+                transform="rotate(-90 253 210)" text-anchor="middle" letter-spacing="0.5">Multi-Media Bed</text>
 
               <rect x="271" y="148" width="30" height="114" rx="2" fill="url(#carbonHatch)" stroke="#64748B"
                 stroke-width="1" />
@@ -5191,11 +5191,11 @@
               <rect x="304" y="148" width="30" height="114" rx="2" fill="url(#sterileHatch)" stroke="#64748B"
                 stroke-width="1" />
               <text x="319" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
-                transform="rotate(-90 319 210)" text-anchor="middle" letter-spacing="0.5">Liquor Refining</text>
+                transform="rotate(-90 319 210)" text-anchor="middle" letter-spacing="0.5">Demineralization</text>
             </g>
 
             <!-- ============ STANDBY VESSEL ============ -->
-            <g class="interactive-vessel" data-vessel="Standby Filter Vessel (Auto-Switch Ready)">
+            <g class="interactive-vessel" data-vessel="Standby Feedwater Demin Vessel (Auto-Switch Ready)">
               <text x="418" y="118" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
                 text-anchor="middle">Standby</text>
               <path d="M 364,142 C 364,118 472,118 472,142 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="2" />
@@ -5213,12 +5213,12 @@
               <rect x="403" y="148" width="30" height="114" rx="2" fill="url(#sterileHatch)" stroke="#64748B"
                 stroke-width="1" />
               <text x="418" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
-                transform="rotate(-90 418 210)" text-anchor="middle" letter-spacing="0.5">Liquor Refining</text>
+                transform="rotate(-90 418 210)" text-anchor="middle" letter-spacing="0.5">Demineralization</text>
 
               <rect x="436" y="148" width="30" height="114" rx="2" fill="#E2E8F0" stroke="#64748B" stroke-width="1"
                 stroke-dasharray="2,2" />
               <text x="451" y="210" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
-                transform="rotate(-90 451 210)" text-anchor="middle" letter-spacing="0.5">Polishing</text>
+                transform="rotate(-90 451 210)" text-anchor="middle" letter-spacing="0.5">Mixed-Bed Resin</text>
             </g>
 
             <!-- Bottom Drain / Purge Lines -->
@@ -5229,12 +5229,12 @@
             <text x="402" y="322" font-family="sans-serif" font-size="14" font-weight="700" fill="#2563EB">↓</text>
 
             <text x="254" y="302" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
-              text-anchor="middle">Purge</text>
+              text-anchor="middle">Blowdown</text>
             <text x="254" y="312" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
               text-anchor="middle">Valves</text>
 
             <text x="386" y="302" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
-              text-anchor="middle">Purge</text>
+              text-anchor="middle">Blowdown</text>
             <text x="386" y="312" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
               text-anchor="middle">Valves</text>
           </g>
@@ -5287,7 +5287,7 @@
             stroke-dasharray="3,5" />
           <rect x="472" y="244" width="4" height="12" fill="#475569" stroke="#1E293B" stroke-width="1" />
 
-          <g class="scada-gauge interactive-gauge" id="dialFilterB" data-label="Dye Filter B" data-cx="526"
+          <g class="scada-gauge interactive-gauge" id="dialFilterB" data-label="Feedwater Filter B" data-cx="526"
             data-cy="250" cursor="pointer">
             <circle cx="526" cy="250" r="24" fill="#64748B" stroke="#334155" stroke-width="1.5" />
             <circle cx="526" cy="250" r="22" fill="#FFFFFF" stroke="#475569" stroke-width="1" />
@@ -5306,15 +5306,15 @@
               transform="rotate(-55, 526, 250)" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" />
             <circle cx="526" cy="250" r="3.5" fill="#1E293B" stroke="#FFFFFF" stroke-width="0.8" />
             <text x="526" y="285" font-family="sans-serif" font-size="10.5" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Dye Filter B</text>
+              text-anchor="middle">Feed Filter B</text>
             <text id="scadaFilterBDiff" x="526" y="298" font-family="sans-serif" font-size="9.5" font-weight="600"
               fill="#475569" text-anchor="middle">Diff: 0.9 psi</text>
           </g>
 
           <g class="scada-sparkline interactive-sparkline" id="sparkFilterB" cursor="pointer"
-            data-title="Dye Filter B Differential Pressure Trend" data-id="DP-FLTR-B"
+            data-title="Feedwater Filter B Differential Pressure Trend" data-id="DP-FLTR-B"
             data-param="ΔP: 0.9 psi (Active Monitoring)" data-norm="Norm: 0.90 psi | Limit: 1.40 psi"
-            data-desc="Refined dye liquor micro-filtration stage differential telemetry" data-status="ONLINE OPTIMAL"
+            data-desc="Polished boiler feedwater filtration stage differential telemetry" data-status="ONLINE OPTIMAL"
             data-statustype="status-ok">
             <rect x="484" y="316" width="74" height="32" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
             <line x1="484" y1="332.0" x2="558" y2="332.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
@@ -5326,7 +5326,7 @@
           <!-- ================= RADIAL EFFICIENCY INDEX ================= -->
           <g id="radialEfficiencyIndex" class="interactive-radar" cursor="pointer">
             <text x="632" y="42" font-family="sans-serif" font-size="12" font-weight="800" fill="#1E293B"
-              text-anchor="middle">Spectral Efficiency &amp; Quality Index</text>
+              text-anchor="middle">Thermal Efficiency &amp; Steam Quality Index</text>
 
             <polygon
               points="632.0,105.4 638.8,108.2 641.6,115.0 638.8,121.8 632.0,124.6 625.2,121.8 622.4,115.0 625.2,108.2"
@@ -5350,61 +5350,61 @@
             <text x="635" y="70.0" font-family="sans-serif" font-size="6.5" font-weight="600" fill="#64748B">90</text>
             <line x1="632" y1="115" x2="632.0" y2="67.0" stroke="#64748B" stroke-width="0.9" />
             <text x="632.0" y="57.0" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
-              text-anchor="middle">Color Uniformity</text>
+              text-anchor="middle">Thermal Efficiency</text>
             <line x1="632" y1="115" x2="665.9" y2="81.1" stroke="#64748B" stroke-width="0.9" />
             <text x="677.94" y="77.05" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
-              text-anchor="middle">Bath Temp</text>
+              text-anchor="middle">Steam Temp</text>
             <line x1="632" y1="115" x2="680.0" y2="115.0" stroke="#64748B" stroke-width="0.9" />
             <text x="690.0" y="118.0" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
-              text-anchor="middle">Liquor Ratio</text>
+              text-anchor="middle">Dryness Fraction</text>
             <line x1="632" y1="115" x2="665.9" y2="148.9" stroke="#64748B" stroke-width="0.9" />
             <text x="679.94" y="154.94" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155"
-              text-anchor="middle">Fixation</text>
+              text-anchor="middle">Combustion</text>
             <text x="679.94" y="162.94" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155"
               text-anchor="middle">Yield</text>
             <line x1="632" y1="115" x2="632.0" y2="163.0" stroke="#64748B" stroke-width="0.9" />
             <text x="632.0" y="177.0" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
-              text-anchor="middle">Turbidity</text>
+              text-anchor="middle">TDS Control</text>
             <line x1="632" y1="115" x2="598.1" y2="148.9" stroke="#64748B" stroke-width="0.9" />
             <text x="584.05" y="158.94" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
               text-anchor="middle">pH Stability</text>
             <line x1="632" y1="115" x2="584.0" y2="115.0" stroke="#64748B" stroke-width="0.9" />
             <text x="572.0" y="118.0" font-family="sans-serif" font-size="7.5" font-weight="600" fill="#334155"
-              text-anchor="middle">Nozzle Drop</text>
+              text-anchor="middle">Excess Air O2</text>
             <line x1="632" y1="115" x2="598.1" y2="81.1" stroke="#64748B" stroke-width="0.9" />
             <text x="586.05" y="73.05" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155"
-              text-anchor="middle">Energy</text>
+              text-anchor="middle">Heat</text>
             <text x="586.05" y="81.05" font-family="sans-serif" font-size="7" font-weight="600" fill="#334155"
-              text-anchor="middle">Efficiency</text>
+              text-anchor="middle">Recovery</text>
             <polygon id="radarDataPoly"
               points="632.0,74.2 656.4,90.6 669.4,115.0 654.1,137.1 632.0,158.2 602.1,144.9 596.0,115.0 604.2,87.2"
               fill="rgba(37,99,235,0.2)" stroke="#2563EB" stroke-width="1.8" />
-            <circle class="radar-dot" id="radar_dot_0" data-metric="Color Uniformity" data-val="85" cx="632.0" cy="74.2"
+            <circle class="radar-dot" id="radar_dot_0" data-metric="Thermal Efficiency" data-val="85" cx="632.0" cy="74.2"
               r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
-            <circle class="radar-dot" id="radar_dot_1" data-metric="Bath Temp" data-val="72" cx="656.4" cy="90.6"
+            <circle class="radar-dot" id="radar_dot_1" data-metric="Steam Temp" data-val="72" cx="656.4" cy="90.6"
               r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
-            <circle class="radar-dot" id="radar_dot_2" data-metric="Liquor Ratio" data-val="78" cx="669.4" cy="115.0"
+            <circle class="radar-dot" id="radar_dot_2" data-metric="Dryness Fraction" data-val="78" cx="669.4" cy="115.0"
               r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
-            <circle class="radar-dot" id="radar_dot_3" data-metric="Fixation Yield" data-val="65" cx="654.1" cy="137.1"
+            <circle class="radar-dot" id="radar_dot_3" data-metric="Combustion Yield" data-val="65" cx="654.1" cy="137.1"
               r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
-            <circle class="radar-dot" id="radar_dot_4" data-metric="Turbidity" data-val="90" cx="632.0" cy="158.2"
+            <circle class="radar-dot" id="radar_dot_4" data-metric="TDS Control" data-val="90" cx="632.0" cy="158.2"
               r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
             <circle class="radar-dot" id="radar_dot_5" data-metric="pH Stability" data-val="88" cx="602.1" cy="144.9"
               r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
-            <circle class="radar-dot" id="radar_dot_6" data-metric="Nozzle Drop" data-val="75" cx="596.0" cy="115.0"
+            <circle class="radar-dot" id="radar_dot_6" data-metric="Excess Air O2" data-val="75" cx="596.0" cy="115.0"
               r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
-            <circle class="radar-dot" id="radar_dot_7" data-metric="Energy Efficiency" data-val="82" cx="604.2"
+            <circle class="radar-dot" id="radar_dot_7" data-metric="Heat Recovery" data-val="82" cx="604.2"
               cy="87.2" r="2.8" fill="#2563EB" stroke="#FFFFFF" stroke-width="1" />
           </g>
 
           <g class="scada-sparkline interactive-sparkline" id="sparkRadarL1" cursor="pointer"
-            data-title="Spectrophotometric Color Uniformity (ΔE) Trend" data-id="TREND-COLOR-01"
-            data-param="ΔE: 0.18 (Exceeds Target)" data-norm="Tolerance Limit: ΔE &lt; 0.50"
-            data-desc="Online spectrophotometer continuous color delta tracking across dyeing lot"
-            data-status="EXCELLENT SHADE MATCH" data-statustype="status-ok">
+            data-title="Steam Dryness Fraction (x) Trend" data-id="TREND-STEAM-01"
+            data-param="Dryness: 0.98 (Exceeds Target)" data-norm="Tolerance Limit: Dryness &gt; 0.95"
+            data-desc="Online calorimeter continuous steam dryness fraction tracking"
+            data-status="EXCELLENT DRY STEAM" data-statustype="status-ok">
             <rect x="478" y="48" width="64" height="28" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
-            <text x="483" y="58" font-family="sans-serif" font-size="6.5" font-weight="700" fill="#64748B">ΔE
-              0.18</text>
+            <text x="483" y="58" font-family="sans-serif" font-size="6.5" font-weight="700" fill="#64748B">Dry
+              0.98</text>
             <line x1="478" y1="62.0" x2="542" y2="62.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
             <polyline id="sparkRadarL1_poly"
               points="482.0,66.0 490.0,62.0 498.0,64.0 506.0,58.0 514.0,60.0 522.0,56.0 530.0,59.0 538.0,58.0"
@@ -5412,13 +5412,13 @@
           </g>
 
           <g class="scada-sparkline interactive-sparkline" id="sparkRadarL2" cursor="pointer"
-            data-title="Dye Bath Temperature Stability Trend" data-id="TREND-TEMP-02"
-            data-param="68.4°C Constant (±0.2°C)" data-norm="Recipe Target: 68.0°C"
-            data-desc="Thermocouple telemetry tracking closed-loop steam heat exchanger"
+            data-title="Main Steam Header Temperature Stability Trend" data-id="TREND-TEMP-02"
+            data-param="184.5°C Saturated Steam (±0.4°C)" data-norm="Header Target: 184.0°C"
+            data-desc="Thermocouple telemetry tracking high-pressure steam distribution header"
             data-status="THERMAL EQUILIBRIUM" data-statustype="status-ok">
             <rect x="478" y="142" width="64" height="28" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
             <text x="483" y="152" font-family="sans-serif" font-size="6.5" font-weight="700"
-              fill="#64748B">68.4°C</text>
+              fill="#64748B">184.5°C</text>
             <line x1="478" y1="156.0" x2="542" y2="156.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
             <polyline id="sparkRadarL2_poly"
               points="482.0,162.0 490.0,158.0 498.0,160.0 506.0,156.0 514.0,158.0 522.0,148.0 530.0,149.0 538.0,160.0"
@@ -5428,12 +5428,12 @@
           </g>
 
           <g class="scada-sparkline interactive-sparkline" id="sparkRadarR1" cursor="pointer"
-            data-title="Liquor Circulation Flow Velocity Trend" data-id="TREND-FLOW-01" data-param="142 L/min Flow Rate"
-            data-norm="Nominal: 140 L/min"
-            data-desc="Electromagnetic flow meter tracking continuous dye liquor circulation" data-status="LAMINAR FLOW"
+            data-title="Main Steam Mass Flow Rate Trend" data-id="TREND-FLOW-01" data-param="142 kg/min Steam Flow"
+            data-norm="Nominal: 140 kg/min"
+            data-desc="Vortex flow meter tracking continuous textile mill steam delivery" data-status="STABLE STEAM FLOW"
             data-statustype="status-ok">
             <rect x="744" y="46" width="64" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
-            <text x="748" y="55" font-family="sans-serif" font-size="6" font-weight="700" fill="#64748B">142 L/m</text>
+            <text x="748" y="55" font-family="sans-serif" font-size="6" font-weight="700" fill="#64748B">142 kg/m</text>
             <line x1="744" y1="59.0" x2="808" y2="59.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
             <polyline id="sparkRadarR1_poly"
               points="748.0,60.8 757.3,57.2 766.7,58.1 776.0,56.3 785.3,59.0 794.7,55.4 804.0,57.2" fill="none"
@@ -5441,12 +5441,12 @@
           </g>
 
           <g class="scada-sparkline interactive-sparkline" id="sparkRadarR2" cursor="pointer"
-            data-title="Dye Bath pH Stabilization Curve" data-id="TREND-PH-02" data-param="pH 6.20 ± 0.05"
-            data-norm="Set Point: pH 6.20"
-            data-desc="Industrial glass electrode pH sensor tracking acid/alkali auto-dosing"
-            data-status="BUFFER NOMINAL" data-statustype="status-ok">
+            data-title="Boiler Feedwater pH Stabilization Curve" data-id="TREND-PH-02" data-param="pH 8.80 ± 0.05"
+            data-norm="Set Point: pH 8.80"
+            data-desc="Industrial pH electrode tracking boiler amine / phosphate auto-dosing"
+            data-status="ALKALINE PASSIVATION" data-statustype="status-ok">
             <rect x="744" y="82" width="64" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
-            <text x="748" y="91" font-family="sans-serif" font-size="6" font-weight="700" fill="#64748B">pH 6.2</text>
+            <text x="748" y="91" font-family="sans-serif" font-size="6" font-weight="700" fill="#64748B">pH 8.8</text>
             <line x1="744" y1="95.0" x2="808" y2="95.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
             <polyline id="sparkRadarR2_poly"
               points="748.0,98.6 757.3,96.8 766.7,97.7 776.0,90.5 785.3,89.6 794.7,96.8 804.0,95.9" fill="none"
@@ -5456,12 +5456,12 @@
           </g>
 
           <g class="scada-sparkline interactive-sparkline" id="sparkRadarR3" cursor="pointer"
-            data-title="Fixation Rate &amp; Exhaustion Yield Trend" data-id="TREND-YIELD-03"
-            data-param="98.6% Exhaustion" data-norm="Standard Target: > 96.0%"
-            data-desc="Colorimetric bath depletion monitoring dye uptake onto fabric fiber matrix"
-            data-status="HIGH UPTAKE" data-statustype="status-ok">
+            data-title="Condensate Return &amp; Thermal Recovery Yield Trend" data-id="TREND-YIELD-03"
+            data-param="94.6% Recovery" data-norm="Standard Target: > 90.0%"
+            data-desc="Continuous condensate return monitoring recovering heat from process stenters &amp; dye vessels"
+            data-status="HIGH HEAT RECOVERY" data-statustype="status-ok">
             <rect x="744" y="118" width="64" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
-            <text x="748" y="127" font-family="sans-serif" font-size="6" font-weight="700" fill="#64748B">98.6%</text>
+            <text x="748" y="127" font-family="sans-serif" font-size="6" font-weight="700" fill="#64748B">94.6%</text>
             <line x1="744" y1="131.0" x2="808" y2="131.0" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
             <polyline id="sparkRadarR3_poly"
               points="748.0,131.0 757.3,130.1 766.7,129.2 776.0,129.6 785.3,128.8 794.7,129.4 804.0,128.7" fill="none"
@@ -5470,9 +5470,9 @@
 
           <!-- ================= IMAGE 4 TREND LINE CHART BOX ================= -->
           <g class="scada-sparkline interactive-sparkline" id="sparkDesorptionTop" cursor="pointer"
-            data-title="Continuous Dye Liquor Flow Stability Trend" data-id="TREND-HDR-01"
-            data-param="Flow: 142 L/min (±0.5%)" data-norm="Target: 140 L/min Nominal"
-            data-desc="Real-time multi-nozzle liquor delivery pressure and flow rate curve" data-status="STABLE NOMINAL"
+            data-title="Continuous Steam Header Flow Stability Trend" data-id="TREND-HDR-01"
+            data-param="Flow: 142 kg/min (±0.4%)" data-norm="Target: 140 kg/min Nominal"
+            data-desc="Real-time multi-boiler steam delivery pressure and mass flow curve" data-status="STABLE NOMINAL"
             data-statustype="status-ok">
             <rect x="570" y="200" width="144" height="42" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.2" />
             <line x1="570" y1="221" x2="714" y2="221" stroke="#E2E8F0" stroke-width="0.8" stroke-dasharray="2,2" />
@@ -5492,8 +5492,7 @@
             <circle cx="9" cy="8" r="3" fill="#22C55E" class="hmi-led led-green" />
             <circle cx="18" cy="8" r="3" fill="#EAB308" class="hmi-led led-yellow" />
             <circle cx="27" cy="8" r="3" fill="#EF4444" class="hmi-led led-red" />
-            <text x="38" y="11" font-family="sans-serif" font-size="7" font-weight="600" fill="#9CA3AF">AATCC / ISO 105
-              Class 1</text>
+            <text x="38" y="11" font-family="sans-serif" font-size="7" font-weight="600" fill="#9CA3AF">ASME Sec. I / EN 12953</text>
 
             <!-- Circular Gauge 99.7% -->
             <circle cx="42" cy="48" r="21" fill="none" stroke="#374151" stroke-width="4.5" />
@@ -5502,26 +5501,24 @@
             <text id="hmiAirPurityVal" x="42" y="50" font-family="sans-serif" font-size="10.5" font-weight="800"
               fill="#F3F4F6" text-anchor="middle">99.7%</text>
             <text x="42" y="60" font-family="sans-serif" font-size="7" font-weight="600" fill="#9CA3AF"
-              text-anchor="middle">Dye Purity</text>
+              text-anchor="middle">Steam Quality</text>
 
             <!-- Mini Sparkline in Monitor -->
             <g id="sparkAirPurity" class="interactive-sparkline" cursor="pointer"
-              data-title="Dye Liquor Spectral Purity History (24h)" data-id="ISO-CLASS-1"
+              data-title="Boiler Steam Purity History (24h)" data-id="ISO-CLASS-1"
               data-param="Purity: 99.7% Continuous" data-norm="Standard: 99.5% Minimum"
-              data-desc="Continuous spectral optical monitoring for pharmaceutical and textile grade liquor purity"
-              data-status="CLASS 1 VERIFIED" data-statustype="status-ok">
+              data-desc="Continuous optical and thermodynamic monitoring for industrial steam quality"
+              data-status="CLASS 1 STEAM" data-statustype="status-ok">
               <rect x="76" y="24" width="60" height="24" rx="2" fill="#0D1117" stroke="#30363D" />
               <polyline points="79,38 87,34 95,36 103,30 111,32 119,28 131,33" fill="none" stroke="#38BDF8"
                 stroke-width="1.2" />
             </g>
 
             <!-- Status Rows -->
-            <text id="hmiDewPointTxt" x="10" y="80" font-family="monospace" font-size="6.5" fill="#E5E7EB">Spectro ΔE:
-              0.18</text>
-            <text id="hmiOilTxt" x="10" y="90" font-family="monospace" font-size="6.5" fill="#E5E7EB">Aux Residual:
-              &lt;0.01%</text>
+            <text id="hmiDewPointTxt" x="10" y="80" font-family="monospace" font-size="6.5" fill="#E5E7EB">Superheat ΔT: +18°C</text>
+            <text id="hmiOilTxt" x="10" y="90" font-family="monospace" font-size="6.5" fill="#E5E7EB">Blowdown: &lt;0.01%</text>
             <text id="hmiParticleTxt" x="10" y="100" font-family="monospace" font-size="6.5"
-              fill="#E5E7EB">Micro-Solids: 0.01µm</text>
+              fill="#E5E7EB">Silica TDS: &lt;0.01 ppm</text>
 
             <!-- Interactive Action Button -->
             <g id="hmiActionBtn" cursor="pointer">
@@ -5535,11 +5532,11 @@
           <!-- ================= COMPRESSOR ARRAY SECTION ================= -->
           <g id="compressorSection">
             <text x="918" y="74" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
-              text-anchor="end">Jet System</text>
+              text-anchor="end">Steam Header</text>
             <text x="918" y="88" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
               text-anchor="end">Pressure:</text>
             <text id="scadaSysPressText" x="918" y="103" font-family="sans-serif" font-size="13.5" font-weight="800"
-              fill="#0F172A" text-anchor="end">7.9 bar</text>
+              fill="#0F172A" text-anchor="end">8.2 bar</text>
 
 
             <g class="scada-gauge interactive-gauge" id="dialSysPressTop" data-label="" data-cx="962" data-cy="85"
@@ -5569,7 +5566,7 @@
 
             <!-- Section Title -->
             <text x="942" y="146" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Continuous Jet Dyeing &amp; Steaming Array</text>
+              text-anchor="middle">Industrial Steam Boiler &amp; Distribution Array</text>
           </g>
 
 
@@ -5608,7 +5605,7 @@
             <line x1="970" y1="195" x2="978" y2="195" stroke="#1E293B" stroke-width="2" />
 
             <text class="comp-title-txt" x="914" y="233" font-family="sans-serif" font-size="11" font-weight="700"
-              fill="#1E293B" text-anchor="middle">Jet Dyeing Chamber 1</text>
+              fill="#1E293B" text-anchor="middle">Industrial Steam Boiler 1</text>
           </g>
 
           <g class="scada-compressor-unit interactive-compressor" id="compressor_2" data-comp="2" data-rpm="1410 RPM"
@@ -5646,7 +5643,7 @@
             <line x1="970" y1="285" x2="978" y2="285" stroke="#1E293B" stroke-width="2" />
 
             <text class="comp-title-txt" x="914" y="323" font-family="sans-serif" font-size="11" font-weight="700"
-              fill="#1E293B" text-anchor="middle">Jet Dyeing Chamber 2</text>
+              fill="#1E293B" text-anchor="middle">Industrial Steam Boiler 2</text>
           </g>
 
           <g class="scada-compressor-unit interactive-compressor" id="compressor_3" data-comp="3" data-rpm="899 RPM"
@@ -5684,7 +5681,7 @@
             <line x1="970" y1="375" x2="978" y2="375" stroke="#1E293B" stroke-width="2" />
 
             <text class="comp-title-txt" x="914" y="413" font-family="sans-serif" font-size="11" font-weight="700"
-              fill="#1E293B" text-anchor="middle">Jet Dyeing Chamber 3</text>
+              fill="#1E293B" text-anchor="middle">Industrial Steam Boiler 3</text>
           </g>
 
           <g class="scada-compressor-unit interactive-compressor" id="compressor_4" data-comp="4" data-rpm="1450 RPM"
@@ -5722,7 +5719,7 @@
             <line x1="970" y1="465" x2="978" y2="465" stroke="#1E293B" stroke-width="2" />
 
             <text class="comp-title-txt" x="914" y="503" font-family="sans-serif" font-size="11" font-weight="700"
-              fill="#1E293B" text-anchor="middle">Jet Dyeing Chamber 4</text>
+              fill="#1E293B" text-anchor="middle">Industrial Steam Boiler 4</text>
           </g>
 
           <!-- Compressor Piping Manifolds -->
@@ -5743,9 +5740,9 @@
             <line x1="780" y1="192" x2="780" y2="532" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="2"
               stroke-dasharray="4,6" />
             <text x="765" y="260" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
-              transform="rotate(-90 765 260)" text-anchor="middle">316L SS Liquor Header</text>
+              transform="rotate(-90 765 260)" text-anchor="middle">316L SS Steam Main Header</text>
             <text x="765" y="440" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
-              transform="rotate(-90 765 440)" text-anchor="middle">316L SS Liquor Header</text>
+              transform="rotate(-90 765 440)" text-anchor="middle">316L SS Steam Main Header</text>
 
             <!-- Branch pipes to each Compressor -->
             <!-- Comp 1 Branch -->
@@ -5753,28 +5750,28 @@
             <line x1="785" y1="192" x2="826" y2="192" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="1.5"
               stroke-dasharray="3,5" />
             <text id="tagComp1Rpm" x="805" y="184" font-family="sans-serif" font-size="8" font-weight="700"
-              fill="#14532D" text-anchor="middle">CH-1</text>
+              fill="#14532D" text-anchor="middle">BLR-1</text>
 
             <!-- Comp 2 Branch -->
             <rect x="785" y="278" width="41" height="8" fill="#16A34A" stroke="#14532D" stroke-width="1" />
             <line x1="785" y1="282" x2="826" y2="282" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="1.5"
               stroke-dasharray="3,5" />
             <text id="tagComp2Rpm" x="805" y="274" font-family="sans-serif" font-size="8" font-weight="700"
-              fill="#14532D" text-anchor="middle">CH-2</text>
+              fill="#14532D" text-anchor="middle">BLR-2</text>
 
             <!-- Comp 3 Branch -->
             <rect x="785" y="368" width="41" height="8" fill="#16A34A" stroke="#14532D" stroke-width="1" />
             <line x1="785" y1="372" x2="826" y2="372" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="1.5"
               stroke-dasharray="3,5" />
             <text id="tagComp3Rpm" x="805" y="364" font-family="sans-serif" font-size="8" font-weight="700"
-              fill="#14532D" text-anchor="middle">CH-3</text>
+              fill="#14532D" text-anchor="middle">BLR-3</text>
 
             <!-- Comp 4 Branch -->
             <rect x="785" y="458" width="41" height="8" fill="#16A34A" stroke="#14532D" stroke-width="1" />
             <line x1="785" y1="462" x2="826" y2="462" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="1.5"
               stroke-dasharray="3,5" />
             <text id="tagComp4Rpm" x="805" y="454" font-family="sans-serif" font-size="8" font-weight="700"
-              fill="#14532D" text-anchor="middle">CH-4</text>
+              fill="#14532D" text-anchor="middle">BLR-4</text>
 
 
             <g class="pid-valve interactive-valve valve-closed" id="valveManifoldMidRed"
@@ -5790,36 +5787,36 @@
             <line x1="1010" y1="192" x2="1010" y2="532" class="pipe-flow-anim" stroke="#86EFAC" stroke-width="2"
               stroke-dasharray="4,6" />
             <text x="1025" y="295" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B"
-              transform="rotate(90 1025 295)" text-anchor="middle">MICRO-REFINING LINE</text>
+              transform="rotate(90 1025 295)" text-anchor="middle">PROCESS STEAM SUPPLY LINE</text>
             <text x="1025" y="415" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#334155"
-              transform="rotate(90 1025 415)" text-anchor="middle">316L SS RETURN</text>
+              transform="rotate(90 1025 415)" text-anchor="middle">CONDENSATE RETURN LINE</text>
 
             <!-- Bottom Distribution Line (Blue) leading from header all the way through buffer tank to Beta -->
             <rect x="525" y="527" width="490" height="10" fill="#2563EB" stroke="#1D4ED8" stroke-width="1.5" />
             <line x1="1005" y1="532" x2="525" y2="532" class="pipe-flow-anim" stroke="#93C5FD" stroke-width="2"
               stroke-dasharray="4,6" />
-            <text x="760" y="547" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B">Dye Liquor
-              Circulation Loop</text>
+            <text x="760" y="547" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B">Steam &amp; Condensate
+              Recirculation Loop</text>
             <polygon points="770,529 780,532 770,535" fill="#2563EB" />
           </g>
 
 
           <!-- ================= RECEIVER TANKS SECTION ================= -->
           <g id="receiverTanksSection">
-            <text x="70" y="444" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Feed</text>
-            <text x="70" y="456" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
+            <text x="70" y="444" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Boiler Feed</text>
+            <text x="70" y="456" font-family="sans-serif" font-size="11" font-weight="700" fill="#1E293B"
               text-anchor="middle">Pressure</text>
 
 
             <!-- Connection pipe linking dialSysPressL1 to vertical process line at x=115 (Image 2) -->
-            <rect id="pipe_sysPressL1_conn" class="interactive-pipe" data-pipe="Feed Pressure Sensor Tap L1" x="70"
+            <rect id="pipe_sysPressL1_conn" class="interactive-pipe" data-pipe="Boiler Feed Pressure Sensor Tap L1" x="70"
               y="476" width="45" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1.2" />
             <line x1="70" y1="480" x2="115" y2="480" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="1.5"
               stroke-dasharray="3,5" />
             <rect x="111" y="474" width="4" height="12" fill="#475569" stroke="#1E293B" stroke-width="1" />
 
-            <g class="scada-gauge interactive-gauge" id="dialSysPressL1" data-label="Main Feed Pressure" data-cx="70"
+            <g class="scada-gauge interactive-gauge" id="dialSysPressL1" data-label="Boiler Feedwater Pressure" data-cx="70"
               data-cy="480" cursor="pointer">
               <circle cx="70" cy="480" r="24" fill="#64748B" stroke="#334155" stroke-width="1.5" />
               <circle cx="70" cy="480" r="22" fill="#FFFFFF" stroke="#475569" stroke-width="1" />
@@ -5840,13 +5837,13 @@
             </g>
 
             <!-- Connection pipe linking dialSysPressL2 to horizontal process line at x=115 (Image 2) -->
-            <rect id="pipe_sysPressL2_conn" class="interactive-pipe" data-pipe="Return Pressure Sensor Tap L2" x="70"
+            <rect id="pipe_sysPressL2_conn" class="interactive-pipe" data-pipe="Condensate Return Sensor Tap L2" x="70"
               y="556" width="45" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1.2" />
             <line x1="70" y1="560" x2="115" y2="560" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="1.5"
               stroke-dasharray="3,5" />
             <rect x="111" y="554" width="4" height="12" fill="#475569" stroke="#1E293B" stroke-width="1" />
 
-            <g class="scada-gauge interactive-gauge" id="dialSysPressL2" data-label="Return Header Pressure"
+            <g class="scada-gauge interactive-gauge" id="dialSysPressL2" data-label="Condensate Return Pressure"
               data-cx="70" data-cy="560" cursor="pointer">
               <circle cx="70" cy="560" r="26" fill="#64748B" stroke="#334155" stroke-width="1.5" />
               <circle cx="70" cy="560" r="24" fill="#FFFFFF" stroke="#475569" stroke-width="1" />
@@ -5866,8 +5863,8 @@
               <line id="needleSysPressL2" class="gauge-needle" x1="70" y1="560" x2="70" y2="541"
                 transform="rotate(45, 70, 560)" stroke="#DC2626" stroke-width="1.8" stroke-linecap="round" />
               <circle cx="70" cy="560" r="3.6" fill="#1E293B" stroke="#FFFFFF" stroke-width="0.8" />
-              <text x="70" y="597" font-family="sans-serif" font-size="10.5" font-weight="700" fill="#1E293B"
-                text-anchor="middle">Return</text>
+              <text x="70" y="597" font-family="sans-serif" font-size="9" font-weight="700" fill="#1E293B"
+                text-anchor="middle">Cond. Return</text>
               <text id="scadaSysPressL2" x="70" y="610" font-family="sans-serif" font-size="9.5" font-weight="600"
                 fill="#475569" text-anchor="middle">7.9 bar</text>
             </g>
@@ -5876,7 +5873,7 @@
             <line x1="115" y1="565" x2="238" y2="565" stroke="#334155" stroke-width="10" />
             <line x1="115" y1="565" x2="238" y2="565" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="2"
               stroke-dasharray="4,6" />
-            <text x="145" y="582" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B">316L SS Feed
+            <text x="145" y="582" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B">316L SS Steam Feed
               Line</text>
 
 
@@ -5889,8 +5886,8 @@
             </g>
 
             <g class="scada-tank interactive-tank" id="tank_Alpha" data-tank="Alpha" cursor="pointer">
-              <text x="286.0" y="398" font-family="sans-serif" font-size="13" font-weight="700" fill="#1E293B"
-                text-anchor="middle">Mixing Vessel</text>
+              <text x="286.0" y="398" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
+                text-anchor="middle">Steam Accumulator</text>
               <text x="286.0" y="414" font-family="sans-serif" font-size="14" font-weight="800" fill="#0F172A"
                 text-anchor="middle">Alpha</text>
 
@@ -5958,9 +5955,9 @@
 
 
             <g class="scada-sparkline interactive-sparkline" id="sparkAlpha" cursor="pointer"
-              data-title="Vessel Alpha Dye Liquor Concentration" data-id="TREND-VESSEL-A"
-              data-param="Bath Temp: 98.5°C | Reactive Dye" data-norm="Dosing Profile: 45 min linear ramp"
-              data-desc="Real-time spectral absorbance &amp; liquor concentration profile" data-status="DOSING ACTIVE"
+              data-title="Steam Accumulator Alpha Pressure &amp; Heat Reserve" data-id="TREND-ACCUM-A"
+              data-param="Core Saturation Temp: 175.4°C | Steam Cushion" data-norm="Target Accumulation: 8.2 bar ±0.3"
+              data-desc="Real-time enthalpy and pressure balance profile for peak-load buffering" data-status="BUFFERING ACTIVE"
               data-statustype="status-ok">
               <rect x="142" y="492" width="84" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
               <line x1="142" y1="505.0" x2="226" y2="505.0" stroke="#E2E8F0" stroke-width="0.8"
@@ -5973,8 +5970,8 @@
             </g>
 
             <g class="scada-tank interactive-tank" id="tank_Beta" data-tank="Beta" cursor="pointer">
-              <text x="414.0" y="398" font-family="sans-serif" font-size="13" font-weight="700" fill="#1E293B"
-                text-anchor="middle">Mixing Vessel</text>
+              <text x="414.0" y="398" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
+                text-anchor="middle">Steam Accumulator</text>
               <text x="414.0" y="414" font-family="sans-serif" font-size="14" font-weight="800" fill="#0F172A"
                 text-anchor="middle">Beta</text>
 
@@ -6042,10 +6039,10 @@
 
 
             <g class="scada-sparkline interactive-sparkline" id="sparkBeta" cursor="pointer"
-              data-title="Vessel Beta Fixation Liquor Saturation" data-id="TREND-VESSEL-B"
-              data-param="Alkali Concentration: 18 g/L" data-norm="Optimal pH Threshold: 10.8 - 11.2"
-              data-desc="Color kitchen fixation alkali dosing and circulation telemetry"
-              data-status="CIRCULATION NOMINAL" data-statustype="status-ok">
+              data-title="Steam Accumulator Beta Pressure &amp; Heat Reserve" data-id="TREND-ACCUM-B"
+              data-param="Core Saturation Temp: 174.8°C | Steam Cushion" data-norm="Target Accumulation: 8.1 bar ±0.3"
+              data-desc="Process steam header balancing and thermal storage telemetry"
+              data-status="PRESSURE NOMINAL" data-statustype="status-ok">
               <rect x="472" y="492" width="84" height="26" rx="3" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1" />
               <line x1="472" y1="505.0" x2="556" y2="505.0" stroke="#E2E8F0" stroke-width="0.8"
                 stroke-dasharray="2,2" />
@@ -6059,11 +6056,11 @@
             <rect x="334" y="490" width="32" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1" />
             <rect x="334" y="605" width="32" height="8" fill="#94A3B8" stroke="#334155" stroke-width="1" />
             <text x="350" y="650" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
-              transform="rotate(-90 350 650)" text-anchor="middle">316L SS Intertie</text>
+              transform="rotate(-90 350 650)" text-anchor="middle">Steam Balancing Intertie</text>
 
             <!-- Outlet pipe exiting Beta into bottom distribution loop -->
             <line x1="462" y1="532" x2="525" y2="532" stroke="#334155" stroke-width="10" />
-            <text x="510" y="555" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B">Circulation
+            <text x="510" y="555" font-family="sans-serif" font-size="8.5" font-weight="700" fill="#1E293B">Steam Supply
               Outlet</text>
 
 
@@ -6085,12 +6082,12 @@
           </g>
 
           <!-- ================= SECONDARY BUFFER TANK ================= -->
-          <g id="secondaryBufferTank" class="scada-tank interactive-tank" data-tank="Secondary Buffer"
+          <g id="secondaryBufferTank" class="scada-tank interactive-tank" data-tank="Flash Condensate Recovery Tank"
             transform="translate(580, 440)" cursor="pointer">
-            <text x="34" y="-12" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Auxiliary Dye</text>
-            <text x="34" y="2" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B"
-              text-anchor="middle">Buffer Tank</text>
+            <text x="34" y="-12" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Flash Condensate</text>
+            <text x="34" y="2" font-family="sans-serif" font-size="11.5" font-weight="700" fill="#1E293B"
+              text-anchor="middle">Recovery Tank</text>
 
             <path d="M 0,20 C 0,0 68,0 68,20 Z" fill="url(#domeGrad)" stroke="#334155" stroke-width="1.8" />
             <rect x="0" y="20" width="68" height="80" fill="url(#vesselGrad)" stroke="#334155" stroke-width="1.8" />
@@ -6114,18 +6111,18 @@
 
           <!-- ================= AUTO-DRAIN SYSTEM ================= -->
           <g id="autoDrainSection">
-            <!-- Drain piping from Mixing Vessel Alpha (x=286) to Chemical Recovery Tank -->
+            <!-- Drain piping from Steam Accumulator Alpha (x=286) to Boiler Blowdown Tank -->
             <path d="M 286,686 L 286,756 L 350,756" fill="none" stroke="#334155" stroke-width="6" />
             <path d="M 286,686 L 286,756 L 350,756" fill="none" class="pipe-flow-anim" stroke="#38BDF8" stroke-width="2"
               stroke-dasharray="4,6" />
 
             <!-- Flow arrow & Pipe Label cleanly positioned below the horizontal pipe -->
             <polygon points="286,725 281,714 291,714" fill="#2563EB" />
-            <text x="290" y="770" font-family="sans-serif" font-size="8" font-weight="700" fill="#1E293B">316L SS
-              Drain</text>
+            <text x="290" y="770" font-family="sans-serif" font-size="8" font-weight="700" fill="#1E293B">Boiler Blowdown
+              Line</text>
 
-            <!-- Highlighted Yellow Box: Chemical Recovery Tank (Cleanly positioned below Beta with 0 overlap) -->
-            <g id="autoDrainTankBox" class="interactive-tank" data-tank="Auto-Chemical Recovery &amp; Drain Tank"
+            <!-- Highlighted Yellow Box: Boiler Blowdown & Heat Recovery Tank (Cleanly positioned below Beta with 0 overlap) -->
+            <g id="autoDrainTankBox" class="interactive-tank" data-tank="Boiler Continuous Blowdown &amp; Heat Recovery Tank"
               cursor="pointer">
               <rect x="350" y="722" width="186" height="150" rx="4" fill="#F8E44C" stroke="#CA8A04" stroke-width="2" />
 
@@ -6146,9 +6143,9 @@
 
               <!-- Clean 3-line title below the valve with 0 cutoff -->
               <text x="388" y="810" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
-                text-anchor="middle">Chemical</text>
+                text-anchor="middle">Boiler</text>
               <text x="388" y="828" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
-                text-anchor="middle">Recovery</text>
+                text-anchor="middle">Blowdown</text>
               <text x="388" y="846" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
                 text-anchor="middle">Tank</text>
 
@@ -6167,14 +6164,14 @@
               </g>
             </g>
 
-            <!-- Floating SCADA Window: Chemical Recovery & Drain with Interactive Logic Circuit -->
+            <!-- Floating SCADA Window: Boiler Blowdown & Heat Recovery with Interactive Logic Circuit -->
             <g id="autoDrainDialog" transform="translate(24, 668)">
               <rect x="0" y="0" width="210" height="194" rx="4" fill="#EAEFF4" stroke="#64748B" stroke-width="1.5"
                 filter="drop-shadow(0 6px 12px rgba(0,0,0,0.15))" />
 
               <rect x="0" y="0" width="210" height="24" rx="4 4 0 0" fill="#CBD5E1" stroke="#94A3B8" stroke-width="1" />
-              <text x="10" y="16" font-family="sans-serif" font-size="10" font-weight="700" fill="#1E293B">Chemical
-                Recovery &amp; Drain</text>
+              <text x="10" y="16" font-family="sans-serif" font-size="10" font-weight="700" fill="#1E293B">Boiler Blowdown
+                &amp; Heat Recovery</text>
 
               <!-- Interactive Window Buttons -->
               <g transform="translate(162, 7)">
@@ -6194,7 +6191,7 @@
               </g>
 
               <!-- Form Rows -->
-              <text x="12" y="44" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Recovery
+              <text x="12" y="44" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Blowdown
                 Cycle:</text>
               <rect x="88" y="32" width="60" height="18" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
               <text id="scadaAutoDrainDuration" x="136" y="45" font-family="monospace" font-size="10" font-weight="700"
@@ -6202,7 +6199,7 @@
               <text x="154" y="44" font-family="sans-serif" font-size="9" font-weight="600" fill="#475569">min</text>
               <circle cx="192" cy="41" r="5" fill="#CBD5E1" stroke="#64748B" stroke-width="1" />
 
-              <text x="12" y="66" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Dosing
+              <text x="12" y="66" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Purge
                 Interval:</text>
               <rect x="88" y="54" width="60" height="18" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
               <text id="scadaAutoDrainCycle" x="136" y="67" font-family="monospace" font-size="10" font-weight="700"
@@ -6210,12 +6207,12 @@
               <text x="154" y="66" font-family="sans-serif" font-size="9" font-weight="600" fill="#475569">sec</text>
               <circle id="cycleLedIndicator" cx="192" cy="63" r="5" fill="#22C55E" stroke="#16A34A" stroke-width="1" />
 
-              <text x="12" y="88" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Bath Level
+              <text x="12" y="88" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Drum Level
                 High:</text>
               <rect id="highStatusBar" x="88" y="76" width="84" height="18" rx="2" fill="#BFDBFE" stroke="#60A5FA" />
               <circle cx="192" cy="85" r="5" fill="#CBD5E1" stroke="#64748B" stroke-width="1" />
 
-              <text x="12" y="110" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">Sludge
+              <text x="12" y="110" font-family="sans-serif" font-size="9.5" font-weight="600" fill="#334155">TDS / Sludge
                 Residual:</text>
               <rect x="88" y="98" width="60" height="18" rx="2" fill="#FFFFFF" stroke="#94A3B8" />
               <text id="scadaAutoDrainLow" x="136" y="111" font-family="monospace" font-size="10" font-weight="700"
@@ -6286,9 +6283,9 @@
 
 
             <g class="telemetry-col interactive-telemetry-station" id="station_1" data-station="1"
-              data-title="Chamber 1">
+              data-title="Industrial Steam Boiler 1">
               <text x="600" y="14" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
-                text-anchor="middle">Chamber 1</text>
+                text-anchor="middle">Boiler 1</text>
               <text id="scadaComp1Rpm" x="600" y="28" font-family="sans-serif" font-size="11.5" font-weight="700"
                 fill="#334155" text-anchor="middle">1450 RPM</text>
 
@@ -6311,13 +6308,13 @@
               <rect id="telBar_0_3" class="telemetry-bar" data-station="1" data-bar="4" data-height="24" x="625" y="72"
                 width="8" height="24" rx="1.5" fill="#DC2626" cursor="pointer" />
               <text x="608" y="112" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
-                text-anchor="middle">Bath Temp</text>
+                text-anchor="middle">Steam Temp</text>
             </g>
 
             <g class="telemetry-col interactive-telemetry-station" id="station_2" data-station="2"
-              data-title="Chamber 2">
+              data-title="Industrial Steam Boiler 2">
               <text x="718" y="14" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
-                text-anchor="middle">Chamber 2</text>
+                text-anchor="middle">Boiler 2</text>
               <text id="scadaComp2Rpm" x="718" y="28" font-family="sans-serif" font-size="11.5" font-weight="700"
                 fill="#334155" text-anchor="middle">1410 RPM</text>
 
@@ -6340,13 +6337,13 @@
               <rect id="telBar_1_3" class="telemetry-bar" data-station="2" data-bar="4" data-height="30" x="743" y="66"
                 width="8" height="30" rx="1.5" fill="#DC2626" cursor="pointer" />
               <text x="726" y="112" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
-                text-anchor="middle">Bath Temp</text>
+                text-anchor="middle">Steam Temp</text>
             </g>
 
             <g class="telemetry-col interactive-telemetry-station" id="station_3" data-station="3"
-              data-title="Chamber 3">
+              data-title="Industrial Steam Boiler 3">
               <text x="836" y="14" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
-                text-anchor="middle">Chamber 3</text>
+                text-anchor="middle">Boiler 3</text>
               <text id="scadaComp3Rpm" x="836" y="28" font-family="sans-serif" font-size="11.5" font-weight="700"
                 fill="#334155" text-anchor="middle">899 RPM</text>
 
@@ -6369,13 +6366,13 @@
               <rect id="telBar_2_3" class="telemetry-bar" data-station="3" data-bar="4" data-height="20" x="861" y="76"
                 width="8" height="20" rx="1.5" fill="#DC2626" cursor="pointer" />
               <text x="844" y="112" font-family="sans-serif" font-size="9" font-weight="700" fill="#334155"
-                text-anchor="middle">Bath Temp</text>
+                text-anchor="middle">Steam Temp</text>
             </g>
 
             <g class="telemetry-col interactive-telemetry-station" id="station_4" data-station="4"
-              data-title="Chamber 4">
+              data-title="Industrial Steam Boiler 4">
               <text x="954" y="14" font-family="sans-serif" font-size="12" font-weight="800" fill="#0F172A"
-                text-anchor="middle">Chamber 4</text>
+                text-anchor="middle">Boiler 4</text>
               <text id="scadaComp4Rpm" x="954" y="28" font-family="sans-serif" font-size="11.5" font-weight="700"
                 fill="#334155" text-anchor="middle">1450 RPM</text>
 
@@ -6399,7 +6396,7 @@
                 width="8" height="42" rx="1.5" fill="#EA580C" cursor="pointer" />
 
               <text x="948" y="112" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
-                text-anchor="middle">Dosing</text>
+                text-anchor="middle">Firing</text>
               <text x="978" y="112" font-family="sans-serif" font-size="8" font-weight="700" fill="#334155"
                 text-anchor="middle">Rate %</text>
 
