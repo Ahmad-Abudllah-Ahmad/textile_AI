@@ -5747,8 +5747,58 @@ function setupEnergyUtilitiesInteractions() {
     return Y_BOT - ((value - min) / (max - min || 1)) * (Y_BOT - Y_TOP);
   }
 
-  function linePath(values, min, max) {
-    return XS.map((x, i) => `${i ? "L" : "M"}${x} ${mapY(values[i], min, max).toFixed(1)}`).join(" ");
+  function getControlPoints(pts) {
+    const cp = [];
+    const n = pts.length;
+    for (let i = 0; i < n - 1; i++) {
+      const p0 = i > 0 ? pts[i - 1] : pts[i];
+      const p1 = pts[i];
+      const p2 = pts[i + 1];
+      const p3 = i < n - 2 ? pts[i + 2] : pts[i + 1];
+      const cp1x = p1.x + (p2.x - p0.x) / 6;
+      const cp1y = p1.y + (p2.y - p0.y) / 6;
+      const cp2x = p2.x - (p3.x - p1.x) / 6;
+      const cp2y = p2.y - (p3.y - p1.y) / 6;
+      cp.push({ cp1x, cp1y, cp2x, cp2y, p2 });
+    }
+    return cp;
+  }
+
+  function curvyLinePath(values, min, max) {
+    const pts = XS.map((x, i) => ({ x, y: mapY(values[i], min, max) }));
+    let d = `M ${pts[0].x} ${pts[0].y.toFixed(1)}`;
+    const cp = getControlPoints(pts);
+    cp.forEach((c) => {
+      d += ` C ${c.cp1x.toFixed(1)} ${c.cp1y.toFixed(1)}, ${c.cp2x.toFixed(1)} ${c.cp2y.toFixed(1)}, ${c.p2.x.toFixed(1)} ${c.p2.y.toFixed(1)}`;
+    });
+    return d;
+  }
+
+  function curvyAreaPath(values, min, max) {
+    const lineD = curvyLinePath(values, min, max);
+    const lastX = XS[XS.length - 1];
+    const firstX = XS[0];
+    return `${lineD} L ${lastX} ${Y_BOT} L ${firstX} ${Y_BOT} Z`;
+  }
+
+  function sampleCurvy(values, min, max, x) {
+    if (x <= XS[0]) return { value: values[0], y: mapY(values[0], min, max) };
+    if (x >= XS[XS.length - 1]) return { value: values[values.length - 1], y: mapY(values[values.length - 1], min, max) };
+    let i = 0;
+    while (i < XS.length - 1 && XS[i + 1] < x) i++;
+    const span = XS[i + 1] - XS[i] || 1;
+    const t = (x - XS[i]) / span;
+    const pts = XS.map((px, idx) => ({ x: px, y: mapY(values[idx], min, max) }));
+    const p0 = i > 0 ? pts[i - 1] : pts[i];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = i < pts.length - 2 ? pts[i + 2] : pts[i + 1];
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+    const mt = 1 - t;
+    const y = mt * mt * mt * p1.y + 3 * mt * mt * t * cp1y + 3 * mt * t * t * cp2y + t * t * t * p2.y;
+    const value = min + ((Y_BOT - y) / (Y_BOT - Y_TOP)) * (max - min);
+    return { value, y };
   }
 
   const scenarios = {
@@ -6074,18 +6124,26 @@ function setupEnergyUtilitiesInteractions() {
           </div>
           <div class="energy-mini-viewport" data-energy-chart="${key}">
             <svg class="comparison-chart-svg" viewBox="0 0 500 160" preserveAspectRatio="none" role="img" aria-label="${scene.title}">
+              <defs>
+                <linearGradient id="energyGrad-${key}" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#06B6D4" stop-opacity="0.32" />
+                  <stop offset="85%" stop-color="#06B6D4" stop-opacity="0.04" />
+                  <stop offset="100%" stop-color="#06B6D4" stop-opacity="0.0" />
+                </linearGradient>
+              </defs>
               <line x1="40" y1="20" x2="488" y2="20" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
               <line x1="40" y1="77" x2="488" y2="77" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
               <line x1="40" y1="135" x2="488" y2="135" stroke="rgba(226,232,240,.85)" stroke-width="1" stroke-dasharray="3 3"></line>
               <text x="36" y="24" font-size="10" fill="#94A3B8" text-anchor="end">${scene.yLabels[0]}</text>
               <text x="36" y="139" font-size="10" fill="#94A3B8" text-anchor="end">${scene.yLabels[3]}</text>
-              <path class="energy-target-line" fill="none" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5 3" stroke-linecap="round" d="${linePath(scene.target, scene.min, scene.max)}"></path>
-              <path class="energy-live-line" fill="none" stroke="#06B6D4" stroke-width="2.6" stroke-linecap="round" d="${linePath(scene.live, scene.min, scene.max)}"></path>
+              <path class="energy-live-area" fill="url(#energyGrad-${key})" d="${curvyAreaPath(scene.live, scene.min, scene.max)}"></path>
+              <path class="energy-target-line" fill="none" stroke="#F59E0B" stroke-width="2" stroke-dasharray="5 3" stroke-linecap="round" d="${curvyLinePath(scene.target, scene.min, scene.max)}"></path>
+              <path class="energy-live-line" fill="none" stroke="#06B6D4" stroke-width="2.6" stroke-linecap="round" d="${curvyLinePath(scene.live, scene.min, scene.max)}"></path>
               <line class="energy-now-line" x1="${nowX}" y1="16" x2="${nowX}" y2="138" stroke="rgba(6,182,212,.4)" stroke-width="1" stroke-dasharray="2 2"></line>
-              <circle class="energy-now-dot" cx="${nowX}" cy="${nowY.toFixed(1)}" r="3.8" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.8"></circle>
+              <circle class="energy-now-dot" cx="${nowX}" cy="${nowY.toFixed(1)}" r="4.2" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2"></circle>
               <line class="energy-hover-line" x1="0" y1="14" x2="0" y2="140" stroke="rgba(15,23,42,.35)" stroke-width="1" stroke-dasharray="2 2" opacity="0"></line>
               <circle class="energy-hover-set" cx="0" cy="0" r="3.8" fill="#F59E0B" stroke="#FFFFFF" stroke-width="1.8" opacity="0"></circle>
-              <circle class="energy-hover-live" cx="0" cy="0" r="4.2" fill="#06B6D4" stroke="#FFFFFF" stroke-width="1.8" opacity="0"></circle>
+              <circle class="energy-hover-live" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
               <rect class="energy-hover-pad" x="40" y="12" width="448" height="130" fill="transparent"></rect>
             </svg>
           </div>
@@ -6193,10 +6251,12 @@ function setupEnergyUtilitiesInteractions() {
     const bounds = svg.getBoundingClientRect();
     const x = 40 + ((event.clientX - bounds.left) / bounds.width) * 500;
     const clampedX = clamp(x, XS[0], XS[XS.length - 1]);
-    const live = sampleSeries(scene.live, clampedX);
-    const set = sampleSeries(scene.target, clampedX);
-    const liveY = mapY(live, scene.min, scene.max);
-    const setY = mapY(set, scene.min, scene.max);
+    const liveSample = sampleCurvy(scene.live, scene.min, scene.max, clampedX);
+    const setSample = sampleCurvy(scene.target, scene.min, scene.max, clampedX);
+    const live = liveSample.value;
+    const set = setSample.value;
+    const liveY = liveSample.y;
+    const setY = setSample.y;
     const hoverLine = viewport.querySelector(".energy-hover-line");
     const hoverLive = viewport.querySelector(".energy-hover-live");
     const hoverSet = viewport.querySelector(".energy-hover-set");
@@ -6215,9 +6275,15 @@ function setupEnergyUtilitiesInteractions() {
       hoverSet.setAttribute("cy", setY.toFixed(1));
       hoverSet.setAttribute("opacity", "1");
     }
+    const diff = live - set;
+    const diffSign = diff > 0.005 ? "+" : (diff < -0.005 ? "−" : "±");
+    const diffDecimals = scene.unit === "bar" ? 2 : (scene.unit === "%" ? 1 : 2);
+    const diffText = `Δ ${diffSign}${Math.abs(diff).toFixed(diffDecimals)} ${scene.unit}`;
+    const inBand = Math.abs(diff) <= (scene.max - scene.min) * 0.05;
+
     if (tipTitle) tipTitle.textContent = `${scene.title} · ${timeAt(clampedX)}`;
-    if (tipA) tipA.textContent = `${scene.liveName}: ${formatVal(scene, live)}`;
-    if (tipB) tipB.textContent = `${scene.targetName}: ${formatVal(scene, set)}`;
+    if (tipA) tipA.innerHTML = `${scene.liveName}: <strong>${formatVal(scene, live)}</strong>`;
+    if (tipB) tipB.innerHTML = `${scene.targetName}: <strong>${formatVal(scene, set)}</strong> <span style="margin-left:6px;font-size:0.65rem;color:${inBand ? "#10B981" : "#F59E0B"}">(${diffText})</span>`;
     placeEnergyTip(event);
     hoverState = { key, x: clampedX, clientX: event.clientX, clientY: event.clientY };
   }
@@ -6458,8 +6524,12 @@ function setupEnergyUtilitiesInteractions() {
     const viewport = energyView.querySelector(`[data-energy-chart="${key}"]`);
     if (viewport) {
       const livePath = viewport.querySelector(".energy-live-line");
+      const liveArea = viewport.querySelector(".energy-live-area");
+      const targetPath = viewport.querySelector(".energy-target-line");
       const nowDot = viewport.querySelector(".energy-now-dot");
-      if (livePath) livePath.setAttribute("d", linePath(scene.live, scene.min, scene.max));
+      if (livePath) livePath.setAttribute("d", curvyLinePath(scene.live, scene.min, scene.max));
+      if (liveArea) liveArea.setAttribute("d", curvyAreaPath(scene.live, scene.min, scene.max));
+      if (targetPath) targetPath.setAttribute("d", curvyLinePath(scene.target, scene.min, scene.max));
       if (nowDot) nowDot.setAttribute("cy", mapY(scene.live[i], scene.min, scene.max).toFixed(1));
     }
     const nowLabel = energyView.querySelector(`[data-energy-now="${key}"]`);
@@ -6473,14 +6543,13 @@ function setupEnergyUtilitiesInteractions() {
     const t = Date.now() / 1000;
     caseKeys.forEach((key, idx) => {
       const scene = scenarios[key];
-      const amp = (scene.max - scene.min) * 0.04;
-      const i = scene.cursor;
-      scene.live[i] = clamp(liveBase[key][i] + Math.sin(t * 1.5 + idx * 1.2) * amp + (Math.random() - 0.5) * amp * 0.25, scene.min, scene.max);
-      if (i > 0) {
-        scene.live[i - 1] = clamp(liveBase[key][i - 1] + Math.sin(t * 1.1 + idx) * amp * 0.55, scene.min, scene.max);
-      }
-      if (i < scene.live.length - 1) {
-        scene.live[i + 1] = clamp(liveBase[key][i + 1] + Math.sin(t * 0.9 + idx) * amp * 0.4, scene.min, scene.max);
+      const amp = (scene.max - scene.min) * 0.038;
+      const base = liveBase[key];
+      for (let p = 0; p < scene.live.length; p++) {
+        const wave = Math.sin(t * 1.6 + idx * 1.25 + p * 0.85) * 0.65
+                   + Math.cos(t * 0.85 + idx * 0.7 - p * 0.5) * 0.35;
+        const microJitter = Math.sin(t * 3.7 + p * 2.1 + idx) * 0.15;
+        scene.live[p] = clamp(base[p] + (wave + microJitter) * amp, scene.min, scene.max);
       }
       updateChart(key);
       updateReadings(key);
@@ -6499,6 +6568,38 @@ function setupEnergyUtilitiesInteractions() {
     aux.thermal.avoided = clamp(0.9 + Math.sin(t * 1.05) * 0.03, 0.84, 0.96);
     aux.tariff.after = clamp(1.92 + Math.sin(t * 0.6) * 0.04, 1.85, 2.0);
     aux.tariff.moved = clamp(0.62 + (t % 20) * 0.0004, 0.62, 0.7);
+
+    // Sparkline live wave fluctuation
+    const secWrap = document.getElementById("energySparkSec");
+    if (secWrap) {
+      const waveSec = Math.sin(t * 1.4) * 2.2;
+      const dSec = `M 0 52 C 40 50, 80 ${(46 + waveSec * 0.4).toFixed(1)}, 120 ${(38 - waveSec * 0.3).toFixed(1)} C 170 28, 210 ${(24 + waveSec * 0.6).toFixed(1)}, 260 18 C 300 14, 325 ${(12 + waveSec * 0.5).toFixed(1)}, 340 ${(10 + waveSec).toFixed(1)}`;
+      const paths = secWrap.querySelectorAll("svg > path");
+      if (paths[0]) paths[0].setAttribute("d", `${dSec} L 340 70 L 0 70 Z`);
+      if (paths[1]) paths[1].setAttribute("d", dSec);
+      const endCircle = secWrap.querySelector("svg > circle:not(.energy-spark-hover)");
+      if (endCircle) endCircle.setAttribute("cy", (10 + waveSec).toFixed(1));
+    }
+    const hexWrap = document.getElementById("energySparkHex");
+    if (hexWrap) {
+      const waveHex = Math.sin(t * 1.25 + 1.2) * 2.5;
+      const dHex = `M 0 40 C 50 36, 90 ${(34 - waveHex * 0.4).toFixed(1)}, 140 ${(28 + waveHex * 0.5).toFixed(1)} C 190 22, 230 ${(18 - waveHex * 0.6).toFixed(1)}, 280 14 C 310 12, 330 ${(10 + waveHex * 0.4).toFixed(1)}, 340 ${(10 + waveHex).toFixed(1)}`;
+      const paths = hexWrap.querySelectorAll("svg > path");
+      if (paths[0]) paths[0].setAttribute("d", `${dHex} L 340 70 L 0 70 Z`);
+      if (paths[1]) paths[1].setAttribute("d", dHex);
+      const endCircle = hexWrap.querySelector("svg > circle:not(.energy-spark-hover)");
+      if (endCircle) endCircle.setAttribute("cy", (10 + waveHex).toFixed(1));
+    }
+    const airWrap = document.getElementById("energySparkAir");
+    if (airWrap) {
+      const waveAir = Math.sin(t * 1.6 + 2.1) * 2.0;
+      const dAir = `M 0 28 C 40 ${(26 + waveAir * 0.4).toFixed(1)}, 80 ${(30 - waveAir * 0.5).toFixed(1)}, 120 28 C 160 ${(26 - waveAir * 0.6).toFixed(1)}, 200 ${(30 + waveAir * 0.4).toFixed(1)}, 240 28 C 280 26, 315 ${(28 + waveAir * 0.5).toFixed(1)}, 340 ${(27 + waveAir).toFixed(1)}`;
+      const paths = airWrap.querySelectorAll("svg > path");
+      if (paths[0]) paths[0].setAttribute("d", `${dAir} L 340 70 L 0 70 Z`);
+      if (paths[1]) paths[1].setAttribute("d", dAir);
+      const endCircle = airWrap.querySelector("svg > circle:not(.energy-spark-hover)");
+      if (endCircle) endCircle.setAttribute("cy", (27 + waveAir).toFixed(1));
+    }
 
     const secEl = document.getElementById("energyKpiSec");
     const hexEl = document.getElementById("energyKpiHex");
