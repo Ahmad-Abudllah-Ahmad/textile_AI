@@ -4646,106 +4646,82 @@
     </header>
 
     <div class="inspection-content-body">
-      <section class="inspection-metrics-row">
-        <div class="inspect-metric-card">
-          <div class="card-head-row">
-            <span class="metric-card-title">ZDHC Chemical Gateway</span>
-            <span class="inspect-badge badge-emerald">100% VERIFIED</span>
-          </div>
-          <div class="metric-huge-val compliance-live-num" id="complianceKpiZdhc">MRSL Level 3</div>
-          <div class="metric-chart-wrap" id="complianceSparkZdhc">
-            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="gradComplyZdhc" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="rgba(16, 185, 129, 0.35)"></stop>
-                  <stop offset="100%" stop-color="rgba(16, 185, 129, 0)"></stop>
-                </linearGradient>
-              </defs>
-              <path d="M 0 38 C 50 34, 90 28, 140 22 C 190 16, 240 12, 290 10 C 315 9, 330 8, 340 8 L 340 70 L 0 70 Z" fill="url(#gradComplyZdhc)"></path>
-              <path d="M 0 38 C 50 34, 90 28, 140 22 C 190 16, 240 12, 290 10 C 315 9, 330 8, 340 8" fill="none" stroke="#10B981" stroke-width="2.4" stroke-linecap="round"></path>
-              <circle cx="340" cy="8" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2"></circle>
-              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(16,185,129,.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
-              <circle class="compliance-spark-hover" cx="0" cy="0" r="4.5" fill="#10B981" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
-            </svg>
-          </div>
-        </div>
-
-        <div class="inspect-metric-card">
-          <div class="card-head-row">
-            <span class="metric-card-title">Digital Product Passport</span>
-            <span class="inspect-badge badge-purple" id="complianceKpiDppBadge">QR DPP READY</span>
-          </div>
-          <div class="metric-huge-val compliance-live-num" id="complianceKpiDpp">TEX-8821 ready</div>
-          <div class="metric-chart-wrap" id="complianceSparkDpp">
-            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="gradComplyDpp" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="rgba(124, 58, 237, 0.35)"></stop>
-                  <stop offset="100%" stop-color="rgba(124, 58, 237, 0)"></stop>
-                </linearGradient>
-              </defs>
-              <path d="M 0 48 C 40 46, 80 42, 130 36 C 180 28, 230 20, 280 14 C 310 11, 328 9, 340 8 L 340 70 L 0 70 Z" fill="url(#gradComplyDpp)"></path>
-              <path d="M 0 48 C 40 46, 80 42, 130 36 C 180 28, 230 20, 280 14 C 310 11, 328 9, 340 8" fill="none" stroke="#7C3AED" stroke-width="2.4" stroke-linecap="round"></path>
-              <circle cx="340" cy="8" r="4.5" fill="#7C3AED" stroke="#FFFFFF" stroke-width="2"></circle>
-              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(124,58,237,.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
-              <circle class="compliance-spark-hover" cx="0" cy="0" r="4.5" fill="#7C3AED" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
-            </svg>
-          </div>
-        </div>
-
-        <div class="inspect-metric-card">
-          <div class="card-head-row">
-            <span class="metric-card-title">ESG Effluent Neutrality</span>
-            <span class="inspect-badge badge-cyan">PASSED</span>
-          </div>
-          <div class="metric-huge-val compliance-live-num" id="complianceKpiPh">pH 7.12</div>
-          <div class="metric-chart-wrap" id="complianceSparkPh">
-            <svg class="curved-sparkline-svg" viewBox="0 0 340 70" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="gradComplyPh" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="rgba(6, 182, 212, 0.32)"></stop>
-                  <stop offset="100%" stop-color="rgba(6, 182, 212, 0)"></stop>
-                </linearGradient>
-              </defs>
-              <path d="M 0 28 C 50 26, 90 30, 140 27 C 190 24, 240 29, 290 26 C 315 25, 330 27, 340 26 L 340 70 L 0 70 Z" fill="url(#gradComplyPh)"></path>
-              <path d="M 0 28 C 50 26, 90 30, 140 27 C 190 24, 240 29, 290 26 C 315 25, 330 27, 340 26" fill="none" stroke="#06B6D4" stroke-width="2.4" stroke-linecap="round"></path>
-              <circle cx="340" cy="26" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2"></circle>
-              <line class="spark-crosshair" x1="0" y1="0" x2="0" y2="70" stroke="rgba(6,182,212,.5)" stroke-width="1.2" stroke-dasharray="2 2" opacity="0"></line>
-              <circle class="compliance-spark-hover" cx="0" cy="0" r="4.5" fill="#06B6D4" stroke="#FFFFFF" stroke-width="2" opacity="0"></circle>
-            </svg>
-          </div>
-        </div>
+      <section class="compliance-kpi-grid" aria-label="Selected lot compliance indicators">
+        <article class="compliance-kpi-card tone-emerald" data-tip-title="Genealogy completeness" data-tip-a="Production events with verified machine, operator and timestamp" data-tip-b="Click any stage below to inspect its evidence">
+          <div class="compliance-kpi-head"><span>GENEALOGY COMPLETE</span><b id="complianceKpiGenealogyBadge">7 / 7</b></div>
+          <div class="compliance-kpi-value" id="complianceKpiGenealogy">100%</div>
+          <div class="compliance-kpi-sub" id="complianceKpiGenealogyNote">Greige through shipment linked</div>
+          <svg class="compliance-kpi-spark" viewBox="0 0 240 34" preserveAspectRatio="none" aria-hidden="true"><path class="spark-area" d="M0 30 C45 29 64 25 92 23 S142 15 170 13 S212 8 240 6 L240 34 L0 34Z"></path><path class="spark-line" d="M0 30 C45 29 64 25 92 23 S142 15 170 13 S212 8 240 6"></path><circle cx="240" cy="6" r="3"></circle></svg>
+        </article>
+        <article class="compliance-kpi-card tone-purple" data-tip-title="Digital Product Passport" data-tip-a="Buyer-facing identity, footprint and chain-of-custody fields" data-tip-b="Shipment QR is generated from the current lot record">
+          <div class="compliance-kpi-head"><span>DPP READINESS</span><b id="complianceKpiDppBadge">QR READY</b></div>
+          <div class="compliance-kpi-value" id="complianceKpiDpp">98%</div>
+          <div class="compliance-kpi-sub" id="complianceKpiDppNote">TEX-8821 · 24/25 fields</div>
+          <svg class="compliance-kpi-spark" viewBox="0 0 240 34" preserveAspectRatio="none" aria-hidden="true"><path class="spark-area" d="M0 29 C32 28 58 27 86 23 S136 17 165 14 S209 9 240 7 L240 34 L0 34Z"></path><path class="spark-line" d="M0 29 C32 28 58 27 86 23 S136 17 165 14 S209 9 240 7"></path><circle cx="240" cy="7" r="3"></circle></svg>
+        </article>
+        <article class="compliance-kpi-card tone-blue" data-tip-title="Buyer audit evidence" data-tip-a="Certificates, lab results and source documents available now" data-tip-b="Missing or expiring evidence is called out in the evidence panel">
+          <div class="compliance-kpi-head"><span>AUDIT EVIDENCE</span><b id="complianceKpiEvidenceBadge">12 / 13</b></div>
+          <div class="compliance-kpi-value" id="complianceKpiEvidence">92%</div>
+          <div class="compliance-kpi-sub" id="complianceKpiEvidenceNote">One shipment document pending</div>
+          <svg class="compliance-kpi-spark" viewBox="0 0 240 34" preserveAspectRatio="none" aria-hidden="true"><path class="spark-area" d="M0 27 C36 26 61 22 87 24 S132 18 160 15 S202 13 240 9 L240 34 L0 34Z"></path><path class="spark-line" d="M0 27 C36 26 61 22 87 24 S132 18 160 15 S202 13 240 9"></path><circle cx="240" cy="9" r="3"></circle></svg>
+        </article>
+        <article class="compliance-kpi-card tone-cyan" data-tip-title="Live effluent neutrality" data-tip-a="Final rinse pH captured against the 6.5–8.5 discharge band" data-tip-b="Live value travels with the selected production lot">
+          <div class="compliance-kpi-head"><span>EFFLUENT RELEASE</span><b id="complianceKpiPhBadge">WITHIN BAND</b></div>
+          <div class="compliance-kpi-value compliance-live-num" id="complianceKpiPh">pH 7.12</div>
+          <div class="compliance-kpi-sub" id="complianceKpiPhNote">Final rinse · JD-04</div>
+          <svg class="compliance-kpi-spark" viewBox="0 0 240 34" preserveAspectRatio="none" aria-hidden="true"><path class="spark-area" d="M0 18 C30 16 58 20 86 17 S135 15 163 17 S207 16 240 17 L240 34 L0 34Z"></path><path class="spark-line" d="M0 18 C30 16 58 20 86 17 S135 15 163 17 S207 16 240 17"></path><circle cx="240" cy="17" r="3"></circle></svg>
+        </article>
       </section>
 
-      <section class="inspection-details-row compliance-fit-row">
-        <div class="inspect-detail-card compliance-stack-card">
+      <section class="compliance-main-grid">
+        <article class="inspect-detail-card compliance-dpp-card">
           <div class="detail-card-header">
-            <div class="feed-header-left">
-              <span class="live-dot-pulse"></span>
-              <h2 class="detail-card-title">Batch genealogy</h2>
-            </div>
-            <div class="feed-header-meta">
-              <span class="meta-tag-feed tag-online" id="complianceLiveClock">CAPTURE 14:32:00</span>
-            </div>
+            <div><span class="compliance-card-eyebrow">SELECTED PRODUCTION LOT</span><h2 class="detail-card-title">QR Digital Product Passport</h2></div>
+            <span class="meta-tag-feed tag-online" id="complianceLiveClock">CAPTURE 14:32:00</span>
           </div>
           <div class="compliance-lot-bar" id="complianceLotBar"></div>
-          <div class="compliance-gene-stack" id="complianceGenealogy"></div>
-        </div>
+          <div class="compliance-passport" id="compliancePassport"></div>
+        </article>
 
-        <div class="inspect-detail-card compliance-stack-card">
+        <article class="inspect-detail-card compliance-record-card">
           <div class="detail-card-header">
-            <h2 class="detail-card-title">Buyer pack &amp; QR passport</h2>
-            <span class="inspect-badge badge-purple" id="compliancePackBadge">WITHIN ESPR</span>
+            <div><span class="compliance-card-eyebrow">CHAIN OF CUSTODY</span><h2 class="detail-card-title">Product record</h2></div>
+            <span class="inspect-badge badge-emerald" id="complianceRecordBadge">VERIFIED</span>
           </div>
-          <div class="compliance-pack" id="compliancePack">
-            <div class="compliance-viz-row" id="compliancePackViz"></div>
-            <div class="compliance-passport" id="compliancePassport"></div>
+          <div class="compliance-product-record" id="complianceProductRecord"></div>
+        </article>
+
+        <article class="inspect-detail-card compliance-footprint-card">
+          <div class="detail-card-header">
+            <div><span class="compliance-card-eyebrow">THIS LOT</span><h2 class="detail-card-title">Footprint &amp; buyer audit</h2></div>
+            <span class="inspect-badge badge-purple" id="compliancePackBadge">AUDIT READY</span>
           </div>
-          <div class="inspect-actions-row">
-            <button type="button" class="inspect-btn-outline" id="btnAssembleCompliance">Assemble report</button>
-            <button type="button" class="inspect-btn-primary compliance-primary-btn" id="btnIssuePassport">Issue QR passport</button>
+          <div class="compliance-footprint-chart" id="complianceFootprintChart"></div>
+          <div class="compliance-audit-callout" id="complianceAuditCallout"></div>
+        </article>
+      </section>
+
+      <section class="compliance-lower-grid">
+        <article class="inspect-detail-card compliance-route-card">
+          <div class="detail-card-header">
+            <div><span class="compliance-card-eyebrow">LIVE BATCH GENEALOGY</span><h2 class="detail-card-title">Greige to shipment</h2></div>
+            <span class="inspect-badge badge-purple" id="complianceRouteBadge">7 EVENTS LINKED</span>
           </div>
-        </div>
+          <div class="compliance-genealogy-flow" id="complianceGenealogy"></div>
+          <div class="compliance-stage-detail" id="complianceStageDetail"></div>
+        </article>
+
+        <article class="inspect-detail-card compliance-evidence-card">
+          <div class="detail-card-header">
+            <div><span class="compliance-card-eyebrow">BUYER PACK</span><h2 class="detail-card-title">Evidence readiness</h2></div>
+            <span class="inspect-badge badge-cyan" id="complianceEvidenceBadge">12 / 13 READY</span>
+          </div>
+          <div class="compliance-evidence-chart" id="complianceEvidenceChart"></div>
+          <div class="inspect-actions-row compliance-actions-row">
+            <button type="button" class="inspect-btn-outline" id="btnAssembleCompliance">Assemble audit pack</button>
+            <button type="button" class="inspect-btn-primary compliance-primary-btn" id="btnIssuePassport">Issue shipment QR</button>
+          </div>
+        </article>
       </section>
       <div class="comp-chart-tooltip" id="complianceChartTip" style="display: none;">
         <div class="tip-header"></div>
