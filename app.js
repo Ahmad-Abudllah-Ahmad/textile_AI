@@ -2077,7 +2077,6 @@ const aiModulesData = {
       {
         title: "Spectro Color Match Index",
         metric: "ΔE 0.18",
-        badge: "EXCELLENT",
         desc: "Closed-loop spectrophotometer inline color matching. Zero metamerism detected against master shade standard."
       },
       {
