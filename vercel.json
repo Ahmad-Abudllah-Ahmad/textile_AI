@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/api/copilot/status",
+      "destination": "/api/copilot"
+    },
+    {
+      "source": "/api/copilot",
+      "destination": "/api/copilot"
+    }
+  ]
+}
