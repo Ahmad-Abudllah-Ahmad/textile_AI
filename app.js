@@ -6928,21 +6928,35 @@ function setupComplianceTraceabilityInteractions() {
   const complianceView = document.getElementById("complianceTraceabilityView");
   const geneStack = document.getElementById("complianceGenealogy");
   const lotBar = document.getElementById("complianceLotBar");
-  const packViz = document.getElementById("compliancePackViz");
   const passportEl = document.getElementById("compliancePassport");
+  const productRecordEl = document.getElementById("complianceProductRecord");
+  const footprintChartEl = document.getElementById("complianceFootprintChart");
+  const auditCalloutEl = document.getElementById("complianceAuditCallout");
+  const stageDetailEl = document.getElementById("complianceStageDetail");
+  const evidenceChartEl = document.getElementById("complianceEvidenceChart");
   const tip = document.getElementById("complianceChartTip");
-  if (!complianceView || !geneStack || !lotBar || !packViz || !passportEl) return;
+  if (!complianceView || !geneStack || !lotBar || !passportEl || !productRecordEl || !footprintChartEl || !evidenceChartEl) return;
 
   const tipTitle = tip ? tip.querySelector(".tip-header") : null;
   const tipA = tip ? tip.querySelector(".compliance-tip-a") : null;
   const tipB = tip ? tip.querySelector(".compliance-tip-b") : null;
   const liveChip = complianceView.querySelector(".compliance-live-chip");
   const clockEl = document.getElementById("complianceLiveClock");
-  const kpiZdhc = document.getElementById("complianceKpiZdhc");
+  const kpiGenealogy = document.getElementById("complianceKpiGenealogy");
+  const kpiGenealogyBadge = document.getElementById("complianceKpiGenealogyBadge");
   const kpiDpp = document.getElementById("complianceKpiDpp");
   const kpiDppBadge = document.getElementById("complianceKpiDppBadge");
+  const kpiDppNote = document.getElementById("complianceKpiDppNote");
+  const kpiEvidence = document.getElementById("complianceKpiEvidence");
+  const kpiEvidenceBadge = document.getElementById("complianceKpiEvidenceBadge");
+  const kpiEvidenceNote = document.getElementById("complianceKpiEvidenceNote");
   const kpiPh = document.getElementById("complianceKpiPh");
+  const kpiPhBadge = document.getElementById("complianceKpiPhBadge");
+  const kpiPhNote = document.getElementById("complianceKpiPhNote");
   const packBadge = document.getElementById("compliancePackBadge");
+  const recordBadge = document.getElementById("complianceRecordBadge");
+  const routeBadge = document.getElementById("complianceRouteBadge");
+  const evidenceBadge = document.getElementById("complianceEvidenceBadge");
   const assembleBtn = document.getElementById("btnAssembleCompliance");
   const issueBtn = document.getElementById("btnIssuePassport");
 
@@ -6954,70 +6968,78 @@ function setupComplianceTraceabilityInteractions() {
       product: "Royal Navy #8821",
       buyer: "Marks & Spencer",
       style: "Royal Navy home-textile",
+      order: "EU-1174",
+      shipment: "MSKU-884 · Vessel Friday",
+      delivery: "18 Sep · 18:30",
       chip: "TEX-8821",
-      chipMeta: "Dyed piece · M&S · 6,240 m",
+      chipMeta: "M&S · EU-1174 · 6,240 m",
       status: "QR ready",
       fibre: "GOTS organic cotton · Multan gin G-441",
       fibreShort: "GOTS-G441",
       hash: "0x7c3aed8821dpp",
+      dpp: 98,
+      dppFields: 24,
+      evidenceReady: 12,
+      evidenceTotal: 13,
+      ph: 7.12,
+      record: [
+        ["Product", "Dyed cotton twill · Royal Navy · 240 gsm", "Buyer specification M&S HT-240"],
+        ["Greige source", "Loom L-18 · lot G-441", "GOTS chain-of-custody verified"],
+        ["Pretreatment", "PT-02 · whiteness 152", "Scour and peroxide bleach record"],
+        ["Dyeing", "JD-04 · recipe RN-8821 · ΔE 0.18", "Shade release inside buyer tolerance"],
+        ["Finishing", "ST-02 · 180°C · 240 cm", "Width and heat-set profile signed"],
+        ["Inspection", "FI-01 · A grade · 2.1 points", "ASTM D5430 map attached"],
+        ["Certificates", "GOTS · OEKO-TEX 100 · ZDHC L3", "All certificates valid at shipment"],
+        ["Shipment", "MSKU-884 · vessel Friday", "Packing list awaits final seal number"]
+      ],
       composition: [
         { label: "Organic cotton", value: 100, color: "#7C3AED", tip: "GOTS lot G-441 · Punjab origin" }
       ],
       meters: [
-        { key: "water", label: "Water", value: "86", unit: "L/kg", pct: 58, color: "#06B6D4", tip: "86 L/kg vs 148 L/kg 2023 baseline" },
-        { key: "energy", label: "Energy", value: "0.114", unit: "kWh", pct: 42, color: "#7C3AED", tip: "0.114 kWh/kg captured from Energy module" },
-        { key: "chem", label: "Chem", value: "L3", unit: "ZDHC", pct: 100, color: "#10B981", tip: "Every dosed batch checked to MRSL Level 3" }
+        { key: "water", label: "Water", value: 86, unit: "L/kg", current: 58, baseline: 100, delta: "−42%", tip: "86 L/kg vs 148 L/kg verified 2023 baseline" },
+        { key: "energy", label: "Energy", value: 0.114, unit: "kWh/kg", current: 42, baseline: 49, delta: "−14%", tip: "Specific electricity captured from the Energy module" },
+        { key: "carbon", label: "Carbon", value: 2.7, unit: "kgCO₂e", current: 64, baseline: 82, delta: "−22%", tip: "Scope 1 and 2 allocation for this production lot" },
+        { key: "chem", label: "Chemicals", value: 100, unit: "% MRSL", current: 100, baseline: 100, delta: "L3", tip: "All dosed inputs screened to ZDHC MRSL Level 3" }
+      ],
+      evidence: [
+        ["Chain of custody", 100, "7 linked events"],
+        ["Certificates", 100, "3 valid"],
+        ["Lab & quality", 100, "4 records"],
+        ["Shipment", 75, "Seal pending"]
       ],
       attest: ["GOTS", "OEKO-TEX 100", "ZDHC L3", "EU CSDDD"],
       passportLine: "This is a shippable dye lot — the same TEX-8821 Royal Navy order tracked in Color Intelligence and Planning. Farm, recipe, chemicals and utilities travel with the piece.",
       stages: [
-        { key: "greige", title: "Greige", machine: "L-18", operator: "Imran", time: "08:12", state: "done", capture: "Fibre origin + greige lot G-441", recipe: "Loom-state cotton", chemicals: "None", utilities: "0.0 L · 0.02 kWh/kg" },
-        { key: "pretreat", title: "Pre-treatment", machine: "PT-02", operator: "Sana", time: "10:04", state: "done", capture: "Scour-bleach continuous", recipe: "Caustic 12 g/L · H2O2 8 g/L", chemicals: "ZDHC L3 auxiliaries", utilities: "18 L/kg · 1.4 kg steam/kg" },
-        { key: "dyeing", title: "Dyeing", machine: "JD-04", operator: "Hassan", time: "14:32", state: "live", capture: "Royal Navy #8821 · ΔE 0.18", recipe: "Reactive navy, liquor 1:8", chemicals: "Dyes + salt, MRSL L3", utilities: "42 L/kg · 0.114 kWh/kg" },
-        { key: "printing", title: "Printing", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Not on this home-textile route", recipe: "Skipped", chemicals: "None", utilities: "—" },
-        { key: "finish", title: "Finishing", machine: "ST-02", operator: "Nadia", time: "16:10", state: "done", capture: "Heat-set 180°C · 240 cm", recipe: "Stenter finish profile", chemicals: "Softener ZDHC L3", utilities: "Steam 0.8 kg/kg" },
-        { key: "fold", title: "Folding / rolling", machine: "FI-01", operator: "Ali", time: "16:58", state: "done", capture: "ASTM D5430 2.1 pts · A+", recipe: "Inspection + pack", chemicals: "None", utilities: "0.01 kWh/kg" }
+        { key: "greige", title: "Greige", machine: "L-18", operator: "Imran", time: "08:12", state: "done", capture: "Origin G-441", recipe: "Loom-state cotton", chemicals: "None", utilities: "0.02 kWh/kg" },
+        { key: "pretreat", title: "Pretreat", machine: "PT-02", operator: "Sana", time: "10:04", state: "done", capture: "Whiteness 152", recipe: "Caustic 12 g/L · H₂O₂ 8 g/L", chemicals: "ZDHC L3 auxiliaries", utilities: "18 L/kg · 1.4 kg steam/kg" },
+        { key: "dyeing", title: "Dye", machine: "JD-04", operator: "Hassan", time: "14:32", state: "done", capture: "ΔE 0.18 pass", recipe: "RN-8821 · liquor 1:8", chemicals: "Reactive navy · MRSL L3", utilities: "42 L/kg · 0.114 kWh/kg" },
+        { key: "finish", title: "Finish", machine: "ST-02", operator: "Nadia", time: "16:10", state: "done", capture: "180°C · 240 cm", recipe: "Heat-set profile F-12", chemicals: "Softener ZDHC L3", utilities: "0.8 kg steam/kg" },
+        { key: "roll", title: "Roll", machine: "RL-04", operator: "Ali", time: "16:58", state: "done", capture: "Rolls 218–224", recipe: "Final rolling", chemicals: "None", utilities: "0.01 kWh/kg" },
+        { key: "cert", title: "Cert", machine: "QA-01", operator: "Mariam", time: "17:12", state: "done", capture: "C-8841 issued", recipe: "ASTM D5430 · A grade", chemicals: "ZDHC verified", utilities: "Evidence sealed" },
+        { key: "ship", title: "Ship", machine: "PK-02", operator: "Usman", time: "17:42", state: "alert", capture: "Seal number pending", recipe: "MSKU-884 · vessel Fri", chemicals: "Not applicable", utilities: "Packing list 92%" }
       ]
     },
-    "aj-003": {
-      id: "AJ-003",
-      kind: "asset",
-      kindLabel: "MACHINE ASSET",
-      product: "Air-jet loom AJ-003",
-      buyer: "Internal mill loop",
-      style: "Loom AJ-003 watch lot",
-      chip: "AJ-003",
-      chipMeta: "Air-jet loom · not a product",
-      status: "Loom watch",
-      fibre: "No fibre passport — this is a machine, not a SKU",
-      fibreShort: "ASSET",
-      hash: "pending-registry",
-      composition: [
-        { label: "Cotton", value: 70, color: "#7C3AED", tip: "Conventional cotton — origin still unbound" },
-        { label: "Polyester", value: 30, color: "#94A3B8", tip: "Blend share without supplier journey" }
+    "tex-8840": {
+      id: "TEX-8840", kind: "lot", kindLabel: "PRODUCTION LOT", product: "Indigo Flora #8840", buyer: "IKEA", style: "Printed cotton furnishing", order: "EU-1192", shipment: "PKHU-218 · Road feeder", delivery: "20 Sep · 09:00", chip: "TEX-8840", chipMeta: "IKEA · EU-1192 · 5,180 m", status: "Evidence review", fibre: "Better Cotton · Rahim Yar Khan gin B-218", fibreShort: "BCI-B218", hash: "0x2563eb8840dpp", dpp: 91, dppFields: 23, evidenceReady: 10, evidenceTotal: 13, ph: 7.08,
+      record: [
+        ["Product", "Printed cotton · Indigo Flora · 220 gsm", "IKEA textile specification TX-220"], ["Greige source", "Loom L-22 · lot B-218", "Better Cotton supplier declaration"], ["Pretreatment", "PT-03 · whiteness 148", "Enzymatic desize and bleach"], ["Printing", "RP-02 · screens 08–13", "Paste batch PB-8840 linked"], ["Finishing", "ST-01 · 175°C · 232 cm", "Dimensional stability passed"], ["Inspection", "FI-02 · A grade · 3.4 points", "Defect map attached"], ["Certificates", "OEKO-TEX 100 · ZDHC L3", "GOTS not applicable to this fibre"], ["Shipment", "PKHU-218 · road feeder", "Buyer declaration requires signature"]
       ],
+      composition: [{ label: "Better Cotton", value: 100, color: "#2563EB", tip: "Supplier lot B-218 · Pakistan origin" }],
       meters: [
-        { key: "water", label: "Water", value: "112", unit: "L/kg", pct: 76, color: "#06B6D4", tip: "112 L/kg captured to dyeing only" },
-        { key: "energy", label: "Energy", value: "0.128", unit: "kWh", pct: 54, color: "#7C3AED", tip: "Energy trail stops at greige hold" },
-        { key: "chem", label: "Chem", value: "L3", unit: "ZDHC", pct: 100, color: "#10B981", tip: "Chemicals still MRSL Level 3" }
+        { key: "water", label: "Water", value: 94, unit: "L/kg", current: 68, baseline: 100, delta: "−32%", tip: "94 L/kg against 138 L/kg process baseline" }, { key: "energy", label: "Energy", value: 0.128, unit: "kWh/kg", current: 54, baseline: 61, delta: "−11%", tip: "Specific electricity captured from the Energy module" }, { key: "carbon", label: "Carbon", value: 3.1, unit: "kgCO₂e", current: 72, baseline: 86, delta: "−16%", tip: "Allocated Scope 1 and 2 emissions" }, { key: "chem", label: "Chemicals", value: 96, unit: "% MRSL", current: 96, baseline: 100, delta: "1 hold", tip: "One print-paste supplier declaration awaiting signature" }
       ],
-      attest: ["ZDHC L3", "Work order", "Vibe watch"],
-      passportLine: "AJ-003 is the air-jet loom on reliability watch — not a buyer SKU. This QR is a live asset tag for the greige hold, not a Digital Product Passport.",
+      evidence: [["Chain of custody", 100, "7 linked events"], ["Certificates", 88, "2 valid"], ["Lab & quality", 92, "5 records"], ["Shipment", 62, "Sign-off due"]],
+      attest: ["Better Cotton", "OEKO-TEX 100", "ZDHC L3"], passportLine: "TEX-8840 connects the greige source, rotary-print recipe, paste inputs, finishing settings and shipment evidence for IKEA order EU-1192.",
       stages: [
-        { key: "greige", title: "Greige", machine: "L-18", operator: "Imran", time: "07:40", state: "live", capture: "Vibration watch on AJ-003", recipe: "Loom-state", chemicals: "None", utilities: "0.03 kWh/kg" },
-        { key: "pretreat", title: "Pre-treatment", machine: "PT-01", operator: "—", time: "held", state: "skipped", capture: "Not released — greige hold", recipe: "Held", chemicals: "—", utilities: "—" },
-        { key: "dyeing", title: "Dyeing", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Waiting greige release", recipe: "—", chemicals: "—", utilities: "—" },
-        { key: "printing", title: "Printing", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Not on route", recipe: "—", chemicals: "—", utilities: "—" },
-        { key: "finish", title: "Finishing", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Not released", recipe: "—", chemicals: "—", utilities: "—" },
-        { key: "fold", title: "Folding / rolling", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Not released", recipe: "—", chemicals: "—", utilities: "—" }
+        { key: "greige", title: "Greige", machine: "L-22", operator: "Asad", time: "07:48", state: "done", capture: "Origin B-218", recipe: "Plain weave cotton", chemicals: "None", utilities: "0.02 kWh/kg" }, { key: "pretreat", title: "Pretreat", machine: "PT-03", operator: "Sana", time: "09:38", state: "done", capture: "Whiteness 148", recipe: "Enzyme + peroxide", chemicals: "ZDHC L3 auxiliaries", utilities: "21 L/kg · 1.5 kg steam/kg" }, { key: "printing", title: "Print", machine: "RP-02", operator: "Faraz", time: "13:18", state: "done", capture: "Screens 08–13", recipe: "PB-8840 · 4,200 cP", chemicals: "Paste inputs · 96% cleared", utilities: "31 L/kg · 0.128 kWh/kg" }, { key: "finish", title: "Finish", machine: "ST-01", operator: "Nadia", time: "15:10", state: "done", capture: "175°C · 232 cm", recipe: "Finish profile PF-08", chemicals: "Softener ZDHC L3", utilities: "0.9 kg steam/kg" }, { key: "roll", title: "Roll", machine: "RL-03", operator: "Ali", time: "16:02", state: "done", capture: "Rolls 301–306", recipe: "Final rolling", chemicals: "None", utilities: "0.01 kWh/kg" }, { key: "cert", title: "Cert", machine: "QA-02", operator: "Mariam", time: "16:28", state: "alert", capture: "Supplier sign-off due", recipe: "OEKO-TEX + ZDHC pack", chemicals: "1 declaration open", utilities: "Evidence 88%" }, { key: "ship", title: "Ship", machine: "PK-03", operator: "Usman", time: "17:20", state: "pending", capture: "Feeder slot reserved", recipe: "PKHU-218", chemicals: "Not applicable", utilities: "Packing list draft" }
       ]
     }
   };
 
   let activeLot = "tex-8821";
   let activeStage = "dyeing";
-  let issued = { "tex-8821": false, "aj-003": false };
-  let assembled = { "tex-8821": false, "aj-003": false };
+  let issued = { "tex-8821": false, "tex-8840": false };
+  let assembled = { "tex-8821": false, "tex-8840": false };
 
   function clamp(n, min, max) {
     return Math.min(max, Math.max(min, n));
@@ -7265,65 +7287,47 @@ function setupComplianceTraceabilityInteractions() {
   function renderLots() {
     lotBar.innerHTML = Object.keys(lots).map((key) => {
       const lot = lots[key];
-      const asset = lot.kind === "asset" ? " is-asset" : "";
-      return `<button type="button" class="compliance-lot-chip${key === activeLot ? " is-active" : ""}${asset}" data-compliance-lot="${key}"><small>${lot.kindLabel}</small><b>${lot.chip}</b><span>${lot.chipMeta}</span></button>`;
+      return `<button type="button" class="compliance-lot-chip${key === activeLot ? " is-active" : ""}" data-compliance-lot="${key}" data-tip-title="${lot.id} · ${lot.product}" data-tip-a="${lot.buyer} · Order ${lot.order}" data-tip-b="${lot.delivery} · Click to load the complete compliance record"><small>${lot.kindLabel}</small><b>${lot.chip}</b><span>${lot.chipMeta}</span></button>`;
     }).join("");
   }
 
   function renderGenealogy() {
     const lot = lots[activeLot];
-    geneStack.innerHTML = lot.stages.map((stage) => {
+    geneStack.innerHTML = lot.stages.map((stage, index) => {
       const selected = stage.key === activeStage ? " is-selected" : "";
-      const stateClass = stage.state === "skipped" ? " is-skipped" : stage.state === "live" ? " is-live" : "";
-      return `
-        <article class="compliance-gene-row${selected}${stateClass}" data-compliance-stage="${stage.key}" data-tip-title="${stage.title}" data-tip-a="${stage.capture}" data-tip-b="${stage.recipe} · ${stage.chemicals} · ${stage.utilities}">
-          <span class="compliance-gene-dot"></span>
-          <div class="compliance-gene-main">
-            <strong>${stage.title}</strong>
-            <small>${stage.capture}</small>
-          </div>
-          <div class="compliance-gene-meta">${stage.machine}<br>${stage.time}</div>
-        </article>`;
+      const stateClass = stage.state === "pending" ? " is-pending" : stage.state === "alert" ? " is-alert" : "";
+      return `<button type="button" class="compliance-gene-node${selected}${stateClass}" data-compliance-stage="${stage.key}" data-tip-title="${stage.title} · ${stage.capture}" data-tip-a="${stage.machine} · ${stage.operator} · ${stage.time}" data-tip-b="${stage.recipe} · ${stage.chemicals}"><span class="compliance-gene-index">${String(index + 1).padStart(2, "0")}</span><strong>${stage.title}</strong><small>${stage.machine} · ${stage.time}</small></button>`;
     }).join("");
+    renderStageDetail();
   }
 
-  function renderPack() {
+  function renderStageDetail() {
     const lot = lots[activeLot];
-    const pie = lot.composition;
-    packViz.innerHTML = `
-      <div class="compliance-pie-mini">
-        <svg viewBox="0 0 72 72" aria-label="Fibre composition">
-          <circle cx="36" cy="36" r="30" fill="#F5F3FF"></circle>
-          <g>${renderPie(pie)}</g>
-          <circle cx="36" cy="36" r="16" fill="#FFFFFF"></circle>
-        </svg>
-        <ul>${pie.map((item) => `<li data-tip-title="${item.label}" data-tip-a="${item.tip}"><i style="background:${item.color}"></i>${item.label}</li>`).join("")}</ul>
-      </div>
-      <div class="compliance-meter-col">
-        ${lot.meters.map((meter) => `
-          <div class="compliance-meter-mini" data-tip-title="${meter.label} footprint" data-tip-a="${meter.tip}" data-tip-b="${meter.value} ${meter.unit}">
-            <svg viewBox="0 0 80 80" aria-label="${meter.label}">
-              <circle cx="40" cy="40" r="26" fill="none" stroke="#E2E8F0" stroke-width="8"></circle>
-              <circle cx="40" cy="40" r="26" fill="none" stroke="${meter.color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${meterArc(meter.pct)}" transform="rotate(-90 40 40)"></circle>
-              <text class="compliance-meter-val" x="40" y="38" text-anchor="middle">${meter.value}</text>
-              <text class="compliance-meter-unit" x="40" y="50" text-anchor="middle">${meter.unit}</text>
-            </svg>
-            <small>${meter.label}</small>
-          </div>`).join("")}
-      </div>`;
+    const stage = lot.stages.find((item) => item.key === activeStage) || lot.stages[0];
+    if (!stageDetailEl) return;
+    stageDetailEl.innerHTML = `
+      <div><small>Captured event</small><strong>${stage.title} · ${stage.capture}</strong></div>
+      <div><small>Machine / owner</small><strong>${stage.machine} · ${stage.operator}</strong></div>
+      <div><small>Process evidence</small><strong>${stage.recipe}</strong></div>
+      <div><small>Chemicals / utilities</small><strong>${stage.chemicals} · ${stage.utilities}</strong></div>`;
+  }
 
-    paintPassport(lot);
+  function renderProductRecord() {
+    const lot = lots[activeLot];
+    productRecordEl.innerHTML = lot.record.map(([label, value, detail]) => `
+      <div class="compliance-record-item" data-tip-title="${label}" data-tip-a="${value}" data-tip-b="${detail}">
+        <small>${label}</small><strong>${value}</strong>
+      </div>`).join("");
   }
 
   function paintPassport(lot) {
     const payload = currentPayload();
-    const title = lot.kind === "lot" ? "Live product QR" : "Live asset tag";
     passportEl.innerHTML = `
-      <div class="compliance-qr" data-tip-title="${title}" data-tip-a="${lot.kindLabel} · ${lot.id}" data-tip-b="${payload}">
+      <div class="compliance-qr" data-tip-title="Live shipment QR" data-tip-a="${lot.id} · ${lot.order}" data-tip-b="Scan record includes identity, genealogy, footprint and certificates">
         ${buildQrSvg(payload)}
       </div>
       <div class="compliance-pass-copy">
-        <em>${issued[activeLot] ? (lot.kind === "lot" ? "QR ISSUED" : "ASSET TAG ISSUED") : lot.kindLabel}</em>
+        <em>${issued[activeLot] ? "SHIPMENT QR ISSUED" : `${lot.kindLabel} · ${lot.order}`}</em>
         <strong>${lot.id} · ${lot.product}</strong>
         <p>${lot.passportLine}</p>
         <div class="compliance-pass-live" data-live-pass>${payload}</div>
@@ -7331,23 +7335,64 @@ function setupComplianceTraceabilityInteractions() {
       </div>`;
   }
 
+  function renderFootprint() {
+    const lot = lots[activeLot];
+    footprintChartEl.innerHTML = lot.meters.map((meter) => `
+      <div class="compliance-footprint-row" data-tip-title="${meter.label} · ${meter.value} ${meter.unit}" data-tip-a="${meter.tip}" data-tip-b="Performance against verified process baseline: ${meter.delta}">
+        <span>${meter.label}</span>
+        <div class="compliance-footprint-track"><i class="compliance-footprint-baseline" style="width:${meter.baseline}%"></i><i class="compliance-footprint-live" data-footprint-live="${meter.key}" style="width:${meter.current}%"></i></div>
+        <b data-footprint-value="${meter.key}">${meter.key === "chem" ? `${meter.value}%` : `${meter.value} ${meter.unit}`}</b>
+      </div>`).join("");
+    if (auditCalloutEl) {
+      const missing = lot.evidenceTotal - lot.evidenceReady;
+      auditCalloutEl.innerHTML = `<span class="compliance-audit-score">${Math.round((lot.evidenceReady / lot.evidenceTotal) * 100)}%</span><div class="compliance-audit-copy"><strong>${assembled[activeLot] ? "Buyer audit pack assembled" : `${missing} evidence item${missing === 1 ? "" : "s"} requires attention`}</strong><small>${lot.buyer} · ${lot.shipment}</small></div><em>${assembled[activeLot] ? "PACK READY" : "REVIEW"}</em>`;
+    }
+  }
+
+  function renderEvidence() {
+    const lot = lots[activeLot];
+    const pct = Math.round((lot.evidenceReady / lot.evidenceTotal) * 100);
+    const circ = 2 * Math.PI * 31;
+    const dash = (pct / 100) * circ;
+    evidenceChartEl.innerHTML = `
+      <div class="compliance-evidence-donut" data-tip-title="Audit pack completeness" data-tip-a="${lot.evidenceReady} of ${lot.evidenceTotal} evidence objects verified" data-tip-b="${lot.buyer} · ${lot.order}">
+        <svg viewBox="0 0 80 80"><circle class="track" cx="40" cy="40" r="31"></circle><circle class="value" cx="40" cy="40" r="31" stroke-dasharray="${dash.toFixed(1)} ${(circ - dash).toFixed(1)}"></circle></svg><div><b>${pct}%</b><small>READY</small></div>
+      </div>
+      <div class="compliance-evidence-bars">${lot.evidence.map(([label, value, detail]) => `<div class="compliance-evidence-row${value < 90 ? " is-warning" : ""}" data-tip-title="${label}" data-tip-a="${detail}" data-tip-b="${value}% complete"><span>${label}</span><i class="compliance-evidence-track"><i style="width:${value}%"></i></i><b>${value}%</b></div>`).join("")}</div>`;
+  }
+
   function syncHeader() {
     const lot = lots[activeLot];
-    if (liveChip) liveChip.innerHTML = `<span></span> LIVE LEDGER · ${lot.id} · ${lot.kind === "lot" ? "PRODUCT" : "ASSET"}`;
-    if (kpiDpp) kpiDpp.textContent = issued[activeLot] ? `${lot.id} issued` : lot.kind === "lot" ? `${lot.id} ready` : `${lot.id} watch`;
-    if (kpiDppBadge) kpiDppBadge.textContent = issued[activeLot] ? "QR ISSUED" : lot.kind === "lot" ? "QR DPP READY" : "ASSET TAG";
-    if (packBadge) packBadge.textContent = assembled[activeLot] ? "PACK READY · 11s" : lot.kind === "lot" ? "WITHIN ESPR" : "NOT A PRODUCT";
+    const evidencePct = Math.round((lot.evidenceReady / lot.evidenceTotal) * 100);
+    if (liveChip) liveChip.innerHTML = `<span></span> LIVE LEDGER · ${lot.id} · ${lot.buyer.toUpperCase()}`;
+    if (kpiGenealogy) kpiGenealogy.textContent = "100%";
+    if (kpiGenealogyBadge) kpiGenealogyBadge.textContent = `${lot.stages.length} / ${lot.stages.length}`;
+    if (kpiDpp) kpiDpp.textContent = `${lot.dpp}%`;
+    if (kpiDppBadge) kpiDppBadge.textContent = issued[activeLot] ? "QR ISSUED" : lot.dpp >= 95 ? "QR READY" : "REVIEW";
+    if (kpiDppNote) kpiDppNote.textContent = `${lot.id} · ${lot.dppFields} / 25 fields`;
+    if (kpiEvidence) kpiEvidence.textContent = `${evidencePct}%`;
+    if (kpiEvidenceBadge) kpiEvidenceBadge.textContent = `${lot.evidenceReady} / ${lot.evidenceTotal}`;
+    if (kpiEvidenceNote) kpiEvidenceNote.textContent = lot.evidenceReady === lot.evidenceTotal ? "Buyer pack complete" : `${lot.evidenceTotal - lot.evidenceReady} evidence item pending`;
+    if (kpiPhBadge) kpiPhBadge.textContent = lot.ph >= 6.5 && lot.ph <= 8.5 ? "WITHIN BAND" : "HOLD";
+    if (kpiPhNote) kpiPhNote.textContent = `Final rinse · ${lot.stages.find((stage) => stage.key === "dyeing" || stage.key === "printing")?.machine || "Process"}`;
+    if (packBadge) packBadge.textContent = assembled[activeLot] ? "PACK READY" : evidencePct >= 90 ? "AUDIT READY" : "EVIDENCE REVIEW";
+    if (recordBadge) recordBadge.textContent = lot.dpp >= 95 ? "VERIFIED" : "1 OPEN ITEM";
+    if (routeBadge) routeBadge.textContent = `${lot.stages.length} EVENTS LINKED`;
+    if (evidenceBadge) evidenceBadge.textContent = `${lot.evidenceReady} / ${lot.evidenceTotal} READY`;
     if (issueBtn) {
       issueBtn.disabled = issued[activeLot];
-      issueBtn.textContent = issued[activeLot] ? (lot.kind === "lot" ? "QR issued ✓" : "Asset tag issued ✓") : (lot.kind === "lot" ? "Issue QR passport" : "Issue asset tag");
+      issueBtn.textContent = issued[activeLot] ? "Shipment QR issued ✓" : "Issue shipment QR";
     }
-    if (assembleBtn) assembleBtn.textContent = assembled[activeLot] ? "Pack ready · 11s" : "Assemble report";
+    if (assembleBtn) assembleBtn.textContent = assembled[activeLot] ? "Audit pack ready ✓" : "Assemble audit pack";
   }
 
   function renderAll() {
     renderLots();
     renderGenealogy();
-    renderPack();
+    renderProductRecord();
+    paintPassport(lots[activeLot]);
+    renderFootprint();
+    renderEvidence();
     syncHeader();
   }
 
@@ -7356,8 +7401,7 @@ function setupComplianceTraceabilityInteractions() {
     if (!chip) return;
     sfx.playClick();
     activeLot = chip.dataset.complianceLot;
-    const firstOpen = lots[activeLot].stages.find((stage) => stage.state !== "skipped") || lots[activeLot].stages[0];
-    activeStage = firstOpen.key;
+    activeStage = lots[activeLot].stages.find((stage) => stage.state === "alert" || stage.state === "pending")?.key || lots[activeLot].stages[0].key;
     renderAll();
   });
 
@@ -7369,76 +7413,30 @@ function setupComplianceTraceabilityInteractions() {
     renderGenealogy();
   });
 
-  geneStack.addEventListener("pointermove", (event) => {
+  complianceView.addEventListener("pointermove", (event) => {
     const el = event.target.closest("[data-tip-title]");
     if (el) showTip(el.dataset.tipTitle, el.dataset.tipA, el.dataset.tipB, event);
+    else hideTip();
   });
-  geneStack.addEventListener("pointerleave", hideTip);
-
-  packViz.addEventListener("pointermove", (event) => {
-    const el = event.target.closest("[data-tip-title]");
-    if (el) showTip(el.dataset.tipTitle, el.dataset.tipA, el.dataset.tipB, event);
-  });
-  packViz.addEventListener("pointerleave", hideTip);
-
-  passportEl.addEventListener("pointermove", (event) => {
-    const el = event.target.closest("[data-tip-title]");
-    if (el) showTip(el.dataset.tipTitle, el.dataset.tipA, el.dataset.tipB, event);
-  });
-  passportEl.addEventListener("pointerleave", hideTip);
-
-  function bindSparkHover() {
-    const sparks = [
-      { id: "complianceSparkZdhc", values: [96, 97.5, 98.4, 99.2, 100], ys: [38, 28, 22, 12, 8], format: (v) => `${v.toFixed(1)}% MRSL checks` },
-      { id: "complianceSparkDpp", values: [52, 58, 62, 78, 100], ys: [48, 42, 36, 20, 8], format: (v) => `${v.toFixed(0)}% passport fields` },
-      { id: "complianceSparkPh", values: [7.18, 7.14, 7.11, 7.13, 7.12], ys: [28, 26, 30, 24, 26], format: (v) => `pH ${v.toFixed(2)}` }
-    ];
-    sparks.forEach((spark) => {
-      const wrap = document.getElementById(spark.id);
-      if (!wrap) return;
-      const svg = wrap.querySelector("svg");
-      const cross = wrap.querySelector(".spark-crosshair");
-      const dot = wrap.querySelector(".compliance-spark-hover");
-      wrap.addEventListener("pointermove", (event) => {
-        const bounds = svg.getBoundingClientRect();
-        const t = clamp((event.clientX - bounds.left) / bounds.width, 0, 1);
-        const idx = t * (spark.values.length - 1);
-        const lo = Math.floor(idx);
-        const hi = Math.min(spark.values.length - 1, lo + 1);
-        const p = idx - lo;
-        const value = spark.values[lo] + (spark.values[hi] - spark.values[lo]) * p;
-        const x = t * 340;
-        const y = spark.ys[lo] + (spark.ys[hi] - spark.ys[lo]) * p;
-        if (cross) {
-          cross.setAttribute("x1", x.toFixed(1));
-          cross.setAttribute("x2", x.toFixed(1));
-          cross.setAttribute("opacity", "1");
-        }
-        if (dot) {
-          dot.setAttribute("cx", x.toFixed(1));
-          dot.setAttribute("cy", y.toFixed(1));
-          dot.setAttribute("opacity", "1");
-        }
-        if (tipTitle) tipTitle.textContent = spark.format(value);
-        if (tipA) tipA.textContent = "Captured with the batch, not reconstructed later";
-        if (tipB) tipB.textContent = "";
-        placeTip(event);
-      });
-      wrap.addEventListener("pointerleave", () => {
-        if (cross) cross.setAttribute("opacity", "0");
-        if (dot) dot.setAttribute("opacity", "0");
-        hideTip();
-      });
-    });
-  }
+  complianceView.addEventListener("pointerleave", hideTip);
 
   if (assembleBtn) {
     assembleBtn.addEventListener("click", () => {
       sfx.playClick();
-      assembled[activeLot] = true;
-      assembleBtn.textContent = "Pack ready · 11s";
-      if (packBadge) packBadge.textContent = "PACK READY · 11s";
-      window.setTimeout(() => { assembleBtn.textContent = "Assemble report"; }, 1800);
+      assembleBtn.disabled = true;
+      assembleBtn.textContent = "Assembling evidence…";
+      window.setTimeout(() => {
+        const lot = lots[activeLot];
+        assembled[activeLot] = true;
+        lot.evidenceReady = lot.evidenceTotal;
+        lot.evidence = lot.evidence.map(([label, , detail]) => [label, 100, label === "Shipment" ? "Shipment declaration attached" : detail]);
+        lot.dpp = 100;
+        lot.dppFields = 25;
+        const openStage = lot.stages.find((stage) => stage.state === "alert" || stage.state === "pending");
+        if (openStage) openStage.state = "done";
+        assembleBtn.disabled = false;
+        renderAll();
+      }, 900);
     });
   }
 
@@ -7447,10 +7445,9 @@ function setupComplianceTraceabilityInteractions() {
       sfx.playClick();
       issued[activeLot] = true;
       lots[activeLot].hash = `0x${hash32(`${lots[activeLot].id}-${Date.now()}`).toString(16)}dpp`;
-      issueBtn.textContent = "QR issued ✓";
-      issueBtn.disabled = true;
-      renderPack();
-      syncHeader();
+      lots[activeLot].dpp = 100;
+      lots[activeLot].dppFields = 25;
+      renderAll();
     });
   }
 
@@ -7458,15 +7455,16 @@ function setupComplianceTraceabilityInteractions() {
     if (complianceView.style.display === "none") return;
     const now = new Date();
     liveClock = now.toLocaleTimeString("en-GB", { hour12: false });
-    livePh = (7.12 + Math.sin(Date.now() / 1800) * 0.015).toFixed(2);
+    const lot = lots[activeLot];
+    livePh = (lot.ph + Math.sin(Date.now() / 1800) * 0.015).toFixed(2);
     if (clockEl) clockEl.textContent = `CAPTURE ${liveClock}`;
     if (kpiPh) kpiPh.textContent = `pH ${livePh}`;
-    if (kpiZdhc) kpiZdhc.textContent = "MRSL Level 3";
-    const lot = lots[activeLot];
-    if (lot.kind === "lot") {
-      const energy = lot.meters.find((item) => item.key === "energy");
-      if (energy) energy.value = (0.114 + Math.sin(Date.now() / 2400) * 0.002).toFixed(3);
-    }
+    const energy = lot.meters.find((item) => item.key === "energy");
+    const liveEnergy = energy ? energy.value + Math.sin(Date.now() / 2200) * 0.0015 : 0;
+    const energyValue = footprintChartEl.querySelector('[data-footprint-value="energy"]');
+    const energyBar = footprintChartEl.querySelector('[data-footprint-live="energy"]');
+    if (energyValue && energy) energyValue.textContent = `${liveEnergy.toFixed(3)} ${energy.unit}`;
+    if (energyBar && energy) energyBar.style.width = `${clamp(energy.current + Math.sin(Date.now() / 1800) * 1.4, 0, 100).toFixed(1)}%`;
     const qrBox = passportEl.querySelector(".compliance-qr");
     const liveLine = passportEl.querySelector("[data-live-pass]");
     const payload = currentPayload();
@@ -7477,8 +7475,8 @@ function setupComplianceTraceabilityInteractions() {
     if (liveLine) liveLine.textContent = payload;
   }
 
-  bindSparkHover();
   renderAll();
+  tickLive();
   window.setInterval(tickLive, 1200);
 }
 
