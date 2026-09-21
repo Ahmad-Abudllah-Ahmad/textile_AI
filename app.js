@@ -5175,11 +5175,14 @@ function setupProductionPlanningInteractions() {
   };
 
   const planningView = document.getElementById("productionPlanningView");
-  const planningTooltip = document.createElement("div");
-  planningTooltip.className = "planning-tooltip";
-  planningTooltip.setAttribute("role", "tooltip");
-  planningTooltip.setAttribute("aria-hidden", "true");
-  planningView?.appendChild(planningTooltip);
+  let planningTooltip = document.querySelector(".planning-tooltip");
+  if (!planningTooltip) {
+    planningTooltip = document.createElement("div");
+    planningTooltip.className = "planning-tooltip";
+    planningTooltip.setAttribute("role", "tooltip");
+    planningTooltip.setAttribute("aria-hidden", "true");
+    document.body.appendChild(planningTooltip);
+  }
 
   const stageDetailsData = {
     incoming: { title: "Greige Release", machine: "L-18 · Loom Take-off", text: "Verified 6,240 m greige batch released 7 min early with 99.4% roll yield." },
@@ -5407,16 +5410,21 @@ function setupProductionPlanningInteractions() {
     if (!target) return;
     const rect = target.getBoundingClientRect();
     const pad = 12;
-    const gap = 10;
-    const width = planningTooltip.offsetWidth || 280;
+    const gap = 12;
+    const width = planningTooltip.offsetWidth || 290;
     const height = planningTooltip.offsetHeight || 65;
 
-    const anchorX = (event && typeof event.clientX === "number")
-      ? Math.max(rect.left + 8, Math.min(rect.right - 8, event.clientX))
-      : (rect.left + rect.width / 2);
+    let anchorX = rect.left + rect.width / 2;
+    if (event && typeof event.clientX === "number" && event.clientX >= rect.left - 10 && event.clientX <= rect.right + 10) {
+      anchorX = Math.max(rect.left + 12, Math.min(rect.right - 12, event.clientX));
+    }
 
     let left = anchorX - width / 2;
-    left = Math.max(pad, Math.min(window.innerWidth - width - pad, left));
+    if (left < pad) {
+      left = pad;
+    } else if (left + width > window.innerWidth - pad) {
+      left = window.innerWidth - width - pad;
+    }
 
     let top = rect.top - height - gap;
     let isBelow = false;
@@ -5428,7 +5436,7 @@ function setupProductionPlanningInteractions() {
       }
     }
 
-    const arrowX = Math.max(14, Math.min(width - 14, anchorX - left));
+    const arrowX = Math.max(16, Math.min(width - 16, anchorX - left));
 
     planningTooltip.style.left = `${Math.round(left)}px`;
     planningTooltip.style.top = `${Math.round(top)}px`;
@@ -5464,6 +5472,7 @@ function setupProductionPlanningInteractions() {
   });
   planningView?.addEventListener("focusin", (event) => showPlanningTooltip(event.target.closest("[data-tooltip]")));
   planningView?.addEventListener("focusout", hidePlanningTooltip);
+  window.addEventListener("scroll", hidePlanningTooltip, true);
   stagePanel?.addEventListener("click", (event) => {
     const block = event.target.closest(".lot-block,.changeover-block,.idle-block");
     const lane = event.target.closest(".machine-lane");
