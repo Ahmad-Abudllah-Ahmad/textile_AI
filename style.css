@@ -328,14 +328,14 @@ html, body {
   width: 100vw;
   height: 100vh;
   min-height: 100vh;
+  max-height: 100vh;
   max-width: none;
   margin: 0;
   border-radius: 0;
   border: none;
   box-shadow: none;
   background: #F6F8FA;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   animation: fadeInDashboard 0.3s var(--ease-smooth);
 }
 
@@ -346,15 +346,19 @@ html, body {
 
 /* Dashboard Inner Container (Full Screen Layout - Side-to-Side Edge) */
 .dash-inner-content {
-  padding: 12px 0 24px 0;
+  padding: 8px 0 0 0;
   background: #F6F8FA;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  height: 100vh;
   min-height: 100vh;
+  max-height: 100vh;
   max-width: 100%;
   width: 100%;
   margin: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .dash-top-toolbar,
@@ -373,6 +377,7 @@ html, body {
   justify-content: space-between;
   gap: 12px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .toolbar-left-group {
@@ -531,6 +536,8 @@ html, body {
   border-radius: 14px;
   padding: 8px 16px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  margin: 0 24px;
+  flex-shrink: 0;
 }
 
 .scrubber-zoom-controls {
@@ -703,11 +710,12 @@ html, body {
 .dash-map-viewport {
   position: relative;
   width: 100%;
-  height: 880px;
+  flex: 1;
+  min-height: 0;
   background: #D8DCE1;
   border-radius: 0;
   border-top: 1px solid #CBD5E1;
-  border-bottom: 1px solid #CBD5E1;
+  border-bottom: none;
   border-left: none;
   border-right: none;
   overflow: hidden;
@@ -720,8 +728,8 @@ html, body {
 .scada-pid-diagram {
   width: 100%;
   height: 100%;
-  max-width: 1060px;
-  max-height: 920px;
+  max-width: 100%;
+  max-height: 100%;
   display: block;
   user-select: none;
   margin: 0 auto;
