@@ -124,16 +124,17 @@ html, body {
 .app-wrapper {
   position: relative;
   z-index: 2;
-  max-width: 1440px;
+  max-width: 100%;
   width: 100%;
-  margin: 0 auto;
+  margin: 0;
   min-height: 100vh;
-  padding: 32px 24px;
+  padding: 32px 28px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   transition: opacity 0.35s ease, transform 0.35s ease;
+  box-sizing: border-box;
 }
 
 .sectors-grid {
@@ -2240,8 +2241,10 @@ html, body {
   align-content: center;
   gap: 12px 18px;
   width: 100%;
-  max-width: 1640px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 24px;
+  box-sizing: border-box;
 }
 
 .module-card-btn {
@@ -2263,14 +2266,16 @@ html, body {
 
 .module-card-btn .card-phase-num {
   font-size: 0.72rem;
-  letter-spacing: 0.08em;
-  margin-bottom: 2px;
+  font-family: var(--font-mono);
+  color: #64748B;
+  font-weight: 700;
+  letter-spacing: 0.05em;
 }
 
 .module-card-btn .card-title {
-  font-size: clamp(0.92rem, 1.05vw, 1.1rem);
-  line-height: 1.22;
-  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .card-top-meta {
@@ -2343,12 +2348,14 @@ html, body {
   align-items: center;
   gap: 32px;
   width: 100%;
-  max-width: 980px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 24px;
+  box-sizing: border-box;
 }
 
 #colorIntelSubGrid {
-  max-width: 1420px;
+  max-width: 100%;
   gap: 18px;
 }
 
@@ -2366,7 +2373,7 @@ html, body {
 }
 
 #fabricVisionSubGrid {
-  max-width: 1540px;
+  max-width: 100%;
   gap: 16px;
 }
 
@@ -2506,7 +2513,9 @@ html, body {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
+  right: 0;
+  bottom: 0;
+  width: 100%;
   height: 100vh;
   background: #F8FAFC;
   z-index: 50;
@@ -2514,13 +2523,14 @@ html, body {
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .inspection-header-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 28px;
+  padding: 10px 20px;
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -2596,12 +2606,12 @@ html, body {
 
 .inspection-content-body {
   flex: 1;
-  padding: 12px 28px 16px 28px;
+  padding: 12px 24px 16px 24px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  max-width: 1680px;
-  margin: 0 auto;
+  max-width: 100%;
+  margin: 0;
   width: 100%;
   box-sizing: border-box;
 }
@@ -2699,6 +2709,10 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .energy-container .inspection-metrics-row { flex: 0 0 auto; margin-bottom: 2px; }
@@ -5369,9 +5383,9 @@ html, body {
   display: grid;
   grid-template-columns: 280px minmax(0, 1fr);
   gap: 16px;
-  padding: 14px 28px 18px;
-  max-width: 1680px;
-  margin: 0 auto;
+  padding: 12px 20px 16px;
+  max-width: 100%;
+  margin: 0;
   width: 100%;
   min-height: 0;
   box-sizing: border-box;
@@ -6056,8 +6070,11 @@ html, body {
   flex: 1 1 0;
   min-height: 0;
   overflow: hidden;
-  padding-top: 8px;
-  padding-bottom: 8px;
+  padding: 8px 18px;
+  max-width: 100%;
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
 }
 
 .compliance-container .inspection-metrics-row { flex: 0 0 auto; }
