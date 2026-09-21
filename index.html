@@ -4660,7 +4660,7 @@
           <div class="compliance-kpi-sub" id="complianceKpiGenealogyNote">Greige through shipment linked</div>
           <svg class="compliance-kpi-spark" viewBox="0 0 240 34" preserveAspectRatio="none" aria-hidden="true"><path class="spark-area" d="M0 30 C45 29 64 25 92 23 S142 15 170 13 S212 8 240 6 L240 34 L0 34Z"></path><path class="spark-line" d="M0 30 C45 29 64 25 92 23 S142 15 170 13 S212 8 240 6"></path><circle cx="240" cy="6" r="3"></circle></svg>
         </article>
-        <article class="compliance-kpi-card tone-purple" data-tip-title="Digital Product Passport" data-tip-a="Buyer-facing identity, footprint and chain-of-custody fields" data-tip-b="Shipment QR is generated from the current lot record">
+        <article class="compliance-kpi-card tone-cyan" data-tip-title="Digital Product Passport" data-tip-a="Buyer-facing identity, footprint and chain-of-custody fields" data-tip-b="Shipment QR is generated from the current lot record">
           <div class="compliance-kpi-head"><span>DPP READINESS</span><b id="complianceKpiDppBadge">QR READY</b></div>
           <div class="compliance-kpi-value" id="complianceKpiDpp">98%</div>
           <div class="compliance-kpi-sub" id="complianceKpiDppNote">TEX-8821 · 24/25 fields</div>
@@ -4687,7 +4687,16 @@
             <span class="meta-tag-feed tag-online" id="complianceLiveClock">CAPTURE 14:32:00</span>
           </div>
           <div class="compliance-lot-bar" id="complianceLotBar"></div>
+          <div class="compliance-lot-preview" id="complianceLotPreview" aria-live="polite"></div>
+        </article>
+
+        <article class="inspect-detail-card compliance-passport-details-card">
+          <div class="detail-card-header">
+            <h2 class="detail-card-title">Passport record</h2>
+            <span class="inspect-badge badge-purple">LIVE DPP</span>
+          </div>
           <div class="compliance-passport" id="compliancePassport"></div>
+          <div class="compliance-passport-details" id="compliancePassportDetails"></div>
         </article>
 
         <article class="inspect-detail-card compliance-record-card">
@@ -4698,24 +4707,15 @@
           <div class="compliance-product-record" id="complianceProductRecord"></div>
         </article>
 
-        <article class="inspect-detail-card compliance-footprint-card">
-          <div class="detail-card-header">
-            <div><span class="compliance-card-eyebrow">THIS LOT</span><h2 class="detail-card-title">Footprint &amp; buyer audit</h2></div>
-            <span class="inspect-badge badge-purple" id="compliancePackBadge">AUDIT READY</span>
-          </div>
-          <div class="compliance-footprint-chart" id="complianceFootprintChart"></div>
-          <div class="compliance-audit-callout" id="complianceAuditCallout"></div>
-        </article>
       </section>
 
       <section class="compliance-lower-grid">
-        <article class="inspect-detail-card compliance-route-card">
+        <article class="inspect-detail-card compliance-footprint-card">
           <div class="detail-card-header">
-            <div><span class="compliance-card-eyebrow">LIVE BATCH GENEALOGY</span><h2 class="detail-card-title">Greige to shipment</h2></div>
-            <span class="inspect-badge badge-purple" id="complianceRouteBadge">7 EVENTS LINKED</span>
+            <div><span class="compliance-card-eyebrow">THIS LOT</span><h2 class="detail-card-title">Footprint &amp; buyer audit</h2></div>
+            <span class="inspect-badge badge-cyan" id="compliancePackBadge">AUDIT READY</span>
           </div>
-          <div class="compliance-genealogy-flow" id="complianceGenealogy"></div>
-          <div class="compliance-stage-detail" id="complianceStageDetail"></div>
+          <div class="compliance-footprint-chart" id="complianceFootprintChart"></div>
         </article>
 
         <article class="inspect-detail-card compliance-evidence-card">
