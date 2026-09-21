@@ -7018,7 +7018,7 @@ function setupComplianceTraceabilityInteractions() {
         { key: "greige", title: "Greige", machine: "L-18", operator: "Imran", time: "08:12", state: "done", capture: "Origin G-441", recipe: "Loom-state cotton", chemicals: "None", utilities: "0.02 kWh/kg" },
         { key: "pretreat", title: "Pretreat", machine: "PT-02", operator: "Sana", time: "10:04", state: "done", capture: "Whiteness 152", recipe: "Caustic 12 g/L · H₂O₂ 8 g/L", chemicals: "ZDHC L3 auxiliaries", utilities: "18 L/kg · 1.4 kg steam/kg" },
         { key: "dyeing", title: "Dye", machine: "JD-04", operator: "Hassan", time: "14:32", state: "done", capture: "ΔE 0.18 pass", recipe: "RN-8821 · liquor 1:8", chemicals: "Reactive navy · MRSL L3", utilities: "42 L/kg · 0.114 kWh/kg" },
-        { key: "finish", title: "Finish", machine: "ST-02", operator: "Nadia", time: "16:10", state: "done", capture: "180°C · 240 cm", recipe: "Heat-set profile F-12", chemicals: "Softener ZDHC L3", utilities: "0.8 kg steam/kg" },
+        { key: "finish", title: "Finishes", machine: "ST-02", operator: "Nadia", time: "16:10", state: "done", capture: "180°C · 240 cm", recipe: "Heat-set profile F-12", chemicals: "Softener ZDHC L3", utilities: "0.8 kg steam/kg" },
         { key: "roll", title: "Roll", machine: "RL-04", operator: "Ali", time: "16:58", state: "done", capture: "Rolls 218–224", recipe: "Final rolling", chemicals: "None", utilities: "0.01 kWh/kg" },
         { key: "cert", title: "Cert", machine: "QA-01", operator: "Mariam", time: "17:12", state: "done", capture: "C-8841 issued", recipe: "ASTM D5430 · A grade", chemicals: "ZDHC verified", utilities: "Evidence sealed" },
         { key: "ship", title: "Ship", machine: "PK-02", operator: "Usman", time: "17:42", state: "alert", capture: "Seal number pending", recipe: "MSKU-884 · vessel Fri", chemicals: "Not applicable", utilities: "Packing list 92%" }
@@ -7036,7 +7036,7 @@ function setupComplianceTraceabilityInteractions() {
       evidence: [["Chain of custody", 100, "7 linked events"], ["Certificates", 88, "2 valid"], ["Lab & quality", 92, "5 records"], ["Shipment", 62, "Sign-off due"]],
       attest: ["Better Cotton", "OEKO-TEX 100", "ZDHC L3"], passportLine: "TEX-8840 connects the greige source, rotary-print recipe, paste inputs, finishing settings and shipment evidence for IKEA order EU-1192.",
       stages: [
-        { key: "greige", title: "Greige", machine: "L-22", operator: "Asad", time: "07:48", state: "done", capture: "Origin B-218", recipe: "Plain weave cotton", chemicals: "None", utilities: "0.02 kWh/kg" }, { key: "pretreat", title: "Pretreat", machine: "PT-03", operator: "Sana", time: "09:38", state: "done", capture: "Whiteness 148", recipe: "Enzyme + peroxide", chemicals: "ZDHC L3 auxiliaries", utilities: "21 L/kg · 1.5 kg steam/kg" }, { key: "printing", title: "Print", machine: "RP-02", operator: "Faraz", time: "13:18", state: "done", capture: "Screens 08–13", recipe: "PB-8840 · 4,200 cP", chemicals: "Paste inputs · 96% cleared", utilities: "31 L/kg · 0.128 kWh/kg" }, { key: "finish", title: "Finish", machine: "ST-01", operator: "Nadia", time: "15:10", state: "done", capture: "175°C · 232 cm", recipe: "Finish profile PF-08", chemicals: "Softener ZDHC L3", utilities: "0.9 kg steam/kg" }, { key: "roll", title: "Roll", machine: "RL-03", operator: "Ali", time: "16:02", state: "done", capture: "Rolls 301–306", recipe: "Final rolling", chemicals: "None", utilities: "0.01 kWh/kg" }, { key: "cert", title: "Cert", machine: "QA-02", operator: "Mariam", time: "16:28", state: "alert", capture: "Supplier sign-off due", recipe: "OEKO-TEX + ZDHC pack", chemicals: "1 declaration open", utilities: "Evidence 88%" }, { key: "ship", title: "Ship", machine: "PK-03", operator: "Usman", time: "17:20", state: "pending", capture: "Feeder slot reserved", recipe: "PKHU-218", chemicals: "Not applicable", utilities: "Packing list draft" }
+        { key: "greige", title: "Greige", machine: "L-22", operator: "Asad", time: "07:48", state: "done", capture: "Origin B-218", recipe: "Plain weave cotton", chemicals: "None", utilities: "0.02 kWh/kg" }, { key: "pretreat", title: "Pretreat", machine: "PT-03", operator: "Sana", time: "09:38", state: "done", capture: "Whiteness 148", recipe: "Enzyme + peroxide", chemicals: "ZDHC L3 auxiliaries", utilities: "21 L/kg · 1.5 kg steam/kg" }, { key: "printing", title: "Print", machine: "RP-02", operator: "Faraz", time: "13:18", state: "done", capture: "Screens 08–13", recipe: "PB-8840 · 4,200 cP", chemicals: "Paste inputs · 96% cleared", utilities: "31 L/kg · 0.128 kWh/kg" }, { key: "finish", title: "Finishes", machine: "ST-01", operator: "Nadia", time: "15:10", state: "done", capture: "175°C · 232 cm", recipe: "Finish profile PF-08", chemicals: "Softener ZDHC L3", utilities: "0.9 kg steam/kg" }, { key: "roll", title: "Roll", machine: "RL-03", operator: "Ali", time: "16:02", state: "done", capture: "Rolls 301–306", recipe: "Final rolling", chemicals: "None", utilities: "0.01 kWh/kg" }, { key: "cert", title: "Cert", machine: "QA-02", operator: "Mariam", time: "16:28", state: "alert", capture: "Supplier sign-off due", recipe: "OEKO-TEX + ZDHC pack", chemicals: "1 declaration open", utilities: "Evidence 88%" }, { key: "ship", title: "Ship", machine: "PK-03", operator: "Usman", time: "17:20", state: "pending", capture: "Feeder slot reserved", recipe: "PKHU-218", chemicals: "Not applicable", utilities: "Packing list draft" }
       ]
     }
   };
@@ -7693,10 +7693,10 @@ function initApp() {
       (t, y) => `${(6.2 + (70 - y) / 70 * 0.4).toFixed(1)} pH`
     ],
     machines: [
-      { id: "singeray", name: "Benninger SingeRay", model: "SINGERAY (GAS SINGEING)", tag: "#PRE-1092-SINGE" },
-      { id: "ben-bleach", name: "BEN-BLEACH Range", model: "BEN-BLEACH DESIZE–SCOUR–BLEACH", tag: "#PRE-1092-BLEACH" },
-      { id: "ben-dimensa", name: "BEN-DIMENSA Mercerizer", model: "BEN-DIMENSA (HOT MERCERIZE)", tag: "#PRE-1092-MERC" },
-      { id: "ben-wash", name: "BEN-WASH Extracta", model: "EXTRACTA / TRIKOFLEX WASH", tag: "#PRE-1092-WASH" }
+      { id: "goller-scour-bleach", name: "GOLLER — Scouring & Bleaching Range", model: "GOLLER SCOUR & BLEACH RANGE", tag: "#PRE-1092-GOLLER" },
+      { id: "benninger-bleach", name: "BENNINGER — Bleaching Range", model: "BENNINGER BLEACHING RANGE", tag: "#PRE-1092-BEN" },
+      { id: "redflag-singe-desize", name: "RED FLAG — Singeing & Desizing Machine", model: "RED FLAG SINGE & DESIZE", tag: "#PRE-1092-RF-SINGE" },
+      { id: "redflag-mercerizing", name: "RED FLAG — Mercerizing Machine", model: "RED FLAG MERCERIZING RANGE", tag: "#PRE-1092-RF-MERC" }
     ]
   });
 
@@ -7731,10 +7731,8 @@ function initApp() {
       (t, y) => `${Math.max(1, Math.round(4 - t * 2 + Math.sin(t * 6)))} /1000m`
     ],
     machines: [
-      { id: "uster-fv2", name: "Uster Fabriq Vision 2", model: "USTER FV2 (DYE-LINE CAMERA)", tag: "#DYE-4410-NAVY" },
-      { id: "evs", name: "Elbit Vision Systems", model: "EVS I-TEX INSPECTION", tag: "#DYE-4410-EVS" },
-      { id: "mahlo", name: "Mahlo Orgatex Web", model: "MAHLO ORGATEX WEB INSPECT", tag: "#DYE-4410-MAHLO" },
-      { id: "bst", name: "BST eltromat iPQ-Web", model: "BST iPQ-WEB SURFACE QC", tag: "#DYE-4410-BST" }
+      { id: "thermosol-dyeing", name: "THERMOSOL — Thermosol Dyeing Machine (manufacturer needs confirmation)", model: "THERMOSOL CONTINUOUS DYEING", tag: "#DYE-4410-THERMO" },
+      { id: "pad-steam", name: "PAD STEAM — Pad Steam Machine (manufacturer needs confirmation)", model: "PAD STEAM CONTINUOUS DYEING", tag: "#DYE-4410-PADSTEAM" }
     ]
   });
 
@@ -7769,10 +7767,10 @@ function initApp() {
       (t, y) => `${Math.max(1, Math.round(3 - t * 1.5 + Math.sin(t * 5)))} /1000m`
     ],
     machines: [
-      { id: "zimmer", name: "Zimmer Austria Vision", model: "ZIMMER ROTASCREEN VISION QC", tag: "#PRN-704-ZIM" },
-      { id: "reggiani", name: "EFI Reggiani Print QC", model: "REGGIANI UNICA QC CAMERA", tag: "#PRN-704-EFI" },
-      { id: "stork", name: "Stork Prints Vision QC", model: "SPGPRINTS ROTARY VISION", tag: "#PRN-704-STORK" },
-      { id: "bst-reg", name: "BST Print Register Control", model: "BST ELTROMAT REGISTER", tag: "#PRN-704-BST" }
+      { id: "reggiani-rotary", name: "EFI REGGIANI — Rotary Screen Printing Machine", model: "EFI REGGIANI ROTARY SCREEN", tag: "#PRN-704-REG-ROT" },
+      { id: "reggiani-prima-flatbed", name: "EFI REGGIANI PRIMA — Flatbed Screen Printer", model: "EFI REGGIANI PRIMA FLATBED", tag: "#PRN-704-PRIMA" },
+      { id: "reggiani-digital", name: "EFI REGGIANI — Digital Textile Printer", model: "EFI REGGIANI DIGITAL TEXTILE", tag: "#PRN-704-DIGITAL" },
+      { id: "arioli-steamer", name: "ARIOLI — Steamer / Steamer-Ager", model: "ARIOLI STEAMER-AGER", tag: "#PRN-704-ARIOLI" }
     ]
   });
 
@@ -7807,10 +7805,11 @@ function initApp() {
       (t, y) => `${(0.12 - t * 0.04 + Math.abs(Math.sin(t * 5)) * 0.02).toFixed(2)} /m²`
     ],
     machines: [
-      { id: "power-frame", name: "Brückner POWER-FRAME", model: "POWER-FRAME SFP-4 STENTER", tag: "#FNS-8802-STENT" },
-      { id: "power-shrink", name: "POWER-SHRINK Sanfor", model: "POWER-SHRINK SANFOR RANGE", tag: "#FNS-8802-SANFOR" },
-      { id: "power-compact", name: "POWER-COMPACT Compactor", model: "POWER-COMPACT FELT CALENDER", tag: "#FNS-8802-COMP" },
-      { id: "montex", name: "Monforts MONTEX Stenter", model: "MONTEX STENTER LINE", tag: "#FNS-8802-MONTEX" }
+      { id: "monfongs-stenter", name: "MONFONGS — Stenter", model: "MONFONGS STENTER LINE", tag: "#FNS-8802-MON-STENT" },
+      { id: "bruckner-stenter", name: "BRÜCKNER — Stenter", model: "BRÜCKNER POWER-FRAME STENTER", tag: "#FNS-8802-BRUCKNER" },
+      { id: "redflag-stenter", name: "RED FLAG — Stenter", model: "RED FLAG STENTER RANGE", tag: "#FNS-8802-RF-STENT" },
+      { id: "monfongs-sanfor", name: "MONFONGS — Sanfor / Sanforizing Machine", model: "MONFONGS SANFORIZING RANGE", tag: "#FNS-8802-SANFOR" },
+      { id: "ferraro-compactor", name: "FERRARO — Compactor", model: "FERRARO KNIT & WOVEN COMPACTOR", tag: "#FNS-8802-FERRARO" }
     ]
   });
 
@@ -8119,21 +8118,21 @@ function initSingleCameraFeed(cfg) {
         "comatex-isw": 34.0,
         "four-point": 28.0,
         "aframe": 45.0,
-        "singeray": 48.0,
-        "ben-bleach": 45.0,
-        "ben-dimensa": 42.0,
-        "ben-wash": 50.0,
-        "evs": 46.0,
-        "mahlo": 42.5,
-        "bst": 44.0,
-        "zimmer": 55.0,
-        "reggiani": 58.0,
-        "stork": 52.0,
-        "bst-reg": 50.0,
-        "power-frame": 55.0,
-        "power-shrink": 40.0,
-        "power-compact": 36.0,
-        "montex": 52.0,
+        "goller-scour-bleach": 48.0,
+        "benninger-bleach": 45.0,
+        "redflag-singe-desize": 50.0,
+        "redflag-mercerizing": 42.0,
+        "thermosol-dyeing": 45.0,
+        "pad-steam": 40.0,
+        "reggiani-rotary": 55.0,
+        "reggiani-prima-flatbed": 42.0,
+        "reggiani-digital": 48.0,
+        "arioli-steamer": 50.0,
+        "monfongs-stenter": 55.0,
+        "bruckner-stenter": 58.0,
+        "redflag-stenter": 52.0,
+        "monfongs-sanfor": 45.0,
+        "ferraro-compactor": 38.0,
         "konsan": 32.0,
         "suntech": 35.0,
         "comatex-isp": 30.0,
