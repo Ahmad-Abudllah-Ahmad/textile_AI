@@ -4312,42 +4312,97 @@
         </div>
 
         <div class="fabric-flow-track">
-          <button type="button" class="fabric-flow-node is-complete" data-plan-stage="incoming">
+          <div role="button" tabindex="0" class="fabric-flow-node is-complete" data-plan-stage="incoming">
             <div class="flow-node-state"><span class="flow-state-dot"></span> INCOMING</div>
-            <div class="flow-node-main"><span class="flow-node-icon">01</span><div><strong>Greige release</strong><small>Weaving · Loom L-18</small></div></div>
+            <div class="flow-node-main"><span class="flow-node-icon">01</span><div class="flow-node-content"><div class="flow-node-title-row"><strong>Greige release</strong></div><small>Weaving · Loom L-18</small></div></div>
             <div class="flow-node-foot"><span>6,240 m verified</span><b>08:12 ✓</b></div>
-          </button>
+          </div>
           <div class="fabric-flow-connector is-complete"><span class="fabric-roll"></span></div>
-          <button type="button" class="fabric-flow-node is-complete" data-plan-stage="pretreatment">
+          <div role="button" tabindex="0" class="fabric-flow-node is-complete" data-plan-stage="pretreatment">
             <div class="flow-node-state"><span class="flow-state-dot"></span> PREPARED</div>
-            <div class="flow-node-main"><span class="flow-node-icon">02</span><div><strong>Pretreatment</strong><small>Range PT-02 · Eligible</small></div></div>
+            <div class="flow-node-main">
+              <span class="flow-node-icon">02</span>
+              <div class="flow-node-content">
+                <div class="flow-node-title-row">
+                  <strong>Pretreatment</strong>
+                  <select class="flow-stage-machine-select" id="planPreMachineSelect" aria-label="Select Pretreatment machine">
+                    <option value="goller-scour-bleach" selected>GOLLER — Scouring &amp; Bleaching Range</option>
+                    <option value="benninger-bleach">BENNINGER — Bleaching Range</option>
+                    <option value="redflag-singe-desize">RED FLAG — Singeing &amp; Desizing Machine</option>
+                    <option value="redflag-mercerizing">RED FLAG — Mercerizing Machine</option>
+                  </select>
+                </div>
+                <small>Range PT-02 · Eligible</small>
+              </div>
+            </div>
             <div class="flow-node-foot"><span>Released early</span><b>10:04 ✓</b></div>
-          </button>
+          </div>
           <div class="fabric-flow-connector is-live"><span class="fabric-roll"></span></div>
-          <button type="button" class="fabric-flow-node is-live is-selected" data-plan-stage="dyeing" aria-current="step">
+          <div role="button" tabindex="0" class="fabric-flow-node is-live is-selected" data-plan-stage="dyeing" aria-current="step">
             <div class="flow-node-state"><span class="flow-state-dot"></span> IN PROCESS</div>
-            <div class="flow-node-main"><span class="flow-node-icon">03</span><div><strong>Jet dyeing</strong><small>JD-04 · Recipe RN-8821</small></div></div>
+            <div class="flow-node-main">
+              <span class="flow-node-icon">03</span>
+              <div class="flow-node-content">
+                <div class="flow-node-title-row">
+                  <strong>Dyeing</strong>
+                  <select class="flow-stage-machine-select" id="planDyeMachineSelect" aria-label="Select Dyeing machine">
+                    <option value="thermosol-dyeing" selected>THERMOSOL — Thermosol Dyeing Machine (manufacturer needs confirmation)</option>
+                    <option value="pad-steam">PAD STEAM — Pad Steam Machine (manufacturer needs confirmation)</option>
+                  </select>
+                </div>
+                <small>JD-04 · Recipe RN-8821</small>
+              </div>
+            </div>
             <div class="flow-progress"><span style="width: 68%"></span></div>
             <div class="flow-node-foot"><span>68% · 46 min left</span><b class="is-late">+18 min</b></div>
-          </button>
+          </div>
           <div class="fabric-flow-connector"><span class="fabric-roll"></span></div>
-          <button type="button" class="fabric-flow-node is-next" data-plan-stage="printing">
+          <div role="button" tabindex="0" class="fabric-flow-node is-next" data-plan-stage="printing">
             <div class="flow-node-state"><span class="flow-state-dot"></span> OPTIONAL ROUTE</div>
-            <div class="flow-node-main"><span class="flow-node-icon">04</span><div><strong>Printing</strong><small>RP-02 · Screen route</small></div></div>
+            <div class="flow-node-main">
+              <span class="flow-node-icon">04</span>
+              <div class="flow-node-content">
+                <div class="flow-node-title-row">
+                  <strong>Printing</strong>
+                  <select class="flow-stage-machine-select" id="planPrintMachineSelect" aria-label="Select Printing machine">
+                    <option value="reggiani-rotary" selected>EFI REGGIANI — Rotary Screen Printing Machine</option>
+                    <option value="reggiani-prima-flatbed">EFI REGGIANI PRIMA — Flatbed Screen Printer</option>
+                    <option value="reggiani-digital">EFI REGGIANI — Digital Textile Printer</option>
+                    <option value="arioli-steamer">ARIOLI — Steamer / Steamer-Ager</option>
+                  </select>
+                </div>
+                <small>RP-02 · Screen route</small>
+              </div>
+            </div>
             <div class="flow-node-foot"><span>Route available</span><b>15:10</b></div>
-          </button>
+          </div>
           <div class="fabric-flow-connector"><span class="fabric-roll"></span></div>
-          <button type="button" class="fabric-flow-node is-next" data-plan-stage="finishing">
+          <div role="button" tabindex="0" class="fabric-flow-node is-next" data-plan-stage="finishing">
             <div class="flow-node-state"><span class="flow-state-dot"></span> NEXT</div>
-            <div class="flow-node-main"><span class="flow-node-icon">05</span><div><strong>Finishing</strong><small>ST-02 · Reserved</small></div></div>
+            <div class="flow-node-main">
+              <span class="flow-node-icon">05</span>
+              <div class="flow-node-content">
+                <div class="flow-node-title-row">
+                  <strong>Finishing</strong>
+                  <select class="flow-stage-machine-select" id="planFinishMachineSelect" aria-label="Select Finishing machine">
+                    <option value="monfongs-stenter" selected>MONFONGS — Stenter</option>
+                    <option value="bruckner-stenter">BRÜCKNER — Stenter</option>
+                    <option value="redflag-stenter">RED FLAG — Stenter</option>
+                    <option value="monfongs-sanfor">MONFONGS — Sanfor / Sanforizing Machine</option>
+                    <option value="ferraro-compactor">FERRARO — Compactor</option>
+                  </select>
+                </div>
+                <small>ST-02 · Reserved</small>
+              </div>
+            </div>
             <div class="flow-node-foot"><span>Slot protected</span><b>15:05</b></div>
-          </button>
+          </div>
           <div class="fabric-flow-connector"><span class="fabric-roll"></span></div>
-          <button type="button" class="fabric-flow-node is-outgoing" data-plan-stage="inspection">
+          <div role="button" tabindex="0" class="fabric-flow-node is-outgoing" data-plan-stage="inspection">
             <div class="flow-node-state"><span class="flow-state-dot"></span> OUTGOING</div>
-            <div class="flow-node-main"><span class="flow-node-icon">06</span><div><strong>Final inspection</strong><small>FI-01 · A-frame pack</small></div></div>
+            <div class="flow-node-main"><span class="flow-node-icon">06</span><div class="flow-node-content"><div class="flow-node-title-row"><strong>Final inspection</strong></div><small>FI-01 · A-frame pack</small></div></div>
             <div class="flow-node-foot"><span>Forecast ready</span><b>17:42</b></div>
-          </button>
+          </div>
         </div>
       </section>
 

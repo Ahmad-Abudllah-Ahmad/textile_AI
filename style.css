@@ -4662,8 +4662,38 @@ html, body {
 .is-complete .flow-node-icon,.is-live .flow-node-icon { background: #D1FAE5; color: #047857; }
 .is-next .flow-node-icon { background: #DBEAFE; color: #2563EB; }
 .is-outgoing .flow-node-icon { background: #EDE9FE; color: #7C3AED; }
-.flow-node-main strong { display: block; font-size: .68rem; line-height: 1.2; }
-.flow-node-main small { display: block; margin-top: 1px; color: #64748B; font-size: .52rem; }
+.flow-node-content { flex: 1 1 auto; min-width: 0; }
+.flow-node-title-row { display: flex; align-items: center; justify-content: space-between; gap: 4px; }
+.flow-node-main strong { display: block; font-size: .68rem; line-height: 1.2; white-space: nowrap; }
+.flow-node-main small { display: block; margin-top: 1px; color: #64748B; font-size: .52rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.flow-stage-machine-select {
+  flex: 0 1 auto;
+  font-family: var(--font-sans);
+  font-size: .44rem;
+  font-weight: 700;
+  color: #334155;
+  background-color: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  border-radius: 4px;
+  padding: 1px 11px 1px 4px;
+  height: 16px;
+  line-height: 14px;
+  max-width: 76px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 2px center;
+  background-size: 7px 7px;
+  outline: none;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.flow-stage-machine-select:hover { background-color: #F1F5F9; border-color: #94A3B8; }
+.flow-stage-machine-select:focus-visible { border-color: #2563EB; box-shadow: 0 0 0 2px rgba(37,99,235,.2); }
 .flow-node-foot { display: flex; justify-content: space-between; gap: 5px; color: #64748B; font-size: .5rem; }
 .flow-node-foot b { color: #334155; font-family: var(--font-mono); }
 .flow-node-foot b.is-late { color: #D97706; }
@@ -4771,8 +4801,8 @@ html, body {
 .lot-block:focus-visible,.changeover-block:focus-visible,.idle-block:focus-visible,.machine-lane:focus-visible { outline: 3px solid rgba(37,99,235,.24); outline-offset: 2px; }
 
 .planning-tooltip { position: fixed; z-index: 9999; max-width: 320px; padding: 9px 13px; border: 1px solid rgba(148,163,184,.3); border-radius: 9px; color: #F8FAFC; background: rgba(15,23,42,.96); backdrop-filter: blur(8px); box-shadow: 0 14px 36px rgba(15,23,42,.32); font-size: .56rem; font-weight: 600; line-height: 1.5; pointer-events: none; opacity: 0; transform: scale(.96); transition: opacity .12s ease, transform .12s ease; }
-.planning-tooltip::after { content: ''; position: absolute; left: 16px; bottom: -5px; width: 9px; height: 9px; background: rgba(15,23,42,.96); border-right: 1px solid rgba(148,163,184,.3); border-bottom: 1px solid rgba(148,163,184,.3); transform: rotate(45deg); }
-.planning-tooltip.pos-below::after { bottom: auto; top: -5px; border-right: none; border-bottom: none; border-left: 1px solid rgba(148,163,184,.3); border-top: 1px solid rgba(148,163,184,.3); }
+.planning-tooltip::after { content: ''; position: absolute; left: var(--arrow-left, 16px); bottom: -5px; width: 9px; height: 9px; background: rgba(15,23,42,.96); border-right: 1px solid rgba(148,163,184,.3); border-bottom: 1px solid rgba(148,163,184,.3); transform: translateX(-50%) rotate(45deg); }
+.planning-tooltip.pos-below::after { bottom: auto; top: -5px; border-right: none; border-bottom: none; border-left: 1px solid rgba(148,163,184,.3); border-top: 1px solid rgba(148,163,184,.3); transform: translateX(-50%) rotate(45deg); }
 .planning-tooltip.is-visible { opacity: 1; transform: scale(1); }
 .planning-tooltip strong { color: #6EE7B7; display: block; font-family: var(--font-mono); font-size: .62rem; margin-bottom: 2px; }
 .planning-tooltip em { color: #94A3B8; font-style: normal; display: block; font-size: .52rem; margin-bottom: 3px; }

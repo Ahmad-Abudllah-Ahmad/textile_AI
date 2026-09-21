@@ -5057,7 +5057,7 @@ function setupProductionPlanningInteractions() {
       decisionTitle: "Preserve direct dyeing transfer", decisionCopy: "Quality release is complete. Keep the A-frame in the protected lane to avoid an extra handling cycle.", metrics: [["RELEASE VARIANCE","−11 min"],["FIRST-PASS","99.1%"]], action: "Confirm transfer"
     },
     dyeing: {
-      eyebrow: "SELECTED STAGE · IN PROCESS", title: "Jet dyeing plan · JD-04", subtitle: "Recipe execution, shade control and protected release to finishing", machine: "JD-04 · 4,500 kg", status: "68% complete · +18 min",
+      eyebrow: "SELECTED STAGE · IN PROCESS", title: "Dyeing plan · JD-04", subtitle: "Recipe execution, shade control and protected release to finishing", machine: "JD-04 · 4,500 kg", status: "68% complete · +18 min",
       steps: [["CIP verification","Complete · 10:18","complete"],["Recipe dosing","Complete · 10:36","complete"],["Dye circulation","Live · 68% complete","live"],["Shade release","Forecast · 14:47",""]],
       chartLabel: "PROCESS TIME PLAN", chartTitle: "JD-04 focused dyeing sequence", axis: ["10:18","10:36","12:15","13:58","14:47"], flowStats: [["PLANNED WINDOW","10:18–14:29"],["CURRENT VARIANCE","+18 min"],["NEXT HANDOFF","ST-02 · 15:16"]],
       decisionTitle: "Protect the finishing handoff", decisionCopy: "Maintain JD-04 speed and hold ST-02 until 15:16. The lot remains inside dispatch tolerance.", metrics: [["TIME TO RELEASE","46 min"],["HANDOFF BUFFER","38 min"]], action: "Apply stage plan"
@@ -5184,7 +5184,7 @@ function setupProductionPlanningInteractions() {
   const stageDetailsData = {
     incoming: { title: "Greige Release", machine: "L-18 · Loom Take-off", text: "Verified 6,240 m greige batch released 7 min early with 99.4% roll yield." },
     pretreatment: { title: "Continuous Pretreatment", machine: "Range PT-02", text: "Scour, bleach, wash and neutralize sequence synchronized directly to dyeing." },
-    dyeing: { title: "Jet Dyeing", machine: "JD-04 · Recipe RN-8821", text: "Current active lot in process (68%). Protected ST-02 slot reservation at 15:05." },
+    dyeing: { title: "Dyeing", machine: "JD-04 · Recipe RN-8821", text: "Current active lot in process (68%). Protected ST-02 slot reservation at 15:05." },
     printing: { title: "Rotary Printing", machine: "RP-02 · Screen Route", text: "Optional bypass route available with 12-color rotary screen setup buffer." },
     finishing: { title: "Stenter Finishing", machine: "ST-02 · Reserved", text: "Protected heat-setting window (185°C · 42 m/min) held for TEX-8821 release." },
     inspection: { title: "Final Inspection & Packing", machine: "FI-01 · A-Frame Line", text: "4-point grading and defect mapping reserved for delivery cut-off at 18:30." }
@@ -5407,33 +5407,32 @@ function setupProductionPlanningInteractions() {
     if (!target) return;
     const rect = target.getBoundingClientRect();
     const pad = 12;
-    const gap = 12;
+    const gap = 10;
     const width = planningTooltip.offsetWidth || 280;
     const height = planningTooltip.offsetHeight || 65;
 
-    const cursorX = (event && typeof event.clientX === "number") ? event.clientX : (rect.left + rect.width / 2);
-    const cursorY = (event && typeof event.clientY === "number") ? event.clientY : rect.top;
+    const anchorX = (event && typeof event.clientX === "number")
+      ? Math.max(rect.left + 8, Math.min(rect.right - 8, event.clientX))
+      : (rect.left + rect.width / 2);
 
-    let left = cursorX + 12;
-    if (left + width > window.innerWidth - pad) {
-      left = cursorX - width - 12;
-    }
+    let left = anchorX - width / 2;
     left = Math.max(pad, Math.min(window.innerWidth - width - pad, left));
 
-    let top = cursorY - height - gap;
+    let top = rect.top - height - gap;
     let isBelow = false;
     if (top < pad) {
-      top = (event && typeof event.clientY === "number") ? (event.clientY + gap + 8) : (rect.bottom + gap);
+      top = rect.bottom + gap;
       isBelow = true;
       if (top + height > window.innerHeight - pad) {
         top = Math.max(pad, window.innerHeight - height - pad);
       }
-    } else if (top + height > window.innerHeight - pad) {
-      top = window.innerHeight - height - pad;
     }
 
-    planningTooltip.style.left = `${left}px`;
-    planningTooltip.style.top = `${top}px`;
+    const arrowX = Math.max(14, Math.min(width - 14, anchorX - left));
+
+    planningTooltip.style.left = `${Math.round(left)}px`;
+    planningTooltip.style.top = `${Math.round(top)}px`;
+    planningTooltip.style.setProperty("--arrow-left", `${Math.round(arrowX)}px`);
     planningTooltip.classList.toggle("pos-below", isBelow);
   }
 
@@ -5553,11 +5552,43 @@ function setupProductionPlanningInteractions() {
 
   let currentStageKey = "incoming";
 
-  stageNodes.forEach((node) => node.addEventListener("click", () => {
-    sfx.playClick();
-    currentStageKey = node.dataset.planStage;
-    renderStagePlan(node.dataset.planStage, true);
-  }));
+  stageNodes.forEach((node) => {
+    node.addEventListener("click", () => {
+      sfx.playClick();
+      currentStageKey = node.dataset.planStage;
+      renderStagePlan(node.dataset.planStage, true);
+    });
+    node.addEventListener("keydown", (e) => {
+      if (e.target !== node) return;
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        node.click();
+      }
+    });
+  });
+
+  document.querySelectorAll(".flow-stage-machine-select").forEach((sel) => {
+    sel.addEventListener("click", (e) => e.stopPropagation());
+    sel.addEventListener("pointerdown", (e) => e.stopPropagation());
+    sel.addEventListener("mousedown", (e) => e.stopPropagation());
+    sel.addEventListener("pointerover", (e) => {
+      e.stopPropagation();
+      hidePlanningTooltip();
+    });
+    sel.addEventListener("change", (e) => {
+      e.stopPropagation();
+      const node = sel.closest(".fabric-flow-node");
+      const small = node?.querySelector("small");
+      if (small && sel.selectedOptions[0]) {
+        const fullText = sel.selectedOptions[0].textContent;
+        const brand = fullText.split("—")[0]?.trim() || fullText.split("·")[0]?.trim();
+        const model = fullText.split("—")[1]?.trim() || "";
+        if (brand && model) {
+          small.textContent = `${brand} · ${model.slice(0, 20)}`.trim();
+        }
+      }
+    });
+  });
   renderStagePlan("incoming", false);
 
   const stageFluctuations = {
@@ -5722,7 +5753,7 @@ function setupProductionPlanningInteractions() {
       if (progBar) progBar.style.width = `${prog}%`;
       const progFoot = dyeingNode.querySelector(".flow-node-foot span");
       if (progFoot) progFoot.textContent = `${Math.round(prog)}% · ${minLeft} min left`;
-      dyeingNode.dataset.tooltip = `<strong>03 · Jet dyeing</strong><em>JD-04 · Recipe RN-8821</em><span>Progress: ${prog}% · ${minLeft} min left · Real-time liquor sync</span>`;
+      dyeingNode.dataset.tooltip = `<strong>03 · Dyeing</strong><em>JD-04 · Recipe RN-8821</em><span>Progress: ${prog}% · ${minLeft} min left · Real-time liquor sync</span>`;
     }
 
     // 2. Fluctuating LOT OUTPUT PROGRESS (Cumulative good metres vs plan)
