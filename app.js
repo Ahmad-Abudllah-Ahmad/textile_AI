@@ -2083,13 +2083,11 @@ const aiModulesData = {
       {
         title: "Recipe Auto-Correction Rate",
         metric: "99.2%",
-        badge: "FIRST TIME RIGHT",
         desc: "Autonomous dye liquor dispensing dynamic adjustments based on real-time textile substrate reflectance."
       },
       {
         title: "Auxiliary Chemical Dosing",
         metric: "2.4 mL/kg",
-        badge: "OPTIMIZED",
         desc: "Surfactants and leveling agents dynamically metered to prevent uneven strike rates across batch vessels."
       }
     ]
@@ -4757,12 +4755,6 @@ function appendCopilotReplyRest(bubble, entry) {
 
   renderCopilotCharts(bubble, entry);
 
-  if (entry.source) {
-    const source = document.createElement("span");
-    source.className = "copilot-source-tag";
-    source.textContent = entry.source;
-    bubble.appendChild(source);
-  }
 }
 
 function renderCopilotReply(bubble, entry, options) {
@@ -4953,10 +4945,6 @@ function setupMillKnowledgeCopilot() {
         "Shift A copilot is live. I have the SOP library, module evidence and this shift’s handover in one place.",
         "Choose a question below. After I answer, I will narrow the next questions to that same topic."
       ]);
-      const source = document.createElement("span");
-      source.className = "copilot-source-tag";
-      source.textContent = "Observe · Understand · Decide · Act · Verify";
-      bubble.appendChild(source);
     });
     updatePromptChrome(null);
     renderPromptChips(COPILOT_ROOT_IDS);
@@ -7417,7 +7405,7 @@ function setupComplianceTraceabilityInteractions() {
   function syncHeader() {
     const lot = lots[activeLot];
     const evidencePct = Math.round((lot.evidenceReady / lot.evidenceTotal) * 100);
-    if (liveChip) liveChip.innerHTML = `<span></span> LIVE LEDGER · ${lot.id} · ${lot.buyer.toUpperCase()}`;
+    if (liveChip) liveChip.remove();
     if (kpiGenealogy) kpiGenealogy.textContent = "100%";
     if (kpiGenealogyBadge) kpiGenealogyBadge.textContent = `${lot.stages.length} / ${lot.stages.length}`;
     if (kpiDpp) kpiDpp.textContent = `${lot.dpp}%`;
