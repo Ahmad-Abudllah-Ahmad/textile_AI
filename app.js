@@ -116,6 +116,7 @@ function hideAllViews() {
     document.getElementById("foldingInspectionView"),
     document.getElementById("productionPlanningView"),
     document.getElementById("energyUtilitiesView"),
+    document.getElementById("complianceTraceabilityView"),
     document.getElementById("dashboardView"),
     document.getElementById("millKnowledgeCopilotView")
   ];
@@ -310,6 +311,18 @@ function showEnergyUtilitiesView() {
   history.pushState(null, "", "#energy-utilities");
 }
 
+function showComplianceTraceabilityView() {
+  const complianceView = document.getElementById("complianceTraceabilityView");
+  if (!complianceView) return;
+
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "compliance-traceability";
+  complianceView.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  history.pushState(null, "", "#compliance-traceability");
+}
+
 function openModuleDashboard(moduleKey = "predictive-maintenance") {
   const dashView = document.getElementById("dashboardView");
   if (!dashView) return;
@@ -379,6 +392,7 @@ window.showFvFinishInspectionView = showFvFinishInspectionView;
 window.showFoldingInspectionView = showFoldingInspectionView;
 window.showProductionPlanningView = showProductionPlanningView;
 window.showEnergyUtilitiesView = showEnergyUtilitiesView;
+window.showComplianceTraceabilityView = showComplianceTraceabilityView;
 window.showMillKnowledgeCopilotView = showMillKnowledgeCopilotView;
 window.openModuleDashboard = openModuleDashboard;
 window.showDashboardView = showDashboardView;
@@ -446,6 +460,8 @@ function initCard3DTilt() {
         showProductionPlanningView();
       } else if (moduleId === "energy-utilities") {
         showEnergyUtilitiesView();
+      } else if (moduleId === "compliance-traceability") {
+        showComplianceTraceabilityView();
       } else if (moduleId === "predictive-maintenance") {
         openModuleDashboard("predictive-maintenance");
       } else if (moduleId === "mill-knowledge") {
@@ -484,6 +500,8 @@ function initCard3DTilt() {
           showProductionPlanningView();
         } else if (moduleId === "energy-utilities") {
           showEnergyUtilitiesView();
+        } else if (moduleId === "compliance-traceability") {
+          showComplianceTraceabilityView();
         } else if (moduleId === "predictive-maintenance") {
           openModuleDashboard("predictive-maintenance");
         } else if (moduleId === "mill-knowledge") {
@@ -529,6 +547,14 @@ function initCard3DTilt() {
   const btnBackEnergy = document.getElementById("btnBackFromEnergy");
   if (btnBackEnergy) {
     btnBackEnergy.addEventListener("click", () => {
+      sfx.playClick();
+      showProcessingModulesView();
+    });
+  }
+
+  const btnBackCompliance = document.getElementById("btnBackFromCompliance");
+  if (btnBackCompliance) {
+    btnBackCompliance.addEventListener("click", () => {
       sfx.playClick();
       showProcessingModulesView();
     });
@@ -597,6 +623,7 @@ function initCard3DTilt() {
       const copilotView = document.getElementById("millKnowledgeCopilotView");
       const planningView = document.getElementById("productionPlanningView");
       const energyView = document.getElementById("energyUtilitiesView");
+      const complianceView = document.getElementById("complianceTraceabilityView");
 
       const fvDashVisible =
         (grgView && grgView.style.display !== "none") ||
@@ -622,6 +649,9 @@ function initCard3DTilt() {
         sfx.playClick();
         showProcessingModulesView();
       } else if (energyView && energyView.style.display !== "none") {
+        sfx.playClick();
+        showProcessingModulesView();
+      } else if (complianceView && complianceView.style.display !== "none") {
         sfx.playClick();
         showProcessingModulesView();
       } else if (copilotView && copilotView.style.display !== "none") {
@@ -731,6 +761,8 @@ function setupDashboardInteractions() {
       showProductionPlanningView();
     } else if (hash === "#energy-utilities" || hash === "#processing-energy-utilities") {
       showEnergyUtilitiesView();
+    } else if (hash === "#compliance-traceability" || hash === "#processing-compliance-traceability") {
+      showComplianceTraceabilityView();
     } else if (hash === "#color-intelligence-suite" || hash === "#color-intelligence") {
       showColorIntelligenceSubView();
     } else if (hash === "#fabric-inspection-suite" || hash === "#fabric-vision") {
@@ -2140,7 +2172,7 @@ const aiModulesData = {
   },
   "compliance-traceability": {
     title: "Compliance & Traceability AI",
-    subtitle: "Digital Product Passport, GOTS, OEKO-TEX & ZDHC Level 3 Ledger",
+    subtitle: "Digital Product Passport, GOTS, OEKO-TEX & ZDHC Level 3 · EU DPP rules finalizing 2027 — compliance expected ~2028",
     icon: `<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`,
     cards: [
       {
@@ -6621,6 +6653,564 @@ function setupEnergyUtilitiesInteractions() {
   }
 }
 
+function setupComplianceTraceabilityInteractions() {
+  const complianceView = document.getElementById("complianceTraceabilityView");
+  const geneStack = document.getElementById("complianceGenealogy");
+  const lotBar = document.getElementById("complianceLotBar");
+  const packViz = document.getElementById("compliancePackViz");
+  const passportEl = document.getElementById("compliancePassport");
+  const tip = document.getElementById("complianceChartTip");
+  if (!complianceView || !geneStack || !lotBar || !packViz || !passportEl) return;
+
+  const tipTitle = tip ? tip.querySelector(".tip-header") : null;
+  const tipA = tip ? tip.querySelector(".compliance-tip-a") : null;
+  const tipB = tip ? tip.querySelector(".compliance-tip-b") : null;
+  const liveChip = complianceView.querySelector(".compliance-live-chip");
+  const clockEl = document.getElementById("complianceLiveClock");
+  const kpiZdhc = document.getElementById("complianceKpiZdhc");
+  const kpiDpp = document.getElementById("complianceKpiDpp");
+  const kpiDppBadge = document.getElementById("complianceKpiDppBadge");
+  const kpiPh = document.getElementById("complianceKpiPh");
+  const packBadge = document.getElementById("compliancePackBadge");
+  const assembleBtn = document.getElementById("btnAssembleCompliance");
+  const issueBtn = document.getElementById("btnIssuePassport");
+
+  const lots = {
+    "tex-8821": {
+      id: "TEX-8821",
+      kind: "lot",
+      kindLabel: "PRODUCTION LOT",
+      product: "Royal Navy #8821",
+      buyer: "Marks & Spencer",
+      style: "Royal Navy home-textile",
+      chip: "TEX-8821",
+      chipMeta: "Dyed piece · M&S · 6,240 m",
+      status: "QR ready",
+      fibre: "GOTS organic cotton · Multan gin G-441",
+      fibreShort: "GOTS-G441",
+      hash: "0x7c3aed8821dpp",
+      composition: [
+        { label: "Organic cotton", value: 100, color: "#7C3AED", tip: "GOTS lot G-441 · Punjab origin" }
+      ],
+      meters: [
+        { key: "water", label: "Water", value: "86", unit: "L/kg", pct: 58, color: "#06B6D4", tip: "86 L/kg vs 148 L/kg 2023 baseline" },
+        { key: "energy", label: "Energy", value: "0.114", unit: "kWh", pct: 42, color: "#7C3AED", tip: "0.114 kWh/kg captured from Energy module" },
+        { key: "chem", label: "Chem", value: "L3", unit: "ZDHC", pct: 100, color: "#10B981", tip: "Every dosed batch checked to MRSL Level 3" }
+      ],
+      attest: ["GOTS", "OEKO-TEX 100", "ZDHC L3", "EU CSDDD"],
+      passportLine: "This is a shippable dye lot — the same TEX-8821 Royal Navy order tracked in Color Intelligence and Planning. Farm, recipe, chemicals and utilities travel with the piece.",
+      stages: [
+        { key: "greige", title: "Greige", machine: "L-18", operator: "Imran", time: "08:12", state: "done", capture: "Fibre origin + greige lot G-441", recipe: "Loom-state cotton", chemicals: "None", utilities: "0.0 L · 0.02 kWh/kg" },
+        { key: "pretreat", title: "Pre-treatment", machine: "PT-02", operator: "Sana", time: "10:04", state: "done", capture: "Scour-bleach continuous", recipe: "Caustic 12 g/L · H2O2 8 g/L", chemicals: "ZDHC L3 auxiliaries", utilities: "18 L/kg · 1.4 kg steam/kg" },
+        { key: "dyeing", title: "Dyeing", machine: "JD-04", operator: "Hassan", time: "14:32", state: "live", capture: "Royal Navy #8821 · ΔE 0.18", recipe: "Reactive navy, liquor 1:8", chemicals: "Dyes + salt, MRSL L3", utilities: "42 L/kg · 0.114 kWh/kg" },
+        { key: "printing", title: "Printing", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Not on this home-textile route", recipe: "Skipped", chemicals: "None", utilities: "—" },
+        { key: "finish", title: "Finishing", machine: "ST-02", operator: "Nadia", time: "16:10", state: "done", capture: "Heat-set 180°C · 240 cm", recipe: "Stenter finish profile", chemicals: "Softener ZDHC L3", utilities: "Steam 0.8 kg/kg" },
+        { key: "fold", title: "Folding / rolling", machine: "FI-01", operator: "Ali", time: "16:58", state: "done", capture: "ASTM D5430 2.1 pts · A+", recipe: "Inspection + pack", chemicals: "None", utilities: "0.01 kWh/kg" }
+      ]
+    },
+    "aj-003": {
+      id: "AJ-003",
+      kind: "asset",
+      kindLabel: "MACHINE ASSET",
+      product: "Air-jet loom AJ-003",
+      buyer: "Internal mill loop",
+      style: "Loom AJ-003 watch lot",
+      chip: "AJ-003",
+      chipMeta: "Air-jet loom · not a product",
+      status: "Loom watch",
+      fibre: "No fibre passport — this is a machine, not a SKU",
+      fibreShort: "ASSET",
+      hash: "pending-registry",
+      composition: [
+        { label: "Cotton", value: 70, color: "#7C3AED", tip: "Conventional cotton — origin still unbound" },
+        { label: "Polyester", value: 30, color: "#94A3B8", tip: "Blend share without supplier journey" }
+      ],
+      meters: [
+        { key: "water", label: "Water", value: "112", unit: "L/kg", pct: 76, color: "#06B6D4", tip: "112 L/kg captured to dyeing only" },
+        { key: "energy", label: "Energy", value: "0.128", unit: "kWh", pct: 54, color: "#7C3AED", tip: "Energy trail stops at greige hold" },
+        { key: "chem", label: "Chem", value: "L3", unit: "ZDHC", pct: 100, color: "#10B981", tip: "Chemicals still MRSL Level 3" }
+      ],
+      attest: ["ZDHC L3", "Work order", "Vibe watch"],
+      passportLine: "AJ-003 is the air-jet loom on reliability watch — not a buyer SKU. This QR is a live asset tag for the greige hold, not a Digital Product Passport.",
+      stages: [
+        { key: "greige", title: "Greige", machine: "L-18", operator: "Imran", time: "07:40", state: "live", capture: "Vibration watch on AJ-003", recipe: "Loom-state", chemicals: "None", utilities: "0.03 kWh/kg" },
+        { key: "pretreat", title: "Pre-treatment", machine: "PT-01", operator: "—", time: "held", state: "skipped", capture: "Not released — greige hold", recipe: "Held", chemicals: "—", utilities: "—" },
+        { key: "dyeing", title: "Dyeing", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Waiting greige release", recipe: "—", chemicals: "—", utilities: "—" },
+        { key: "printing", title: "Printing", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Not on route", recipe: "—", chemicals: "—", utilities: "—" },
+        { key: "finish", title: "Finishing", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Not released", recipe: "—", chemicals: "—", utilities: "—" },
+        { key: "fold", title: "Folding / rolling", machine: "—", operator: "—", time: "—", state: "skipped", capture: "Not released", recipe: "—", chemicals: "—", utilities: "—" }
+      ]
+    }
+  };
+
+  let activeLot = "tex-8821";
+  let activeStage = "dyeing";
+  let issued = { "tex-8821": false, "aj-003": false };
+  let assembled = { "tex-8821": false, "aj-003": false };
+
+  function clamp(n, min, max) {
+    return Math.min(max, Math.max(min, n));
+  }
+
+  function hash32(str) {
+    let h = 2166136261;
+    for (let i = 0; i < str.length; i += 1) {
+      h ^= str.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  }
+
+  function pieSlice(startPct, endPct) {
+    const cx = 36;
+    const cy = 36;
+    const r = 30;
+    const start = ((startPct / 100) * Math.PI * 2) - Math.PI / 2;
+    const end = ((endPct / 100) * Math.PI * 2) - Math.PI / 2;
+    const x1 = cx + r * Math.cos(start);
+    const y1 = cy + r * Math.sin(start);
+    const x2 = cx + r * Math.cos(end);
+    const y2 = cy + r * Math.sin(end);
+    const large = endPct - startPct > 50 ? 1 : 0;
+    if (endPct - startPct >= 99.9) {
+      return `M ${cx} ${cy - r} A ${r} ${r} 0 1 1 ${cx - 0.01} ${cy - r} Z`;
+    }
+    return `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2} Z`;
+  }
+
+  function renderPie(items) {
+    const total = items.reduce((sum, item) => sum + item.value, 0) || 1;
+    let cursor = 0;
+    return items.map((item) => {
+      const share = (item.value / total) * 100;
+      const start = cursor;
+      cursor += share;
+      return `<path class="compliance-slice" fill="${item.color}" d="${pieSlice(start, cursor)}" data-tip-title="${item.label}" data-tip-a="${item.tip}" data-tip-b="${share.toFixed(0)}% of fibre mix"></path>`;
+    }).join("");
+  }
+
+  function meterArc(pct) {
+    const circ = 2 * Math.PI * 26;
+    const dash = (clamp(pct, 0, 100) / 100) * circ;
+    return `${dash.toFixed(1)} ${(circ - dash).toFixed(1)}`;
+  }
+
+  let livePh = "7.12";
+  let liveClock = "14:32:00";
+
+  function currentPayload() {
+    const lot = lots[activeLot];
+    const stage = lot.stages.find((item) => item.key === activeStage) || lot.stages[0];
+    const water = lot.meters.find((item) => item.key === "water");
+    const energy = lot.meters.find((item) => item.key === "energy");
+    const kind = lot.kind === "lot" ? "DPP" : "ASSET";
+    const status = issued[activeLot] ? "ISSUED" : lot.kind === "lot" ? "READY" : "WATCH";
+    return [
+      `TEX.${kind}`,
+      lot.id,
+      lot.product.replace(/\s+/g, "_"),
+      lot.kind === "lot" ? "M&S" : "LOOM",
+      lot.fibreShort,
+      `${water.value}${water.unit}`,
+      `${energy.value}${energy.unit}`,
+      `pH${livePh}`,
+      `${stage.key}@${stage.machine}`,
+      liveClock.replace(/:/g, ""),
+      lot.hash.slice(-8),
+      status
+    ].join("|");
+  }
+
+  function buildQrSvg(text) {
+    const bytes = Array.from(text).map((ch) => ch.charCodeAt(0) & 255);
+    const versions = [
+      { v: 2, size: 25, data: 34, ec: 10, align: [18] },
+      { v: 3, size: 29, data: 55, ec: 15, align: [22] },
+      { v: 4, size: 33, data: 80, ec: 20, align: [26] },
+      { v: 5, size: 37, data: 108, ec: 26, align: [30] }
+    ];
+    const spec = versions.find((item) => bytes.length + 2 < item.data) || versions[versions.length - 1];
+    const bits = [];
+    const pushBits = (value, len) => {
+      for (let i = len - 1; i >= 0; i -= 1) bits.push((value >>> i) & 1);
+    };
+    pushBits(0b0100, 4);
+    pushBits(Math.min(bytes.length, spec.data - 2), 8);
+    bytes.slice(0, spec.data - 2).forEach((b) => pushBits(b, 8));
+    pushBits(0, Math.min(4, spec.data * 8 - bits.length));
+    while (bits.length % 8) bits.push(0);
+    const data = [];
+    for (let i = 0; i < bits.length; i += 8) {
+      data.push(bits.slice(i, i + 8).reduce((n, b) => (n << 1) | b, 0));
+    }
+    const pads = [0xEC, 0x11];
+    while (data.length < spec.data) data.push(pads[(data.length - bytes.length) & 1]);
+    data.length = spec.data;
+
+    const exp = new Array(512);
+    const log = new Array(256);
+    let x = 1;
+    for (let i = 0; i < 255; i += 1) {
+      exp[i] = x;
+      log[x] = i;
+      x <<= 1;
+      if (x & 256) x ^= 0x11d;
+    }
+    for (let i = 255; i < 512; i += 1) exp[i] = exp[i - 255];
+    const mul = (a, b) => (a && b ? exp[log[a] + log[b]] : 0);
+    let gen = [1];
+    for (let i = 0; i < spec.ec; i += 1) {
+      const next = new Array(gen.length + 1).fill(0);
+      for (let j = 0; j < gen.length; j += 1) {
+        next[j] ^= mul(gen[j], exp[i]);
+        next[j + 1] ^= gen[j];
+      }
+      gen = next;
+    }
+    const rs = data.slice();
+    for (let i = 0; i < spec.ec; i += 1) rs.push(0);
+    for (let i = 0; i < spec.data; i += 1) {
+      const coef = rs[i];
+      if (!coef) continue;
+      for (let j = 0; j < gen.length; j += 1) rs[i + j] ^= mul(gen[j], coef);
+    }
+    const code = data.concat(rs.slice(spec.data));
+    const stream = [];
+    code.forEach((b) => {
+      for (let i = 7; i >= 0; i -= 1) stream.push((b >>> i) & 1);
+    });
+
+    const n = spec.size;
+    const grid = Array.from({ length: n }, () => new Array(n).fill(null));
+    const reserved = Array.from({ length: n }, () => new Array(n).fill(false));
+    const set = (c, r, val, lock) => {
+      if (c < 0 || r < 0 || c >= n || r >= n) return;
+      grid[r][c] = val;
+      if (lock) reserved[r][c] = true;
+    };
+    const finder = (ox, oy) => {
+      for (let r = -1; r < 8; r += 1) {
+        for (let c = -1; c < 8; c += 1) {
+          const on = r >= 0 && r <= 6 && c >= 0 && c <= 6 && (r === 0 || r === 6 || c === 0 || c === 6 || (r >= 2 && r <= 4 && c >= 2 && c <= 4));
+          set(ox + c, oy + r, on, true);
+        }
+      }
+    };
+    finder(0, 0);
+    finder(n - 7, 0);
+    finder(0, n - 7);
+    spec.align.forEach((pos) => {
+      for (let r = -2; r <= 2; r += 1) {
+        for (let c = -2; c <= 2; c += 1) {
+          set(pos + c, pos + r, Math.max(Math.abs(r), Math.abs(c)) !== 1, true);
+        }
+      }
+    });
+    for (let i = 8; i < n - 8; i += 1) {
+      set(6, i, i % 2 === 0, true);
+      set(i, 6, i % 2 === 0, true);
+    }
+    set(8, n - 8, true, true);
+
+    let bit = 0;
+    let up = true;
+    for (let col = n - 1; col > 0; col -= 2) {
+      if (col === 6) col -= 1;
+      for (let pass = 0; pass < n; pass += 1) {
+        const row = up ? n - 1 - pass : pass;
+        for (let k = 0; k < 2; k += 1) {
+          const c = col - k;
+          if (reserved[row][c] || grid[row][c] !== null) continue;
+          const raw = stream[bit] || 0;
+          bit += 1;
+          const mask = ((row + c) % 2 === 0) ? 1 : 0;
+          grid[row][c] = raw ^ mask;
+        }
+      }
+      up = !up;
+    }
+
+    const format = (() => {
+      let d = (0b01 << 3) | 0;
+      let v = d << 10;
+      for (let i = 14; i >= 10; i -= 1) {
+        if ((v >>> i) & 1) v ^= 0x537 << (i - 10);
+      }
+      return ((d << 10) | v) ^ 0x5412;
+    })();
+    const fmtPos = [
+      [0, 8], [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [7, 8], [8, 8],
+      [8, 7], [8, 5], [8, 4], [8, 3], [8, 2], [8, 1], [8, 0]
+    ];
+    const fmtPos2 = [
+      [8, n - 1], [8, n - 2], [8, n - 3], [8, n - 4], [8, n - 5], [8, n - 6], [8, n - 7],
+      [n - 8, 8], [n - 7, 8], [n - 6, 8], [n - 5, 8], [n - 4, 8], [n - 3, 8], [n - 2, 8], [n - 1, 8]
+    ];
+    for (let i = 0; i < 15; i += 1) {
+      const bitOn = (format >>> (14 - i)) & 1;
+      set(fmtPos[i][0], fmtPos[i][1], bitOn, true);
+      set(fmtPos2[i][0], fmtPos2[i][1], bitOn, true);
+    }
+
+    const cells = [];
+    for (let r = 0; r < n; r += 1) {
+      for (let c = 0; c < n; c += 1) {
+        if (grid[r][c]) cells.push(`<rect x="${c}" y="${r}" width="1" height="1" fill="#0F172A"/>`);
+      }
+    }
+    return `<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" aria-label="Live ${lots[activeLot].kind === "lot" ? "product" : "asset"} QR">${cells.join("")}</svg>`;
+  }
+
+  function placeTip(event) {
+    if (!tip) return;
+    tip.style.display = "block";
+    const pad = 10;
+    const gap = 16;
+    const width = tip.offsetWidth;
+    const height = tip.offsetHeight;
+    let left = event.clientX + gap;
+    let top = event.clientY - height - 12;
+    if (left + width > window.innerWidth - pad) left = event.clientX - width - gap;
+    if (left < pad) left = pad;
+    if (top < pad) top = event.clientY + gap;
+    if (top + height > window.innerHeight - pad) top = window.innerHeight - height - pad;
+    if (top < pad) top = pad;
+    tip.style.left = `${left}px`;
+    tip.style.top = `${top}px`;
+  }
+
+  function showTip(title, a, b, event) {
+    if (!tip || !tipTitle) return;
+    tipTitle.textContent = title;
+    if (tipA) tipA.textContent = a || "";
+    if (tipB) tipB.textContent = b || "";
+    placeTip(event);
+  }
+
+  function hideTip() {
+    if (tip) tip.style.display = "none";
+  }
+
+  function renderLots() {
+    lotBar.innerHTML = Object.keys(lots).map((key) => {
+      const lot = lots[key];
+      const asset = lot.kind === "asset" ? " is-asset" : "";
+      return `<button type="button" class="compliance-lot-chip${key === activeLot ? " is-active" : ""}${asset}" data-compliance-lot="${key}"><small>${lot.kindLabel}</small><b>${lot.chip}</b><span>${lot.chipMeta}</span></button>`;
+    }).join("");
+  }
+
+  function renderGenealogy() {
+    const lot = lots[activeLot];
+    geneStack.innerHTML = lot.stages.map((stage) => {
+      const selected = stage.key === activeStage ? " is-selected" : "";
+      const stateClass = stage.state === "skipped" ? " is-skipped" : stage.state === "live" ? " is-live" : "";
+      return `
+        <article class="compliance-gene-row${selected}${stateClass}" data-compliance-stage="${stage.key}" data-tip-title="${stage.title}" data-tip-a="${stage.capture}" data-tip-b="${stage.recipe} · ${stage.chemicals} · ${stage.utilities}">
+          <span class="compliance-gene-dot"></span>
+          <div class="compliance-gene-main">
+            <strong>${stage.title}</strong>
+            <small>${stage.capture}</small>
+          </div>
+          <div class="compliance-gene-meta">${stage.machine}<br>${stage.time}</div>
+        </article>`;
+    }).join("");
+  }
+
+  function renderPack() {
+    const lot = lots[activeLot];
+    const pie = lot.composition;
+    packViz.innerHTML = `
+      <div class="compliance-pie-mini">
+        <svg viewBox="0 0 72 72" aria-label="Fibre composition">
+          <circle cx="36" cy="36" r="30" fill="#F5F3FF"></circle>
+          <g>${renderPie(pie)}</g>
+          <circle cx="36" cy="36" r="16" fill="#FFFFFF"></circle>
+        </svg>
+        <ul>${pie.map((item) => `<li data-tip-title="${item.label}" data-tip-a="${item.tip}"><i style="background:${item.color}"></i>${item.label}</li>`).join("")}</ul>
+      </div>
+      <div class="compliance-meter-col">
+        ${lot.meters.map((meter) => `
+          <div class="compliance-meter-mini" data-tip-title="${meter.label} footprint" data-tip-a="${meter.tip}" data-tip-b="${meter.value} ${meter.unit}">
+            <svg viewBox="0 0 80 80" aria-label="${meter.label}">
+              <circle cx="40" cy="40" r="26" fill="none" stroke="#E2E8F0" stroke-width="8"></circle>
+              <circle cx="40" cy="40" r="26" fill="none" stroke="${meter.color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${meterArc(meter.pct)}" transform="rotate(-90 40 40)"></circle>
+              <text class="compliance-meter-val" x="40" y="38" text-anchor="middle">${meter.value}</text>
+              <text class="compliance-meter-unit" x="40" y="50" text-anchor="middle">${meter.unit}</text>
+            </svg>
+            <small>${meter.label}</small>
+          </div>`).join("")}
+      </div>`;
+
+    paintPassport(lot);
+  }
+
+  function paintPassport(lot) {
+    const payload = currentPayload();
+    const title = lot.kind === "lot" ? "Live product QR" : "Live asset tag";
+    passportEl.innerHTML = `
+      <div class="compliance-qr" data-tip-title="${title}" data-tip-a="${lot.kindLabel} · ${lot.id}" data-tip-b="${payload}">
+        ${buildQrSvg(payload)}
+      </div>
+      <div class="compliance-pass-copy">
+        <em>${issued[activeLot] ? (lot.kind === "lot" ? "QR ISSUED" : "ASSET TAG ISSUED") : lot.kindLabel}</em>
+        <strong>${lot.id} · ${lot.product}</strong>
+        <p>${lot.passportLine}</p>
+        <div class="compliance-pass-live" data-live-pass>${payload}</div>
+        <div class="compliance-attest">${lot.attest.map((item) => `<span>${item}</span>`).join("")}</div>
+      </div>`;
+  }
+
+  function syncHeader() {
+    const lot = lots[activeLot];
+    if (liveChip) liveChip.innerHTML = `<span></span> LIVE LEDGER · ${lot.id} · ${lot.kind === "lot" ? "PRODUCT" : "ASSET"}`;
+    if (kpiDpp) kpiDpp.textContent = issued[activeLot] ? `${lot.id} issued` : lot.kind === "lot" ? `${lot.id} ready` : `${lot.id} watch`;
+    if (kpiDppBadge) kpiDppBadge.textContent = issued[activeLot] ? "QR ISSUED" : lot.kind === "lot" ? "QR DPP READY" : "ASSET TAG";
+    if (packBadge) packBadge.textContent = assembled[activeLot] ? "PACK READY · 11s" : lot.kind === "lot" ? "WITHIN ESPR" : "NOT A PRODUCT";
+    if (issueBtn) {
+      issueBtn.disabled = issued[activeLot];
+      issueBtn.textContent = issued[activeLot] ? (lot.kind === "lot" ? "QR issued ✓" : "Asset tag issued ✓") : (lot.kind === "lot" ? "Issue QR passport" : "Issue asset tag");
+    }
+    if (assembleBtn) assembleBtn.textContent = assembled[activeLot] ? "Pack ready · 11s" : "Assemble report";
+  }
+
+  function renderAll() {
+    renderLots();
+    renderGenealogy();
+    renderPack();
+    syncHeader();
+  }
+
+  lotBar.addEventListener("click", (event) => {
+    const chip = event.target.closest("[data-compliance-lot]");
+    if (!chip) return;
+    sfx.playClick();
+    activeLot = chip.dataset.complianceLot;
+    const firstOpen = lots[activeLot].stages.find((stage) => stage.state !== "skipped") || lots[activeLot].stages[0];
+    activeStage = firstOpen.key;
+    renderAll();
+  });
+
+  geneStack.addEventListener("click", (event) => {
+    const row = event.target.closest("[data-compliance-stage]");
+    if (!row) return;
+    sfx.playClick();
+    activeStage = row.dataset.complianceStage;
+    renderGenealogy();
+  });
+
+  geneStack.addEventListener("pointermove", (event) => {
+    const el = event.target.closest("[data-tip-title]");
+    if (el) showTip(el.dataset.tipTitle, el.dataset.tipA, el.dataset.tipB, event);
+  });
+  geneStack.addEventListener("pointerleave", hideTip);
+
+  packViz.addEventListener("pointermove", (event) => {
+    const el = event.target.closest("[data-tip-title]");
+    if (el) showTip(el.dataset.tipTitle, el.dataset.tipA, el.dataset.tipB, event);
+  });
+  packViz.addEventListener("pointerleave", hideTip);
+
+  passportEl.addEventListener("pointermove", (event) => {
+    const el = event.target.closest("[data-tip-title]");
+    if (el) showTip(el.dataset.tipTitle, el.dataset.tipA, el.dataset.tipB, event);
+  });
+  passportEl.addEventListener("pointerleave", hideTip);
+
+  function bindSparkHover() {
+    const sparks = [
+      { id: "complianceSparkZdhc", values: [96, 97.5, 98.4, 99.2, 100], ys: [38, 28, 22, 12, 8], format: (v) => `${v.toFixed(1)}% MRSL checks` },
+      { id: "complianceSparkDpp", values: [52, 58, 62, 78, 100], ys: [48, 42, 36, 20, 8], format: (v) => `${v.toFixed(0)}% passport fields` },
+      { id: "complianceSparkPh", values: [7.18, 7.14, 7.11, 7.13, 7.12], ys: [28, 26, 30, 24, 26], format: (v) => `pH ${v.toFixed(2)}` }
+    ];
+    sparks.forEach((spark) => {
+      const wrap = document.getElementById(spark.id);
+      if (!wrap) return;
+      const svg = wrap.querySelector("svg");
+      const cross = wrap.querySelector(".spark-crosshair");
+      const dot = wrap.querySelector(".compliance-spark-hover");
+      wrap.addEventListener("pointermove", (event) => {
+        const bounds = svg.getBoundingClientRect();
+        const t = clamp((event.clientX - bounds.left) / bounds.width, 0, 1);
+        const idx = t * (spark.values.length - 1);
+        const lo = Math.floor(idx);
+        const hi = Math.min(spark.values.length - 1, lo + 1);
+        const p = idx - lo;
+        const value = spark.values[lo] + (spark.values[hi] - spark.values[lo]) * p;
+        const x = t * 340;
+        const y = spark.ys[lo] + (spark.ys[hi] - spark.ys[lo]) * p;
+        if (cross) {
+          cross.setAttribute("x1", x.toFixed(1));
+          cross.setAttribute("x2", x.toFixed(1));
+          cross.setAttribute("opacity", "1");
+        }
+        if (dot) {
+          dot.setAttribute("cx", x.toFixed(1));
+          dot.setAttribute("cy", y.toFixed(1));
+          dot.setAttribute("opacity", "1");
+        }
+        if (tipTitle) tipTitle.textContent = spark.format(value);
+        if (tipA) tipA.textContent = "Captured with the batch, not reconstructed later";
+        if (tipB) tipB.textContent = "";
+        placeTip(event);
+      });
+      wrap.addEventListener("pointerleave", () => {
+        if (cross) cross.setAttribute("opacity", "0");
+        if (dot) dot.setAttribute("opacity", "0");
+        hideTip();
+      });
+    });
+  }
+
+  if (assembleBtn) {
+    assembleBtn.addEventListener("click", () => {
+      sfx.playClick();
+      assembled[activeLot] = true;
+      assembleBtn.textContent = "Pack ready · 11s";
+      if (packBadge) packBadge.textContent = "PACK READY · 11s";
+      window.setTimeout(() => { assembleBtn.textContent = "Assemble report"; }, 1800);
+    });
+  }
+
+  if (issueBtn) {
+    issueBtn.addEventListener("click", () => {
+      sfx.playClick();
+      issued[activeLot] = true;
+      lots[activeLot].hash = `0x${hash32(`${lots[activeLot].id}-${Date.now()}`).toString(16)}dpp`;
+      issueBtn.textContent = "QR issued ✓";
+      issueBtn.disabled = true;
+      renderPack();
+      syncHeader();
+    });
+  }
+
+  function tickLive() {
+    if (complianceView.style.display === "none") return;
+    const now = new Date();
+    liveClock = now.toLocaleTimeString("en-GB", { hour12: false });
+    livePh = (7.12 + Math.sin(Date.now() / 1800) * 0.015).toFixed(2);
+    if (clockEl) clockEl.textContent = `CAPTURE ${liveClock}`;
+    if (kpiPh) kpiPh.textContent = `pH ${livePh}`;
+    if (kpiZdhc) kpiZdhc.textContent = "MRSL Level 3";
+    const lot = lots[activeLot];
+    if (lot.kind === "lot") {
+      const energy = lot.meters.find((item) => item.key === "energy");
+      if (energy) energy.value = (0.114 + Math.sin(Date.now() / 2400) * 0.002).toFixed(3);
+    }
+    const qrBox = passportEl.querySelector(".compliance-qr");
+    const liveLine = passportEl.querySelector("[data-live-pass]");
+    const payload = currentPayload();
+    if (qrBox) {
+      qrBox.innerHTML = buildQrSvg(payload);
+      qrBox.dataset.tipB = payload;
+    }
+    if (liveLine) liveLine.textContent = payload;
+  }
+
+  bindSparkHover();
+  renderAll();
+  window.setInterval(tickLive, 1200);
+}
+
 // ==========================================================================
 // 13. INITIALIZATION
 // ==========================================================================
@@ -6630,6 +7220,7 @@ function initApp() {
   setupDashboardInteractions();
   setupProductionPlanningInteractions();
   setupEnergyUtilitiesInteractions();
+  setupComplianceTraceabilityInteractions();
   initCustomCursor();
   initScadaClock();
   initScadaRealTimeEngine();
