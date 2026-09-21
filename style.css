@@ -4688,10 +4688,10 @@ html, body {
 .schedule-panel,
 #stagePlanPanel,
 .stage-plan-panel {
-  padding: 10px 16px;
-  flex: 1.25 1 auto;
-  min-height: 220px;
-  overflow: hidden;
+  padding: 10px 16px 14px;
+  flex: 0 0 auto;
+  min-height: max-content;
+  overflow: visible;
   display: flex;
   flex-direction: column;
 }
@@ -4743,8 +4743,8 @@ html, body {
 
 .schedule-time-axis { display: grid; grid-template-columns: 125px repeat(6,1fr); margin: 4px 0 6px; color: #94A3B8; font-family: var(--font-mono); font-size: .50rem; font-weight: 600; flex: 0 0 auto; }
 .schedule-time-axis b { border-left: 1px solid #E2E8F0; padding-left: 6px; font-weight: 600; }
-.machine-lanes { display: flex; flex-direction: column; justify-content: space-evenly; gap: 8px; flex: 1 1 auto; min-height: 140px; overflow: visible; }
-.machine-lane { display: grid; grid-template-columns: 125px 1fr; align-items: center; padding: 3px 6px; border: 1px solid #EEF2F6; border-radius: 8px; background: #FAFCFE; cursor: pointer; flex: 1 1 auto; transition: background .2s ease, border-color .2s ease, box-shadow .2s ease; }
+.machine-lanes { display: flex; flex-direction: column; gap: 8px; flex: 0 0 auto; min-height: auto; overflow: visible; }
+.machine-lane { display: grid; grid-template-columns: 125px 1fr; align-items: center; padding: 4px 6px; border: 1px solid #EEF2F6; border-radius: 8px; background: #FAFCFE; cursor: pointer; flex: 0 0 auto; min-height: 42px; box-sizing: border-box; transition: background .2s ease, border-color .2s ease, box-shadow .2s ease; }
 .machine-lane:hover { background: #F8FAFC; border-color: #CBD5E1; }
 .machine-lane:hover .machine-label strong { color: #059669; }
 .machine-lane.is-selected { border-color: #93C5FD; background: #F8FBFF; box-shadow: 0 0 0 3px rgba(59,130,246,.07); }
