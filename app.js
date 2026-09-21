@@ -6930,14 +6930,16 @@ function setupComplianceTraceabilityInteractions() {
   const complianceView = document.getElementById("complianceTraceabilityView");
   const geneStack = document.getElementById("complianceGenealogy");
   const lotBar = document.getElementById("complianceLotBar");
+  const lotPreview = document.getElementById("complianceLotPreview");
   const passportEl = document.getElementById("compliancePassport");
+  const passportDetailsEl = document.getElementById("compliancePassportDetails");
   const productRecordEl = document.getElementById("complianceProductRecord");
   const footprintChartEl = document.getElementById("complianceFootprintChart");
   const auditCalloutEl = document.getElementById("complianceAuditCallout");
   const stageDetailEl = document.getElementById("complianceStageDetail");
   const evidenceChartEl = document.getElementById("complianceEvidenceChart");
   const tip = document.getElementById("complianceChartTip");
-  if (!complianceView || !geneStack || !lotBar || !passportEl || !productRecordEl || !footprintChartEl || !evidenceChartEl) return;
+  if (!complianceView || !lotBar || !passportEl || !passportDetailsEl || !productRecordEl || !footprintChartEl || !evidenceChartEl) return;
 
   const tipTitle = tip ? tip.querySelector(".tip-header") : null;
   const tipA = tip ? tip.querySelector(".compliance-tip-a") : null;
@@ -6968,6 +6970,7 @@ function setupComplianceTraceabilityInteractions() {
       kind: "lot",
       kindLabel: "PRODUCTION LOT",
       product: "Royal Navy #8821",
+      image: "assets/compliance_royal_navy_8821.png",
       buyer: "Marks & Spencer",
       style: "Royal Navy home-textile",
       order: "EU-1174",
@@ -7022,7 +7025,7 @@ function setupComplianceTraceabilityInteractions() {
       ]
     },
     "tex-8840": {
-      id: "TEX-8840", kind: "lot", kindLabel: "PRODUCTION LOT", product: "Indigo Flora #8840", buyer: "IKEA", style: "Printed cotton furnishing", order: "EU-1192", shipment: "PKHU-218 · Road feeder", delivery: "20 Sep · 09:00", chip: "TEX-8840", chipMeta: "IKEA · EU-1192 · 5,180 m", status: "Evidence review", fibre: "Better Cotton · Rahim Yar Khan gin B-218", fibreShort: "BCI-B218", hash: "0x2563eb8840dpp", dpp: 91, dppFields: 23, evidenceReady: 10, evidenceTotal: 13, ph: 7.08,
+      id: "TEX-8840", kind: "lot", kindLabel: "PRODUCTION LOT", product: "Indigo Flora #8840", image: "assets/compliance_indigo_flora_8840.png", buyer: "IKEA", style: "Printed cotton furnishing", order: "EU-1192", shipment: "PKHU-218 · Road feeder", delivery: "20 Sep · 09:00", chip: "TEX-8840", chipMeta: "IKEA · EU-1192 · 5,180 m", status: "Evidence review", fibre: "Better Cotton · Rahim Yar Khan gin B-218", fibreShort: "BCI-B218", hash: "0x2563eb8840dpp", dpp: 91, dppFields: 23, evidenceReady: 10, evidenceTotal: 13, ph: 7.08,
       record: [
         ["Product", "Printed cotton · Indigo Flora · 220 gsm", "IKEA textile specification TX-220"], ["Greige source", "Loom L-22 · lot B-218", "Better Cotton supplier declaration"], ["Pretreatment", "PT-03 · whiteness 148", "Enzymatic desize and bleach"], ["Printing", "RP-02 · screens 08–13", "Paste batch PB-8840 linked"], ["Finishing", "ST-01 · 175°C · 232 cm", "Dimensional stability passed"], ["Inspection", "FI-02 · A grade · 3.4 points", "Defect map attached"], ["Certificates", "OEKO-TEX 100 · ZDHC L3", "GOTS not applicable to this fibre"], ["Shipment", "PKHU-218 · road feeder", "Buyer declaration requires signature"]
       ],
@@ -7287,13 +7290,16 @@ function setupComplianceTraceabilityInteractions() {
   }
 
   function renderLots() {
+    const active = lots[activeLot];
     lotBar.innerHTML = Object.keys(lots).map((key) => {
       const lot = lots[key];
-      return `<button type="button" class="compliance-lot-chip${key === activeLot ? " is-active" : ""}" data-compliance-lot="${key}" data-tip-title="${lot.id} · ${lot.product}" data-tip-a="${lot.buyer} · Order ${lot.order}" data-tip-b="${lot.delivery} · Click to load the complete compliance record"><small>${lot.kindLabel}</small><b>${lot.chip}</b><span>${lot.chipMeta}</span></button>`;
+      return `<button type="button" class="compliance-lot-chip${key === activeLot ? " is-active" : ""}" data-compliance-lot="${key}" data-tip-title="${lot.id} · ${lot.product}" data-tip-a="${lot.buyer} · Order ${lot.order}" data-tip-b="${lot.delivery} · Click to load the complete compliance record"><img class="compliance-lot-thumb" src="${lot.image}" alt="${lot.product} textile"><div class="compliance-lot-copy"><small>${lot.kindLabel}</small><b>${lot.chip}</b><span>${lot.chipMeta}</span></div></button>`;
     }).join("");
+    if (lotPreview) lotPreview.innerHTML = `<img src="${active.image}" alt="${active.product} textile product image">`;
   }
 
   function renderGenealogy() {
+    if (!geneStack) return;
     const lot = lots[activeLot];
     geneStack.innerHTML = lot.stages.map((stage, index) => {
       const selected = stage.key === activeStage ? " is-selected" : "";
@@ -7316,10 +7322,14 @@ function setupComplianceTraceabilityInteractions() {
 
   function renderProductRecord() {
     const lot = lots[activeLot];
-    productRecordEl.innerHTML = lot.record.map(([label, value, detail]) => `
-      <div class="compliance-record-item" data-tip-title="${label}" data-tip-a="${value}" data-tip-b="${detail}">
-        <small>${label}</small><strong>${value}</strong>
-      </div>`).join("");
+    productRecordEl.innerHTML = `
+      <table class="compliance-record-table" aria-label="${lot.id} product compliance record">
+        <thead><tr><th>Record</th><th>Verified detail</th><th>Evidence</th></tr></thead>
+        <tbody>${lot.record.map(([label, value, detail]) => `
+          <tr data-tip-title="${label}" data-tip-a="${value}" data-tip-b="${detail}">
+            <th scope="row">${label}</th><td>${value}</td><td>${detail}</td>
+          </tr>`).join("")}</tbody>
+      </table>`;
   }
 
   function paintPassport(lot) {
@@ -7327,7 +7337,8 @@ function setupComplianceTraceabilityInteractions() {
     passportEl.innerHTML = `
       <div class="compliance-qr" data-tip-title="Live shipment QR" data-tip-a="${lot.id} · ${lot.order}" data-tip-b="Scan record includes identity, genealogy, footprint and certificates">
         ${buildQrSvg(payload)}
-      </div>
+      </div>`;
+    passportDetailsEl.innerHTML = `
       <div class="compliance-pass-copy">
         <em>${issued[activeLot] ? "SHIPMENT QR ISSUED" : `${lot.kindLabel} · ${lot.order}`}</em>
         <strong>${lot.id} · ${lot.product}</strong>
@@ -7407,7 +7418,7 @@ function setupComplianceTraceabilityInteractions() {
     renderAll();
   });
 
-  geneStack.addEventListener("click", (event) => {
+  geneStack?.addEventListener("click", (event) => {
     const row = event.target.closest("[data-compliance-stage]");
     if (!row) return;
     sfx.playClick();
@@ -7468,7 +7479,7 @@ function setupComplianceTraceabilityInteractions() {
     if (energyValue && energy) energyValue.textContent = `${liveEnergy.toFixed(3)} ${energy.unit}`;
     if (energyBar && energy) energyBar.style.width = `${clamp(energy.current + Math.sin(Date.now() / 1800) * 1.4, 0, 100).toFixed(1)}%`;
     const qrBox = passportEl.querySelector(".compliance-qr");
-    const liveLine = passportEl.querySelector("[data-live-pass]");
+    const liveLine = passportDetailsEl.querySelector("[data-live-pass]");
     const payload = currentPayload();
     if (qrBox) {
       qrBox.innerHTML = buildQrSvg(payload);
