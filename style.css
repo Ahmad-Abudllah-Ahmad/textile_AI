@@ -6133,10 +6133,10 @@ html, body {
   align-items: center;
   gap: 7px;
   padding: 6px 10px;
-  border: 1px solid #DDD6FE;
+  border: 1px solid #A5F3FC;
   border-radius: 999px;
-  background: #F5F3FF;
-  color: #5B21B6;
+  background: #ECFEFF;
+  color: #0E7490;
   font-family: var(--font-mono);
   font-size: 0.58rem;
   font-weight: 800;
@@ -6147,14 +6147,14 @@ html, body {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #7C3AED;
-  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.16);
+  background: #06B6D4;
+  box-shadow: 0 0 0 4px rgba(6, 182, 212, 0.16);
   animation: compliancePulse 1.6s ease-in-out infinite;
 }
 
 @keyframes compliancePulse {
-  0%, 100% { box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.18); }
-  50% { box-shadow: 0 0 0 7px rgba(124, 58, 237, 0.06); }
+  0%, 100% { box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.18); }
+  50% { box-shadow: 0 0 0 7px rgba(6, 182, 212, 0.06); }
 }
 
 .compliance-live-num { font-variant-numeric: tabular-nums; }
@@ -6195,9 +6195,29 @@ html, body {
   cursor: pointer;
   text-align: left;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
+  gap: 7px;
+  overflow: hidden;
+}
+
+.compliance-lot-thumb {
+  width: 42px;
+  height: 38px;
+  flex: 0 0 42px;
+  object-fit: cover;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.08);
+}
+
+.compliance-lot-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 1px;
+  text-align: left;
 }
 
 .compliance-lot-chip small {
@@ -6224,13 +6244,13 @@ html, body {
 }
 
 .compliance-lot-chip.is-active {
-  border-color: #C4B5FD;
-  background: #F5F3FF;
-  color: #5B21B6;
-  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.08);
+  border-color: #67E8F9;
+  background: #ECFEFF;
+  color: #0E7490;
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.12);
 }
 
-.compliance-lot-chip.is-active small { color: #7C3AED; }
+.compliance-lot-chip.is-active small { color: #0891B2; }
 .compliance-lot-chip.is-asset { border-style: dashed; }
 
 .compliance-gene-stack {
@@ -6456,7 +6476,7 @@ html, body {
 .compliance-pass-copy { min-width: 0; overflow: hidden; }
 .compliance-pass-copy em {
   display: block;
-  color: #7C3AED;
+  color: #0E7490;
   font-family: var(--font-mono);
   font-size: 0.42rem;
   font-style: normal;
@@ -6478,7 +6498,7 @@ html, body {
 }
 .compliance-pass-live {
   margin-top: 4px;
-  color: #5B21B6;
+  color: #0E7490;
   font-family: var(--font-mono);
   font-size: 0.4rem;
   font-weight: 700;
@@ -6496,21 +6516,21 @@ html, body {
 .compliance-attest span {
   padding: 2px 6px;
   border-radius: 999px;
-  background: #EDE9FE;
-  color: #5B21B6;
+  background: #ECFEFF;
+  color: #0E7490;
   font-family: var(--font-mono);
   font-size: 0.42rem;
   font-weight: 800;
 }
 
 .compliance-primary-btn {
-  background: linear-gradient(135deg, #7C3AED, #6D28D9);
-  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);
+  background: linear-gradient(135deg, #06B6D4, #0891B2);
+  box-shadow: 0 4px 12px rgba(6, 182, 212, 0.25);
 }
 
 .compliance-primary-btn:hover {
-  background: linear-gradient(135deg, #6D28D9, #5B21B6);
-  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);
+  background: linear-gradient(135deg, #0891B2, #0E7490);
+  box-shadow: 0 6px 16px rgba(6, 182, 212, 0.35);
 }
 
 #complianceChartTip {
@@ -6624,14 +6644,14 @@ html, body {
 
 .compliance-main-grid {
   display: grid;
-  grid-template-columns: minmax(275px, 0.95fr) minmax(335px, 1.18fr) minmax(330px, 1fr);
+  grid-template-columns: minmax(260px, 0.72fr) minmax(280px, 0.88fr) minmax(470px, 1.6fr);
   gap: 9px;
   min-height: 0;
 }
 
 .compliance-lower-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.85fr) minmax(320px, 0.95fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 9px;
   min-height: 0;
 }
@@ -6652,7 +6672,7 @@ html, body {
 }
 
 .compliance-card-eyebrow {
-  display: block;
+  display: none;
   margin-bottom: 2px;
   color: #7C3AED;
   font-family: var(--font-mono);
@@ -6662,6 +6682,7 @@ html, body {
 }
 
 .compliance-dpp-card,
+.compliance-passport-details-card,
 .compliance-record-card,
 .compliance-footprint-card,
 .compliance-route-card,
@@ -6676,8 +6697,8 @@ html, body {
 }
 
 .compliance-lot-chip {
-  min-height: 34px;
-  padding: 4px 7px;
+  min-height: 48px;
+  padding: 4px;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
@@ -6687,16 +6708,40 @@ html, body {
   box-shadow: 0 5px 12px rgba(124, 58, 237, 0.11);
 }
 
+.compliance-lot-preview {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-top: 1px;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  background: #F8FAFC;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.compliance-lot-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
 .compliance-passport {
   flex: 1 1 0;
-  grid-template-columns: minmax(94px, 0.72fr) minmax(0, 1.28fr);
-  gap: 12px;
-  padding: 10px;
-  background: radial-gradient(circle at 15% 20%, rgba(124, 58, 237, 0.08), transparent 45%), linear-gradient(180deg, #FAF5FF, #FFFFFF);
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 7px;
+  align-items: start;
+  padding: 9px 10px;
+  background: #FFFFFF;
+  place-content: center;
 }
 
 .compliance-qr {
-  width: min(132px, 100%);
+  width: min(142px, 100%);
   height: auto;
   aspect-ratio: 1;
   justify-self: center;
@@ -6710,14 +6755,124 @@ html, body {
 
 .compliance-pass-copy strong { font-size: 0.82rem; }
 .compliance-pass-copy p { font-size: 0.55rem; line-height: 1.42; }
+.compliance-pass-copy { text-align: left; }
+
+.compliance-passport-details {
+  flex: 1 1 0;
+  min-height: 0;
+  overflow: hidden;
+  padding: 12px;
+  border: 1px solid #BAE6FD;
+  border-radius: 10px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+}
+
+.compliance-passport-details-card .compliance-passport {
+  flex: 0 0 116px;
+  margin-bottom: 7px;
+  border-color: #BAE6FD;
+}
+
+.compliance-passport-details-card .compliance-qr {
+  width: min(100px, 100%);
+}
+
+.compliance-passport-details .compliance-pass-copy {
+  width: 100%;
+}
+.compliance-passport-details-card .inspect-badge.badge-purple {
+  background: #ECFEFF;
+  color: #0E7490;
+  border-color: #A5F3FC;
+}
 .compliance-pass-live { font-size: 0.36rem; }
 
 .compliance-product-record {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5px 8px;
+  display: block;
   flex: 1 1 0;
   min-height: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+.compliance-record-table {
+  width: 100%;
+  height: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid #E2E8F0;
+  border-radius: 9px;
+  overflow: hidden;
+  background: #FFFFFF;
+}
+
+.compliance-record-table thead {
+  background: #ECFEFF;
+}
+
+.compliance-record-table th,
+.compliance-record-table td {
+  min-width: 0;
+  padding: 4px 7px;
+  border-right: 1px solid #E2E8F0;
+  border-bottom: 1px solid #E2E8F0;
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compliance-record-table th:last-child,
+.compliance-record-table td:last-child { border-right: 0; }
+.compliance-record-table tbody tr:last-child th,
+.compliance-record-table tbody tr:last-child td { border-bottom: 0; }
+
+.compliance-record-table thead th {
+  height: 22px;
+  color: #0E7490;
+  font-family: var(--font-mono);
+  font-size: 0.48rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.compliance-record-table thead th:nth-child(1) { width: 18%; }
+.compliance-record-table thead th:nth-child(2) { width: 42%; }
+.compliance-record-table thead th:nth-child(3) { width: 40%; }
+
+.compliance-record-table tbody th {
+  position: relative;
+  color: #475569;
+  font-family: var(--font-mono);
+  font-size: 0.49rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  background: #F8FAFC;
+}
+
+.compliance-record-table tbody th::before {
+  display: none;
+}
+
+.compliance-record-table tbody td {
+  color: #334155;
+  font-size: 0.55rem;
+  font-weight: 650;
+}
+
+.compliance-record-table tbody tr {
+  cursor: help;
+  transition: background 0.16s ease;
+}
+
+.compliance-record-table tbody tr:hover th,
+.compliance-record-table tbody tr:hover td {
+  background: #F0FDFA;
 }
 
 .compliance-record-item {
@@ -6817,7 +6972,7 @@ html, body {
 
 .compliance-footprint-baseline { background: #CBD5E1; opacity: 0.72; }
 .compliance-footprint-live {
-  background: linear-gradient(90deg, #8B5CF6, #06B6D4);
+  background: linear-gradient(90deg, #06B6D4, #10B981);
   transform-origin: left center;
   animation: complianceBarIn 0.65s var(--ease-elastic) both;
   transition: width 0.6s ease;
@@ -6958,7 +7113,7 @@ html, body {
 .compliance-evidence-donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .compliance-evidence-donut circle { fill: none; stroke-width: 8; }
 .compliance-evidence-donut .track { stroke: #E2E8F0; }
-.compliance-evidence-donut .value { stroke: #7C3AED; stroke-linecap: round; transition: stroke-dasharray 0.6s ease; }
+.compliance-evidence-donut .value { stroke: #10B981; stroke-linecap: round; transition: stroke-dasharray 0.6s ease; }
 .compliance-evidence-donut div { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
 .compliance-evidence-donut b { color: #0F172A; font-size: 0.9rem; line-height: 1; }
 .compliance-evidence-donut small { color: #64748B; font-family: var(--font-mono); font-size: 0.38rem; margin-top: 2px; }
@@ -6968,7 +7123,7 @@ html, body {
 .compliance-evidence-row span { color: #475569; font-size: 0.48rem; font-weight: 700; }
 .compliance-evidence-row b { color: #334155; font-family: var(--font-mono); font-size: 0.43rem; text-align: right; }
 .compliance-evidence-track { height: 6px; border-radius: 999px; background: #E2E8F0; overflow: hidden; }
-.compliance-evidence-track i { display: block; height: 100%; border-radius: inherit; background: #7C3AED; animation: complianceBarIn 0.55s ease both; }
+.compliance-evidence-track i { display: block; height: 100%; border-radius: inherit; background: #10B981; animation: complianceBarIn 0.55s ease both; }
 .compliance-evidence-row.is-warning .compliance-evidence-track i { background: #F59E0B; }
 .compliance-evidence-row.is-warning b { color: #D97706; }
 
@@ -6986,14 +7141,12 @@ html, body {
   .compliance-container { height: auto; min-height: 100vh; max-height: none; overflow-y: auto; }
   .compliance-container .inspection-content-body { display: flex; overflow: visible; }
   .compliance-main-grid { grid-template-columns: 1fr 1fr; }
-  .compliance-footprint-card { grid-column: 1 / -1; }
   .compliance-lower-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
   .compliance-kpi-grid { grid-template-columns: 1fr 1fr; }
   .compliance-main-grid { grid-template-columns: 1fr; }
-  .compliance-footprint-card { grid-column: auto; }
   .compliance-genealogy-flow { grid-template-columns: repeat(4, minmax(82px, 1fr)); overflow-x: auto; padding-bottom: 5px; }
   .compliance-genealogy-flow::before { display: none; }
   .compliance-stage-detail { grid-template-columns: 1fr 1fr; }
