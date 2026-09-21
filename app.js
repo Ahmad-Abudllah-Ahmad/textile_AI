@@ -5118,7 +5118,7 @@ function setupProductionPlanningInteractions() {
       details: ["Recipe accuracy · 99.4%","Bath ratio · 1:8","Rinse pH · 7.2","Residual moisture · 42%"],
       axis: ["10:00","11:00","12:00","13:00","14:00","15:00"],
       rows: [
-        ["CK-01","Recipe & color kitchen",[["RN-8819",2,13,"done"],["RN-8821 dosing",18,17,"done"],["RN-8827",72,15,"plan"]]],
+        ["CK-01","Recipe & color dispensing",[["RN-8819",2,13,"done"],["RN-8821 dosing",18,17,"done"],["RN-8827",72,15,"plan"]]],
         ["JD-04","Jet dyeing machine",[["TEX-8819",2,15,"done"],["CIP",20,8,"changeover"],["TEX-8821 · 68%",30,37,"live"],["TEX-8827",72,23,"plan"]],61],
         ["WS-02","Wash-off range",[["TEX-8816",3,16,"done"],["TEX-8821 · rinse",70,14,"plan"],["TEX-8824",87,10,"plan"]]],
         ["HT-01","Hydro extractor",[["TEX-8816",4,13,"done"],["TEX-8819",28,13,"done"],["TEX-8821",86,10,"plan"]]]
@@ -5134,7 +5134,7 @@ function setupProductionPlanningInteractions() {
       details: ["Paste viscosity · 4,200 cP","Repeat · 640 mm","Steam · 102°C","Wash pH · 7.1"],
       axis: ["10:30","11:15","12:00","12:45","13:30","14:15"],
       rows: [
-        ["CK-02","Print color kitchen",[["TEX-8832 paste",2,16,"done"],["TEX-8840 paste",22,17,"live"],["TEX-8821 route",74,16,"plan"]]],
+        ["CK-02","Print color dispensing",[["TEX-8832 paste",2,16,"done"],["TEX-8840 paste",22,17,"live"],["TEX-8821 route",74,16,"plan"]]],
         ["RP-02","Rotary screen printer",[["TEX-8832",2,17,"done"],["Screen setup",23,10,"changeover"],["TEX-8840 print",35,30,"live"],["TEX-8821",72,20,"plan"]],57],
         ["LS-01","Loop steamer",[["TEX-8829",3,15,"done"],["TEX-8840 fixation",68,15,"plan"],["TEX-8821",86,11,"plan"]]],
         ["PW-01","Print wash range",[["TEX-8829",3,16,"done"],["TEX-8832",39,16,"live"],["TEX-8840",78,18,"plan"]]]
