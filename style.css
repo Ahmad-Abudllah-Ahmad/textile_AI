@@ -6802,7 +6802,9 @@ html, body {
   flex: 1 1 0;
   min-height: 0;
   width: 100%;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
 }
 
 .compliance-record-table {
@@ -6824,7 +6826,7 @@ html, body {
 .compliance-record-table th,
 .compliance-record-table td {
   min-width: 0;
-  padding: 4px 7px;
+  padding: 5px 8px;
   border-right: 1px solid #E2E8F0;
   border-bottom: 1px solid #E2E8F0;
   text-align: left;
@@ -6840,25 +6842,25 @@ html, body {
 .compliance-record-table tbody tr:last-child td { border-bottom: 0; }
 
 .compliance-record-table thead th {
-  height: 22px;
+  height: 25px;
   color: #0E7490;
   font-family: var(--font-mono);
-  font-size: 0.48rem;
+  font-size: 0.65rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
-.compliance-record-table thead th:nth-child(1) { width: 18%; }
+.compliance-record-table thead th:nth-child(1) { width: 20%; }
 .compliance-record-table thead th:nth-child(2) { width: 42%; }
-.compliance-record-table thead th:nth-child(3) { width: 40%; }
+.compliance-record-table thead th:nth-child(3) { width: 38%; }
 
 .compliance-record-table tbody th {
   position: relative;
-  color: #475569;
+  color: #334155;
   font-family: var(--font-mono);
-  font-size: 0.49rem;
-  font-weight: 800;
+  font-size: 0.72rem;
+  font-weight: 700;
   text-transform: uppercase;
   background: #F8FAFC;
 }
@@ -6868,9 +6870,9 @@ html, body {
 }
 
 .compliance-record-table tbody td {
-  color: #334155;
-  font-size: 0.55rem;
-  font-weight: 650;
+  color: #0F172A;
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .compliance-record-table tbody tr {
