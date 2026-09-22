@@ -7758,8 +7758,8 @@ function initApp() {
       (t, y) => `${Math.max(1, Math.round(4 - t * 2 + Math.sin(t * 6)))} /1000m`
     ],
     machines: [
-      { id: "thermosol-dyeing", name: "THERMOSOL — Thermosol Dyeing Machine (manufacturer needs confirmation)", model: "THERMOSOL CONTINUOUS DYEING", tag: "#DYE-4410-THERMO" },
-      { id: "pad-steam", name: "PAD STEAM — Pad Steam Machine (manufacturer needs confirmation)", model: "PAD STEAM CONTINUOUS DYEING", tag: "#DYE-4410-PADSTEAM" }
+      { id: "thermosol-dyeing", name: "THERMOSOL — Thermosol Dyeing Machine", model: "THERMOSOL CONTINUOUS DYEING", tag: "#DYE-4410-THERMO" },
+      { id: "pad-steam", name: "PAD STEAM — Pad Steam Machine", model: "PAD STEAM CONTINUOUS DYEING", tag: "#DYE-4410-PADSTEAM" }
     ]
   });
 
