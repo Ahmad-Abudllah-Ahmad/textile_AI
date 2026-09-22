@@ -12,13 +12,99 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="style.css?v=2.2" />
+  <link rel="stylesheet" href="style.css?v=19.0" />
 </head>
 
 <body>
+  <!-- =========================================================================
+       TOP GLOBAL INDUSTRIAL STATUS TICKER (BILINGUAL URDU & ENGLISH)
+       Runs End-to-End at the very top of the screen
+       ========================================================================= -->
+  <aside class="global-status-ticker-bar" id="globalStatusTickerBar" aria-label="Global SCADA Telemetry Stream">
+    <!-- Active Single Status Carousel / Rotator (showing one by one) -->
+    <div class="ticker-spotlight-display" id="tickerSpotlightDisplay" aria-live="polite">
+      <span class="spotlight-tag" id="spotlightTag">SPINNING · سپننگ</span>
+      <div class="spotlight-text-content">
+        <span class="spotlight-en" id="spotlightTextEn">Ring Spindles: 21,480 RPM · Count 30.2 Ne · 98.9% Eff</span>
+        <span class="spotlight-divider">•</span>
+        <span class="spotlight-ur" id="spotlightTextUr">تکلا رفتار: 21,480 چکر · کاؤنٹ 30.2 · کارکردگی 98.9%</span>
+      </div>
+    </div>
+
+    <!-- Continuous End-to-End Scrolling Ticker Stream -->
+    <div class="ticker-tape-viewport">
+      <div class="ticker-tape-track" id="tickerTapeTrack">
+        <!-- Rendered with seamless duplicate stream -->
+      </div>
+    </div>
+
+    <div class="ticker-right-cluster">
+      <!-- Hazard Bell with Live Alert Count & Dropdown Menu -->
+      <div class="hazard-bell-wrapper" id="hazardBellWrapper">
+        <button class="hazard-bell-btn" id="hazardBellBtn" type="button" aria-label="Hazard Alerts (2 Active)" aria-expanded="false" aria-haspopup="true">
+          <span class="hazard-bell-icon-box">
+            <svg class="hazard-bell-svg" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span class="hazard-bell-ping"></span>
+          </span>
+          <span class="hazard-bell-title">ALERTS</span>
+          <span class="hazard-bell-badge" id="hazardBellBadge">2</span>
+        </button>
+
+        <!-- Dropdown Menu showing multiple active alerts -->
+        <div class="hazard-alerts-dropdown" id="hazardAlertsDropdown">
+          <div class="alerts-dd-header">
+            <div class="alerts-dd-title-group">
+              <span class="alerts-dd-beacon"></span>
+              <span class="alerts-dd-heading">ACTIVE SCADA ALERTS</span>
+              <span class="alerts-dd-pill">2 ALERTS</span>
+            </div>
+            <span class="alerts-dd-ur">فعال انتباہات</span>
+          </div>
+
+          <div class="alerts-dd-list" id="alertsDropdownList">
+            <!-- Alert 1: Boiler #02 -->
+            <button class="alert-dd-item is-active" id="ddAlertItem0" data-alert-index="0" type="button">
+              <div class="dd-item-top">
+                <span class="dd-item-tag is-critical">CRITICAL • بوائلر</span>
+                <span class="dd-item-status">● LIVE NOW</span>
+              </div>
+              <div class="dd-item-name">BOILER UNIT #02 — STEAM PRESSURE HIGH</div>
+              <div class="dd-item-metric">Live Value: <strong id="ddValBoiler">8.85 bar</strong> <span class="dd-metric-thresh">(Limit: 8.50 bar)</span></div>
+              <div class="dd-item-ur">مین اسٹیم پریشر حد سے زیادہ ہو چکا ہے</div>
+            </button>
+
+            <!-- Alert 2: Stenter #04 -->
+            <button class="alert-dd-item" id="ddAlertItem1" data-alert-index="1" type="button">
+              <div class="dd-item-top">
+                <span class="dd-item-tag is-warning">THERMAL ADVISORY • سٹینٹر</span>
+                <span class="dd-item-status">● LIVE NOW</span>
+              </div>
+              <div class="dd-item-name">STENTER #04 — EXHAUST TEMP ELEVATED</div>
+              <div class="dd-item-metric">Live Value: <strong id="ddValStenter">218.6 °C</strong> <span class="dd-metric-thresh">(Limit: 205.0 °C)</span></div>
+              <div class="dd-item-ur">سٹینٹر چیمبر نمبر 4 کا ایگزاسٹ درجہ حرارت زیادہ ہے</div>
+            </button>
+          </div>
+
+          <div class="alerts-dd-footer">
+            <span class="dd-footer-hint">Click an alert to inspect full SCADA diagnostics</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ticker-live-clock-pill">
+        <span class="clock-live-dot"></span>
+        <span id="tickerClockDisplay">18:54:00</span>
+        <span class="ticker-clock-tz">PKT</span>
+      </div>
+    </div>
+  </aside>
+
   <!-- Ambient background glow elements (Per Image 3 Design System) -->
   <div class="ambient-glow glow-blue"></div>
   <div class="ambient-glow glow-pink"></div>
@@ -40,12 +126,34 @@
         <div class="card-glow-bg glow-blue-card"></div>
         <div class="card-border"></div>
 
-        <img src="assets/spinning.jpg" alt="Spinning" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
-
         <div class="card-content-overlay">
-          <span class="card-phase-num">01</span>
-          <h2 class="card-title title-blue">SPINNING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">PHASE 01</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-blue">SPINNING</h2>
+            <p class="card-description">
+              Ring and rotor yarn spinning automation with real-time spindle telemetry, draft optimization, and continuous count monitoring.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">SPINDLE SPEED</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="spinValSpindle" style="color: #000000 !important; font-weight: 900;">21,480</span><span class="telem-unit">RPM</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">YARN COUNT</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="spinValCount" style="color: #000000 !important; font-weight: 900;">30.2</span><span class="telem-unit">Ne</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">LINE EFFICIENCY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="spinValEff" style="color: #000000 !important; font-weight: 900;">98.6</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="card-glare"></div>
@@ -56,12 +164,34 @@
         <div class="card-glow-bg glow-pink-card"></div>
         <div class="card-border"></div>
 
-        <img src="assets/weaving.jpg" alt="Weaving" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
-
         <div class="card-content-overlay">
-          <span class="card-phase-num">02</span>
-          <h2 class="card-title title-pink">WEAVING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">PHASE 02</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-pink">WEAVING</h2>
+            <p class="card-description">
+              High-speed air-jet and rapier loom operations with continuous warp tension regulation and automated weft insertion telemetry.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">LOOM INSERTION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="weavValInsertion" style="color: #000000 !important; font-weight: 900;">845</span><span class="telem-unit">PPM</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">WEFT EFFICIENCY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="weavValEff" style="color: #000000 !important; font-weight: 900;">96.4</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">WARP TENSION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="weavValTension" style="color: #000000 !important; font-weight: 900;">248</span><span class="telem-unit">cN</span></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="card-glare"></div>
@@ -73,12 +203,34 @@
         <div class="card-glow-bg glow-green-card"></div>
         <div class="card-border"></div>
 
-        <img src="assets/processing.jpg" alt="Processing" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
-
         <div class="card-content-overlay">
-          <span class="card-phase-num">03</span>
-          <h2 class="card-title title-green">PROCESSING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">PHASE 03</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-green">PROCESSING</h2>
+            <p class="card-description">
+              Preparation, continuous dyeing, printing, and stenter finishing synchronized by closed-loop AI color intelligence and SCADA.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">LINE VELOCITY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="procValVelocity" style="color: #000000 !important; font-weight: 900;">48.5</span><span class="telem-unit">m/min</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">COLOR ACCURACY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="procValColor" style="color: #000000 !important; font-weight: 900;">0.18</span><span class="telem-unit">ΔE</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">STEAM PRESSURE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="procValSteam" style="color: #000000 !important; font-weight: 900;">8.20</span><span class="telem-unit">bar</span></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="card-glare"></div>
@@ -89,12 +241,34 @@
         <div class="card-glow-bg glow-orange-card"></div>
         <div class="card-border"></div>
 
-        <img src="assets/stitching.jpg" alt="Stitching" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
-
         <div class="card-content-overlay">
-          <span class="card-phase-num">04</span>
-          <h2 class="card-title title-orange">STITCHING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">PHASE 04</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-orange">STITCHING</h2>
+            <p class="card-description">
+              Industrial garment and home-textile sewing cells with computerized seam tracking, automatic thread trimming, and QA inspection.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">SEAM VELOCITY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="stitchValVelocity" style="color: #000000 !important; font-weight: 900;">4,250</span><span class="telem-unit">SPM</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">HOURLY OUTPUT</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="stitchValOutput" style="color: #000000 !important; font-weight: 900;">1,280</span><span class="telem-unit">pcs/h</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">FIRST-PASS YIELD</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="stitchValYield" style="color: #000000 !important; font-weight: 900;">99.2</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="card-glare"></div>
@@ -124,12 +298,34 @@
       <button class="sector-card module-card-btn" data-module="color-intelligence" aria-label="Color Intelligence AI">
         <div class="card-glow-bg glow-cyan-card"></div>
         <div class="card-border border-cyan"></div>
-        <img src="assets/module_color_intelligence.jpg" alt="Color Intelligence AI" class="card-cover-img"
-          loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">01</span>
-          <h2 class="card-title title-cyan">COLOR INTELLIGENCE AI</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 01</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-cyan">COLOR INTELLIGENCE AI</h2>
+            <p class="card-description">
+              Closed-loop spectrophotometric shade formulation, multi-tank dye dispensing, and automated ΔE tolerance control.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">COLOR VARIANCE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValColVar" style="color: #000000 !important; font-weight: 900;">0.14</span><span class="telem-unit">ΔE</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">RECIPE ACCURACY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValColRec" style="color: #000000 !important; font-weight: 900;">99.4</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">DYE BATH YIELD</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValColYld" style="color: #000000 !important; font-weight: 900;">97.8</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -139,12 +335,34 @@
         aria-label="Fabric Inspection &amp; Vision AI">
         <div class="card-glow-bg glow-blue-card"></div>
         <div class="card-border border-blue"></div>
-        <img src="assets/module_fabric_vision.jpg" alt="Fabric Inspection &amp; Vision AI" class="card-cover-img"
-          loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">02</span>
-          <h2 class="card-title title-blue">FABRIC INSPECTION &amp; VISION AI</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 02</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-blue">FABRIC INSPECTION &amp; VISION AI</h2>
+            <p class="card-description">
+              High-speed line-scan camera defect classification with real-time continuous roll defect mapping and grading.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">DEFECT RATE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValVisDet" style="color: #000000 !important; font-weight: 900;">99.8</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">LINE VELOCITY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValVisSpd" style="color: #000000 !important; font-weight: 900;">112</span><span class="telem-unit">m/min</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">FALSE REJECT</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValVisRej" style="color: #000000 !important; font-weight: 900;">0.04</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -154,12 +372,34 @@
         aria-label="Energy &amp; Utilities Optimization AI">
         <div class="card-glow-bg glow-amber-card"></div>
         <div class="card-border border-amber"></div>
-        <img src="assets/module_energy_utilities.jpg" alt="Energy &amp; Utilities Optimization AI"
-          class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">03</span>
-          <h2 class="card-title title-amber">ENERGY &amp; UTILITIES OPTIMIZATION AI</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 03</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-amber">ENERGY &amp; UTILITIES OPTIMIZATION AI</h2>
+            <p class="card-description">
+              Continuous thermofluid monitoring, boiler steam load balance, and closed-loop effluent recycling optimization.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">STEAM USAGE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValEngStm" style="color: #000000 !important; font-weight: 900;">2.42</span><span class="telem-unit">kg/kg</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">POWER LOAD</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValEngPwr" style="color: #000000 !important; font-weight: 900;">1,840</span><span class="telem-unit">kW</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">WATER RECOVERY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValEngRec" style="color: #000000 !important; font-weight: 900;">88.5</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -169,12 +409,34 @@
         aria-label="Production Planning &amp; Scheduling AI">
         <div class="card-glow-bg glow-emerald-card"></div>
         <div class="card-border border-emerald"></div>
-        <img src="assets/module_production_planning.jpg" alt="Production Planning &amp; Scheduling AI"
-          class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">04</span>
-          <h2 class="card-title title-emerald">PRODUCTION PLANNING &amp; SCHEDULING AI</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 04</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-emerald">PRODUCTION PLANNING &amp; SCHEDULING AI</h2>
+            <p class="card-description">
+              Dynamic batch sequencing, stenter line bottleneck forecasting, and automated machine changeover reduction.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">LINE OEE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValPlnOee" style="color: #000000 !important; font-weight: 900;">94.6</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">DISPATCH RATE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValPlnOtp" style="color: #000000 !important; font-weight: 900;">98.2</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">SETUP REDUCTION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValPlnChg" style="color: #000000 !important; font-weight: 900;">-38</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -184,12 +446,34 @@
         aria-label="Predictive Maintenance AI">
         <div class="card-glow-bg glow-rose-card"></div>
         <div class="card-border border-rose"></div>
-        <img src="assets/module_predictive_maintenance.jpg" alt="Predictive Maintenance AI" class="card-cover-img"
-          loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">05</span>
-          <h2 class="card-title title-rose">PREDICTIVE MAINTENANCE AI</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 05</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-rose">PREDICTIVE MAINTENANCE AI</h2>
+            <p class="card-description">
+              High-frequency bearing vibration FFT telemetry, thermal motor imaging, and automated MTBF failure prediction.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">HEALTH INDEX</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValMntHlt" style="color: #000000 !important; font-weight: 900;">97.4</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">VIBRATION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValMntVib" style="color: #000000 !important; font-weight: 900;">1.22</span><span class="telem-unit">mm/s</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">LINE UPTIME</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValMntUpt" style="color: #000000 !important; font-weight: 900;">99.9</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -199,12 +483,34 @@
         aria-label="Compliance &amp; Traceability AI">
         <div class="card-glow-bg glow-purple-card"></div>
         <div class="card-border border-purple"></div>
-        <img src="assets/module_compliance_traceability.jpg" alt="Compliance &amp; Traceability AI"
-          class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">06</span>
-          <h2 class="card-title title-purple">COMPLIANCE &amp; TRACEABILITY AI</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 06</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-purple">COMPLIANCE &amp; TRACEABILITY AI</h2>
+            <p class="card-description">
+              End-to-end digital product passport (DPP), OEKO-TEX chemical MRSL verification, and ESG carbon audit trails.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">AUDIT SCORE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValCmpAud" style="color: #000000 !important; font-weight: 900;">100</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">CARBON FOOTPRINT</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValCmpCar" style="color: #000000 !important; font-weight: 900;">2.48</span><span class="telem-unit">kgCO₂</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">WATER FOOTPRINT</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValCmpWat" style="color: #000000 !important; font-weight: 900;">86.2</span><span class="telem-unit">L/kg</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -213,12 +519,34 @@
       <button class="sector-card module-card-btn" data-module="mill-knowledge" aria-label="Mill Knowledge Copilot">
         <div class="card-glow-bg glow-indigo-card"></div>
         <div class="card-border border-indigo"></div>
-        <img src="assets/module_mill_knowledge.jpg" alt="Mill Knowledge Copilot" class="card-cover-img"
-          loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">07</span>
-          <h2 class="card-title title-indigo">MILL KNOWLEDGE COPILOT</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 07</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-indigo">MILL KNOWLEDGE COPILOT</h2>
+            <p class="card-description">
+              Domain-specific industrial assistant trained on mill SOPs, machine maintenance logs, and chemical batch recipes.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">QUERY LATENCY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValMilLat" style="color: #000000 !important; font-weight: 900;">185</span><span class="telem-unit">ms</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">KB ACCURACY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValMilAcc" style="color: #000000 !important; font-weight: 900;">99.2</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">SOP QUERIES</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValMilQry" style="color: #000000 !important; font-weight: 900;">1,420</span><span class="telem-unit">ops/d</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -244,11 +572,34 @@
       <button class="sector-card sub-card-btn" data-module="color-intelligence" data-sub="dyeing" aria-label="Dyeing">
         <div class="card-glow-bg glow-cyan-card"></div>
         <div class="card-border border-cyan"></div>
-        <img src="assets/sub_dyeing.jpg" alt="Dyeing Operations" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">01</span>
-          <h2 class="card-title title-cyan">DYEING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">STAGE 01</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-cyan">DYEING</h2>
+            <p class="card-description">
+              Jet &amp; jigger continuous dye liquor monitoring with closed-loop exhaustion control.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">COLOR DEVIATION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValDyeDev" style="color: #000000 !important; font-weight: 900;">0.12</span><span class="telem-unit">ΔE</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">BATH TEMP</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValDyeTmp" style="color: #000000 !important; font-weight: 900;">98.4</span><span class="telem-unit">°C</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">DYE EXHAUSTION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValDyeExh" style="color: #000000 !important; font-weight: 900;">96.8</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -258,11 +609,34 @@
         aria-label="Printing">
         <div class="card-glow-bg glow-pink-card"></div>
         <div class="card-border border-pink"></div>
-        <img src="assets/sub_printing.jpg" alt="Printing Operations" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">02</span>
-          <h2 class="card-title title-pink">PRINTING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">STAGE 02</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-pink">PRINTING</h2>
+            <p class="card-description">
+              Rotary screen &amp; digital inkjet registration accuracy and ink viscosity telemetry.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">REGISTRATION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValPrnReg" style="color: #000000 !important; font-weight: 900;">0.02</span><span class="telem-unit">mm</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">PRINT SPEED</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValPrnSpd" style="color: #000000 !important; font-weight: 900;">42.5</span><span class="telem-unit">m/min</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">INK VISCOSITY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValPrnVis" style="color: #000000 !important; font-weight: 900;">24.2</span><span class="telem-unit">cP</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -272,11 +646,34 @@
         aria-label="Bleaching (White Process)">
         <div class="card-glow-bg glow-emerald-card"></div>
         <div class="card-border border-emerald"></div>
-        <img src="assets/sub_bleaching.jpg" alt="Bleaching White Operations" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">03</span>
-          <h2 class="card-title title-emerald">BLEACHING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">STAGE 03</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-emerald">BLEACHING</h2>
+            <p class="card-description">
+              Peroxide oxidation monitoring CIE Berger whiteness and fiber tensile retention.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">WHITENESS INDEX</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValBlcWht" style="color: #000000 !important; font-weight: 900;">78.4</span><span class="telem-unit">WI</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">H₂O₂ CONC</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValBlcCon" style="color: #000000 !important; font-weight: 900;">4.2</span><span class="telem-unit">g/L</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">TENSILE RETENTION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValBlcTen" style="color: #000000 !important; font-weight: 900;">97.6</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -286,11 +683,34 @@
         aria-label="Mercerizing">
         <div class="card-glow-bg glow-amber-card"></div>
         <div class="card-border border-amber"></div>
-        <img src="assets/sub_mercerizing.jpg" alt="Mercerizing Operations" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">04</span>
-          <h2 class="card-title title-amber">MERCERIZING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">STAGE 04</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-amber">MERCERIZING</h2>
+            <p class="card-description">
+              High caustic soda tension stabilization optimizing cotton luster and dye absorption.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">CAUSTIC STRENGTH</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValMrcStr" style="color: #000000 !important; font-weight: 900;">28.5</span><span class="telem-unit">°Bé</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">LUSTER INDEX</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValMrcLus" style="color: #000000 !important; font-weight: 900;">94.2</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">NEUTRAL PH</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValMrcPh" style="color: #000000 !important; font-weight: 900;">6.85</span><span class="telem-unit">pH</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -299,11 +719,34 @@
       <button class="sector-card sub-card-btn" data-module="color-intelligence" data-sub="finish" aria-label="Finishes">
         <div class="card-glow-bg glow-purple-card"></div>
         <div class="card-border border-purple"></div>
-        <img src="assets/sub_stenter.jpg" alt="Finishes Operations" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">05</span>
-          <h2 class="card-title title-purple">FINISHES</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">STAGE 05</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-purple">FINISHES</h2>
+            <p class="card-description">
+              Stenter thermosetting, hydrophobicity padding, and residual moisture optimization.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">STENTER TEMP</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValFinTmp" style="color: #000000 !important; font-weight: 900;">185.0</span><span class="telem-unit">°C</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">WET PICK-UP</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValFinPck" style="color: #000000 !important; font-weight: 900;">64.2</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">RESIDUAL MOISTURE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="ciValFinMst" style="color: #000000 !important; font-weight: 900;">4.8</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -328,11 +771,34 @@
       <button class="sector-card sub-card-btn" data-module="fabric-vision" data-sub="greige" aria-label="Greige">
         <div class="card-glow-bg glow-amber-card"></div>
         <div class="card-border border-amber"></div>
-        <img src="assets/sub_greige.jpg" alt="Greige Inspection" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">01</span>
-          <h2 class="card-title title-amber">GREIGE</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">INSP 01</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-amber">GREIGE</h2>
+            <p class="card-description">
+              Loom-state woven fabric defect scanning for warp breaks, coarse picks, and oil stains.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">DEFECT POINTS</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValGrgPts" style="color: #000000 !important; font-weight: 900;">12.4</span><span class="telem-unit">pts</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">SCAN SPEED</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValGrgSpd" style="color: #000000 !important; font-weight: 900;">85.0</span><span class="telem-unit">m/min</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">LINE EFFICIENCY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValGrgEff" style="color: #000000 !important; font-weight: 900;">99.2</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -342,11 +808,34 @@
         aria-label="Pretreatment">
         <div class="card-glow-bg glow-blue-card"></div>
         <div class="card-border border-blue"></div>
-        <img src="assets/sub_pretreatment.jpg" alt="Pretreatment Operations" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">02</span>
-          <h2 class="card-title title-blue">PRETREATMENT</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">INSP 02</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-blue">PRETREATMENT</h2>
+            <p class="card-description">
+              Singeing, desizing, and scouring web consistency detection with pinhole monitoring.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">SURFACE UNIFORMITY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValPreUni" style="color: #000000 !important; font-weight: 900;">99.1</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">WEB WIDTH</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValPreWdh" style="color: #000000 !important; font-weight: 900;">182.4</span><span class="telem-unit">cm</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">DESIZE RATING</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValPreRat" style="color: #000000 !important; font-weight: 900;">8.0</span><span class="telem-unit">TEG</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -356,11 +845,34 @@
         aria-label="Dyeing Inspection">
         <div class="card-glow-bg glow-cyan-card"></div>
         <div class="card-border border-cyan"></div>
-        <img src="assets/sub_fv_dyeing.jpg" alt="Dyeing Inspection" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">03</span>
-          <h2 class="card-title title-cyan">DYEING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">INSP 03</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-cyan">DYEING</h2>
+            <p class="card-description">
+              Continuous surface vision for dye streaks, listing, shade gradation, and dye splashes.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">SHADE LEVELNESS</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValDyeLvl" style="color: #000000 !important; font-weight: 900;">99.4</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">DELTA E DRIFT</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValDyeDrf" style="color: #000000 !important; font-weight: 900;">0.15</span><span class="telem-unit">ΔE</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">SPOT COUNT</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValDyeSpt" style="color: #000000 !important; font-weight: 900;">0</span><span class="telem-unit">/100m</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -370,27 +882,71 @@
         aria-label="Printing Inspection">
         <div class="card-glow-bg glow-pink-card"></div>
         <div class="card-border border-pink"></div>
-        <img src="assets/sub_fv_printing.jpg" alt="Printing Inspection" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">04</span>
-          <h2 class="card-title title-pink">PRINTING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">INSP 04</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-pink">PRINTING</h2>
+            <p class="card-description">
+              High-resolution camera tracking pattern repeat alignment, color bleed, and missing nozzles.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">REPEAT PRECISION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValPrnPrf" style="color: #000000 !important; font-weight: 900;">99.8</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">COLOR BLEED</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValPrnBld" style="color: #000000 !important; font-weight: 900;">0.01</span><span class="telem-unit">mm</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">LINE SPEED</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValPrnSpd" style="color: #000000 !important; font-weight: 900;">48.0</span><span class="telem-unit">m/min</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
-
-
 
       <!-- 05: FINISHES -->
       <button class="sector-card sub-card-btn" data-module="fabric-vision" data-sub="finish"
         aria-label="Finishes Inspection">
         <div class="card-glow-bg glow-orange-card"></div>
         <div class="card-border border-orange"></div>
-        <img src="assets/sub_fv_finish.jpg" alt="Finishes Inspection" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">06</span>
-          <h2 class="card-title title-orange">FINISHES</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">INSP 05</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-orange">FINISHES</h2>
+            <p class="card-description">
+              Stenter weft straightening vision measuring fabric bow, skew distortion, and weight.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">BOW DISTORTION</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValFinBow" style="color: #000000 !important; font-weight: 900;">0.3</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">SKEW ANGLE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValFinSkw" style="color: #000000 !important; font-weight: 900;">0.2</span><span class="telem-unit">°</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">FABRIC WEIGHT</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValFinGsm" style="color: #000000 !important; font-weight: 900;">215</span><span class="telem-unit">g/m²</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
@@ -400,15 +956,37 @@
         aria-label="Folding Inspection">
         <div class="card-glow-bg glow-purple-card"></div>
         <div class="card-border border-purple"></div>
-        <img src="assets/sub_fv_folding.jpg" alt="Folding & Packaging" class="card-cover-img" loading="eager" />
-        <div class="card-overlay"></div>
         <div class="card-content-overlay">
-          <span class="card-phase-num">05</span>
-          <h2 class="card-title title-purple">FOLDING</h2>
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">INSP 06</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-purple">FOLDING</h2>
+            <p class="card-description">
+              Final 4-point fabric grading confirmation, roll length verification, and automated packaging.
+            </p>
+          </div>
+
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">LENGTH ACCURACY</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValFldAcc" style="color: #000000 !important; font-weight: 900;">99.9</span><span class="telem-unit">%</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">ROLL PACKAGING</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValFldPkg" style="color: #000000 !important; font-weight: 900;">142</span><span class="telem-unit">r/h</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">FINAL YIELD</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="fvValFldYld" style="color: #000000 !important; font-weight: 900;">98.7</span><span class="telem-unit">%</span></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="card-glare"></div>
       </button>
-
 
     </main>
   </div>
@@ -6424,7 +7002,85 @@
     </div>
   </div>
 
-  <script src="app.js?v=2.2"></script>
+  <!-- =========================================================================
+       BOTTOM CORNER BOILER SCADA ALERT (BILINGUAL URDU & ENGLISH)
+       Appears everywhere across all views after delay
+       ========================================================================= -->
+  <aside class="boiler-corner-alert" id="boilerCornerAlert" role="alert" aria-live="assertive" style="display: none;">
+    <div class="boiler-alert-glow"></div>
+    <div class="boiler-alert-card">
+      <div class="boiler-alert-header">
+        <div class="boiler-alert-title-wrap">
+          <div class="boiler-alert-icon-beacon">
+            <span class="beacon-wave"></span>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M12 9v4"></path>
+              <path d="M12 17h.01"></path>
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            </svg>
+          </div>
+          <div class="boiler-alert-headings">
+            <div class="boiler-alert-badge-row">
+              <span class="boiler-alert-badge" id="boilerAlertBadge">CRITICAL SCADA TELEMETRY</span>
+              <div class="alert-counter-pill" id="alertCounterPill">
+                <button class="alert-counter-nav" id="alertPrevBtn" type="button" aria-label="Previous alert">‹</button>
+                <span id="alertCounterDisplay">ALERT 1 OF 2</span>
+                <button class="alert-counter-nav" id="alertNextBtn" type="button" aria-label="Next alert">›</button>
+              </div>
+            </div>
+            <h4 class="boiler-alert-title" id="boilerAlertTitle">BOILER UNIT #02 ALERT <span class="boiler-alert-title-ur" id="boilerAlertTitleUr">• بوائلر انتباہ</span></h4>
+          </div>
+        </div>
+        <button class="boiler-alert-close-btn" id="boilerAlertCloseBtn" type="button" aria-label="Close Alert">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="boiler-alert-metrics-row" id="boilerAlertMetricsRow">
+        <div class="boiler-metric-pill is-warning" id="boilerMetricPill1">
+          <span class="boiler-metric-label" id="boilerMetricLabel1">STEAM PRESSURE / پریشر</span>
+          <div class="boiler-metric-val"><span id="boilerAlertMetricVal1">8.85</span> <span class="boiler-metric-unit" id="boilerMetricUnit1">bar</span> <span class="boiler-alert-tag-high" id="boilerMetricTag1">▲ HIGH</span></div>
+        </div>
+        <div class="boiler-metric-pill" id="boilerMetricPill2">
+          <span class="boiler-metric-label" id="boilerMetricLabel2">FEED WATER / پانی کی سطح</span>
+          <div class="boiler-metric-val"><span id="boilerAlertMetricVal2">94.2</span> <span class="boiler-metric-unit" id="boilerMetricUnit2">%</span></div>
+        </div>
+        <div class="boiler-metric-pill" id="boilerMetricPill3">
+          <span class="boiler-metric-label" id="boilerMetricLabel3">FLUE STACK / درجہ حرارت</span>
+          <div class="boiler-metric-val"><span id="boilerAlertMetricVal3">172.4</span> <span class="boiler-metric-unit" id="boilerMetricUnit3">°C</span></div>
+        </div>
+      </div>
+
+      <div class="boiler-alert-body">
+        <p class="boiler-alert-msg-en" id="boilerAlertMsgEn">
+          <strong>Advisory:</strong> Main steam manifold pressure exceeds 8.50 bar nominal threshold (Current: 8.85 bar). Modulation bypass valve auto-engaged at 42% to protect dyeing range header.
+        </p>
+        <p class="boiler-alert-msg-ur" id="boilerAlertMsgUr">
+          <strong>حفاظتی انتباہ:</strong> مین اسٹیم پریشر 8.50 بار کی حد سے بڑھ کر 8.85 بار ہو چکا ہے۔ پروسیسنگ ڈائینگ کو محفوظ رکھنے کیلئے بائی پاس والو 42 فیصد پر خودکار فعال کر دیا گیا ہے۔
+        </p>
+      </div>
+
+      <div class="boiler-alert-actions">
+        <button class="boiler-btn-ack" id="boilerAlertAckBtn" type="button">
+          <span>ACKNOWLEDGE</span>
+          <span class="btn-ack-ur">• تصدیق کی</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Minimized Floating Corner Badge (When alert is acknowledged or closed) -->
+  <button class="boiler-minimized-badge" id="boilerMinimizedBadge" type="button" style="display: none;" aria-label="Reopen Boiler Alert">
+    <span class="mini-beacon-dot"></span>
+    <span class="mini-badge-en" id="miniBadgeText">BOILER #02: <strong id="miniBoilerPressure">8.85 bar</strong></span>
+    <span class="mini-badge-count" id="miniBadgeCount">● 2 ALERTS</span>
+    <span class="mini-badge-ur" id="miniBadgeUr">• فعال انتباہات</span>
+  </button>
+
+  <script src="app.js?v=6.0"></script>
 </body>
 
 </html>

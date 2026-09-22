@@ -669,6 +669,133 @@ function initCard3DTilt() {
 }
 
 // ==========================================================================
+// 3B. SECTOR CARDS TELEMETRY REAL-TIME FLUCTUATION
+// ==========================================================================
+function initSectorCardsTelemetry() {
+  const mainView = document.getElementById("mainPageView");
+  const procView = document.getElementById("processingModulesView");
+  const colorView = document.getElementById("colorIntelligenceSubView");
+  const fabricView = document.getElementById("fabricInspectionSubView");
+
+  const groups = [
+    {
+      getView: () => mainView,
+      items: [
+        { id: "spinValSpindle", base: 21480, amp: 55, decimals: 0, comma: true },
+        { id: "spinValCount", base: 30.2, amp: 0.12, decimals: 1 },
+        { id: "spinValEff", base: 98.6, amp: 0.35, decimals: 1 },
+        { id: "weavValInsertion", base: 845, amp: 8, decimals: 0 },
+        { id: "weavValEff", base: 96.4, amp: 0.4, decimals: 1 },
+        { id: "weavValTension", base: 248, amp: 4, decimals: 0 },
+        { id: "procValVelocity", base: 48.5, amp: 0.8, decimals: 1 },
+        { id: "procValColor", base: 0.18, amp: 0.02, decimals: 2 },
+        { id: "procValSteam", base: 8.20, amp: 0.08, decimals: 2 },
+        { id: "stitchValVelocity", base: 4250, amp: 30, decimals: 0, comma: true },
+        { id: "stitchValOutput", base: 1280, amp: 12, decimals: 0, comma: true },
+        { id: "stitchValYield", base: 99.2, amp: 0.25, decimals: 1 }
+      ]
+    },
+    {
+      getView: () => procView,
+      items: [
+        { id: "modValColVar", base: 0.14, amp: 0.02, decimals: 2 },
+        { id: "modValColRec", base: 99.4, amp: 0.2, decimals: 1 },
+        { id: "modValColYld", base: 97.8, amp: 0.3, decimals: 1 },
+        { id: "modValVisDet", base: 99.8, amp: 0.1, decimals: 1 },
+        { id: "modValVisSpd", base: 112, amp: 3, decimals: 0 },
+        { id: "modValVisRej", base: 0.04, amp: 0.01, decimals: 2 },
+        { id: "modValEngStm", base: 2.42, amp: 0.05, decimals: 2 },
+        { id: "modValEngPwr", base: 1840, amp: 25, decimals: 0, comma: true },
+        { id: "modValEngRec", base: 88.5, amp: 0.4, decimals: 1 },
+        { id: "modValPlnOee", base: 94.6, amp: 0.3, decimals: 1 },
+        { id: "modValPlnOtp", base: 98.2, amp: 0.2, decimals: 1 },
+        { id: "modValPlnChg", base: -38, amp: 1, decimals: 0 },
+        { id: "modValMntHlt", base: 97.4, amp: 0.3, decimals: 1 },
+        { id: "modValMntVib", base: 1.22, amp: 0.04, decimals: 2 },
+        { id: "modValMntUpt", base: 99.9, amp: 0.05, decimals: 1 },
+        { id: "modValCmpAud", base: 100, amp: 0.1, decimals: 0 },
+        { id: "modValCmpCar", base: 2.48, amp: 0.04, decimals: 2 },
+        { id: "modValCmpWat", base: 86.2, amp: 0.8, decimals: 1 },
+        { id: "modValMilLat", base: 185, amp: 12, decimals: 0 },
+        { id: "modValMilAcc", base: 99.2, amp: 0.2, decimals: 1 },
+        { id: "modValMilQry", base: 1420, amp: 15, decimals: 0, comma: true }
+      ]
+    },
+    {
+      getView: () => colorView,
+      items: [
+        { id: "ciValDyeDev", base: 0.12, amp: 0.02, decimals: 2 },
+        { id: "ciValDyeTmp", base: 98.4, amp: 0.3, decimals: 1 },
+        { id: "ciValDyeExh", base: 96.8, amp: 0.2, decimals: 1 },
+        { id: "ciValPrnReg", base: 0.02, amp: 0.005, decimals: 3 },
+        { id: "ciValPrnSpd", base: 42.5, amp: 0.6, decimals: 1 },
+        { id: "ciValPrnVis", base: 24.2, amp: 0.4, decimals: 1 },
+        { id: "ciValBlcWht", base: 78.4, amp: 0.4, decimals: 1 },
+        { id: "ciValBlcCon", base: 4.2, amp: 0.1, decimals: 1 },
+        { id: "ciValBlcTen", base: 97.6, amp: 0.2, decimals: 1 },
+        { id: "ciValMrcStr", base: 28.5, amp: 0.2, decimals: 1 },
+        { id: "ciValMrcLus", base: 94.2, amp: 0.3, decimals: 1 },
+        { id: "ciValMrcPh", base: 6.85, amp: 0.05, decimals: 2 },
+        { id: "ciValFinTmp", base: 185.0, amp: 0.6, decimals: 1 },
+        { id: "ciValFinPck", base: 64.2, amp: 0.5, decimals: 1 },
+        { id: "ciValFinMst", base: 4.8, amp: 0.1, decimals: 1 }
+      ]
+    },
+    {
+      getView: () => fabricView,
+      items: [
+        { id: "fvValGrgPts", base: 12.4, amp: 0.4, decimals: 1 },
+        { id: "fvValGrgSpd", base: 85.0, amp: 1.2, decimals: 1 },
+        { id: "fvValGrgEff", base: 99.2, amp: 0.1, decimals: 1 },
+        { id: "fvValPreUni", base: 99.1, amp: 0.2, decimals: 1 },
+        { id: "fvValPreWdh", base: 182.4, amp: 0.3, decimals: 1 },
+        { id: "fvValPreRat", base: 8.0, amp: 0.1, decimals: 1 },
+        { id: "fvValDyeLvl", base: 99.4, amp: 0.2, decimals: 1 },
+        { id: "fvValDyeDrf", base: 0.15, amp: 0.02, decimals: 2 },
+        { id: "fvValDyeSpt", base: 0, amp: 0, decimals: 0 },
+        { id: "fvValPrnPrf", base: 99.8, amp: 0.1, decimals: 1 },
+        { id: "fvValPrnBld", base: 0.01, amp: 0.003, decimals: 3 },
+        { id: "fvValPrnSpd", base: 48.0, amp: 0.8, decimals: 1 },
+        { id: "fvValFinBow", base: 0.3, amp: 0.05, decimals: 2 },
+        { id: "fvValFinSkw", base: 0.2, amp: 0.04, decimals: 2 },
+        { id: "fvValFinGsm", base: 215, amp: 2, decimals: 0 },
+        { id: "fvValFldAcc", base: 99.9, amp: 0.05, decimals: 1 },
+        { id: "fvValFldPkg", base: 142, amp: 4, decimals: 0 },
+        { id: "fvValFldYld", base: 98.7, amp: 0.2, decimals: 1 }
+      ]
+    }
+  ];
+
+  groups.forEach((g, gIdx) => {
+    g.items.forEach((m, mIdx) => {
+      m.el = document.getElementById(m.id);
+      m.phaseOff = gIdx * 1.8 + mIdx * 0.73;
+      m.freq = 0.52 + ((gIdx + mIdx) % 4) * 0.13;
+    });
+  });
+
+  let tPhase = 0;
+  setInterval(() => {
+    tPhase += 0.35;
+    groups.forEach((g) => {
+      const view = g.getView();
+      if (view && view.style.display === "none") return;
+      g.items.forEach((m) => {
+        if (!m.el) {
+          m.el = document.getElementById(m.id);
+          if (!m.el) return;
+        }
+        if (m.amp === 0) return;
+        const liveVal = m.base + Math.sin(tPhase * m.freq + m.phaseOff) * m.amp;
+        m.el.textContent = m.decimals === 0
+          ? (m.comma ? Math.round(liveVal).toLocaleString("en-US") : String(Math.round(liveVal)))
+          : liveVal.toFixed(m.decimals);
+      });
+    });
+  }, 750);
+}
+
+// ==========================================================================
 // 4. DASHBOARD EVENT HANDLERS
 // ==========================================================================
 function setupDashboardInteractions() {
@@ -7711,10 +7838,595 @@ function initGlobalSparklineTelemetryEngine() {
 }
 
 // ==========================================================================
-// 13. INITIALIZATION
+// 13. BILINGUAL GLOBAL SCADA STATUS TICKER & BOILER ALERT SYSTEM
+// ==========================================================================
+
+function initTopScadaStatusTicker() {
+  const tapeTrack = document.getElementById("tickerTapeTrack");
+  const clockEl = document.getElementById("tickerClockDisplay");
+  const spotlightBox = document.getElementById("tickerSpotlightDisplay");
+  const spotlightTag = document.getElementById("spotlightTag");
+  const spotlightEn = document.getElementById("spotlightTextEn");
+  const spotlightUr = document.getElementById("spotlightTextUr");
+
+  // Status data items in English and Urdu
+  const statusItems = [
+    {
+      id: "spinning",
+      tagEn: "SPINNING",
+      tagUr: "سپننگ",
+      valEn: "Ring Spindles: 21,480 RPM · Count 30.2 Ne · 98.9% Eff",
+      valUr: "تکلا رفتار: 21,480 چکر · کاؤنٹ 30.2 · کارکردگی 98.9%",
+      shortEn: "SPINNING: 21,480 RPM · 98.9% Eff",
+      shortUr: "سپننگ: 21,480 چکر · کارکردگی 98.9%",
+      warn: false
+    },
+    {
+      id: "weaving",
+      tagEn: "WEAVING",
+      tagUr: "ویونگ",
+      valEn: "Air-Jet Looms: 849 PPM · Weft Eff 96.6% · 248 cN",
+      valUr: "ایئر جیٹ لومز: 849 پی پی ایم · کارکردگی 96.6%",
+      shortEn: "WEAVING: 849 PPM · 96.6% Weft Eff",
+      shortUr: "ویونگ: 849 پی پی ایم · کارکردگی 96.6%",
+      warn: false
+    },
+    {
+      id: "dyeing",
+      tagEn: "DYEING",
+      tagUr: "ڈائینگ",
+      valEn: "Continuous Range: ΔE 0.18 · 98.4°C · 48.5 m/min",
+      valUr: "ڈائینگ رینج: کلر ایکوریسی ΔE 0.18 · رفتار 48.5 میٹر/منٹ",
+      shortEn: "DYEING: ΔE 0.18 (Pass) · 48.5 m/min",
+      shortUr: "ڈائینگ: ڈیلٹا ای 0.18 · رفتار 48.5 میٹر/منٹ",
+      warn: false
+    },
+    {
+      id: "stitching",
+      tagEn: "STITCHING",
+      tagUr: "اسٹیچنگ",
+      valEn: "Assembly Cells: 4,222 SPM · Yield 99.4% · 1,285 pcs/h",
+      valUr: "سلائی یونٹ: 4,222 فی منٹ · کوالٹی 99.4% (پاس)",
+      shortEn: "STITCHING: 4,222 SPM · 99.4% Yield",
+      shortUr: "اسٹیچنگ: 4,222 ٹانکے · پیداوار 99.4%",
+      warn: false
+    },
+    {
+      id: "boiler",
+      tagEn: "BOILER #02",
+      tagUr: "انڈسٹریل بوائلر",
+      valEn: "Steam Header: 8.85 bar [HIGH] · Auto-Bypass 42%",
+      valUr: "اسٹیم پریشر: 8.85 بار (ہائی پریشر) · بائی پاس 42%",
+      shortEn: "BOILER #02: 8.85 bar [PRESSURE ALERT]",
+      shortUr: "بوائلر 02: 8.85 بار (پریشر انتباہ)",
+      warn: true
+    },
+    {
+      id: "vision",
+      tagEn: "VISION AI",
+      tagUr: "ویژن اے آئی",
+      valEn: "Fabric Inspection: 112 m/min · 0 Defects (Pass)",
+      valUr: "کیمرہ اسکین: 112 میٹر/منٹ · صفر نقص (کوالٹی اوکے)",
+      shortEn: "VISION AI: 112 m/min · 0 Defects",
+      shortUr: "ویژن اے آئی: 112 میٹر/منٹ · صفر نقص",
+      warn: false
+    },
+    {
+      id: "energy",
+      tagEn: "ENERGY GRID",
+      tagUr: "توانائی و بجلی",
+      valEn: "Plant Load: 1,840 kW · Water Recovery: 88.5%",
+      valUr: "بجلی لوڈ: 1,840 کلو واٹ · واٹر ریکوری 88.5%",
+      shortEn: "POWER: 1,840 kW · Recovery 88.5%",
+      shortUr: "توانائی: 1,840 کلو واٹ · ری سائیکلنگ 88.5%",
+      warn: false
+    },
+    {
+      id: "compliance",
+      tagEn: "COMPLIANCE",
+      tagUr: "ماحولیاتی تعمیل",
+      valEn: "OEKO-TEX MRSL: 100% Pass · Audit OK (Zero Chem)",
+      valUr: "زیرو کیمیکل اخراج · اویکو ٹیکس 100% منظور شدہ",
+      shortEn: "COMPLIANCE: 100% Chemical Pass",
+      shortUr: "تعمیل: 100 فیصد تصدیق شدہ",
+      warn: false
+    }
+  ];
+
+  // Render continuous track items (duplicated for infinite loop)
+  if (tapeTrack) {
+    const buildTapeHtml = () => {
+      return statusItems
+        .map(item => `
+          <div class="tape-item ${item.warn ? 'is-alert' : ''}" data-tape-id="${item.id}">
+            <strong>${item.shortEn}</strong>
+            <span class="tape-separator">◄►</span>
+            <span class="tape-ur">${item.shortUr}</span>
+            <span class="tape-separator">•</span>
+          </div>
+        `)
+        .join("");
+    };
+
+    // Duplicate twice for a seamless 50% translation loop
+    tapeTrack.innerHTML = buildTapeHtml() + buildTapeHtml();
+  }
+
+  // Live Digital Clock (PKT)
+  function updateClock() {
+    if (!clockEl) return;
+    const now = new Date();
+    // Pakistan Standard Time is UTC+5
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    const pktDate = new Date(utc + 3600000 * 5);
+    const hrs = String(pktDate.getHours()).padStart(2, "0");
+    const mins = String(pktDate.getMinutes()).padStart(2, "0");
+    const secs = String(pktDate.getSeconds()).padStart(2, "0");
+    clockEl.textContent = `${hrs}:${mins}:${secs}`;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // Rotating Spotlight (displays one by one)
+  let currentIndex = 0;
+  function rotateSpotlight() {
+    if (!spotlightBox || !spotlightTag || !spotlightEn || !spotlightUr) return;
+
+    spotlightBox.classList.add("fade-out");
+
+    setTimeout(() => {
+      currentIndex = (currentIndex + 1) % statusItems.length;
+      const cur = statusItems[currentIndex];
+
+      spotlightTag.textContent = `${cur.tagEn} · ${cur.tagUr}`;
+      if (cur.warn) {
+        spotlightBox.classList.add("is-alert");
+        spotlightBox.style.borderColor = "#ef4444";
+        spotlightBox.style.background = "#fef2f2";
+        spotlightBox.style.boxShadow = "0 0 10px rgba(239, 68, 68, 0.22)";
+        spotlightTag.style.color = "#ffffff";
+        spotlightTag.style.background = "#ef4444";
+        spotlightTag.style.borderColor = "#dc2626";
+      } else {
+        spotlightBox.classList.remove("is-alert");
+        spotlightBox.style.borderColor = "#cbd5e1";
+        spotlightBox.style.background = "#ffffff";
+        spotlightBox.style.boxShadow = "0 1px 3px rgba(15, 23, 42, 0.04)";
+        spotlightTag.style.color = "#000000";
+        spotlightTag.style.background = "#e2e8f0";
+        spotlightTag.style.borderColor = "#cbd5e1";
+      }
+
+      spotlightEn.textContent = cur.valEn;
+      spotlightUr.textContent = cur.valUr;
+
+      spotlightBox.classList.remove("fade-out");
+    }, 300);
+  }
+
+  // Rotate every 4.5 seconds
+  setInterval(rotateSpotlight, 4500);
+}
+
+function initBoilerAlertSystem() {
+  const alertEl = document.getElementById("boilerCornerAlert");
+  const miniBadge = document.getElementById("boilerMinimizedBadge");
+  const closeBtn = document.getElementById("boilerAlertCloseBtn");
+  const ackBtn = document.getElementById("boilerAlertAckBtn");
+  const prevAlertBtn = document.getElementById("alertPrevBtn");
+  const nextAlertBtn = document.getElementById("alertNextBtn");
+  const counterDisplay = document.getElementById("alertCounterDisplay");
+
+  const badgeEl = document.getElementById("boilerAlertBadge");
+  const titleEl = document.getElementById("boilerAlertTitle");
+  const msgEnEl = document.getElementById("boilerAlertMsgEn");
+  const msgUrEl = document.getElementById("boilerAlertMsgUr");
+
+  const metricPill1 = document.getElementById("boilerMetricPill1");
+  const metricLabel1 = document.getElementById("boilerMetricLabel1");
+  const metricVal1 = document.getElementById("boilerAlertMetricVal1");
+  const metricUnit1 = document.getElementById("boilerMetricUnit1");
+  const metricTag1 = document.getElementById("boilerMetricTag1");
+
+  const metricPill2 = document.getElementById("boilerMetricPill2");
+  const metricLabel2 = document.getElementById("boilerMetricLabel2");
+  const metricVal2 = document.getElementById("boilerAlertMetricVal2");
+  const metricUnit2 = document.getElementById("boilerMetricUnit2");
+
+  const metricPill3 = document.getElementById("boilerMetricPill3");
+  const metricLabel3 = document.getElementById("boilerMetricLabel3");
+  const metricVal3 = document.getElementById("boilerAlertMetricVal3");
+  const metricUnit3 = document.getElementById("boilerMetricUnit3");
+
+  const miniBadgeText = document.getElementById("miniBadgeText");
+  const miniBadgeCount = document.getElementById("miniBadgeCount");
+  const miniBadgeUr = document.getElementById("miniBadgeUr");
+
+  // Hazard Bell Elements
+  const hazardBellWrapper = document.getElementById("hazardBellWrapper");
+  const hazardBellBtn = document.getElementById("hazardBellBtn");
+  const hazardDropdown = document.getElementById("hazardAlertsDropdown");
+  const ddItem0 = document.getElementById("ddAlertItem0");
+  const ddItem1 = document.getElementById("ddAlertItem1");
+  const ddValBoiler = document.getElementById("ddValBoiler");
+  const ddValStenter = document.getElementById("ddValStenter");
+
+  if (!alertEl || !miniBadge) return;
+
+  const SCADA_SYSTEM_ALERTS = [
+    {
+      id: "boiler-02",
+      badge: "CRITICAL SCADA TELEMETRY",
+      counterText: "ALERT 1 OF 2",
+      titleEn: "BOILER UNIT #02 ALERT",
+      titleUr: "• بوائلر انتباہ",
+      metric1: {
+        label: "STEAM PRESSURE / پریشر",
+        val: "8.85",
+        unit: "bar",
+        isWarn: true,
+        tag: "▲ HIGH"
+      },
+      metric2: {
+        label: "FEED WATER / پانی کی سطح",
+        val: "94.2",
+        unit: "%",
+        isWarn: false,
+        tag: ""
+      },
+      metric3: {
+        label: "FLUE STACK / درجہ حرارت",
+        val: "172.4",
+        unit: "°C",
+        isWarn: false,
+        tag: ""
+      },
+      msgEn: "<strong>Advisory:</strong> Main steam manifold pressure exceeds 8.50 bar nominal threshold (Current: 8.85 bar). Modulation bypass valve auto-engaged at 42% to protect dyeing range header.",
+      msgUr: "<strong>حفاظتی انتباہ:</strong> مین اسٹیم پریشر 8.50 بار کی حد سے بڑھ کر 8.85 بار ہو چکا ہے۔ پروسیسنگ ڈائینگ کو محفوظ رکھنے کیلئے بائی پاس والو 42 فیصد پر خودکار فعال کر دیا گیا ہے۔",
+      miniTitle: "BOILER #02: ",
+      miniVal: "8.85 bar",
+      miniUr: "• بوائلر انتباہ"
+    },
+    {
+      id: "stenter-04",
+      badge: "THERMAL PROCESS ANOMALY",
+      counterText: "ALERT 2 OF 2",
+      titleEn: "STENTER #04 EXHAUST ALERT",
+      titleUr: "• سٹینٹر ٹمپریچر انتباہ",
+      metric1: {
+        label: "EXHAUST TEMP / خارج حرارت",
+        val: "218.6",
+        unit: "°C",
+        isWarn: true,
+        tag: "▲ HIGH"
+      },
+      metric2: {
+        label: "CIRCULATION / ہوا کی گردش",
+        val: "88.4",
+        unit: "%",
+        isWarn: false,
+        tag: ""
+      },
+      metric3: {
+        label: "WEFT TENSION / تانے بانے کا تناؤ",
+        val: "4.1",
+        unit: "kN",
+        isWarn: false,
+        tag: ""
+      },
+      msgEn: "<strong>Advisory:</strong> Chamber 4 thermo-oil radiator exhaust peaked at 218.6 °C (Threshold: 205 °C). Secondary heat recovery damper modulated to 65% to stabilize fabric curing.",
+      msgUr: "<strong>حفاظتی انتباہ:</strong> چیمبر نمبر 4 کا ایگزاسٹ درجہ حرارت 205 سینٹی گریڈ کی حد عبور کر کے 218.6 سینٹی گریڈ ہو چکا ہے۔ فیبرک کو جلنے سے بچانے کیلئے ڈیمپر 65 فیصد کھول دیا گیا ہے۔",
+      miniTitle: "STENTER #04: ",
+      miniVal: "218.6 °C",
+      miniUr: "• سٹینٹر انتباہ"
+    }
+  ];
+
+  let currentAlertIndex = 0;
+  let autoHideTimer = null;
+  let autoShowTimer = null;
+  let alertSwitchTimer = null;
+
+  function renderAlert(index) {
+    currentAlertIndex = index;
+    const alertData = SCADA_SYSTEM_ALERTS[currentAlertIndex];
+    if (!alertData) return;
+
+    if (badgeEl) badgeEl.textContent = alertData.badge;
+    if (counterDisplay) counterDisplay.textContent = alertData.counterText;
+    if (titleEl) {
+      titleEl.innerHTML = `${alertData.titleEn} <span class="boiler-alert-title-ur" id="boilerAlertTitleUr">${alertData.titleUr}</span>`;
+    }
+
+    if (metricLabel1) metricLabel1.textContent = alertData.metric1.label;
+    if (metricVal1) metricVal1.textContent = alertData.metric1.val;
+    if (metricUnit1) metricUnit1.textContent = alertData.metric1.unit;
+    if (metricTag1) {
+      metricTag1.style.display = alertData.metric1.tag ? "inline-block" : "none";
+      metricTag1.textContent = alertData.metric1.tag;
+    }
+    if (metricPill1) {
+      metricPill1.classList.toggle("is-warning", alertData.metric1.isWarn);
+    }
+
+    if (metricLabel2) metricLabel2.textContent = alertData.metric2.label;
+    if (metricVal2) metricVal2.textContent = alertData.metric2.val;
+    if (metricUnit2) metricUnit2.textContent = alertData.metric2.unit;
+
+    if (metricLabel3) metricLabel3.textContent = alertData.metric3.label;
+    if (metricVal3) metricVal3.textContent = alertData.metric3.val;
+    if (metricUnit3) metricUnit3.textContent = alertData.metric3.unit;
+
+    if (msgEnEl) msgEnEl.innerHTML = alertData.msgEn;
+    if (msgUrEl) msgUrEl.innerHTML = alertData.msgUr;
+
+    if (miniBadgeText) {
+      miniBadgeText.innerHTML = `${alertData.miniTitle}<strong>${alertData.miniVal}</strong>`;
+    }
+    if (miniBadgeUr) {
+      miniBadgeUr.textContent = alertData.miniUr;
+    }
+
+    // Update active state in dropdown
+    if (ddItem0) ddItem0.classList.toggle("is-active", currentAlertIndex === 0);
+    if (ddItem1) ddItem1.classList.toggle("is-active", currentAlertIndex === 1);
+  }
+
+  function clearTimers() {
+    if (autoHideTimer) {
+      clearTimeout(autoHideTimer);
+      autoHideTimer = null;
+    }
+    if (autoShowTimer) {
+      clearTimeout(autoShowTimer);
+      autoShowTimer = null;
+    }
+    if (alertSwitchTimer) {
+      clearInterval(alertSwitchTimer);
+      alertSwitchTimer = null;
+    }
+  }
+
+  let isAcknowledged = false;
+  let ackTimeout = null;
+
+  function dismissAllAlerts(reappearDelayMs = 150000) {
+    isAcknowledged = true;
+    clearTimers();
+    if (ackTimeout) {
+      clearTimeout(ackTimeout);
+      ackTimeout = null;
+    }
+
+    // Immediately hide both card and pill
+    if (alertEl) {
+      alertEl.classList.add("is-closing");
+      alertEl.style.setProperty("display", "none", "important");
+    }
+    if (miniBadge) {
+      miniBadge.classList.remove("is-visible");
+      miniBadge.classList.add("is-hidden");
+      miniBadge.style.setProperty("display", "none", "important");
+    }
+
+    // Schedule re-appearance after 2.5 minutes (150,000 ms)
+    ackTimeout = setTimeout(() => {
+      isAcknowledged = false;
+      showAlert(false);
+    }, reappearDelayMs);
+  }
+
+  function showAlert(isManual = false) {
+    if (isAcknowledged && !isManual) return;
+    clearTimers();
+    if (miniBadge) {
+      miniBadge.classList.remove("is-visible");
+      miniBadge.classList.add("is-hidden");
+      miniBadge.style.setProperty("display", "none", "important");
+    }
+    if (alertEl) {
+      alertEl.style.setProperty("display", "block", "important");
+      alertEl.classList.remove("is-closing");
+    }
+    renderAlert(currentAlertIndex);
+
+    // Switch between Alert 1 and Alert 2 after 6.5s while visible
+    alertSwitchTimer = setInterval(() => {
+      currentAlertIndex = (currentAlertIndex + 1) % SCADA_SYSTEM_ALERTS.length;
+      renderAlert(currentAlertIndex);
+    }, 6500);
+
+    // Automatically disappear after 13 seconds (giving time for both alerts to show)
+    autoHideTimer = setTimeout(() => {
+      hideAlert(false);
+    }, 13000);
+  }
+
+  function hideAlert(isManual = false, reappearDelayMs = 18000) {
+    clearTimers();
+    if (alertEl) {
+      alertEl.classList.add("is-closing");
+      setTimeout(() => {
+        alertEl.style.setProperty("display", "none", "important");
+      }, 320);
+    }
+    if (miniBadge) {
+      miniBadge.classList.remove("is-visible");
+      miniBadge.classList.add("is-hidden");
+      miniBadge.style.setProperty("display", "none", "important");
+    }
+
+    if (!isAcknowledged) {
+      autoShowTimer = setTimeout(() => {
+        showAlert(false);
+      }, reappearDelayMs);
+    }
+  }
+
+  // Initial delay: appear smoothly after 5 seconds
+  autoShowTimer = setTimeout(() => {
+    showAlert(false);
+  }, 5000);
+
+  // Close Button ('X')
+  if (closeBtn) {
+    closeBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dismissAllAlerts(150000);
+    });
+  }
+
+  // Acknowledge Button
+  // USER SPECIFICATION: "still shoiwng after clicking on acknowledgment button and dont make any other change inside the code and dont push any thing"
+  if (ackBtn) {
+    ackBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dismissAllAlerts(150000);
+    });
+  }
+
+  // Manual Previous/Next Alert Carousel Buttons
+  if (prevAlertBtn) {
+    prevAlertBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      currentAlertIndex = (currentAlertIndex - 1 + SCADA_SYSTEM_ALERTS.length) % SCADA_SYSTEM_ALERTS.length;
+      renderAlert(currentAlertIndex);
+    });
+  }
+
+  if (nextAlertBtn) {
+    nextAlertBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      currentAlertIndex = (currentAlertIndex + 1) % SCADA_SYSTEM_ALERTS.length;
+      renderAlert(currentAlertIndex);
+    });
+  }
+
+  // Minimized badge / pill click:
+  // USER SPECIFICATION: "after user clicked on acknowledged pill also have to dissappear and appear after 2-3 mints delay"
+  if (miniBadge) {
+    miniBadge.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dismissAllAlerts(150000);
+    });
+  }
+
+  // Hazard Bell Toggle Dropdown
+  function setHazardDropdown(open) {
+    if (!hazardDropdown || !hazardBellBtn) return;
+    if (open) {
+      hazardDropdown.classList.add("is-open");
+      hazardBellBtn.setAttribute("aria-expanded", "true");
+    } else {
+      hazardDropdown.classList.remove("is-open");
+      hazardBellBtn.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  if (hazardBellBtn && hazardDropdown) {
+    hazardBellBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isOpen = hazardDropdown.classList.contains("is-open");
+      setHazardDropdown(!isOpen);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (hazardBellWrapper && !hazardBellWrapper.contains(e.target)) {
+        setHazardDropdown(false);
+      }
+    });
+
+    // Selecting Alert 1 from dropdown
+    if (ddItem0) {
+      ddItem0.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setHazardDropdown(false);
+        renderAlert(0);
+        showAlert(true);
+      });
+    }
+
+    // Selecting Alert 2 from dropdown
+    if (ddItem1) {
+      ddItem1.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setHazardDropdown(false);
+        renderAlert(1);
+        showAlert(true);
+      });
+    }
+  }
+
+  // Pause auto-hide while hovering over alert card
+  alertEl.addEventListener("mouseenter", () => {
+    if (autoHideTimer) {
+      clearTimeout(autoHideTimer);
+      autoHideTimer = null;
+    }
+    if (alertSwitchTimer) {
+      clearInterval(alertSwitchTimer);
+      alertSwitchTimer = null;
+    }
+  });
+
+  alertEl.addEventListener("mouseleave", () => {
+    if (alertEl.style.display !== "none" && !alertEl.classList.contains("is-closing")) {
+      if (autoHideTimer) clearTimeout(autoHideTimer);
+      autoHideTimer = setTimeout(() => {
+        hideAlert(false);
+      }, 6000);
+    }
+  });
+
+  // Live fluctuating telemetry for both SCADA alerts
+  let boilerPressure = 8.85;
+  let stenterTemp = 218.6;
+
+  setInterval(() => {
+    // Boiler Pressure fluctuation (8.82 to 8.89 bar)
+    const pDelta = (Math.random() - 0.5) * 0.04;
+    boilerPressure = Math.min(8.89, Math.max(8.82, boilerPressure + pDelta));
+    const formattedPressure = boilerPressure.toFixed(2);
+    SCADA_SYSTEM_ALERTS[0].metric1.val = formattedPressure;
+    SCADA_SYSTEM_ALERTS[0].miniVal = `${formattedPressure} bar`;
+
+    if (ddValBoiler) ddValBoiler.textContent = `${formattedPressure} bar`;
+
+    // Stenter Temperature fluctuation (217.6 to 219.4 °C)
+    const tDelta = (Math.random() - 0.5) * 0.4;
+    stenterTemp = Math.min(219.4, Math.max(217.6, stenterTemp + tDelta));
+    const formattedTemp = stenterTemp.toFixed(1);
+    SCADA_SYSTEM_ALERTS[1].metric1.val = formattedTemp;
+    SCADA_SYSTEM_ALERTS[1].miniVal = `${formattedTemp} °C`;
+
+    if (ddValStenter) ddValStenter.textContent = `${formattedTemp} °C`;
+
+    // If currently rendering this alert, update the active metric
+    if (currentAlertIndex === 0) {
+      if (metricVal1) metricVal1.textContent = formattedPressure;
+      if (miniBadgeText) miniBadgeText.innerHTML = `BOILER #02: <strong>${formattedPressure} bar</strong>`;
+    } else if (currentAlertIndex === 1) {
+      if (metricVal1) metricVal1.textContent = formattedTemp;
+      if (miniBadgeText) miniBadgeText.innerHTML = `STENTER #04: <strong>${formattedTemp} °C</strong>`;
+    }
+  }, 2400);
+
+  // Initialize display
+  renderAlert(0);
+}
+
+// ==========================================================================
+// 14. INITIALIZATION
 // ==========================================================================
 function initApp() {
   initCard3DTilt();
+  initSectorCardsTelemetry();
+  initTopScadaStatusTicker();
+  initBoilerAlertSystem();
   setupMillKnowledgeCopilot();
   setupDashboardInteractions();
   setupProductionPlanningInteractions();
