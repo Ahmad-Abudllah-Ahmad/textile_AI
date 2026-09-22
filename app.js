@@ -3331,7 +3331,7 @@ function createInspectionDashboardController(cfg) {
       if (hudStrong) hudStrong.textContent = liveDeltaEVal.textContent;
     }
 
-    scanPhase += 0.035;
+    scanPhase += 0.018;
     const targetRNorm = currentTargetColor.r / 255;
     const targetGNorm = currentTargetColor.g / 255;
     const targetBNorm = currentTargetColor.b / 255;
@@ -7521,6 +7521,196 @@ function setupComplianceTraceabilityInteractions() {
 }
 
 // ==========================================================================
+// 12B. GLOBAL REAL-TIME SPARKLINE & TELEMETRY ENGINE (WHOLE WEBSITE)
+// ==========================================================================
+function initGlobalSparklineTelemetryEngine() {
+  const svgs = Array.from(document.querySelectorAll(".curved-sparkline-svg, .compliance-kpi-spark"));
+  if (!svgs.length) return;
+
+  const items = svgs.map((svg, idx) => {
+    const isCompliance = svg.classList.contains("compliance-kpi-spark");
+    const vb = svg.viewBox ? svg.viewBox.baseVal : null;
+    const width = vb && vb.width ? vb.width : (isCompliance ? 240 : 340);
+    const height = vb && vb.height ? vb.height : (isCompliance ? 34 : 70);
+
+    const paths = svg.querySelectorAll("path");
+    if (!paths.length) return null;
+
+    let linePath = svg.querySelector("path.spark-line, path[stroke]:not([stroke='none'])");
+    let areaPath = svg.querySelector("path.spark-area, path[fill^='url'], path:not([stroke])");
+
+    if (!linePath && paths.length >= 2) {
+      linePath = paths[1];
+    } else if (!linePath && paths.length === 1) {
+      linePath = paths[0];
+    }
+
+    if (!areaPath && paths.length >= 2 && paths[0] !== linePath) {
+      areaPath = paths[0];
+    }
+
+    const dot = svg.querySelector("circle.spark-dot") ||
+                svg.querySelector("circle:not([class*='hover']):not([id*='Hover']):not([id*='hover']):not([opacity='0'])") ||
+                svg.querySelector("circle");
+
+    const card = svg.closest(".inspect-metric-card") ||
+                 svg.closest(".compliance-kpi-card") ||
+                 svg.closest(".planning-kpi") ||
+                 svg.parentElement;
+
+    const hugeValEl = card ? (
+      card.querySelector(".compliance-kpi-value") ||
+      card.querySelector(".metric-huge-val") ||
+      card.querySelector("strong")
+    ) : null;
+
+    let numMeta = null;
+    if (hugeValEl && hugeValEl.id !== "complianceKpiPh") {
+      const raw = hugeValEl.textContent.trim();
+      const m = raw.match(/^([^\d\-+.]*?)([-+]?\d+(?:\.\d+)?)(.*)$/);
+      if (m && !m[1].toLowerCase().includes("fi-")) {
+        const prefix = m[1];
+        const baseNum = parseFloat(m[2]);
+        const decPart = m[2].split(".")[1];
+        const decimals = decPart ? decPart.length : 0;
+        const suffix = m[3];
+        const amp = decimals >= 3 ? 0.002 : (decimals === 2 ? 0.02 : (decimals === 1 ? 0.15 : (baseNum <= 10 ? 0.4 : 0.8)));
+        numMeta = { prefix, baseNum, decimals, suffix, amp };
+      }
+    }
+
+    const dotCx = dot ? parseFloat(dot.getAttribute("cx") || width.toString()) : width;
+
+    return {
+      svg,
+      width,
+      height,
+      linePath,
+      areaPath,
+      dot,
+      card,
+      hugeValEl,
+      numMeta,
+      dotCx,
+      baseY: null,
+      xCoords: null,
+      freq1: 0.46 + (idx % 5) * 0.06,
+      amp1: height <= 34 ? 0.9 : 2.0,
+      freq2: 0.24 + (idx % 3) * 0.05,
+      amp2: height <= 34 ? 0.45 : 1.0,
+      phaseOff: (idx * 1.37) % (Math.PI * 2),
+      cardIdx: idx
+    };
+  }).filter(Boolean);
+
+  let phase = 0;
+  let lastValTick = 0;
+
+  function telemetryLoop(timestamp) {
+    phase += 0.016;
+
+    for (let i = 0; i < items.length; i++) {
+      const item = items[i];
+      if (!item.card || item.card.offsetParent === null) continue;
+
+      if (!item.baseY) {
+        const len = (item.linePath && typeof item.linePath.getTotalLength === "function") ? item.linePath.getTotalLength() : 0;
+        if (len <= 0) continue;
+        const numPts = 7;
+        item.baseY = [];
+        item.xCoords = [];
+        for (let s = 0; s < numPts; s++) {
+          const t = s / (numPts - 1);
+          const pt = item.linePath.getPointAtLength(t * len);
+          item.baseY.push(pt.y);
+          item.xCoords.push(t * item.width);
+        }
+      }
+
+      const pts = [];
+      for (let s = 0; s < item.xCoords.length; s++) {
+        const x = item.xCoords[s];
+        const w1 = Math.sin(phase * item.freq1 + s * 0.85 + item.phaseOff) * item.amp1;
+        const w2 = Math.cos(phase * item.freq2 + s * 1.15 + item.phaseOff * 0.6) * item.amp2;
+        const minY = item.height <= 34 ? 2.5 : 6;
+        const maxY = item.height - (item.height <= 34 ? 2.5 : 6);
+        const y = Math.max(minY, Math.min(maxY, item.baseY[s] + w1 + w2));
+        pts.push({ x, y });
+      }
+
+      let lineD = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`;
+      for (let s = 0; s < pts.length - 1; s++) {
+        const xc = ((pts[s].x + pts[s + 1].x) / 2).toFixed(1);
+        const yc = ((pts[s].y + pts[s + 1].y) / 2).toFixed(1);
+        lineD += ` Q ${pts[s].x.toFixed(1)} ${pts[s].y.toFixed(1)} ${xc} ${yc}`;
+      }
+      lineD += ` L ${pts[pts.length - 1].x.toFixed(1)} ${pts[pts.length - 1].y.toFixed(1)}`;
+
+      if (item.linePath) {
+        item.linePath.setAttribute("d", lineD);
+      }
+      if (item.areaPath) {
+        item.areaPath.setAttribute("d", `${lineD} L ${item.width} ${item.height} L 0 ${item.height} Z`);
+      }
+      if (item.dot) {
+        let dotY = pts[pts.length - 1].y;
+        if (item.dotCx <= pts[0].x) {
+          dotY = pts[0].y;
+        } else if (item.dotCx < pts[pts.length - 1].x) {
+          for (let s = 0; s < pts.length - 1; s++) {
+            if (item.dotCx >= pts[s].x && item.dotCx <= pts[s + 1].x) {
+              const frac = (item.dotCx - pts[s].x) / (pts[s + 1].x - pts[s].x);
+              dotY = pts[s].y + (pts[s + 1].y - pts[s].y) * frac;
+              break;
+            }
+          }
+        }
+        item.dot.setAttribute("cy", dotY.toFixed(1));
+      }
+    }
+
+    if (timestamp - lastValTick > 750) {
+      lastValTick = timestamp;
+      for (let j = 0; j < items.length; j++) {
+        const item = items[j];
+        if (!item.card || item.card.offsetParent === null) continue;
+        if (!item.hugeValEl || !item.numMeta) continue;
+
+        const nm = item.numMeta;
+        const curRaw = item.hugeValEl.textContent.trim();
+        const curM = curRaw.match(/^([^\d\-+.]*?)([-+]?\d+(?:\.\d+)?)(.*)$/);
+        if (curM) {
+          const curNum = parseFloat(curM[2]);
+          if (!isNaN(curNum) && Math.abs(curNum - nm.baseNum) > nm.amp * 3.5) {
+            nm.baseNum = curNum;
+            nm.prefix = curM[1];
+            nm.suffix = curM[3];
+          }
+        }
+
+        const drift = Math.sin(phase * (0.35 + (item.cardIdx % 4) * 0.12) + item.phaseOff) * nm.amp;
+        let liveNum = nm.baseNum + drift;
+        if (nm.suffix.includes("%") && nm.baseNum <= 100 && liveNum > 100) {
+          liveNum = 100;
+        }
+        if (nm.decimals === 0) {
+          liveNum = Math.round(liveNum);
+          if (liveNum < 0) liveNum = 0;
+          item.hugeValEl.textContent = `${nm.prefix}${liveNum}${nm.suffix}`;
+        } else {
+          if (nm.prefix === "±") liveNum = Math.abs(liveNum);
+          item.hugeValEl.textContent = `${nm.prefix}${liveNum.toFixed(nm.decimals)}${nm.suffix}`;
+        }
+      }
+    }
+
+    requestAnimationFrame(telemetryLoop);
+  }
+
+  requestAnimationFrame(telemetryLoop);
+}
+
+// ==========================================================================
 // 13. INITIALIZATION
 // ==========================================================================
 function initApp() {
@@ -7537,6 +7727,7 @@ function initApp() {
   setupAiAnomalyInteractivity();
   setupAiSidebarTabs();
   setupDyeingColorInspectionInteractions();
+  initGlobalSparklineTelemetryEngine();
 
   // Setup Printing, Bleaching, Mercerizing, and Finish Dashboards
   createInspectionDashboardController({

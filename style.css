@@ -6508,31 +6508,35 @@ html, body {
   display: block;
   color: #0E7490;
   font-family: var(--font-mono);
-  font-size: 0.42rem;
+  font-size: 0.68rem;
   font-style: normal;
   font-weight: 800;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.07em;
 }
 .compliance-pass-copy strong {
   display: block;
-  margin-top: 2px;
+  margin-top: 4px;
   color: #0F172A;
-  font-size: 0.78rem;
+  font-size: 1.25rem;
   font-weight: 800;
+  line-height: 1.25;
 }
 .compliance-pass-copy p {
-  margin: 3px 0 0;
+  margin: 6px 0 0;
   color: #64748B;
-  font-size: 0.56rem;
-  line-height: 1.35;
+  font-size: 0.82rem;
+  line-height: 1.48;
 }
 .compliance-pass-live {
-  margin-top: 4px;
+  margin-top: 8px;
   color: #0E7490;
   font-family: var(--font-mono);
-  font-size: 0.4rem;
+  font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.01em;
+  background: rgba(14, 116, 144, 0.06);
+  padding: 4px 8px;
+  border-radius: 4px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -6540,16 +6544,16 @@ html, body {
 .compliance-attest {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 6px;
+  gap: 6px;
+  margin-top: 8px;
 }
 .compliance-attest span {
-  padding: 2px 6px;
+  padding: 3px 8px;
   border-radius: 999px;
   background: #ECFEFF;
   color: #0E7490;
   font-family: var(--font-mono);
-  font-size: 0.42rem;
+  font-size: 0.64rem;
   font-weight: 800;
 }
 
@@ -6783,15 +6787,15 @@ html, body {
   box-shadow: 0 10px 28px rgba(88, 28, 135, 0.18);
 }
 
-.compliance-pass-copy strong { font-size: 0.82rem; }
-.compliance-pass-copy p { font-size: 0.55rem; line-height: 1.42; }
+.compliance-pass-copy strong { font-size: 1.25rem; }
+.compliance-pass-copy p { font-size: 0.82rem; line-height: 1.48; }
 .compliance-pass-copy { text-align: left; }
 
 .compliance-passport-details {
   flex: 1 1 0;
   min-height: 0;
   overflow: hidden;
-  padding: 12px;
+  padding: 16px 18px;
   border: 1px solid #BAE6FD;
   border-radius: 10px;
   background: #FFFFFF;
@@ -6817,7 +6821,7 @@ html, body {
   color: #0E7490;
   border-color: #A5F3FC;
 }
-.compliance-pass-live { font-size: 0.36rem; }
+.compliance-pass-live { font-size: 0.62rem; }
 
 .compliance-product-record {
   display: block;
@@ -6957,40 +6961,55 @@ html, body {
 }
 
 .compliance-footprint-chart {
-  display: grid;
-  gap: 6px;
-  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  flex: 1 1 auto;
   min-height: 0;
+  gap: 8px;
+  padding: 4px 0;
 }
 
 .compliance-footprint-row {
   display: grid;
-  grid-template-columns: 61px minmax(0, 1fr) 54px;
+  grid-template-columns: 105px minmax(0, 1fr) 110px;
   align-items: center;
-  gap: 7px;
+  gap: 12px;
   min-width: 0;
   cursor: help;
+  padding: 3px 6px;
+  border-radius: 8px;
+  transition: background 0.18s ease;
+}
+.compliance-footprint-row:hover {
+  background: rgba(241, 245, 249, 0.7);
 }
 
 .compliance-footprint-row > span {
-  color: #475569;
-  font-size: 0.52rem;
-  font-weight: 750;
+  color: #1E293B;
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
 .compliance-footprint-row > b {
   color: #0F172A;
   font-family: var(--font-mono);
-  font-size: 0.5rem;
+  font-size: 0.84rem;
+  font-weight: 800;
   text-align: right;
+  white-space: nowrap;
 }
 
 .compliance-footprint-track {
   position: relative;
   height: 10px;
   border-radius: 999px;
-  background: #EEF2F7;
+  background: #E2E8F0;
   overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .compliance-footprint-baseline,
@@ -7134,30 +7153,114 @@ html, body {
 
 .compliance-evidence-chart {
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
-  gap: 10px;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 16px;
   align-items: center;
-  flex: 1 1 0;
+  flex: 1 1 auto;
   min-height: 0;
+  height: 100%;
+  padding: 4px 0;
 }
 
-.compliance-evidence-donut { position: relative; width: 80px; height: 80px; margin: auto; }
-.compliance-evidence-donut svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.compliance-evidence-donut circle { fill: none; stroke-width: 8; }
+.compliance-evidence-donut {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  margin: auto;
+}
+.compliance-evidence-donut svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.compliance-evidence-donut circle {
+  fill: none;
+  stroke-width: 9;
+}
 .compliance-evidence-donut .track { stroke: #E2E8F0; }
-.compliance-evidence-donut .value { stroke: #10B981; stroke-linecap: round; transition: stroke-dasharray 0.6s ease; }
-.compliance-evidence-donut div { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
-.compliance-evidence-donut b { color: #0F172A; font-size: 0.9rem; line-height: 1; }
-.compliance-evidence-donut small { color: #64748B; font-family: var(--font-mono); font-size: 0.38rem; margin-top: 2px; }
+.compliance-evidence-donut .value {
+  stroke: #10B981;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s ease;
+}
+.compliance-evidence-donut div {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  text-align: center;
+}
+.compliance-evidence-donut b {
+  color: #0F172A;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+.compliance-evidence-donut small {
+  color: #64748B;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+}
 
-.compliance-evidence-bars { display: grid; gap: 6px; min-width: 0; }
-.compliance-evidence-row { display: grid; grid-template-columns: 68px minmax(0, 1fr) 30px; gap: 6px; align-items: center; cursor: help; }
-.compliance-evidence-row span { color: #475569; font-size: 0.48rem; font-weight: 700; }
-.compliance-evidence-row b { color: #334155; font-family: var(--font-mono); font-size: 0.43rem; text-align: right; }
-.compliance-evidence-track { height: 6px; border-radius: 999px; background: #E2E8F0; overflow: hidden; }
-.compliance-evidence-track i { display: block; height: 100%; border-radius: inherit; background: #10B981; animation: complianceBarIn 0.55s ease both; }
-.compliance-evidence-row.is-warning .compliance-evidence-track i { background: #F59E0B; }
-.compliance-evidence-row.is-warning b { color: #D97706; }
+.compliance-evidence-bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  min-width: 0;
+  gap: 8px;
+  padding: 4px 0;
+}
+.compliance-evidence-row {
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr) 52px;
+  gap: 12px;
+  align-items: center;
+  cursor: help;
+  padding: 3px 6px;
+  border-radius: 8px;
+  transition: background 0.18s ease;
+}
+.compliance-evidence-row:hover {
+  background: rgba(241, 245, 249, 0.7);
+}
+.compliance-evidence-row span {
+  color: #1E293B;
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+.compliance-evidence-row b {
+  color: #0F172A;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  font-weight: 800;
+  text-align: right;
+}
+.compliance-evidence-track {
+  height: 10px;
+  border-radius: 999px;
+  background: #E2E8F0;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.compliance-evidence-track i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #10B981, #059669);
+  animation: complianceBarIn 0.55s ease both;
+}
+.compliance-evidence-row.is-warning .compliance-evidence-track i {
+  background: linear-gradient(90deg, #F59E0B, #D97706);
+}
+.compliance-evidence-row.is-warning b {
+  color: #D97706;
+}
 
 .compliance-actions-row { gap: 7px; }
 .compliance-actions-row button { padding-top: 7px; padding-bottom: 7px; }
