@@ -2,6 +2,7 @@
 <html lang="en">
 
 <head>
+  <script>if(sessionStorage.getItem('textile_auth')!=='authenticated'){window.location.replace('login.html');}</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Textile AI</title>
@@ -15,7 +16,7 @@
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="style.css?v=24.1" />
+  <link rel="stylesheet" href="style.css?v=24.2" />
 </head>
 
 <body>
@@ -24,6 +25,10 @@
        Runs End-to-End at the very top of the screen
        ========================================================================= -->
   <aside class="global-status-ticker-bar" id="globalStatusTickerBar" aria-label="Global SCADA Telemetry Stream">
+    <!-- Company Logo (Left-anchored in nav bar) -->
+    <div class="navbar-logo-wrap">
+      <img src="logo.png" alt="Lucky Textile Mills Limited" class="navbar-logo-img" />
+    </div>
     <!-- Continuous End-to-End Scrolling Ticker Stream -->
     <div class="ticker-tape-viewport">
       <div class="ticker-tape-track" id="tickerTapeTrack">
@@ -89,6 +94,16 @@
         <span id="tickerClockDisplay">18:54:00</span>
         <span class="ticker-clock-tz">PKT</span>
       </div>
+
+      <!-- Logout Button -->
+      <button class="navbar-logout-btn" id="navbarLogoutBtn" type="button" aria-label="Logout" onclick="sessionStorage.removeItem('textile_auth'); window.location.replace('login.html');">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span>Logout</span>
+      </button>
     </div>
   </aside>
 
