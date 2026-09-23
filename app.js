@@ -7940,8 +7940,6 @@ function initTopScadaStatusTicker() {
         .map(item => `
           <div class="tape-item ${item.warn ? 'is-alert' : ''}" data-tape-id="${item.id}">
             <strong>${item.shortEn}</strong>
-            <span class="tape-separator">◄►</span>
-            <span class="tape-ur">${item.shortUr}</span>
             <span class="tape-separator">•</span>
           </div>
         `)
@@ -7967,7 +7965,7 @@ function initTopScadaStatusTicker() {
   setInterval(updateClock, 1000);
   updateClock();
 
-  // Rotating Spotlight (displays one by one)
+  // Rotating Spotlight (displays one by one if element present)
   let currentIndex = 0;
   function rotateSpotlight() {
     if (!spotlightBox || !spotlightTag || !spotlightEn || !spotlightUr) return;
@@ -8004,8 +8002,9 @@ function initTopScadaStatusTicker() {
     }, 300);
   }
 
-  // Rotate every 4.5 seconds
-  setInterval(rotateSpotlight, 4500);
+  if (spotlightBox) {
+    setInterval(rotateSpotlight, 4500);
+  }
 }
 
 function initBoilerAlertSystem() {
@@ -8082,7 +8081,7 @@ function initBoilerAlertSystem() {
         tag: ""
       },
       msgEn: "<strong>Advisory:</strong> Main steam manifold pressure exceeds 8.50 bar nominal threshold (Current: 8.85 bar). Modulation bypass valve auto-engaged at 42% to protect dyeing range header.",
-      msgUr: "<strong>حفاظتی انتباہ:</strong> مین اسٹیم پریشر 8.50 بار کی حد سے بڑھ کر 8.85 بار ہو چکا ہے۔ پروسیسنگ ڈائینگ کو محفوظ رکھنے کیلئے بائی پاس والو 42 فیصد پر خودکار فعال کر دیا گیا ہے۔",
+      msgUr: "",
       miniTitle: "BOILER #02: ",
       miniVal: "8.85 bar",
       miniUr: "• بوائلر انتباہ"
@@ -8115,7 +8114,7 @@ function initBoilerAlertSystem() {
         tag: ""
       },
       msgEn: "<strong>Advisory:</strong> Chamber 4 thermo-oil radiator exhaust peaked at 218.6 °C (Threshold: 205 °C). Secondary heat recovery damper modulated to 65% to stabilize fabric curing.",
-      msgUr: "<strong>حفاظتی انتباہ:</strong> چیمبر نمبر 4 کا ایگزاسٹ درجہ حرارت 205 سینٹی گریڈ کی حد عبور کر کے 218.6 سینٹی گریڈ ہو چکا ہے۔ فیبرک کو جلنے سے بچانے کیلئے ڈیمپر 65 فیصد کھول دیا گیا ہے۔",
+      msgUr: "",
       miniTitle: "STENTER #04: ",
       miniVal: "218.6 °C",
       miniUr: "• سٹینٹر انتباہ"
