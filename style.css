@@ -3944,7 +3944,7 @@ body {
 
 #energyChartTip {
   position: fixed;
-  z-index: 200;
+  z-index: 100030;
   pointer-events: none;
   transform: none;
   max-width: min(340px, calc(100vw - 20px));
@@ -4871,10 +4871,7 @@ body {
 }
 
 .comp-chart-tooltip .tip-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: inline-block;
+  display: none;
 }
 
 .comp-chart-tooltip .dot-target {
@@ -9895,13 +9892,13 @@ body {
 
 #complianceChartTip {
   position: fixed;
-  z-index: 200;
+  z-index: 100030;
   pointer-events: none;
   transform: none;
   box-sizing: border-box;
   width: max-content;
   max-width: min(280px, calc(100vw - 24px));
-  overflow: hidden;
+  overflow: visible;
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
@@ -9941,8 +9938,17 @@ body {
 
 #complianceChartTip .tip-dot,
 #energyChartTip .tip-dot {
-  flex: 0 0 auto;
-  margin-top: 4px;
+  display: none;
+}
+
+/* Sparkline hover rings stretch into large pale circles because the charts use
+   preserveAspectRatio="none". Keep the numeric tooltip; hide the tracker. */
+.energy-spark-hover,
+.spark-hover-dot,
+.output-hover-tracker,
+[id^="sparkHoverDot"],
+.compliance-kpi-spark circle {
+  display: none;
 }
 
 /* Completed buyer-facing compliance workspace */

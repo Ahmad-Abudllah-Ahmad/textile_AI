@@ -126,6 +126,58 @@ function hideAllViews() {
   if (typeof window.closePanelComponentInfo === "function") {
     window.closePanelComponentInfo();
   }
+  ["complianceChartTip", "energyChartTip"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = "none";
+  });
+}
+
+function placeFloatingChartTip(tip, event, options) {
+  if (!tip || !event) return;
+  if (tip.parentElement !== document.body) {
+    document.body.appendChild(tip);
+  }
+  tip.style.display = "block";
+  tip.style.transform = "none";
+  const pad = 12;
+  const gap = 10;
+  const width = tip.offsetWidth;
+  const height = tip.offsetHeight;
+  const ticker = document.querySelector(".global-status-ticker-bar");
+  const tickerBottom = ticker ? ticker.getBoundingClientRect().bottom : 0;
+  const safeTop = Math.max(pad, tickerBottom + 8);
+  const hostSelector = options && options.hostSelector;
+  const host = hostSelector && event.target && event.target.closest
+    ? event.target.closest(hostSelector)
+    : null;
+  const hostRect = host ? host.getBoundingClientRect() : null;
+  let left = event.clientX + gap;
+  let top = event.clientY - height - gap;
+
+  if (hostRect) {
+    left = hostRect.left;
+    const above = hostRect.top - height - gap;
+    const below = hostRect.bottom + gap;
+    if (above >= safeTop) {
+      top = above;
+    } else if (below + height <= window.innerHeight - pad) {
+      top = below;
+    } else {
+      top = Math.min(Math.max(safeTop, below), window.innerHeight - height - pad);
+    }
+    if (left + width > hostRect.right && hostRect.right - width >= pad) {
+      left = hostRect.right - width;
+    }
+  } else if (top < safeTop) {
+    top = event.clientY + gap;
+  }
+
+  if (left + width > window.innerWidth - pad) left = window.innerWidth - width - pad;
+  if (left < pad) left = pad;
+  if (top + height > window.innerHeight - pad) top = window.innerHeight - height - pad;
+  if (top < safeTop) top = safeTop;
+  tip.style.left = `${left}px`;
+  tip.style.top = `${top}px`;
 }
 
 function showProcessingModulesView() {
@@ -7701,21 +7753,7 @@ function setupEnergyUtilitiesInteractions() {
   }
 
   function placeEnergyTip(event) {
-    if (!tip) return;
-    tip.style.display = "block";
-    const pad = 10;
-    const gap = 16;
-    const width = tip.offsetWidth;
-    const height = tip.offsetHeight;
-    let left = event.clientX + gap;
-    let top = event.clientY - height - 12;
-    if (left + width > window.innerWidth - pad) left = event.clientX - width - gap;
-    if (left < pad) left = pad;
-    if (top < pad) top = event.clientY + gap;
-    if (top + height > window.innerHeight - pad) top = window.innerHeight - height - pad;
-    if (top < pad) top = pad;
-    tip.style.left = `${left}px`;
-    tip.style.top = `${top}px`;
+    placeFloatingChartTip(tip, event);
   }
 
   function showVisualTip(el, event) {
@@ -8500,29 +8538,7 @@ function setupComplianceTraceabilityInteractions() {
   }
 
   function placeTip(event) {
-    if (!tip) return;
-    tip.style.display = "block";
-    tip.style.transform = "none";
-    const pad = 12;
-    const gap = 10;
-    const width = tip.offsetWidth;
-    const height = tip.offsetHeight;
-    const host = event.target && event.target.closest ? event.target.closest("[data-tip-title]") : null;
-    const hostRect = host ? host.getBoundingClientRect() : null;
-    let left = event.clientX + gap;
-    let top = event.clientY - height - 12;
-    if (hostRect) {
-      left = hostRect.left;
-      top = hostRect.top - height - gap;
-      if (top < pad) top = Math.min(hostRect.bottom + gap, window.innerHeight - height - pad);
-      if (left + width > hostRect.right && hostRect.right - width >= pad) left = hostRect.right - width;
-    }
-    if (left + width > window.innerWidth - pad) left = window.innerWidth - width - pad;
-    if (left < pad) left = pad;
-    if (top + height > window.innerHeight - pad) top = window.innerHeight - height - pad;
-    if (top < pad) top = pad;
-    tip.style.left = `${left}px`;
-    tip.style.top = `${top}px`;
+    placeFloatingChartTip(tip, event, { hostSelector: "[data-tip-title]" });
   }
 
   function showTip(title, a, b, event) {
