@@ -1103,6 +1103,235 @@ body {
   filter: drop-shadow(0 0 4px #22c55e);
 }
 
+/* Contextual information controls for the boiler and steam P&ID */
+.scada-info-trigger {
+  position: absolute;
+  z-index: 1150;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  opacity: 0;
+  pointer-events: none;
+  color: #1d4ed8;
+  background: #ffffff;
+  border: 2px solid #2563eb;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.3);
+  font-family: Arial, sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  transform: scale(0.92);
+  transition:
+    opacity 0.14s ease,
+    transform 0.14s ease,
+    background-color 0.14s ease,
+    border-color 0.14s ease;
+}
+
+.scada-info-trigger.is-visible,
+.scada-info-trigger:focus {
+  opacity: 1;
+  pointer-events: all;
+  transform: scale(1);
+}
+
+.scada-info-trigger:hover,
+.scada-info-trigger:focus-visible {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border-color: #1d4ed8;
+  transform: scale(1.08);
+  outline: 2px solid #7dd3fc;
+  outline-offset: 2px;
+}
+
+.scada-component-info {
+  position: absolute;
+  z-index: 1200;
+  width: min(360px, calc(100% - 24px));
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.97);
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.38);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.scada-component-info[hidden] {
+  display: none;
+}
+
+.scada-info-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+.scada-info-eyebrow {
+  display: block;
+  margin-bottom: 4px;
+  color: #7dd3fc;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.scada-info-heading h2 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.scada-info-close {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.scada-info-close:hover,
+.scada-info-close:focus-visible {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.3);
+  outline: 2px solid #7dd3fc;
+  outline-offset: 2px;
+}
+
+.scada-info-summary {
+  margin: 0 0 12px;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+.scada-info-details {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.scada-info-details > div {
+  padding: 9px 10px;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9px;
+}
+
+.scada-info-details dt {
+  margin-bottom: 3px;
+  color: #7dd3fc;
+  font-size: 0.68rem;
+  font-weight: 750;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.scada-info-details dd {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 0.77rem;
+  line-height: 1.45;
+}
+
+.scada-info-caution {
+  margin: 11px 0 0;
+  padding-top: 10px;
+  color: #94a3b8;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scada-info-trigger {
+    transition: none;
+  }
+}
+
+/* Contextual information controls for the card-based dashboards */
+.panel-info-btn {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  margin-left: 6px;
+  padding: 0;
+  vertical-align: middle;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.08);
+  border: 1px solid rgba(37, 99, 235, 0.3);
+  border-radius: 50%;
+  font-family: Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.panel-info-btn:hover,
+.panel-info-btn:focus-visible {
+  color: #ffffff;
+  background: #2563eb;
+  border-color: #2563eb;
+  outline: none;
+}
+
+.panel-info-btn:focus-visible {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+}
+
+.panel-info-row {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.has-panel-info {
+  position: relative;
+}
+
+.has-panel-info > .panel-info-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  margin-left: 0;
+  z-index: 3;
+}
+
+.panel-component-info {
+  position: fixed;
+}
+
 /* SCADA Live Tooltip HUD */
 .scada-hud-tooltip {
   position: absolute;
@@ -9669,7 +9898,51 @@ body {
   z-index: 200;
   pointer-events: none;
   transform: none;
-  max-width: min(300px, calc(100vw - 20px));
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(280px, calc(100vw - 24px));
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Long machine-readable values (passport payloads, codes) must wrap inside the
+   pointer tooltips instead of running past the panel. */
+#complianceChartTip,
+#energyChartTip {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#complianceChartTip .tip-header,
+#energyChartTip .tip-header {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+#complianceChartTip .tip-row,
+#energyChartTip .tip-row {
+  align-items: flex-start;
+  min-width: 0;
+  max-width: 100%;
+}
+
+#complianceChartTip .tip-row > span,
+#energyChartTip .tip-row > span {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+#complianceChartTip .tip-dot,
+#energyChartTip .tip-dot {
+  flex: 0 0 auto;
+  margin-top: 4px;
 }
 
 /* Completed buyer-facing compliance workspace */

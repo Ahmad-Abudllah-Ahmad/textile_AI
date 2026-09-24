@@ -123,6 +123,9 @@ function hideAllViews() {
   views.forEach((v) => {
     if (v) v.style.display = "none";
   });
+  if (typeof window.closePanelComponentInfo === "function") {
+    window.closePanelComponentInfo();
+  }
 }
 
 function showProcessingModulesView() {
@@ -331,6 +334,11 @@ function openModuleDashboard(moduleKey = "predictive-maintenance") {
   hideAllViews();
   dashView.style.display = "block";
   window.scrollTo({ top: 0, behavior: "smooth" });
+  requestAnimationFrame(() => {
+    if (typeof window.refreshScadaComponentInfoPositions === "function") {
+      window.refreshScadaComponentInfoPositions();
+    }
+  });
 
   history.pushState(null, "", "#processing-" + moduleKey);
 
@@ -360,6 +368,9 @@ function showDashboardView() {
 }
 
 function hideDashboardView() {
+  if (typeof window.closeScadaComponentInfo === "function") {
+    window.closeScadaComponentInfo();
+  }
   const beacon = document.getElementById("anomalyBeacon");
   if (beacon) beacon.style.display = "none";
   const popup = document.getElementById("aiAnomalyPopup");
@@ -1857,6 +1868,1081 @@ function setupScadaInteractivity() {
     });
     spark.addEventListener("mouseleave", hideHud);
   });
+}
+
+// ==========================================================================
+// 7B. ACCESSIBLE COMPONENT INFORMATION BUTTONS
+// ==========================================================================
+function setupScadaComponentInfo() {
+  const viewport = document.getElementById("dashMapViewport");
+  const panel = document.getElementById("scadaComponentInfo");
+  const closeButton = document.getElementById("scadaComponentInfoClose");
+  const categoryEl = document.getElementById("scadaComponentInfoCategory");
+  const titleEl = document.getElementById("scadaComponentInfoTitle");
+  const summaryEl = document.getElementById("scadaComponentInfoSummary");
+  const readingEl = document.getElementById("scadaComponentInfoReading");
+  const meaningEl = document.getElementById("scadaComponentInfoMeaning");
+  if (!viewport || !panel || !closeButton || !categoryEl || !titleEl || !summaryEl || !readingEl || !meaningEl) {
+    return;
+  }
+
+  const registrations = [];
+  const targetToTrigger = new Map();
+  let activeTrigger = null;
+  let hideTriggerTimer = null;
+
+  const textValue = (id, fallback) => {
+    const node = document.getElementById(id);
+    return node && node.textContent.trim() ? node.textContent.trim() : fallback;
+  };
+
+  const gaugeInfo = {
+    dialFilterA: {
+      title: "Feedwater Filter A Differential Pressure",
+      reading: () => `${textValue("scadaFilterADiff", "Differential pressure in psi")}. Differential pressure is the pressure loss from the inlet to the outlet of the filter.`,
+      meaning: "A rising value can indicate that the filter media is loading with solids and may need inspection or backwashing under the site water-treatment procedure."
+    },
+    dialFilterB: {
+      title: "Feedwater Filter B Differential Pressure",
+      reading: () => `${textValue("scadaFilterBDiff", "Differential pressure in psi")}. Differential pressure is the pressure loss from the inlet to the outlet of the filter.`,
+      meaning: "Tracking pressure loss helps identify restriction before it reduces feedwater flow to the boiler train."
+    },
+    dialSysPressTop: {
+      title: "Main Steam Header Pressure",
+      reading: () => `${textValue("scadaSysPressText", "Header pressure in bar")}. This is the common distribution pressure downstream of the boiler array.`,
+      meaning: "Stable header pressure supports repeatable heating in pretreatment, dyeing, washing, printing, and finishing equipment as steam demand changes."
+    },
+    dialSysPressL1: {
+      title: "Boiler Feedwater Pressure",
+      reading: () => `Feedwater supply pressure is shown in bar. The feed pump must deliver water above boiler pressure so water can enter the boiler.`,
+      meaning: "Adequate feed pressure protects water supply continuity and helps maintain safe boiler drum level."
+    },
+    dialSysPressL2: {
+      title: "Condensate Return Pressure",
+      reading: () => `${textValue("scadaSysPressL2", "Return pressure in bar")}. This indicates pressure in the condensate return path.`,
+      meaning: "Returning hot, uncontaminated condensate reduces makeup-water demand, chemical treatment, and the energy needed to raise feedwater temperature."
+    }
+  };
+
+  const trendMeaning = {
+    sparkFilterA: "The trend makes gradual filter loading easier to distinguish from a single noisy differential-pressure reading.",
+    sparkFilterB: "The trend makes gradual filter loading easier to distinguish from a single noisy differential-pressure reading.",
+    sparkRadarL1: "Dryness fraction is the mass fraction of dry saturated steam in a wet-steam mixture; values closer to 1 indicate less entrained liquid water.",
+    sparkRadarL2: "Temperature stability, interpreted together with pressure, helps operators assess whether steam conditions remain consistent at the distribution header.",
+    sparkRadarR1: "Mass flow in kg/min shows how much steam the mill is delivering to process users, independent of pipe size.",
+    sparkRadarR2: "Feedwater pH indicates acidity or alkalinity. Its acceptable range must come from the site chemistry program for the boiler pressure and metallurgy.",
+    sparkRadarR3: "A higher condensate-return proportion generally means more hot water and heat are recovered instead of replaced with cold makeup water.",
+    sparkDesorptionTop: "Short-term flow stability helps reveal demand swings and whether the boiler array and accumulator system are balancing the process load.",
+    sparkAirPurity: "This is an application-specific steam-quality score, not a universal steam grade. Product-contact steam quality requires the plant's specified sampling and analysis.",
+    sparkAlpha: "Accumulator pressure and temperature indicate the available thermal reserve for short steam-demand peaks.",
+    sparkBeta: "Accumulator pressure and temperature indicate the available thermal reserve for short steam-demand peaks."
+  };
+
+  const tankInfo = {
+    tank_Alpha: {
+      title: "Steam Accumulator Alpha",
+      summary: "A pressurized vessel that stores energy in hot water when boiler output exceeds demand and releases flash steam when demand rises.",
+      reading: () => `${textValue("scadaAlphaBar", "Pressure in bar")} with vessel level and a pressure/heat-reserve trend.`,
+      meaning: "It buffers rapid demand changes from batch textile processes so the boiler plant does not have to follow every short peak instantly."
+    },
+    tank_Beta: {
+      title: "Steam Accumulator Beta",
+      summary: "A second pressurized energy-storage vessel that supports the shared steam header during peak demand.",
+      reading: () => `${textValue("scadaBetaBar", "Pressure in bar")} with vessel level and a pressure/heat-reserve trend.`,
+      meaning: "Parallel storage adds reserve and helps stabilize steam delivery when several dyeing or finishing users call for heat together."
+    },
+    secondaryBufferTank: {
+      title: "Flash Condensate Recovery Tank",
+      summary: "Receives hot condensate at reduced pressure, separates flash steam, and retains recoverable hot water.",
+      reading: () => "The vessel graphic shows liquid level in the flash-condensate recovery stage.",
+      meaning: "Recovering flash steam and hot condensate reduces fuel, makeup water, treatment chemicals, and thermal discharge."
+    },
+    autoDrainTankBox: {
+      title: "Boiler Blowdown and Heat-Recovery Tank",
+      summary: "Receives hot boiler water removed to control dissolved solids and collect sludge, then enables heat recovery before discharge or reuse.",
+      reading: () => "The panel shows the blowdown route, inlet valve, recovery vessel level, cycle timing, and residual-solids indication.",
+      meaning: "Correct blowdown protects steam quality and heat-transfer surfaces; heat recovery limits the energy and hot water otherwise lost."
+    }
+  };
+
+  const register = (target, getInfo) => {
+    if (target && typeof getInfo === "function") registrations.push({ target, getInfo });
+  };
+
+  register(document.getElementById("intakeSection"), () => ({
+    category: "Feedwater preparation",
+    title: "Feedwater Intake, Deaerator, and Economizer",
+    summary: "This stage conditions boiler makeup water and returned condensate before they enter the boiler feed system. Deaeration removes dissolved oxygen and carbon dioxide; an economizer recovers flue-gas heat to preheat feedwater.",
+    reading: `${textValue("scadaInTemp", "Feedwater temperature")} and ${textValue("scadaInRH", "feedwater pH")} at the inlet stage.`,
+    meaning: "Hot, correctly treated feedwater reduces corrosion risk, improves boiler efficiency, and supports reliable steam for textile wet processing."
+  }));
+
+  document.querySelectorAll(".interactive-vessel").forEach((vessel) => {
+    register(vessel, () => {
+      const name = vessel.getAttribute("data-vessel") || "Feedwater treatment vessel";
+      const isStandby = name.toLowerCase().includes("standby");
+      return {
+        category: "Water treatment",
+        title: name,
+        summary: "A multi-stage treatment vessel removes suspended material, adsorbable contaminants, and dissolved ions from boiler makeup water before final feedwater conditioning.",
+        reading: isStandby ? "Standby vessel available for changeover while the parallel train remains online." : "Active vessel currently assigned to the feedwater treatment train.",
+        meaning: "Lower contaminant loading helps reduce deposits, corrosion, and carryover. Treatment performance must be verified with the plant's water-analysis program."
+      };
+    });
+  });
+
+  document.querySelectorAll(".interactive-gauge").forEach((gauge) => {
+    register(gauge, () => ({
+      category: "Pressure instrumentation",
+      summary: "A local pressure indication used to assess the hydraulic or steam condition at this point in the process.",
+      ...gaugeInfo[gauge.id]
+    }));
+  });
+
+  register(document.getElementById("radialEfficiencyIndex"), () => ({
+    category: "Performance overview",
+    title: "Thermal Efficiency and Steam Quality Index",
+    summary: "A normalized overview that places unlike operating indicators on a common 0–100 scale for rapid comparison. It is a screening view, not a substitute for the underlying measurements.",
+    reading: "Thermal efficiency, steam temperature, dryness fraction, combustion yield, TDS control, pH stability, excess oxygen, and heat recovery.",
+    meaning: "The shape helps operators spot imbalance across boiler efficiency, water chemistry, combustion, and steam delivery before opening the detailed trends."
+  }));
+
+  register(document.getElementById("scadaHmiCard"), () => ({
+    category: "Operator summary",
+    title: "Steam Quality HMI",
+    summary: "A compact operator summary of steam-condition indicators and the current monitoring state.",
+    reading: `${textValue("hmiAirPurityVal", "Steam-quality score")}, superheat indication, blowdown indication, silica/TDS indication, and system mode.`,
+    meaning: "It brings key steam-condition signals together for quick scanning. The percentage is a dashboard index; verify steam chemistry and dryness with the specified plant instruments and tests."
+  }));
+
+  document.querySelectorAll(".interactive-compressor").forEach((boiler) => {
+    register(boiler, () => {
+      const number = Number(boiler.getAttribute("data-comp")) || 1;
+      const running = scadaState.compRunning[number - 1];
+      return {
+        category: "Steam generation",
+        title: `Industrial Steam Boiler ${number}`,
+        summary: "One of four parallel boiler units supplying the common steam header. The dashboard combines boiler availability with feedwater-drive and condition data.",
+        reading: `${running ? "Active firing" : "Standby"}; feed-pump drive ${scadaState.compRPMs[number - 1]} RPM, with vibration and header-pressure telemetry.`,
+        meaning: "Parallel units let the textile mill match steam generation to changing demand while preserving reserve capacity for critical wet-processing loads."
+      };
+    });
+  });
+
+  document.querySelectorAll(".interactive-tank").forEach((tank) => {
+    register(tank, () => ({
+      category: "Steam and condensate storage",
+      ...tankInfo[tank.id]
+    }));
+  });
+
+  register(document.getElementById("autoDrainDialog"), () => ({
+    category: "Blowdown control",
+    title: "Automatic Blowdown Controller",
+    summary: "A control panel for sequencing boiler-water removal based on the configured cycle and monitored condition inputs.",
+    reading: "Cycle duration, purge interval, high-level state, residual/TDS indication, and the logic output that commands the blowdown route.",
+    meaning: "Controlled blowdown removes concentrated dissolved solids and settled material while avoiding unnecessary losses of hot water, treatment chemicals, and energy."
+  }));
+
+  document.querySelectorAll(".interactive-telemetry-station").forEach((station) => {
+    register(station, () => {
+      const number = Number(station.getAttribute("data-station")) || 1;
+      return {
+        category: "Boiler telemetry",
+        title: `Boiler ${number} Telemetry Station`,
+        summary: "A secondary status view for the corresponding boiler unit; it summarizes sensor signals rather than representing separate equipment.",
+        reading: `Feed-pump speed, steam-drum level, operating state, and steam-quality indication for Boiler ${number}.`,
+        meaning: "Side-by-side telemetry makes load sharing and abnormal differences between parallel boiler units easier to identify."
+      };
+    });
+  });
+
+  document.querySelectorAll(".interactive-sparkline").forEach((spark) => {
+    register(spark, () => ({
+      category: "Process trend",
+      title: spark.getAttribute("data-title") || "Process Telemetry Trend",
+      summary: "A short time-series view that shows direction and stability instead of only the latest value.",
+      reading: `${spark.getAttribute("data-param") || "Current process signal"}. ${spark.getAttribute("data-norm") || "Compare with the approved operating range."}`,
+      meaning: trendMeaning[spark.id] || "Trend context helps operators distinguish a persistent process change from a momentary fluctuation."
+    }));
+  });
+
+  const valveNames = {
+    valvePurgeActive: "Active Treatment-Vessel Purge Valve",
+    valvePurgeStandby: "Standby Treatment-Vessel Purge Valve",
+    valvePurgeCrossover: "Treatment-Vessel Crossover Valve",
+    valveHeaderJunction: "Main Steam Header Junction Valve",
+    valveManifoldMidRed: "Boiler Manifold Isolation Valve",
+    valveAlphaInlet: "Accumulator Alpha Inlet Valve",
+    valveBetaOutlet: "Accumulator Beta Outlet Valve",
+    valveAlphaBetaCross: "Accumulator Balancing Intertie Valve",
+    valveAutoDrainInlet: "Blowdown Recovery Inlet Valve"
+  };
+
+  document.querySelectorAll(".interactive-valve").forEach((valve) => {
+    register(valve, () => {
+      const state = (valve.getAttribute("data-state") || "open").toUpperCase();
+      return {
+        category: "Flow control",
+        title: valveNames[valve.id] || "Process Isolation Valve",
+        summary: "A valve used to isolate equipment or route feedwater, steam, condensate, or blowdown through the marked process path.",
+        reading: `Commanded state: ${state}. The P&ID symbol changes to show whether the route is available or isolated.`,
+        meaning: "Correct valve position is essential for safe isolation, equipment changeover, accumulator charging, and controlled blowdown routing."
+      };
+    });
+  });
+
+  function hideAllTriggers(except = null) {
+    targetToTrigger.forEach((trigger) => {
+      if (trigger !== except && trigger !== activeTrigger) trigger.classList.remove("is-visible");
+    });
+  }
+
+  function positionTrigger(target, trigger) {
+    const viewportRect = viewport.getBoundingClientRect();
+    const rect = target.getBoundingClientRect();
+    if (!viewportRect.width || !viewportRect.height || !rect.width || !rect.height) return;
+    trigger.style.left = `${rect.right - viewportRect.left - trigger.offsetWidth / 2 - 3}px`;
+    trigger.style.top = `${rect.top - viewportRect.top - trigger.offsetHeight / 2 + 3}px`;
+  }
+
+  function positionPanel(trigger) {
+    if (panel.hidden) return;
+    const viewportRect = viewport.getBoundingClientRect();
+    const triggerRect = trigger.getBoundingClientRect();
+    const gap = 12;
+    const inset = 12;
+    let left = triggerRect.right - viewportRect.left + gap;
+    let top = triggerRect.top - viewportRect.top - panel.offsetHeight / 2;
+
+    if (left + panel.offsetWidth > viewport.clientWidth - inset) {
+      left = triggerRect.left - viewportRect.left - panel.offsetWidth - gap;
+    }
+    left = Math.max(inset, Math.min(viewport.clientWidth - panel.offsetWidth - inset, left));
+    top = Math.max(inset, Math.min(viewport.clientHeight - panel.offsetHeight - inset, top));
+
+    panel.style.left = `${left}px`;
+    panel.style.top = `${top}px`;
+  }
+
+  function closeInfo({ restoreFocus = false } = {}) {
+    if (panel.hidden) return;
+    panel.hidden = true;
+    if (activeTrigger) {
+      activeTrigger.setAttribute("aria-expanded", "false");
+      const triggerToRestore = activeTrigger;
+      activeTrigger = null;
+      if (restoreFocus) triggerToRestore.focus();
+    }
+  }
+
+  function openInfo(trigger, getInfo) {
+    const info = getInfo();
+    if (!info || !info.title) return;
+    if (activeTrigger && activeTrigger !== trigger) {
+      activeTrigger.setAttribute("aria-expanded", "false");
+      activeTrigger.classList.remove("is-visible");
+    }
+    activeTrigger = trigger;
+    hideAllTriggers(trigger);
+    trigger.classList.add("is-visible");
+    trigger.setAttribute("aria-expanded", "true");
+    categoryEl.textContent = info.category || "Process component";
+    titleEl.textContent = info.title;
+    summaryEl.textContent = info.summary || "";
+    readingEl.textContent = typeof info.reading === "function" ? info.reading() : info.reading;
+    meaningEl.textContent = typeof info.meaning === "function" ? info.meaning() : info.meaning;
+    panel.hidden = false;
+    requestAnimationFrame(() => positionPanel(trigger));
+  }
+
+  registrations.forEach(({ target, getInfo }, index) => {
+    const trigger = document.createElement("button");
+    trigger.type = "button";
+    trigger.className = "scada-info-trigger";
+    trigger.setAttribute("aria-haspopup", "dialog");
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.setAttribute("aria-controls", "scadaComponentInfo");
+    const initialInfo = getInfo();
+    trigger.setAttribute("aria-label", `Information about ${initialInfo.title}`);
+    trigger.setAttribute("data-info-index", String(index));
+    trigger.textContent = "i";
+    viewport.appendChild(trigger);
+    targetToTrigger.set(target, trigger);
+    positionTrigger(target, trigger);
+
+    const showTrigger = () => {
+      window.clearTimeout(hideTriggerTimer);
+      hideAllTriggers(trigger);
+      trigger.classList.add("is-visible");
+    };
+    const scheduleHide = () => {
+      window.clearTimeout(hideTriggerTimer);
+      hideTriggerTimer = window.setTimeout(() => {
+        if (trigger !== activeTrigger && !trigger.matches(":hover") && document.activeElement !== trigger) {
+          trigger.classList.remove("is-visible");
+        }
+      }, 140);
+    };
+
+    target.addEventListener("mouseenter", showTrigger);
+    target.addEventListener("mouseleave", scheduleHide);
+    trigger.addEventListener("mouseenter", showTrigger);
+    trigger.addEventListener("mouseleave", scheduleHide);
+    trigger.addEventListener("focus", showTrigger);
+    trigger.addEventListener("blur", scheduleHide);
+    trigger.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      openInfo(trigger, getInfo);
+    });
+    trigger.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openInfo(trigger, getInfo);
+      } else if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        closeInfo({ restoreFocus: true });
+      }
+    });
+  });
+
+  closeButton.addEventListener("click", () => closeInfo({ restoreFocus: true }));
+  viewport.addEventListener("pointerdown", (event) => {
+    if (!panel.hidden && !panel.contains(event.target) && !event.target.closest(".scada-info-trigger")) {
+      closeInfo();
+    }
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !panel.hidden) {
+      event.stopPropagation();
+      closeInfo({ restoreFocus: true });
+    }
+  });
+  window.addEventListener("resize", () => {
+    targetToTrigger.forEach((trigger, target) => positionTrigger(target, trigger));
+    if (activeTrigger) positionPanel(activeTrigger);
+  });
+
+  window.closeScadaComponentInfo = closeInfo;
+  window.refreshScadaComponentInfoPositions = () => {
+    targetToTrigger.forEach((trigger, target) => positionTrigger(target, trigger));
+    if (activeTrigger) positionPanel(activeTrigger);
+  };
+}
+
+// ==========================================================================
+// 7C. DASHBOARD PANEL INFORMATION BUTTONS
+// ==========================================================================
+const PANEL_INFO_CAUTION =
+  "Reference information only. Use the buyer specification, site SOPs, calibrated instruments and machine manuals for production decisions.";
+
+function colorFeedInfo(process, matters) {
+  return {
+    category: "Inline measurement",
+    summary: `Camera and spectrophotometer view of the fabric at the in-line measuring point on the selected ${process} machine.`,
+    shows: "The running fabric, the machine assigned to this lot, and the window the optical readings are sampled from.",
+    matters
+  };
+}
+
+function colorStandardInfo(matters) {
+  return {
+    category: "Colour standard",
+    summary: "The approved master standard in CIELAB coordinates shown next to the live measured values and the agreed tolerance.",
+    shows: "Target lightness (L*), red–green (a*) and yellow–blue (b*), the tolerance in ΔE, the live measurement and the resulting pass or fail.",
+    matters
+  };
+}
+
+function visionFeedInfo(stage, matters) {
+  return {
+    category: "Inline vision",
+    summary: `Line-scan camera view of the fabric passing the ${stage} inspection station on the selected machine.`,
+    shows: "The moving web, the machine selected for the lot, and the defects the vision model has flagged on the current length.",
+    matters
+  };
+}
+
+const PANEL_INFO_LIBRARY = {
+  dyeingColorInspectionView: {
+    "Spectro Color Match Index": {
+      category: "Shade accuracy",
+      summary: "The CIELAB colour difference (ΔE) between the fabric being dyed and the approved master standard, measured by the in-line spectrophotometer.",
+      shows: "The current ΔE with its recent trend, judged against the tolerance set for this batch in the standard panel below.",
+      matters: "Shade approval, re-dyeing cost and shade-sorting all depend on ΔE. Seeing drift while the goods are still running allows a dosing correction instead of a re-process."
+    },
+    "Recipe Auto-Correction Rate": {
+      category: "Closed-loop control",
+      summary: "The share of measured deviations that the automatic dosing loop corrected without an operator re-shading the batch.",
+      shows: "The correction success rate with its trend against the target.",
+      matters: "A high right-first-time rate protects dye and auxiliary consumption, machine availability and delivery dates, because every manual re-shade adds bath time and water."
+    },
+    "Auxiliary Chemical Dosing": {
+      category: "Chemical dosing",
+      summary: "Live dosing of dyeing auxiliaries such as levelling, sequestering and wetting agents, expressed per kilogram of goods.",
+      shows: "The current dosing rate in mL/kg with the metering profile across the batch.",
+      matters: "Auxiliaries govern levelness, migration and reproducibility. Overdosing raises cost and effluent load; underdosing causes unlevel dyeing and patchy shade."
+    },
+    "Live In-Line Spectrophotometer Sensor Feed": colorFeedInfo(
+      "dyeing",
+      "A colour reading is only valid if the measured area is representative. The feed lets the operator confirm that the sampling window is free of creases, foam and wet patches before acting on a value."
+    ),
+    "Master Standard vs Actual Measured Color Data": colorStandardInfo(
+      "Comparing on separate axes tells the colourist which dye component to adjust, instead of only reporting that the shade is off."
+    )
+  },
+
+  printingColorInspectionView: {
+    "Print Color Match Index": {
+      category: "Shade accuracy",
+      summary: "The colour difference between the printed pattern colours and the approved strike-off standard.",
+      shows: "The current ΔE for the measured print colour with its trend and tolerance.",
+      matters: "Print shade is judged against the strike-off the buyer signed. Continuous measurement catches paste-strength drift before a long run is printed out of tolerance."
+    },
+    "Pattern Registration Accuracy": {
+      category: "Registration control",
+      summary: "Alignment between successive screens or print heads, measured as displacement of the pattern repeat.",
+      shows: "Live registration deviation in millimetres with its trend.",
+      matters: "Registration error appears as blurred outlines, white gaps or colour overlap, and normally makes the printed length a second-quality roll."
+    },
+    "Viscosity & Paste Dosing": {
+      category: "Print paste",
+      summary: "Rheology and dosing of the print paste supplied to the screens or print heads.",
+      shows: "The current viscosity and dosing values with their trend across the run.",
+      matters: "Viscosity controls penetration, outline sharpness and colour yield. Drift, often caused by temperature or thickener changes, leads to bleeding, flushing or weak prints."
+    },
+    "Live In-Line Multi-Spectral Print Sensor Feed": colorFeedInfo(
+      "printing",
+      "Print faults are pattern-dependent, so the operator needs to see the repeat itself to judge whether a reading reflects the design or a genuine process problem."
+    ),
+    "Master Standard vs Actual Measured Color Data": colorStandardInfo(
+      "Each colourway in the design has its own standard, so the axes indicate which paste to adjust when the print drifts."
+    )
+  },
+
+  bleachingColorInspectionView: {
+    "Berger Whiteness Index (Wb)": {
+      category: "Whiteness measurement",
+      summary: "Instrumental whiteness of the bleached fabric, reported on the Berger scale from the in-line spectrophotometer.",
+      shows: "The current whiteness index with its trend against the target for the quality being produced.",
+      matters: "Base whiteness decides whether goods can go to a white finish and how reproducible pale shades will be, because any residual yellowness carries into the dyed colour."
+    },
+    "Peroxide Reaction Efficiency": {
+      category: "Bleach chemistry",
+      summary: "How much of the hydrogen peroxide dosed is consumed by the bleaching reaction rather than decomposing or leaving with the liquor.",
+      shows: "The efficiency of the peroxide bleach step with its trend.",
+      matters: "Low efficiency wastes chemical and loads the effluent, and often signals catalytic metal contamination that also causes pinholes and strength loss."
+    },
+    "Hydrogen Peroxide Dosing": {
+      category: "Chemical dosing",
+      summary: "Live dosing rate of hydrogen peroxide into the bleach bath or pad liquor.",
+      shows: "The current dosing rate with the metering profile.",
+      matters: "Peroxide level is a balance: too little leaves seed coat and yellowness; too much, particularly at the wrong pH or with metal traces, degrades cellulose and lowers tensile strength."
+    },
+    "Live In-Line Whiteness Spectrophotometer Sensor Feed": colorFeedInfo(
+      "bleaching",
+      "Wet and dry fabric read differently, so the feed lets the operator confirm the state and position of the goods at the measuring point."
+    ),
+    "Master Standard vs Actual Measured Color Data": colorStandardInfo(
+      "For whites, the b* axis is the sensitive one: rising b* is the yellowness that buyers reject even when overall lightness looks acceptable."
+    )
+  },
+
+  mercerizingColorInspectionView: {
+    "Barium Activity Number (BAN)": {
+      category: "Degree of mercerization",
+      summary: "An index of how far mercerization has progressed, based on the ratio of barium hydroxide absorbed by treated compared with untreated cotton.",
+      shows: "The current activity number with its trend; unmercerized cotton sits near the reference value and the number rises as the treatment takes effect.",
+      matters: "Degree of mercerization drives lustre, strength and dye uptake. Under-treated goods absorb less dye, which appears later as depth and shade differences."
+    },
+    "Caustic Impregnation Uniformity": {
+      category: "Process uniformity",
+      summary: "Evenness of caustic soda pick-up across the width and along the length of the fabric during impregnation.",
+      shows: "The uniformity index with its trend.",
+      matters: "Uneven caustic penetration produces listing and ending — side-to-centre and end-to-end variation that usually becomes visible only after dyeing."
+    },
+    "Lye Concentration & Wetting": {
+      category: "Caustic control",
+      summary: "Strength of the caustic soda liquor together with the wetting-agent dosing that helps it penetrate the yarn.",
+      shows: "The current concentration and dosing values with their trend.",
+      matters: "Concentration, temperature, wetting and tension must hold together for the short contact time, otherwise the fibre swells without being properly stabilized under tension."
+    },
+    "Live In-Line Luster Spectrophotometer Sensor Feed": colorFeedInfo(
+      "mercerizing",
+      "Lustre is a directional, specular property, so the operator must confirm that the fabric is flat and correctly presented before trusting the reading."
+    ),
+    "Master Standard vs Actual Measured Color Data": colorStandardInfo(
+      "Mercerized cotton reflects more light and dyes deeper, so lightness readings shift even before any dye is applied."
+    )
+  },
+
+  stenterColorInspectionView: {
+    "Thermo-Fixation Shade Match": {
+      category: "Shade accuracy",
+      summary: "Colour difference measured after heat setting and finishing, the stage where curing can move the shade seen in the dyehouse.",
+      shows: "Post-fixation ΔE with its trend against tolerance.",
+      matters: "Heat, optical brighteners and softeners all shift shade. The measurement after the stenter is the colour the buyer actually receives."
+    },
+    "Heat-Setting Stabilization": {
+      category: "Thermal process",
+      summary: "Stability of the heat-setting treatment across the stenter chambers.",
+      shows: "The stabilization index with its trend.",
+      matters: "Even heat setting fixes dimensional stability and handle. Overheating yellows fabric and damages elastane; underheating leaves residual shrinkage that shows up after washing."
+    },
+    "Moisture & Softener Dosing": {
+      category: "Finish application",
+      summary: "Residual moisture at the stenter exit together with the softener add-on applied in the pad.",
+      shows: "The current moisture and dosing values with their trend.",
+      matters: "Over-drying wastes thermal energy and harshens the handle; under-drying risks shade change and mildew in the roll. Add-on level affects handle, sewability and shade."
+    },
+    "Live In-Line Finish Spectrophotometer Sensor Feed": colorFeedInfo(
+      "finishing",
+      "Fabric leaves the stenter hot and under tension, so the feed helps confirm the goods are settled and flat where the reading is taken."
+    ),
+    "Master Standard vs Actual Measured Color Data": colorStandardInfo(
+      "Comparing pre- and post-finish measurements separates a dyeing error from a shift introduced by curing or the finish recipe."
+    )
+  },
+
+  greigeInspectionView: {
+    "Defect Match Index": {
+      category: "Vision detection",
+      summary: "Agreement between the vision system's defect classification and the reference classification used for grading.",
+      shows: "The match index with its trend.",
+      matters: "Grading decisions and buyer claims depend on consistent classification. A falling index usually points to lighting, focus, or a fabric construction the model has not been trained on."
+    },
+    "Auto-Grading Accuracy": {
+      category: "Fabric grading",
+      summary: "Accuracy of automatic grading against the four-point system commonly used for woven fabric inspection.",
+      shows: "Grading accuracy with its trend.",
+      matters: "In the four-point system each defect scores one to four points by size, and the points per 100 square metres decide whether a roll is first or second quality."
+    },
+    "Scan Throughput": {
+      category: "Line capacity",
+      summary: "The fabric speed the inspection system is currently processing.",
+      shows: "Throughput in metres per minute for the running machine.",
+      matters: "Inspection has to keep pace with the weaving shed without losing detection resolution, so throughput links quality confidence to the delivery schedule."
+    },
+    "Live In-Line Greige Linear-Camera Sensor Feed": visionFeedInfo(
+      "greige",
+      "Loom-state faults such as broken ends and picks, slubs and oil stains are far cheaper to find before the fabric is dyed and finished."
+    ),
+    "Live Tear, Hole & Oil Stain Classification": {
+      category: "Defect classification",
+      summary: "A live breakdown of detected defects by type, with the tolerance applied to the running quality.",
+      shows: "Tear index, hole count and oil stains per 1000 m against the configured tolerance.",
+      matters: "Separating mechanical damage from contamination points to different root causes — loom and take-up mechanics on one side, lubrication and handling on the other."
+    }
+  },
+
+  pretreatmentInspectionView: {
+    "Absorbency Deviation": {
+      category: "Preparation quality",
+      summary: "Variation in fabric wettability after singeing, desizing, scouring and bleaching.",
+      shows: "Deviation from the target absorbency with its trend.",
+      matters: "Uneven absorbency is one of the most common causes of unlevel dyeing, and it has to be corrected in preparation rather than in the dyehouse."
+    },
+    "Desize–Scour Efficiency": {
+      category: "Preparation chemistry",
+      summary: "Effectiveness of size removal and scouring, the basis for residual-size checks such as the violet iodine scale.",
+      shows: "The efficiency value with its trend.",
+      matters: "Residual size, waxes and seed coat block dye penetration and cause spots and patchy shade in the next stage."
+    },
+    "Bath pH Level": {
+      category: "Bath chemistry",
+      summary: "The pH of the running preparation bath.",
+      shows: "The live pH reading with its trend.",
+      matters: "Scouring and peroxide bleaching are strongly pH-dependent, and goods must also be neutralized before dyeing, so drifting pH affects both fabric quality and shade reproducibility."
+    },
+    "Live In-Line Pretreatment Optical Sensor Feed": visionFeedInfo(
+      "pretreatment",
+      "Preparation faults such as pinholes, singeing marks and uneven wetting are visible on the running web long before they reach the dye range."
+    ),
+    "Live Tear & Chemical Stain Classification": {
+      category: "Defect classification",
+      summary: "Live classification of mechanical damage and chemical marks detected on the prepared fabric.",
+      shows: "Tear index, hole count and chemical stains per 1000 m against the configured tolerance.",
+      matters: "Chemical marks in preparation usually indicate dosing, rinsing or splash problems that will repeat on every following length until they are corrected."
+    }
+  },
+
+  fvDyeingInspectionView: {
+    "Defect Detection Rate": {
+      category: "Vision detection",
+      summary: "The proportion of surface defects on dyed fabric that the vision system detects.",
+      shows: "The detection rate with its trend.",
+      matters: "Dyed goods carry the full value added so far, so a defect missed here travels into finishing, inspection and, in the worst case, the buyer's claim."
+    },
+    "Tear / Hole Match Index": {
+      category: "Defect classification",
+      summary: "Agreement between the system's classification of mechanical damage and the reference classification.",
+      shows: "The match index for tears and holes with its trend.",
+      matters: "Mechanical damage on a dye range usually traces back to guide rollers, expanders or jet transport, so reliable classification is what makes the maintenance action clear."
+    },
+    "Chemical Spot Alerts": {
+      category: "Contamination watch",
+      summary: "Alerts raised for dye spots, chemical splashes and crease marks found on the running fabric.",
+      shows: "The current alert rate with its trend.",
+      matters: "Spots and crease marks are often correctable at source — filtration, dosing or transport — and every length produced before the alert is acted on carries the same fault."
+    },
+    "Live In-Line Dyeing Defect Vision Sensor Feed": visionFeedInfo(
+      "dyeing",
+      "Seeing the flagged area in context lets the operator separate a true fabric defect from a wet mark or foam that will disappear after drying."
+    ),
+    "Live Tear & Chemical Stain Classification": {
+      category: "Defect classification",
+      summary: "Live classification of mechanical damage and chemical or dye marks on dyed fabric.",
+      shows: "Tear index, hole count and chemical stains per 1000 m against the configured tolerance.",
+      matters: "The split between damage and staining decides whether the response is mechanical maintenance or a change to the dyeing and rinsing chemistry."
+    }
+  },
+
+  fvPrintingInspectionView: {
+    "Print Defect Match Index": {
+      category: "Vision detection",
+      summary: "Agreement between the vision system's print-defect classification and the reference classification.",
+      shows: "The match index with its trend.",
+      matters: "Printed defects are judged against the design itself, so classification accuracy determines whether a genuine misprint is separated from an intended pattern feature."
+    },
+    "Registration Skew Accuracy": {
+      category: "Registration control",
+      summary: "Measured skew and misalignment of the pattern repeat across screens or print heads.",
+      shows: "Registration and skew deviation with its trend.",
+      matters: "Drifting registration on a rotary or digital line spoils every following repeat, so it is one of the fastest ways to lose a long print run."
+    },
+    "Misprint Alert Rate": {
+      category: "Defect rate",
+      summary: "Rate of misprints, pin-holes and blotches detected on the running length.",
+      shows: "Alerts per 1000 m with the current trend.",
+      matters: "Rising alerts typically indicate a blocked screen, a missing nozzle or a paste supply problem — all faults that repeat until the machine is stopped and cleared."
+    },
+    "Live In-Line Print Defect Vision Sensor Feed": visionFeedInfo(
+      "print",
+      "Comparing the running repeat with the approved design is what lets the operator confirm a defect before stopping a machine mid-run."
+    ),
+    "Live Misprint & Registration Classification": {
+      category: "Defect classification",
+      summary: "Live breakdown of print defects by type together with the registration measurement.",
+      shows: "Registration in millimetres, pin-hole count and misprints per 1000 m against the tolerance.",
+      matters: "Registration faults and paste faults have different causes; classifying them separately sends the correct action to the printer or to the colour kitchen."
+    }
+  },
+
+  fvFinishInspectionView: {
+    "Dimensional Match Index": {
+      category: "Dimensional control",
+      summary: "How closely finished width and weight match the specification for the quality being produced.",
+      shows: "The dimensional match index with its trend.",
+      matters: "Width and GSM are contractual values. Running narrow wastes fabric at cutting, and running heavy gives away material on every metre delivered."
+    },
+    "Skew / Bow Correction": {
+      category: "Fabric geometry",
+      summary: "Measured weft distortion and the correction applied by the straightening unit before the stenter chambers.",
+      shows: "Current skew and bow in degrees with the applied correction trend.",
+      matters: "Bow and skew cause garments to twist after washing, so buyers set tight limits and the fault must be corrected while the fabric is still on the stenter."
+    },
+    "Surface Defect Density": {
+      category: "Defect rate",
+      summary: "Density of surface defects detected on the finished fabric.",
+      shows: "Defects per unit length with the current trend.",
+      matters: "Finishing is the last chance to detect a fault before final inspection and packing, where any rejection costs the full value of the piece."
+    },
+    "Live In-Line Finish Surface Vision Sensor Feed": visionFeedInfo(
+      "finishing",
+      "Stenter faults such as pin marks, curled selvedges and uneven drying appear on the running web and can be corrected in the same run."
+    ),
+    "Live Dimensional & Surface Defect Classification": {
+      category: "Defect classification",
+      summary: "Live dimensional readings together with the classification of surface defects on finished goods.",
+      shows: "Width in centimetres, skew and bow in degrees, GSM, and the applied tolerance.",
+      matters: "Dimensional drift and surface defects are reported together because overfeed, tension and temperature changes usually affect both at the same time."
+    }
+  },
+
+  foldingInspectionView: {
+    "Length Count Accuracy": {
+      category: "Measurement accuracy",
+      summary: "Accuracy of the measured roll length against the length recorded for dispatch.",
+      shows: "Counting accuracy with its trend.",
+      matters: "Short measure leads to buyer claims and credit notes, while over-measure gives away fabric, so the counter is a direct commercial control."
+    },
+    "Edge Alignment Match": {
+      category: "Roll geometry",
+      summary: "Alignment of the fabric edges as the roll or plait is built.",
+      shows: "Edge deviation in millimetres with its trend.",
+      matters: "Poorly aligned rolls are damaged in transport and slow down the buyer's spreading and cutting operation."
+    },
+    "Packing Throughput": {
+      category: "Line capacity",
+      summary: "Rate at which rolls are being folded, wrapped and packed for dispatch.",
+      shows: "Current throughput for the packing line.",
+      matters: "Packing is the last operation before the dispatch cut-off, so its rate determines whether finished goods actually leave on the booked shipment."
+    },
+    "Live In-Line Folding & Pack Vision Sensor Feed": visionFeedInfo(
+      "folding and packing",
+      "A final visual record at packing supports the shipment documentation and any later discussion with the buyer about roll condition."
+    ),
+    "Live Roll Edge & Fold Geometry Classification": {
+      category: "Pack quality",
+      summary: "Classification of roll and plait geometry, wrap condition and measured length before dispatch.",
+      shows: "Length in metres, edge error in millimetres, wrap tension and the applied tolerance.",
+      matters: "Wrap tension and fold geometry protect the goods in transit; loose wraps allow soiling and crushed edges that appear as damage on arrival."
+    }
+  },
+
+  productionPlanningView: {
+    "ON-TIME CONFIDENCE": {
+      title: "On-time confidence",
+      category: "Delivery risk",
+      summary: "The planner's estimate of the probability that the selected lot reaches its dispatch cut-off, given current progress and known constraints.",
+      shows: "The confidence value, the change against the previous review, and its recent trend.",
+      matters: "Textile orders are shipped against booked containers and buyer windows, so an early warning gives time to re-sequence rather than pay for air freight or a discount."
+    },
+    "CURRENT BOTTLENECK": {
+      title: "Current bottleneck",
+      category: "Constraint",
+      summary: "The machine or stage that is currently limiting flow through the selected route.",
+      shows: "The constraining resource with the queue or delay it is causing.",
+      matters: "Only the bottleneck sets the output of the line. Adding work anywhere else increases work in progress without improving delivery."
+    },
+    "CHANGEOVER SAVED": {
+      title: "Changeover saved",
+      category: "Sequencing benefit",
+      summary: "Machine time saved by sequencing lots so that shade, quality and width changes are grouped instead of alternating.",
+      shows: "Time saved against an unsorted batch sequence.",
+      matters: "Cleaning a dye machine between dark and pale shades costs time, water and chemicals, so sequence order directly converts into available capacity."
+    },
+    "WIP AHEAD": {
+      title: "Work in progress ahead",
+      category: "Queue load",
+      summary: "The fabric already queued ahead of this lot at the next stages.",
+      shows: "Rolls and metres waiting in front of the selected lot.",
+      matters: "Work in progress hides delay: a lot can look on schedule at its current machine yet still miss dispatch because of the queue waiting downstream."
+    },
+    "Lot TEX-8821 · Royal Navy · 6,240 m": {
+      title: "Live material route",
+      category: "Lot routing",
+      summary: "The end-to-end route of the selected lot through greige release, preparation, dyeing, optional printing, finishing and final inspection.",
+      shows: "Each stage with its state, the machine selected for it, live progress and the forecast or recorded time.",
+      matters: "Textile routes are not fixed; a lot can be re-routed to another machine or skip a stage. Seeing the full route with its machine choices is how the planner protects the dispatch date."
+    },
+    "#departmentScheduleTitle": {
+      title: "Department stages and machine plan",
+      category: "Machine scheduling",
+      summary: "The machine-lane schedule for the department selected in the route above.",
+      shows: "Each machine as a lane, the planned and running batch blocks, at-risk blocks, and the live factory clock position.",
+      matters: "Lane view exposes conflicts between lots competing for the same machine, which is where most textile delays are created and where they can still be resolved."
+    },
+    "Cumulative good metres vs plan": {
+      title: "Cumulative good metres vs plan",
+      category: "Output tracking",
+      summary: "Quality-verified output for the lot plotted against the planned production curve and the forecast to completion.",
+      shows: "Actual good metres, the planned curve, the current variance and the projected completion time.",
+      matters: "Counting only good metres keeps the picture honest: production that has to be re-processed or downgraded does not move the order towards dispatch."
+    },
+    "Downstream flow protection": {
+      title: "Downstream flow protection",
+      category: "Handoff readiness",
+      summary: "Readiness of the next stages to receive this lot, with the risk of starving or blocking the line.",
+      shows: "Each handoff with its readiness percentage, reserved slot, time exposure and the remaining transfer buffer.",
+      matters: "A protected handoff keeps the finishing and inspection slots reserved. Losing a reserved stenter or inspection window usually costs more time than the original delay."
+    }
+  },
+
+  energyUtilitiesView: {
+    "Specific Energy Consumption": {
+      category: "Energy benchmark",
+      summary: "Energy used per kilogram of production, the standard way to compare mill energy performance independently of output volume.",
+      shows: "The current value in kWh/kg with its trend and the change against last year.",
+      matters: "Wet processing is energy-intensive, so this figure is both the main cost lever and the number buyers and ESG reports ask for. It only falls if energy drops faster than production."
+    },
+    "Thermal Waste Heat Recovery": {
+      category: "Heat recovery",
+      summary: "The share of recoverable waste heat that heat exchangers are actually returning to the process.",
+      shows: "Current recovery performance with its trend and the state of the exchanger.",
+      matters: "Hot effluent from dyeing and hot stenter exhaust are the largest recoverable losses in a mill; recovered heat directly reduces boiler fuel and makeup-water heating."
+    },
+    "Compressed Air Header": {
+      category: "Compressed air",
+      summary: "Pressure held in the main compressed-air header that supplies looms, valves and pneumatic equipment.",
+      shows: "Current header pressure with its stability trend.",
+      matters: "Compressed air is the most expensive utility per unit of work. Holding pressure higher than the machines need wastes energy and increases the loss through every leak."
+    },
+    "Setpoints & utility readings": {
+      title: "Setpoints and utility readings",
+      category: "Utility control",
+      summary: "Operator setpoints next to the live readings for the mill's main utility groups.",
+      shows: "Electricity, steam, gas and air load, compressor loading, recovered against lost heat, tariff-window distribution and the leak-monitoring result.",
+      matters: "Utilities interact: raising steam demand in dyeing changes gas consumption and recovery performance at the same time, so they are set and judged together rather than one by one."
+    },
+    "AI Desired Optimization & Live Match": {
+      title: "AI desired optimization and live match",
+      category: "Closed-loop optimization",
+      summary: "The optimizer's target for each utility next to the live feed value, with how closely the two agree.",
+      shows: "Desired optimal value, live feed value and the match percentage for each utility group.",
+      matters: "The match percentage shows whether the plant is actually following the optimized plan. A persistent gap points to a physical limit — a valve, compressor or heat exchanger — not to a control setting."
+    },
+    "Live vs setpoint": {
+      title: "Live vs setpoint",
+      category: "Control trends",
+      summary: "Short-term trends comparing each live utility reading with its setpoint.",
+      shows: "Live and setpoint traces for peak dye load, air header, heat recovery, off-peak load and leak watch.",
+      matters: "A stable offset means a mis-set target, while oscillation points to control tuning or to demand swings from batch wet processing. The trend distinguishes the two."
+    }
+  },
+
+  complianceTraceabilityView: {
+    "GENEALOGY COMPLETE": {
+      title: "Genealogy completeness",
+      category: "Traceability",
+      summary: "The proportion of production events for this lot that are linked with a verified machine, operator and timestamp.",
+      shows: "Completeness of the chain from greige through to shipment, with the trend.",
+      matters: "Traceability is only usable if no link is missing. A single unrecorded stage can prevent a claim being investigated or a buyer audit being passed."
+    },
+    "DPP READINESS": {
+      title: "Digital Product Passport readiness",
+      category: "Digital product passport",
+      summary: "How many of the passport data fields for this lot are populated and verified.",
+      shows: "Completed fields against the total required for the passport record.",
+      matters: "The EU's Ecodesign for Sustainable Products Regulation introduces a Digital Product Passport with textiles as a priority group. Exact fields and dates are set by delegated acts, so confirm current requirements with the buyer before relying on this figure."
+    },
+    "AUDIT EVIDENCE": {
+      title: "Audit evidence availability",
+      category: "Buyer audit",
+      summary: "The share of supporting documents — certificates, test reports and source records — that are available now for this lot.",
+      shows: "Evidence completeness with a note on what is still pending.",
+      matters: "Buyer and certification audits are evidence-based. Documents that exist but cannot be produced on request count as missing during an audit."
+    },
+    "EFFLUENT RELEASE": {
+      title: "Effluent release condition",
+      category: "Environmental compliance",
+      summary: "The pH captured on the final rinse for this lot, compared with the discharge band applied by the plant.",
+      shows: "The live pH value with the process step and machine it was measured on.",
+      matters: "Discharge consent is set by the local authority and the treatment plant design, and pH is one of its routine conditions. Tying the reading to the lot links an environmental record to the goods being shipped."
+    },
+    "QR Digital Product Passport": {
+      category: "Digital product passport",
+      summary: "The passport generated for the selected production lot, carried on the shipment as a scannable code.",
+      shows: "The selected lot, its capture time and the passport preview that will travel with the goods.",
+      matters: "One code gives the buyer the fibre origin, recipe, chemical and utility record for the piece, which is what removes most back-and-forth email evidence requests."
+    },
+    "Passport record": {
+      category: "Product data",
+      summary: "The structured data held in the passport for this lot.",
+      shows: "Identity, composition, process and footprint fields as they are currently recorded.",
+      matters: "These fields are what the buyer reads. They must agree with the production record and the test reports, because inconsistencies are treated as a compliance failure rather than a clerical error."
+    },
+    "Product record": {
+      category: "Chain of custody",
+      summary: "The chain-of-custody record linking each production step to its inputs, machine and operator.",
+      shows: "Stage-by-stage custody entries with their verification state.",
+      matters: "Chain of custody is what supports claims about organic, recycled or certified content; without it, a certificate on its own does not prove the material in the piece."
+    },
+    "Footprint & buyer audit": {
+      title: "Footprint and buyer audit",
+      category: "Environmental reporting",
+      summary: "Resource and emission figures attributed to this lot for buyer reporting.",
+      shows: "Energy, water, chemical and carbon figures for the lot with their audit state.",
+      matters: "Buyers increasingly request per-order footprint data. Figures allocated from metered utility and production records are defensible; estimates made after shipment usually are not."
+    },
+    "Evidence readiness": {
+      category: "Buyer pack",
+      summary: "Status of the document pack assembled for the buyer or auditor.",
+      shows: "Documents ready against the total required, with the items still outstanding.",
+      matters: "Shipment release often depends on this pack being complete, so an outstanding certificate here can hold goods that are otherwise finished and packed."
+    }
+  },
+
+  millKnowledgeCopilotView: {
+    "PREVIOUS CHATS": {
+      title: "Previous chats",
+      category: "Session history",
+      summary: "Earlier questions asked in this briefing session.",
+      shows: "The conversation history for the current shift, which can be reopened.",
+      matters: "Shift handover depends on what was already asked and answered, so keeping the thread avoids repeating the same investigation on the next shift."
+    },
+    "#copilotPromptTitle": {
+      title: "Suggested questions",
+      category: "Guided assistance",
+      summary: "Questions generated from this shift's live context and the mill's document library.",
+      shows: "Suggested questions, which narrow to the topic after each answer.",
+      matters: "Answers are drawn from mill SOPs, maintenance logs and module evidence. Verify any instruction against the current approved procedure before acting on it in production."
+    }
+  }
+};
+
+function setupPanelComponentInfo() {
+  const volatileTitleIds = new Set(["departmentScheduleTitle", "copilotPromptTitle"]);
+  const anchorGroups = [
+    { card: ".inspect-metric-card", title: ".metric-card-title" },
+    { card: ".inspect-detail-card", title: ".detail-card-title" },
+    { card: ".planning-kpi", title: ":scope > span", placement: "card" },
+    { card: ".planning-section-head", title: "h2" },
+    { card: ".compliance-kpi-card", title: ".compliance-kpi-head span", placement: "header" },
+    { card: ".copilot-history-card", title: ".section-micro-title" },
+    { card: ".copilot-prompt-panel", title: "#copilotPromptTitle" }
+  ];
+
+  const panel = document.createElement("aside");
+  panel.className = "scada-component-info panel-component-info";
+  panel.id = "panelComponentInfo";
+  panel.setAttribute("role", "dialog");
+  panel.setAttribute("aria-labelledby", "panelComponentInfoTitle");
+  panel.hidden = true;
+  panel.innerHTML = `
+    <div class="scada-info-heading">
+      <div>
+        <span class="scada-info-eyebrow" id="panelComponentInfoCategory"></span>
+        <h2 id="panelComponentInfoTitle"></h2>
+      </div>
+      <button type="button" class="scada-info-close" id="panelComponentInfoClose"
+        aria-label="Close panel information">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round">
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <p class="scada-info-summary" id="panelComponentInfoSummary"></p>
+    <dl class="scada-info-details">
+      <div>
+        <dt>What this panel shows</dt>
+        <dd id="panelComponentInfoShows"></dd>
+      </div>
+      <div>
+        <dt>Why it matters in a textile mill</dt>
+        <dd id="panelComponentInfoMatters"></dd>
+      </div>
+    </dl>
+    <p class="scada-info-caution">${PANEL_INFO_CAUTION}</p>`;
+  document.body.appendChild(panel);
+
+  const categoryEl = panel.querySelector("#panelComponentInfoCategory");
+  const titleEl = panel.querySelector("#panelComponentInfoTitle");
+  const summaryEl = panel.querySelector("#panelComponentInfoSummary");
+  const showsEl = panel.querySelector("#panelComponentInfoShows");
+  const mattersEl = panel.querySelector("#panelComponentInfoMatters");
+  const closeButton = panel.querySelector("#panelComponentInfoClose");
+  let activeButton = null;
+
+  function positionPanel(button) {
+    const rect = button.getBoundingClientRect();
+    const inset = 12;
+    const gap = 10;
+    let left = rect.left;
+    let top = rect.bottom + gap;
+    if (left + panel.offsetWidth > window.innerWidth - inset) {
+      left = window.innerWidth - panel.offsetWidth - inset;
+    }
+    left = Math.max(inset, left);
+    if (top + panel.offsetHeight > window.innerHeight - inset) {
+      const above = rect.top - gap - panel.offsetHeight;
+      top = above >= inset ? above : Math.max(inset, window.innerHeight - panel.offsetHeight - inset);
+    }
+    panel.style.left = `${left}px`;
+    panel.style.top = `${top}px`;
+  }
+
+  function closeInfo({ restoreFocus = false } = {}) {
+    if (panel.hidden) return;
+    panel.hidden = true;
+    if (!activeButton) return;
+    activeButton.setAttribute("aria-expanded", "false");
+    const previous = activeButton;
+    activeButton = null;
+    if (restoreFocus) previous.focus();
+  }
+
+  function openInfo(button, info) {
+    if (activeButton && activeButton !== button) {
+      activeButton.setAttribute("aria-expanded", "false");
+    }
+    activeButton = button;
+    button.setAttribute("aria-expanded", "true");
+    categoryEl.textContent = info.category || "Dashboard panel";
+    titleEl.textContent = info.title;
+    summaryEl.textContent = info.summary;
+    showsEl.textContent = info.shows;
+    mattersEl.textContent = info.matters;
+    panel.hidden = false;
+    positionPanel(button);
+  }
+
+  function attachButton(anchor, info) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "panel-info-btn";
+    button.textContent = "i";
+    button.setAttribute("aria-haspopup", "dialog");
+    button.setAttribute("aria-expanded", "false");
+    button.setAttribute("aria-controls", "panelComponentInfo");
+    button.setAttribute("aria-label", `Information about ${info.title}`);
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      sfx.playClick();
+      if (activeButton === button && !panel.hidden) closeInfo({ restoreFocus: true });
+      else openInfo(button, info);
+    });
+    anchor.appendChild(button);
+    return button;
+  }
+
+  Object.entries(PANEL_INFO_LIBRARY).forEach(([viewId, entries]) => {
+    const view = document.getElementById(viewId);
+    if (!view) return;
+
+    anchorGroups.forEach((group) => {
+      view.querySelectorAll(group.card).forEach((card) => {
+        const titleNode = card.querySelector(group.title);
+        if (!titleNode || titleNode.querySelector(".panel-info-btn")) return;
+
+        const key = entries[`#${titleNode.id}`] ? `#${titleNode.id}` : titleNode.textContent.replace(/\s+/g, " ").trim();
+        const entry = entries[key];
+        if (!entry) return;
+
+        const info = { ...entry, title: entry.title || key };
+        if (group.placement === "card") {
+          card.classList.add("has-panel-info");
+          attachButton(card, info);
+          return;
+        }
+        if (group.placement === "header" || volatileTitleIds.has(titleNode.id)) {
+          const row = document.createElement("span");
+          row.className = "panel-info-row";
+          titleNode.parentNode.insertBefore(row, titleNode);
+          row.appendChild(titleNode);
+          attachButton(row, info);
+          return;
+        }
+        attachButton(titleNode, info);
+      });
+    });
+  });
+
+  closeButton.addEventListener("click", () => closeInfo({ restoreFocus: true }));
+  document.addEventListener("pointerdown", (event) => {
+    if (panel.hidden) return;
+    if (panel.contains(event.target) || event.target.closest(".panel-info-btn")) return;
+    closeInfo();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && !panel.hidden) {
+      event.stopPropagation();
+      closeInfo({ restoreFocus: true });
+    }
+  });
+  window.addEventListener("resize", () => {
+    if (activeButton) positionPanel(activeButton);
+  });
+  window.addEventListener("scroll", () => {
+    if (activeButton) positionPanel(activeButton);
+  }, true);
+
+  window.closePanelComponentInfo = closeInfo;
 }
 
 // ==========================================================================
@@ -7416,15 +8502,23 @@ function setupComplianceTraceabilityInteractions() {
   function placeTip(event) {
     if (!tip) return;
     tip.style.display = "block";
-    const pad = 10;
-    const gap = 16;
+    tip.style.transform = "none";
+    const pad = 12;
+    const gap = 10;
     const width = tip.offsetWidth;
     const height = tip.offsetHeight;
+    const host = event.target && event.target.closest ? event.target.closest("[data-tip-title]") : null;
+    const hostRect = host ? host.getBoundingClientRect() : null;
     let left = event.clientX + gap;
     let top = event.clientY - height - 12;
-    if (left + width > window.innerWidth - pad) left = event.clientX - width - gap;
+    if (hostRect) {
+      left = hostRect.left;
+      top = hostRect.top - height - gap;
+      if (top < pad) top = Math.min(hostRect.bottom + gap, window.innerHeight - height - pad);
+      if (left + width > hostRect.right && hostRect.right - width >= pad) left = hostRect.right - width;
+    }
+    if (left + width > window.innerWidth - pad) left = window.innerWidth - width - pad;
     if (left < pad) left = pad;
-    if (top < pad) top = event.clientY + gap;
     if (top + height > window.innerHeight - pad) top = window.innerHeight - height - pad;
     if (top < pad) top = pad;
     tip.style.left = `${left}px`;
@@ -7637,7 +8731,8 @@ function setupComplianceTraceabilityInteractions() {
     const payload = currentPayload();
     if (qrBox) {
       qrBox.innerHTML = buildQrSvg(payload);
-      qrBox.dataset.tipB = payload;
+      qrBox.dataset.tipA = `${lot.id} · ${lot.order}`;
+      qrBox.dataset.tipB = "Encoded Digital Product Passport: lot identity, fibre, utilities, process stage and certificate status.";
     }
     if (liveLine) liveLine.textContent = payload;
   }
@@ -8435,6 +9530,8 @@ function initApp() {
   initScadaClock();
   initScadaRealTimeEngine();
   setupScadaInteractivity();
+  setupScadaComponentInfo();
+  setupPanelComponentInfo();
   setupAiAnomalyInteractivity();
   setupAiSidebarTabs();
   setupDyeingColorInspectionInteractions();

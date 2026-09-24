@@ -5457,6 +5457,38 @@
           </div>
         </div>
 
+        <!-- Reusable component information popover. Its content and anchor are set in app.js. -->
+        <aside class="scada-component-info" id="scadaComponentInfo" role="dialog"
+          aria-labelledby="scadaComponentInfoTitle" hidden>
+          <div class="scada-info-heading">
+            <div>
+              <span class="scada-info-eyebrow" id="scadaComponentInfoCategory">PROCESS COMPONENT</span>
+              <h2 id="scadaComponentInfoTitle">Component information</h2>
+            </div>
+            <button type="button" class="scada-info-close" id="scadaComponentInfoClose"
+              aria-label="Close component information">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                stroke-width="2" stroke-linecap="round">
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+          <p class="scada-info-summary" id="scadaComponentInfoSummary"></p>
+          <dl class="scada-info-details">
+            <div>
+              <dt>What this dashboard shows</dt>
+              <dd id="scadaComponentInfoReading"></dd>
+            </div>
+            <div>
+              <dt>Why it matters in a textile mill</dt>
+              <dd id="scadaComponentInfoMeaning"></dd>
+            </div>
+          </dl>
+          <p class="scada-info-caution">Use site-approved operating limits, calibrated instruments, water-treatment
+            specifications, and equipment manuals for operational decisions.</p>
+        </aside>
+
         <!-- Floating Red Anomaly Beacon Marker (Shown on Component / Line when Anomaly occurs) -->
         <div class="ai-anomaly-marker-beacon" id="anomalyBeacon" style="display: none;">
           <span class="beacon-pulse"></span>
