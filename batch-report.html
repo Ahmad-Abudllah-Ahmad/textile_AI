@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Batch report</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f8fafc;
+      color: #0f172a;
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+    .sheet {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+    .logo {
+      display: block;
+      width: min(220px, 70vw);
+      height: auto;
+      margin: 0 auto 18px;
+    }
+    .kicker {
+      margin: 0;
+      text-align: center;
+      letter-spacing: 0.16em;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+    h1 {
+      margin: 6px 0 4px;
+      text-align: center;
+      font-size: 1.8rem;
+      letter-spacing: -0.03em;
+    }
+    .lede {
+      margin: 0 0 22px;
+      text-align: center;
+      color: #475569;
+      font-size: 0.92rem;
+    }
+    section {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 16px 8px;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 0.95rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      text-align: left;
+      padding: 9px 8px 9px 0;
+      border-top: 1px solid #f1f5f9;
+      font-size: 0.9rem;
+      vertical-align: top;
+    }
+    th {
+      border-top: 0;
+      color: #64748b;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .muted { color: #94a3b8; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #1e1b4b;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .pill.is-done { background: #ecfdf5; color: #047857; }
+    .pill.is-live { background: #1e1b4b; color: #ffffff; }
+    .empty {
+      text-align: center;
+      color: #64748b;
+      padding: 12px 0 20px;
+    }
+    .stage-scroll { overflow-x: auto; }
+    .scan-map-card { margin: 0 0 12px; }
+    .scan-map {
+      height: 220px;
+      overflow: hidden;
+      background: #e7eef5;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+    }
+    .scan-map .mill-dot,
+    .scan-map .batcher-dot {
+      border: 2px solid #ffffff;
+      border-radius: 50%;
+    }
+    .scan-map .mill-dot {
+      background: #1d4ed8;
+      box-shadow: 0 0 0 2px #1d4ed8;
+    }
+    .scan-map .batcher-dot {
+      background: #d97706;
+      box-shadow: 0 0 0 2px #d97706;
+    }
+    .scan-distance {
+      margin: 8px 0 4px;
+      font-size: 0.92rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+    @media (max-width: 720px) {
+      .sheet {
+        padding: 18px 14px calc(28px + env(safe-area-inset-bottom));
+      }
+      h1 { font-size: 1.55rem; }
+      .lede { overflow-wrap: anywhere; }
+      section { padding: 14px 12px 6px; }
+      .facts tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+        column-gap: 12px;
+        align-items: start;
+      }
+      .facts th,
+      .facts td {
+        display: block;
+        width: auto;
+        padding: 8px 0;
+        overflow-wrap: anywhere;
+      }
+      .facts td { text-align: right; }
+      .stage-scroll { overflow: visible; }
+      .stage-table { min-width: 0; }
+      .stage-table thead { display: none; }
+      .stage-table tr {
+        display: block;
+        border-top: 1px solid #e2e8f0;
+        padding: 4px 0 10px;
+      }
+      .stage-table td {
+        display: grid;
+        grid-template-columns: 6.6rem minmax(0, 1fr);
+        column-gap: 10px;
+        align-items: start;
+        justify-items: start;
+        border-top: 0;
+        padding: 5px 0;
+        overflow-wrap: anywhere;
+      }
+      .stage-table td::before {
+        content: attr(data-label);
+        color: #64748b;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .stage-table td:first-child {
+        display: block;
+        padding-top: 10px;
+        font-weight: 800;
+      }
+      .stage-table td:first-child::before { content: none; }
+      .pill {
+        height: auto;
+        min-height: 22px;
+        white-space: normal;
+        line-height: 1.25;
+        padding: 3px 8px;
+      }
+    }
+    @media print {
+      body { background: #ffffff; }
+      .sheet { padding: 0; }
+      section { box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <img class="logo" src="Powered_By__14_-removebg-preview.png" width="521" height="382" alt="Lucky Textile Mills Limited, powered by Spark Technologies" />
+    <p class="kicker">BATCH REPORT</p>
+    <h1 id="reportId">Batch</h1>
+    <p class="lede" id="reportLede">Piece-lot record opened from the batch QR code.</p>
+    <div id="reportBody"></div>
+  </main>
+  <script>
+    (function () {
+      const STAGES = ["GREIGE", "PRETREATMENT", "DYEING", "PRINTING", "FINISHES", "FOLDING"];
+
+      function esc(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        }[ch]));
+      }
+
+      function formatDate(raw) {
+        const text = String(raw || "");
+        const iso = text.length === 8 ? text.slice(0, 4) + "-" + text.slice(4, 6) + "-" + text.slice(6, 8) : text;
+        const parts = iso.split("-");
+        if (parts.length !== 3) return iso || "—";
+        const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+        if (Number.isNaN(date.getTime())) return iso;
+        return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+      }
+
+      function formatStamp(ms) {
+        if (!ms) return "—";
+        const date = new Date(ms);
+        if (Number.isNaN(date.getTime())) return "—";
+        const day = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+        const hours = date.getHours();
+        const suffix = hours >= 12 ? "PM" : "AM";
+        const hour = String((hours % 12) || 12).padStart(2, "0");
+        const minute = String(date.getMinutes()).padStart(2, "0");
+        return day + ", " + hour + ":" + minute + " " + suffix;
+      }
+
+      function storedBatch(id) {
+        try {
+          const list = JSON.parse(localStorage.getItem("textile_batch_ledger_v1") || "[]");
+          return Array.isArray(list) ? list.find((item) => item && item.id === id) : null;
+        } catch (err) {
+          return null;
+        }
+      }
+
+      function fromPacked(packed) {
+        const parts = String(packed || "").split("~");
+        if (parts.length < 6 || !parts[0]) return null;
+        const stageIndex = Math.max(0, Math.min(STAGES.length - 1, Number(parts[4]) || 0));
+        const completed = parts[5] === "1";
+        const minutes = String(parts[6] || "").split(".").filter((item) => item !== "").map((item) => Number(item) || 0);
+        const marks = String(parts[7] || "");
+        const trail = STAGES.map((stage, index) => {
+          const state = completed || index < stageIndex ? "done" : index === stageIndex ? "live" : "wait";
+          const mark = marks.charAt(index);
+          return {
+            stage,
+            minutes: minutes[index] || 0,
+            state,
+            updatedBy: mark === "S" ? "scan" : mark === "M" ? "manual" : "",
+            updatedAt: 0
+          };
+        });
+        return {
+          id: parts[0],
+          fabric: parts[1].replace(/\+/g, " "),
+          gsm: parts[2],
+          date: parts[3],
+          stage: completed ? "FOLDING" : STAGES[stageIndex],
+          completed,
+          trail
+        };
+      }
+
+      function liveMinutes(entry) {
+        if (!entry || entry.state === "wait") return 0;
+        if (entry.state === "live" && entry.startedAtMs) {
+          return Math.max(0, Math.floor((Date.now() - entry.startedAtMs) / 60000));
+        }
+        return entry.minutes || 0;
+      }
+
+      function normalize(batch) {
+        const stageIndex = batch.completed ? STAGES.length : Math.max(0, STAGES.indexOf(batch.stage));
+        const trail = STAGES.map((stage, index) => {
+          const saved = (batch.trail || []).find((entry) => entry.stage === stage) || (batch.trail || [])[index] || {};
+          let state = saved.state;
+          if (!state) state = batch.completed || index < stageIndex ? "done" : index === stageIndex ? "live" : "wait";
+          return {
+            stage,
+            minutes: saved.minutes || 0,
+            state,
+            startedAtMs: saved.startedAtMs || 0,
+            updatedBy: saved.updatedBy || "",
+            updatedAt: saved.updatedAt || 0
+          };
+        });
+        return { ...batch, trail };
+      }
+
+      function updatedLabel(entry) {
+        if (entry.updatedBy === "scan") return "QR scan";
+        if (entry.updatedBy === "manual") return "Manual";
+        return "—";
+      }
+
+      function statusLabel(state) {
+        if (state === "live") return "On this stage";
+        if (state === "done") return "Done";
+        return "Not started";
+      }
+
+      const MILL = { lat: 24.9387737, lon: 67.0867499 };
+      const MILL_ROOF = [[24.9384171, 67.0866555], [24.9389327, 67.0867789]];
+
+      function mixBatchHash(n) {
+        let x = n >>> 0;
+        x ^= x >>> 16;
+        x = Math.imul(x, 0x7feb352d);
+        x ^= x >>> 15;
+        x = Math.imul(x, 0x846ca68b);
+        x ^= x >>> 16;
+        return x >>> 0;
+      }
+
+      function batcherSpot(batchId) {
+        let hash = 0;
+        const id = String(batchId || "BT");
+        for (let i = 0; i < id.length; i += 1) hash = (Math.imul(hash, 33) + id.charCodeAt(i)) >>> 0;
+        const mixed = mixBatchHash(hash);
+        const along = (mixed % 1000) / 999;
+        const across = (mixBatchHash(hash ^ 0x9e3779b9) % 1000) / 999;
+        const south = 24.9384315;
+        const north = 24.9389183;
+        const west = 67.0866714;
+        const east = 67.0867630;
+        return {
+          lat: south + along * (north - south),
+          lon: west + across * (east - west)
+        };
+      }
+
+      function metersBetween(lat1, lon1, lat2, lon2) {
+        const earth = 6371000;
+        const a1 = lat1 * Math.PI / 180;
+        const a2 = lat2 * Math.PI / 180;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const h = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(a1) * Math.cos(a2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        return Math.round(2 * earth * Math.asin(Math.min(1, Math.sqrt(h))));
+      }
+
+      function departmentName(stage) {
+        const names = {
+          GREIGE: "Greige",
+          PRETREATMENT: "Pretreatment",
+          DYEING: "Dyeing",
+          PRINTING: "Printing",
+          FINISHES: "Finishes",
+          FOLDING: "Folding"
+        };
+        return names[stage] || stage || "this department";
+      }
+
+      function batchAwayText(batchId, department) {
+        const spot = batcherSpot(batchId);
+        const meters = metersBetween(spot.lat, spot.lon, MILL.lat, MILL.lon);
+        return "This batch is " + meters.toLocaleString("en-US") + " m away from " + department + ".";
+      }
+
+      function mountScanMap(batchId) {
+        const host = document.getElementById("scanMillMap");
+        if (!host || host.dataset.ready === "1") return;
+        host.dataset.ready = "1";
+        const spot = batcherSpot(batchId);
+        const start = function (L) {
+          if (!host.isConnected) return;
+          const map = L.map(host, { zoomControl: false, scrollWheelZoom: false, dragging: false });
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap"
+          }).addTo(map);
+          const batcherIcon = L.divIcon({ className: "batcher-dot", iconSize: [12, 12], iconAnchor: [6, 6] });
+          L.marker([spot.lat, spot.lon], { icon: batcherIcon, keyboard: false, title: batchId })
+            .addTo(map)
+            .bindTooltip(batchId, { permanent: true, direction: "bottom", offset: [0, 6] });
+          const place = function () {
+            map.invalidateSize();
+            map.fitBounds(MILL_ROOF, { padding: [8, 8], maxZoom: 19, animate: false });
+          };
+          place();
+          window.setTimeout(place, 80);
+        };
+        if (window.L) {
+          start(window.L);
+          return;
+        }
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        document.head.appendChild(css);
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+        script.onload = function () { start(window.L); };
+        script.onerror = function () { delete host.dataset.ready; };
+        document.head.appendChild(script);
+      }
+
+      function pill(state) {
+        const cls = state === "done" ? "is-done" : state === "live" ? "is-live" : "";
+        return '<span class="pill ' + cls + '">' + esc(statusLabel(state)) + "</span>";
+      }
+
+      function render(batch) {
+        const view = normalize(batch);
+        const current = view.trail.find((entry) => entry.state === "live");
+        const nowMinutes = current ? liveMinutes(current) : 0;
+        const totalMinutes = view.trail.reduce((sum, entry) => sum + (entry.state === "wait" ? 0 : liveMinutes(entry)), 0);
+        const status = view.completed ? "Completed" : view.stage;
+        document.title = view.id + " · Batch report";
+        document.getElementById("reportId").textContent = view.id;
+        document.getElementById("reportLede").textContent = view.fabric + " · " + view.gsm + " gsm · " + formatDate(view.date);
+        const facts = [
+          ["Batch number", view.id],
+          ["Fabric type", view.fabric],
+          ["GSM", view.gsm],
+          ["Date added", formatDate(view.date)],
+          ["Current stage", status],
+          ["Completed", view.completed ? "Yes" : "No"],
+          ["Minutes on this stage", current ? nowMinutes.toLocaleString("en-US") + " min" : "—"],
+          ["Minutes so far", totalMinutes.toLocaleString("en-US") + " min"]
+        ];
+        const department = departmentName(view.completed ? "FOLDING" : view.stage);
+        const factRows = facts.map((row) => "<tr><th>" + esc(row[0]) + "</th><td>" + esc(row[1]) + "</td></tr>").join("");
+        const stageCell = (label, html, className) => '<td data-label="' + esc(label) + '"' + (className ? ' class="' + className + '"' : "") + ">" + html + "</td>";
+        const stageRows = view.trail.map((entry) => {
+          const waiting = entry.state === "wait";
+          const mins = waiting ? "—" : liveMinutes(entry).toLocaleString("en-US") + " min" + (entry.state === "live" && entry.startedAtMs ? " · live" : "");
+          return "<tr>" +
+            stageCell("Stage", esc(entry.stage)) +
+            stageCell("Cloth", esc(view.fabric)) +
+            stageCell("GSM", esc(view.gsm)) +
+            stageCell("Minutes", esc(mins), waiting ? "muted" : "") +
+            stageCell("Status", pill(entry.state)) +
+            stageCell("Updated by", esc(updatedLabel(entry))) +
+            stageCell("Updated", esc(formatStamp(entry.updatedAt))) +
+            "</tr>";
+        }).join("");
+        document.getElementById("reportBody").innerHTML =
+          '<section><h2>Batch</h2><div class="scan-map-card"><div class="scan-map" id="scanMillMap" role="img" aria-label="Map of this batch and the mill building"></div><p class="scan-distance">' + esc(batchAwayText(view.id, department)) + "</p></div><table class=\"facts\"><tbody>" + factRows + "</tbody></table></section>" +
+          '<section><h2>Each stage</h2><div class="stage-scroll"><table class="stage-table"><thead><tr><th>Stage</th><th>Cloth</th><th>GSM</th><th>Minutes</th><th>Status</th><th>Updated by</th><th>Updated</th></tr></thead><tbody>' + stageRows + "</tbody></table></div></section>";
+      }
+
+      const packed = new URLSearchParams(location.search).get("d") || "";
+      const decoded = fromPacked(packed);
+      const saved = decoded ? storedBatch(decoded.id) : null;
+      const batch = saved && decoded
+        ? { ...decoded, ...saved, trail: (saved.trail && saved.trail.length) ? saved.trail : decoded.trail }
+        : (saved || decoded);
+      if (!batch) {
+        document.getElementById("reportId").textContent = "No batch in this code";
+        document.getElementById("reportLede").textContent = "Scan a batch sticker from Batch Traceability.";
+        document.getElementById("reportBody").innerHTML = '<p class="empty">This QR code does not carry a batch record.</p>';
+        return;
+      }
+      render(batch);
+      mountScanMap(batch.id);
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Maintenance record</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f4f7fb;
+      color: #0f172a;
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+    .sheet {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 16px calc(32px + env(safe-area-inset-bottom));
+    }
+    .logo {
+      display: block;
+      width: min(220px, 70vw);
+      height: auto;
+      margin: 0 auto 14px;
+    }
+    .kicker {
+      margin: 0;
+      text-align: center;
+      letter-spacing: 0.16em;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+    h1 {
+      margin: 6px 0 4px;
+      text-align: center;
+      font-size: 1.55rem;
+      letter-spacing: -0.03em;
+    }
+    .lede {
+      margin: 0 0 18px;
+      text-align: center;
+      color: #475569;
+      line-height: 1.45;
+    }
+    section {
+      margin-top: 18px;
+      padding: 16px;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      background: #ffffff;
+    }
+    h2 {
+      margin: 0 0 12px;
+      font-size: 0.95rem;
+    }
+    .scroll { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+      border-bottom: 1px solid #e8eef5;
+      overflow-wrap: break-word;
+    }
+    th {
+      color: #64748b;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    td:nth-child(1),
+    td:nth-child(2),
+    td:nth-child(3),
+    td:nth-child(4) { white-space: nowrap; }
+    .empty { color: #94a3b8; }
+    form {
+      display: grid;
+      gap: 12px;
+    }
+    label span {
+      display: block;
+      margin-bottom: 6px;
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    input[type="text"] {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border: 1px solid #dbe3ee;
+      border-radius: 12px;
+      font: inherit;
+      color: inherit;
+      background: #ffffff;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    button, .file-btn {
+      height: 40px;
+      padding: 0 14px;
+      border: 1px solid #dbe3ee;
+      border-radius: 999px;
+      background: #ffffff;
+      color: #0f172a;
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    button.send {
+      border-color: #0f172a;
+      background: #0f172a;
+      color: #ffffff;
+    }
+    .note {
+      margin: 10px 0 0;
+      color: #0f766e;
+      font-size: 0.9rem;
+    }
+    .note.is-error { color: #b45309; }
+    @media (max-width: 800px) {
+      .attend thead, .observe thead { display: none; }
+      .attend tr, .observe tr {
+        display: block;
+        padding: 10px 0;
+        border-bottom: 1px solid #e8eef5;
+      }
+      .attend td, .observe td {
+        display: grid;
+        grid-template-columns: 8.2rem minmax(0, 1fr);
+        column-gap: 10px;
+        border-bottom: 0;
+        padding: 4px 0;
+        white-space: normal;
+      }
+      .attend td::before, .observe td::before {
+        content: attr(data-label);
+        color: #64748b;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <img class="logo" src="Powered_By__14_-removebg-preview.png" width="521" height="382" alt="Lucky Textile Mills Limited, powered by Spark Technologies" />
+    <section>
+      <h2>Add a maintenance record</h2>
+      <form id="recordForm">
+        <label>
+          <span>Written record</span>
+          <input id="recordText" type="text" maxlength="500" placeholder="Write what you found on the machine" autocomplete="off" />
+        </label>
+        <div class="actions">
+          <button class="send" type="submit">Send written record</button>
+          <button class="file-btn" type="button" id="voiceBtn">Upload voice</button>
+          <button class="file-btn" type="button" id="imageBtn">Upload image</button>
+          <button class="file-btn" type="button" id="videoBtn">Upload video</button>
+        </div>
+      </form>
+      <input id="voiceFile" type="file" accept="audio/*" hidden />
+      <input id="imageFile" type="file" accept="image/*" hidden />
+      <input id="videoFile" type="file" accept="video/*" hidden />
+      <p class="note" id="recordNote" hidden></p>
+    </section>
+    <p class="kicker">MAINTENANCE RECORD</p>
+    <h1 id="jobId">Job card</h1>
+    <p class="lede" id="jobLede">Attendance and observations for this machine.</p>
+
+    <section>
+      <h2>Who attended this machine</h2>
+      <div class="scroll">
+        <table class="attend">
+          <thead>
+            <tr>
+              <th>Person</th><th>Department</th><th>Assigned</th><th>Arrived</th>
+              <th>After assignment</th><th>Time on machine</th><th>Referred to</th><th>Department</th>
+            </tr>
+          </thead>
+          <tbody id="attendBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Observations</h2>
+      <div class="scroll">
+        <table class="observe">
+          <thead>
+            <tr>
+              <th>Type</th><th>Person</th><th>Department</th><th>Time</th><th>Observation</th>
+            </tr>
+          </thead>
+          <tbody id="observeBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const jobId = decodeURIComponent(params.get("d") || "").replace(/[~#&]/g, "").slice(0, 24);
+    const attendBody = document.getElementById("attendBody");
+    const observeBody = document.getElementById("observeBody");
+    const recordNote = document.getElementById("recordNote");
+    let record = null;
+
+    function esc(value) {
+      return String(value == null ? "" : value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function clockLabel(start, fallback) {
+      if (!start) return fallback || "00:00";
+      const total = Math.max(0, Math.floor((Date.now() - start) / 1000));
+      const minutes = String(Math.floor(total / 60)).padStart(2, "0");
+      const seconds = String(total % 60).padStart(2, "0");
+      return `${minutes}:${seconds} · live`;
+    }
+
+    function whenLabel(ms) {
+      if (!ms) return "—";
+      const date = new Date(ms);
+      const hours = date.getHours();
+      const suffix = hours >= 12 ? "PM" : "AM";
+      const hour = String((hours % 12) || 12).padStart(2, "0");
+      const minute = String(date.getMinutes()).padStart(2, "0");
+      const second = String(date.getSeconds()).padStart(2, "0");
+      return `${hour}:${minute}:${second} ${suffix}`;
+    }
+
+    function setNote(text, isError) {
+      recordNote.hidden = !text;
+      recordNote.textContent = text || "";
+      recordNote.classList.toggle("is-error", Boolean(isError));
+    }
+
+    function currentPerson() {
+      const rows = (record && record.attendance) || [];
+      const last = rows[rows.length - 1];
+      return last && last.person && last.person !== "—" ? last : null;
+    }
+
+    function observationNotes() {
+      const notes = ((record && record.notes) || []).slice();
+      const person = currentPerson();
+      ((record && record.pending) || []).forEach((note) => {
+        if (notes.some((item) => item.token && item.token === note.token)) return;
+        notes.push({
+          token: note.token,
+          type: note.type,
+          person: person ? person.person : "—",
+          department: person ? person.department : "—",
+          time: whenLabel(note.atMs),
+          text: note.text
+        });
+      });
+      return notes;
+    }
+
+    function render() {
+      document.getElementById("jobId").textContent = jobId || "Job card";
+      const machine = record && record.machine ? record.machine : "";
+      const text = record && record.text ? record.text : "";
+      document.getElementById("jobLede").textContent = [machine, text].filter(Boolean).join(" · ") || "Attendance and observations for this machine.";
+      const attendance = (record && record.attendance) || [];
+      attendBody.innerHTML = attendance.length
+        ? attendance.map((row) => `<tr>
+            <td data-label="Person">${esc(row.person)}</td>
+            <td data-label="Department">${esc(row.department)}</td>
+            <td data-label="Assigned">${esc(row.assigned)}</td>
+            <td data-label="Arrived">${esc(row.arrived)}</td>
+            <td data-label="After assignment">${esc(row.after)}</td>
+            <td data-label="Time on machine">${esc(clockLabel(row.clockStart, row.time))}</td>
+            <td data-label="Referred to">${esc(row.referred)}</td>
+            <td data-label="Department">${esc(row.referredDept)}</td>
+          </tr>`).join("")
+        : `<tr><td class="empty" colspan="8">No one has been assigned yet.</td></tr>`;
+      const types = [
+        ["written", "Written", "No written observation attached."],
+        ["voice", "Voice", "No voice observation attached."],
+        ["image", "Image", "No image observation attached."],
+        ["video", "Video", "No video observation attached."]
+      ];
+      const notes = observationNotes();
+      observeBody.innerHTML = types.map(([type, label, empty]) => {
+        const matches = notes.filter((note) => note.type === type);
+        const rows = type === "written" && !matches.length && record && record.writtenFallback
+          ? [record.writtenFallback]
+          : matches;
+        if (!rows.length) {
+          return `<tr>
+            <td data-label="Type">${label}</td>
+            <td data-label="Person">—</td>
+            <td data-label="Department">—</td>
+            <td data-label="Time">—</td>
+            <td class="empty" data-label="Observation">${empty}</td>
+          </tr>`;
+        }
+        return rows.map((note) => `<tr>
+          <td data-label="Type">${label}</td>
+          <td data-label="Person">${esc(note.person || "—")}</td>
+          <td data-label="Department">${esc(note.department || "—")}</td>
+          <td data-label="Time">${esc(note.time || "—")}</td>
+          <td data-label="Observation">${esc(note.text || "")}</td>
+        </tr>`).join("");
+      }).join("");
+    }
+
+    function loadRecord() {
+      if (!jobId) return;
+      fetch(`/api/job-maintain?job=${encodeURIComponent(jobId)}`)
+        .then((response) => response.json())
+        .then((data) => {
+          record = data || null;
+          render();
+        })
+        .catch(() => {});
+    }
+
+    function sendRecord(type, text, file) {
+      const token = `mn-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+      const body = { token, jobId, type, text, fileName: file ? file.name : "" };
+      const post = (payload) => fetch("/api/job-maintain", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      }).then(async (response) => {
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "The record was not saved.");
+        record = record || { notes: [], pending: [], attendance: [] };
+        record.pending = record.pending || [];
+        record.pending.push({ token, type, text, atMs: data.atMs || Date.now() });
+        render();
+        setNote(type === "written" ? "Written record sent to the job portal." : `${type[0].toUpperCase()}${type.slice(1)} sent to the job portal.`, false);
+        loadRecord();
+      }).catch((error) => setNote(error.message || "The record was not saved.", true));
+      if (!file) return post(body);
+      if (file.size > 6 * 1024 * 1024) {
+        setNote("Keep each voice, image, or video under 6 MB.", true);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => post({ ...body, fileBase64: String(reader.result || "") });
+      reader.onerror = () => setNote("That file could not be read.", true);
+      reader.readAsDataURL(file);
+    }
+
+    document.getElementById("recordForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const text = document.getElementById("recordText").value.replace(/\s+/g, " ").trim();
+      if (!jobId) {
+        setNote("This maintenance code has no job.", true);
+        return;
+      }
+      if (!text) {
+        setNote("Write the record before sending it.", true);
+        return;
+      }
+      document.getElementById("recordText").value = "";
+      sendRecord("written", text, null);
+    });
+
+    function bindFile(buttonId, inputId, type) {
+      const input = document.getElementById(inputId);
+      document.getElementById(buttonId).addEventListener("click", () => input.click());
+      input.addEventListener("change", () => {
+        const file = input.files && input.files[0];
+        input.value = "";
+        if (!file || !jobId) return;
+        const kb = Math.max(1, Math.round(file.size / 1024));
+        sendRecord(type, `${file.name} · ${kb} KB`, file);
+      });
+    }
+    bindFile("voiceBtn", "voiceFile", "voice");
+    bindFile("imageBtn", "imageFile", "image");
+    bindFile("videoBtn", "videoFile", "video");
+
+    render();
+    loadRecord();
+    setInterval(loadRecord, 3000);
+    setInterval(render, 1000);
+  </script>
+</body>
+</html>

@@ -118,7 +118,10 @@ function hideAllViews() {
     document.getElementById("energyUtilitiesView"),
     document.getElementById("complianceTraceabilityView"),
     document.getElementById("dashboardView"),
-    document.getElementById("millKnowledgeCopilotView")
+    document.getElementById("millKnowledgeCopilotView"),
+    document.getElementById("batchTraceabilityView"),
+    document.getElementById("jobCardView"),
+    document.getElementById("fabricTraceabilityView")
   ];
   views.forEach((v) => {
     if (v) v.style.display = "none";
@@ -178,6 +181,151 @@ function placeFloatingChartTip(tip, event, options) {
   if (top < safeTop) top = safeTop;
   tip.style.left = `${left}px`;
   tip.style.top = `${top}px`;
+}
+
+function buildTextileQrSvg(text, options) {
+  const payload = String(text || "");
+  const className = options && options.className ? options.className : "";
+  const label = (options && options.label) || payload || "QR code";
+  const bytes = Array.from(payload).map((ch) => ch.charCodeAt(0) & 255);
+  const versions = [
+    { v: 1, size: 21, data: 17, ec: 7, align: [] },
+    { v: 2, size: 25, data: 34, ec: 10, align: [18] },
+    { v: 3, size: 29, data: 55, ec: 15, align: [22] },
+    { v: 4, size: 33, data: 80, ec: 20, align: [26] },
+    { v: 5, size: 37, data: 108, ec: 26, align: [30] }
+  ];
+  const spec = versions.find((item) => bytes.length + 2 < item.data) || versions[versions.length - 1];
+  const bits = [];
+  const pushBits = (value, len) => {
+    for (let i = len - 1; i >= 0; i -= 1) bits.push((value >>> i) & 1);
+  };
+  pushBits(0b0100, 4);
+  pushBits(Math.min(bytes.length, spec.data - 2), 8);
+  bytes.slice(0, spec.data - 2).forEach((b) => pushBits(b, 8));
+  pushBits(0, Math.min(4, spec.data * 8 - bits.length));
+  while (bits.length % 8) bits.push(0);
+  const data = [];
+  for (let i = 0; i < bits.length; i += 8) {
+    data.push(bits.slice(i, i + 8).reduce((n, b) => (n << 1) | b, 0));
+  }
+  const pads = [0xEC, 0x11];
+  while (data.length < spec.data) data.push(pads[(data.length) & 1]);
+  data.length = spec.data;
+
+  const exp = new Array(512);
+  const log = new Array(256);
+  let x = 1;
+  for (let i = 0; i < 255; i += 1) {
+    exp[i] = x;
+    log[x] = i;
+    x <<= 1;
+    if (x & 256) x ^= 0x11d;
+  }
+  for (let i = 255; i < 512; i += 1) exp[i] = exp[i - 255];
+  const mul = (a, b) => (a && b ? exp[log[a] + log[b]] : 0);
+  let gen = [1];
+  for (let i = 0; i < spec.ec; i += 1) {
+    const next = new Array(gen.length + 1).fill(0);
+    for (let j = 0; j < gen.length; j += 1) {
+      next[j] ^= mul(gen[j], exp[i]);
+      next[j + 1] ^= gen[j];
+    }
+    gen = next;
+  }
+  const rs = data.slice();
+  for (let i = 0; i < spec.ec; i += 1) rs.push(0);
+  for (let i = 0; i < spec.data; i += 1) {
+    const coef = rs[i];
+    if (!coef) continue;
+    for (let j = 0; j < gen.length; j += 1) rs[i + j] ^= mul(gen[j], coef);
+  }
+  const code = data.concat(rs.slice(spec.data));
+  const stream = [];
+  code.forEach((b) => {
+    for (let i = 7; i >= 0; i -= 1) stream.push((b >>> i) & 1);
+  });
+
+  const n = spec.size;
+  const grid = Array.from({ length: n }, () => new Array(n).fill(null));
+  const reserved = Array.from({ length: n }, () => new Array(n).fill(false));
+  const set = (c, r, val, lock) => {
+    if (c < 0 || r < 0 || c >= n || r >= n) return;
+    grid[r][c] = val;
+    if (lock) reserved[r][c] = true;
+  };
+  const finder = (ox, oy) => {
+    for (let r = -1; r < 8; r += 1) {
+      for (let c = -1; c < 8; c += 1) {
+        const on = r >= 0 && r <= 6 && c >= 0 && c <= 6 && (r === 0 || r === 6 || c === 0 || c === 6 || (r >= 2 && r <= 4 && c >= 2 && c <= 4));
+        set(ox + c, oy + r, on, true);
+      }
+    }
+  };
+  finder(0, 0);
+  finder(n - 7, 0);
+  finder(0, n - 7);
+  spec.align.forEach((pos) => {
+    for (let r = -2; r <= 2; r += 1) {
+      for (let c = -2; c <= 2; c += 1) {
+        set(pos + c, pos + r, Math.max(Math.abs(r), Math.abs(c)) !== 1, true);
+      }
+    }
+  });
+  for (let i = 8; i < n - 8; i += 1) {
+    set(6, i, i % 2 === 0, true);
+    set(i, 6, i % 2 === 0, true);
+  }
+  set(8, n - 8, true, true);
+
+  let bit = 0;
+  let up = true;
+  for (let col = n - 1; col > 0; col -= 2) {
+    if (col === 6) col -= 1;
+    for (let pass = 0; pass < n; pass += 1) {
+      const row = up ? n - 1 - pass : pass;
+      for (let k = 0; k < 2; k += 1) {
+        const c = col - k;
+        if (reserved[row][c] || grid[row][c] !== null) continue;
+        const raw = stream[bit] || 0;
+        bit += 1;
+        const mask = ((row + c) % 2 === 0) ? 1 : 0;
+        grid[row][c] = raw ^ mask;
+      }
+    }
+    up = !up;
+  }
+
+  const format = (() => {
+    let d = (0b01 << 3) | 0;
+    let v = d << 10;
+    for (let i = 14; i >= 10; i -= 1) {
+      if ((v >>> i) & 1) v ^= 0x537 << (i - 10);
+    }
+    return ((d << 10) | v) ^ 0x5412;
+  })();
+  const fmtPos = [
+    [0, 8], [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [7, 8], [8, 8],
+    [8, 7], [8, 5], [8, 4], [8, 3], [8, 2], [8, 1], [8, 0]
+  ];
+  const fmtPos2 = [
+    [8, n - 1], [8, n - 2], [8, n - 3], [8, n - 4], [8, n - 5], [8, n - 6], [8, n - 7],
+    [n - 8, 8], [n - 7, 8], [n - 6, 8], [n - 5, 8], [n - 4, 8], [n - 3, 8], [n - 2, 8], [n - 1, 8]
+  ];
+  for (let i = 0; i < 15; i += 1) {
+    const bitOn = (format >>> (14 - i)) & 1;
+    set(fmtPos[i][0], fmtPos[i][1], bitOn, true);
+    set(fmtPos2[i][0], fmtPos2[i][1], bitOn, true);
+  }
+
+  const cells = [];
+  for (let r = 0; r < n; r += 1) {
+    for (let c = 0; c < n; c += 1) {
+      if (grid[r][c]) cells.push(`<rect x="${c}" y="${r}" width="1" height="1" fill="#0F172A"/>`);
+    }
+  }
+  const cls = className ? ` class="${className}"` : "";
+  return `<svg${cls} viewBox="-2 -2 ${n + 4} ${n + 4}" shape-rendering="crispEdges" role="img" aria-label="${label.replace(/"/g, "")}"><rect x="-2" y="-2" width="${n + 4}" height="${n + 4}" fill="#FFFFFF"/>${cells.join("")}</svg>`;
 }
 
 function showProcessingModulesView() {
@@ -415,6 +563,40 @@ function showMillKnowledgeCopilotView() {
   }
 }
 
+function showBatchTraceabilityView() {
+  const view = document.getElementById("batchTraceabilityView");
+  if (!view) return;
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "batch-traceability";
+  view.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  history.pushState(null, "", "#batch-traceability");
+}
+
+function showJobCardView() {
+  const view = document.getElementById("jobCardView");
+  if (!view) return;
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "job-card";
+  view.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  history.pushState(null, "", "#job-card");
+}
+
+function showFabricTraceabilityView() {
+  const view = document.getElementById("fabricTraceabilityView");
+  if (!view) return;
+  sfx.playDashboardOpen();
+  hideAllViews();
+  currentSubModule = "fabric-traceability";
+  view.style.display = "flex";
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  history.pushState(null, "", "#fabric-traceability");
+  if (typeof window.renderFabricLedger === "function") window.renderFabricLedger();
+}
+
 function showDashboardView() {
   openModuleDashboard("predictive-maintenance");
 }
@@ -457,6 +639,8 @@ window.showProductionPlanningView = showProductionPlanningView;
 window.showEnergyUtilitiesView = showEnergyUtilitiesView;
 window.showComplianceTraceabilityView = showComplianceTraceabilityView;
 window.showMillKnowledgeCopilotView = showMillKnowledgeCopilotView;
+window.showBatchTraceabilityView = showBatchTraceabilityView;
+window.showJobCardView = showJobCardView;
 window.openModuleDashboard = openModuleDashboard;
 window.showDashboardView = showDashboardView;
 window.hideDashboardView = hideDashboardView;
@@ -529,6 +713,12 @@ function initCard3DTilt() {
         openModuleDashboard("predictive-maintenance");
       } else if (moduleId === "mill-knowledge") {
         showMillKnowledgeCopilotView();
+      } else if (moduleId === "batch-traceability") {
+        showBatchTraceabilityView();
+      } else if (moduleId === "job-card") {
+        showJobCardView();
+      } else if (moduleId === "fabric-traceability") {
+        showFabricTraceabilityView();
       }
     });
 
@@ -569,6 +759,12 @@ function initCard3DTilt() {
           openModuleDashboard("predictive-maintenance");
         } else if (moduleId === "mill-knowledge") {
           showMillKnowledgeCopilotView();
+        } else if (moduleId === "batch-traceability") {
+          showBatchTraceabilityView();
+        } else if (moduleId === "job-card") {
+          showJobCardView();
+        } else if (moduleId === "fabric-traceability") {
+          showFabricTraceabilityView();
         }
       }
     });
@@ -618,6 +814,30 @@ function initCard3DTilt() {
   const btnBackCompliance = document.getElementById("btnBackFromCompliance");
   if (btnBackCompliance) {
     btnBackCompliance.addEventListener("click", () => {
+      sfx.playClick();
+      showProcessingModulesView();
+    });
+  }
+
+  const btnBackBatch = document.getElementById("btnBackFromBatchTrace");
+  if (btnBackBatch) {
+    btnBackBatch.addEventListener("click", () => {
+      sfx.playClick();
+      showProcessingModulesView();
+    });
+  }
+
+  const btnBackJob = document.getElementById("btnBackFromJobCard");
+  if (btnBackJob) {
+    btnBackJob.addEventListener("click", () => {
+      sfx.playClick();
+      showProcessingModulesView();
+    });
+  }
+
+  const btnBackFabric = document.getElementById("btnBackFromFabricTrace");
+  if (btnBackFabric) {
+    btnBackFabric.addEventListener("click", () => {
       sfx.playClick();
       showProcessingModulesView();
     });
@@ -687,6 +907,9 @@ function initCard3DTilt() {
       const planningView = document.getElementById("productionPlanningView");
       const energyView = document.getElementById("energyUtilitiesView");
       const complianceView = document.getElementById("complianceTraceabilityView");
+      const batchView = document.getElementById("batchTraceabilityView");
+      const jobView = document.getElementById("jobCardView");
+      const fabricView = document.getElementById("fabricTraceabilityView");
 
       const fvDashVisible =
         (grgView && grgView.style.display !== "none") ||
@@ -720,6 +943,20 @@ function initCard3DTilt() {
       } else if (copilotView && copilotView.style.display !== "none") {
         sfx.playClick();
         showProcessingModulesView();
+      } else if (batchView && batchView.style.display !== "none") {
+        sfx.playClick();
+        showProcessingModulesView();
+      } else if (jobView && jobView.style.display !== "none") {
+        sfx.playClick();
+        showProcessingModulesView();
+      } else if (fabricView && fabricView.style.display !== "none") {
+        const record = document.getElementById("opsRecordOverlay");
+        if (record && !record.hidden) {
+          document.getElementById("opsRecordClose")?.click();
+        } else {
+          sfx.playClick();
+          showProcessingModulesView();
+        }
       } else if (dashView && dashView.style.display !== "none") {
         hideDashboardView();
       } else if ((ciView && ciView.style.display !== "none") || (fvView && fvView.style.display !== "none")) {
@@ -959,6 +1196,12 @@ function setupDashboardInteractions() {
       showFabricInspectionSubView();
     } else if (hash === "#mill-knowledge-copilot" || hash === "#mill-knowledge") {
       showMillKnowledgeCopilotView();
+    } else if (hash === "#batch-traceability" || hash === "#processing-batch-traceability") {
+      showBatchTraceabilityView();
+    } else if (hash === "#job-card" || hash === "#processing-job-card") {
+      showJobCardView();
+    } else if (hash === "#fabric-traceability" || hash === "#processing-fabric-traceability") {
+      showFabricTraceabilityView();
     } else if (hash === "#processing" || hash === "#processing-modules") {
       showProcessingModulesView();
     }
@@ -2821,6 +3064,54 @@ const PANEL_INFO_LIBRARY = {
       summary: "Questions generated from this shift's live context and the mill's document library.",
       shows: "Suggested questions, which narrow to the topic after each answer.",
       matters: "Answers are drawn from mill SOPs, maintenance logs and module evidence. Verify any instruction against the current approved procedure before acting on it in production."
+    }
+  },
+
+  batchTraceabilityView: {
+    "Batch ledger": {
+      category: "Lot identity",
+      summary: "A working ledger of production lots, each carrying a barcode from greige through folding.",
+      shows: "Batch number, fabric, GSM, date, the six process stages, current status and print / complete actions.",
+      matters: "A lot without a stage history cannot be released, reprinted or traced when a buyer or auditor asks which machine processed it."
+    }
+  },
+
+  jobCardView: {
+    "UNASSIGNED": {
+      category: "Maintenance intake",
+      summary: "New job cards waiting for a utility, miscellaneous, electrical or mechanical owner.",
+      shows: "The machine, the fault, and who is still free to take the card.",
+      matters: "Unowned cards sit on the machine. Assigning a crew in the first hour is how a print-head or stenter stoppage stays a short hold instead of a lost shift."
+    },
+    "UTILITY": {
+      category: "Utility crew",
+      summary: "Jobs accepted by the utility crew — steam, air, water and plant services.",
+      shows: "Cards currently with utility, including the machine and the assigned person.",
+      matters: "An exhaust fan off its set speed belongs with utility, the crew that keeps plant services on the machine."
+    },
+    "MISCELLANEOUS": {
+      category: "Miscellaneous crew",
+      summary: "Jobs accepted by the Miscellaneous section.",
+      shows: "Cards currently with Miscellaneous, including the machine and the assigned person.",
+      matters: "Miscellaneous is its own queue, so a card sent there is attended by a free person in that section."
+    },
+    "ELECTRICAL": {
+      category: "Electrical crew",
+      summary: "Jobs accepted by the electrical crew — heaters, drives and instrumentation.",
+      shows: "Cards currently with electrical, including the machine and the assigned electrician.",
+      matters: "A steamer over temperature is an electrical / instrumentation job. Putting it on the right board keeps the right permit and the right tools on the machine."
+    },
+    "MECHANICAL": {
+      category: "Mechanical crew",
+      summary: "Jobs accepted by the mechanical crew — chains, alignments and mechanical checks.",
+      shows: "Cards currently with mechanical, including the machine and the assigned fitter.",
+      matters: "Print-head alignment and dryer-chain tension are mechanical. The board makes the queue visible so the mill does not lose metres while the card sits in a notebook."
+    },
+    "CLOSED": {
+      category: "Closed work",
+      summary: "Job cards that have been finished and taken off the live board.",
+      shows: "Closed cards for this session, or an empty state when none are closed.",
+      matters: "A closed card is the handover record: what was wrong, who attended, and that the machine was released."
     }
   }
 };
@@ -8398,143 +8689,8 @@ function setupComplianceTraceabilityInteractions() {
   }
 
   function buildQrSvg(text) {
-    const bytes = Array.from(text).map((ch) => ch.charCodeAt(0) & 255);
-    const versions = [
-      { v: 2, size: 25, data: 34, ec: 10, align: [18] },
-      { v: 3, size: 29, data: 55, ec: 15, align: [22] },
-      { v: 4, size: 33, data: 80, ec: 20, align: [26] },
-      { v: 5, size: 37, data: 108, ec: 26, align: [30] }
-    ];
-    const spec = versions.find((item) => bytes.length + 2 < item.data) || versions[versions.length - 1];
-    const bits = [];
-    const pushBits = (value, len) => {
-      for (let i = len - 1; i >= 0; i -= 1) bits.push((value >>> i) & 1);
-    };
-    pushBits(0b0100, 4);
-    pushBits(Math.min(bytes.length, spec.data - 2), 8);
-    bytes.slice(0, spec.data - 2).forEach((b) => pushBits(b, 8));
-    pushBits(0, Math.min(4, spec.data * 8 - bits.length));
-    while (bits.length % 8) bits.push(0);
-    const data = [];
-    for (let i = 0; i < bits.length; i += 8) {
-      data.push(bits.slice(i, i + 8).reduce((n, b) => (n << 1) | b, 0));
-    }
-    const pads = [0xEC, 0x11];
-    while (data.length < spec.data) data.push(pads[(data.length - bytes.length) & 1]);
-    data.length = spec.data;
-
-    const exp = new Array(512);
-    const log = new Array(256);
-    let x = 1;
-    for (let i = 0; i < 255; i += 1) {
-      exp[i] = x;
-      log[x] = i;
-      x <<= 1;
-      if (x & 256) x ^= 0x11d;
-    }
-    for (let i = 255; i < 512; i += 1) exp[i] = exp[i - 255];
-    const mul = (a, b) => (a && b ? exp[log[a] + log[b]] : 0);
-    let gen = [1];
-    for (let i = 0; i < spec.ec; i += 1) {
-      const next = new Array(gen.length + 1).fill(0);
-      for (let j = 0; j < gen.length; j += 1) {
-        next[j] ^= mul(gen[j], exp[i]);
-        next[j + 1] ^= gen[j];
-      }
-      gen = next;
-    }
-    const rs = data.slice();
-    for (let i = 0; i < spec.ec; i += 1) rs.push(0);
-    for (let i = 0; i < spec.data; i += 1) {
-      const coef = rs[i];
-      if (!coef) continue;
-      for (let j = 0; j < gen.length; j += 1) rs[i + j] ^= mul(gen[j], coef);
-    }
-    const code = data.concat(rs.slice(spec.data));
-    const stream = [];
-    code.forEach((b) => {
-      for (let i = 7; i >= 0; i -= 1) stream.push((b >>> i) & 1);
-    });
-
-    const n = spec.size;
-    const grid = Array.from({ length: n }, () => new Array(n).fill(null));
-    const reserved = Array.from({ length: n }, () => new Array(n).fill(false));
-    const set = (c, r, val, lock) => {
-      if (c < 0 || r < 0 || c >= n || r >= n) return;
-      grid[r][c] = val;
-      if (lock) reserved[r][c] = true;
-    };
-    const finder = (ox, oy) => {
-      for (let r = -1; r < 8; r += 1) {
-        for (let c = -1; c < 8; c += 1) {
-          const on = r >= 0 && r <= 6 && c >= 0 && c <= 6 && (r === 0 || r === 6 || c === 0 || c === 6 || (r >= 2 && r <= 4 && c >= 2 && c <= 4));
-          set(ox + c, oy + r, on, true);
-        }
-      }
-    };
-    finder(0, 0);
-    finder(n - 7, 0);
-    finder(0, n - 7);
-    spec.align.forEach((pos) => {
-      for (let r = -2; r <= 2; r += 1) {
-        for (let c = -2; c <= 2; c += 1) {
-          set(pos + c, pos + r, Math.max(Math.abs(r), Math.abs(c)) !== 1, true);
-        }
-      }
-    });
-    for (let i = 8; i < n - 8; i += 1) {
-      set(6, i, i % 2 === 0, true);
-      set(i, 6, i % 2 === 0, true);
-    }
-    set(8, n - 8, true, true);
-
-    let bit = 0;
-    let up = true;
-    for (let col = n - 1; col > 0; col -= 2) {
-      if (col === 6) col -= 1;
-      for (let pass = 0; pass < n; pass += 1) {
-        const row = up ? n - 1 - pass : pass;
-        for (let k = 0; k < 2; k += 1) {
-          const c = col - k;
-          if (reserved[row][c] || grid[row][c] !== null) continue;
-          const raw = stream[bit] || 0;
-          bit += 1;
-          const mask = ((row + c) % 2 === 0) ? 1 : 0;
-          grid[row][c] = raw ^ mask;
-        }
-      }
-      up = !up;
-    }
-
-    const format = (() => {
-      let d = (0b01 << 3) | 0;
-      let v = d << 10;
-      for (let i = 14; i >= 10; i -= 1) {
-        if ((v >>> i) & 1) v ^= 0x537 << (i - 10);
-      }
-      return ((d << 10) | v) ^ 0x5412;
-    })();
-    const fmtPos = [
-      [0, 8], [1, 8], [2, 8], [3, 8], [4, 8], [5, 8], [7, 8], [8, 8],
-      [8, 7], [8, 5], [8, 4], [8, 3], [8, 2], [8, 1], [8, 0]
-    ];
-    const fmtPos2 = [
-      [8, n - 1], [8, n - 2], [8, n - 3], [8, n - 4], [8, n - 5], [8, n - 6], [8, n - 7],
-      [n - 8, 8], [n - 7, 8], [n - 6, 8], [n - 5, 8], [n - 4, 8], [n - 3, 8], [n - 2, 8], [n - 1, 8]
-    ];
-    for (let i = 0; i < 15; i += 1) {
-      const bitOn = (format >>> (14 - i)) & 1;
-      set(fmtPos[i][0], fmtPos[i][1], bitOn, true);
-      set(fmtPos2[i][0], fmtPos2[i][1], bitOn, true);
-    }
-
-    const cells = [];
-    for (let r = 0; r < n; r += 1) {
-      for (let c = 0; c < n; c += 1) {
-        if (grid[r][c]) cells.push(`<rect x="${c}" y="${r}" width="1" height="1" fill="#0F172A"/>`);
-      }
-    }
-    return `<svg viewBox="0 0 ${n} ${n}" shape-rendering="crispEdges" aria-label="Live ${lots[activeLot].kind === "lot" ? "product" : "asset"} QR">${cells.join("")}</svg>`;
+    const kind = lots[activeLot] && lots[activeLot].kind === "lot" ? "product" : "asset";
+    return buildTextileQrSvg(text, { label: `Live ${kind} QR` });
   }
 
   function placeTip(event) {
@@ -9529,6 +9685,2244 @@ function initBoilerAlertSystem() {
   renderAlert(0);
 }
 
+function setupOpsWorkbenches() {
+  const BATCH_STAGES = ["GREIGE", "PRETREATMENT", "DYEING", "PRINTING", "FINISHES", "FOLDING"];
+  const BATCH_KEY = "textile_batch_ledger_v1";
+  const JOB_KEY = "textile_job_cards_v1";
+  const JOB_PEOPLE = [
+    "Unassigned",
+    "Bitalal Khan",
+    "Farhan Ali",
+    "Ahsan Raza",
+    "Imran Shahah",
+    "Nadeem Qureshi",
+    "Usman Ghani",
+    "Tariq Mehmood",
+    "Asif Raza"
+  ];
+  const JOB_CREW = {
+    utility: ["Bitalal Khan", "Farhan Ali", "Ahsan Raza"],
+    miscellaneous: [],
+    electrical: ["Imran Shahah", "Nadeem Qureshi"],
+    mechanical: ["Usman Ghani", "Tariq Mehmood"]
+  };
+  const JOB_FLOATERS = ["Asif Raza"];
+  const JOB_MACHINES = [
+    "BLEACHING-01",
+    "STENTER-14 (NEW MONFORTS)",
+    "PAD DRY DYEING-01",
+    "PAD STEAM-01",
+    "RFGG/ANH-03",
+    "JET DYEING-02",
+    "JIGGER-03"
+  ];
+
+  function load(key, fallback) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return fallback.map((item) => ({ ...item }));
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) && parsed.length ? parsed : fallback.map((item) => ({ ...item }));
+    } catch (err) {
+      return fallback.map((item) => ({ ...item }));
+    }
+  }
+
+  function save(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (err) {
+      /* ignore quota */
+    }
+  }
+
+  function compactBatch(batch) {
+    const seeded = seedBatchTrail(batch);
+    const stageIndex = seeded.completed ? BATCH_STAGES.length - 1 : Math.max(0, BATCH_STAGES.indexOf(seeded.stage));
+    const minutes = (seeded.trail || []).map((entry) => {
+      if (!entry || entry.state === "wait") return 0;
+      if (entry.state === "live") return stageMinutes(entry);
+      return entry.minutes || 0;
+    });
+    const keep = seeded.completed ? BATCH_STAGES.length : stageIndex + 1;
+    let end = minutes.length;
+    while (end > keep && minutes[end - 1] === 0) end -= 1;
+    const fabric = String(seeded.fabric || "").replace(/[~#&]/g, "").replace(/\s+/g, "+");
+    const date = String(seeded.date || "").replace(/-/g, "");
+    const marks = (seeded.trail || []).map((entry) => {
+      if (entry.updatedBy === "scan") return "S";
+      if (entry.updatedBy === "manual") return "M";
+      return "-";
+    }).join("");
+    return [seeded.id, fabric, seeded.gsm, date, stageIndex, seeded.completed ? 1 : 0, minutes.slice(0, end).join("."), marks].join("~");
+  }
+
+  let scanOrigin = location.origin;
+
+  function hostIsPrivate(hostname) {
+    const host = String(hostname || "").toLowerCase().replace(/^\[|\]$/g, "");
+    if (host === "localhost" || host === "127.0.0.1" || host === "::1") return true;
+    if (/^10\.\d+\.\d+\.\d+$/.test(host) || /^192\.168\.\d+\.\d+$/.test(host)) return true;
+    const match = host.match(/^172\.(\d+)\.\d+\.\d+$/);
+    return Boolean(match && Number(match[1]) >= 16 && Number(match[1]) <= 31);
+  }
+
+  function applyScanOrigin(origin) {
+    const next = String(origin || "").replace(/\/$/, "");
+    if (!next || next === scanOrigin) return;
+    scanOrigin = next;
+    renderBatches();
+    renderJobs();
+    refreshOpenRecord();
+  }
+
+  function loadScanOrigin(attempt) {
+    if (!hostIsPrivate(location.hostname)) return;
+    fetch("/api/scan-origin")
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.origin) applyScanOrigin(data.origin);
+        const wait = data && data.public ? 30000 : 1000;
+        if ((data && data.public) || attempt < 20) window.setTimeout(() => loadScanOrigin(data && data.public ? attempt : attempt + 1), wait);
+      })
+      .catch(() => {
+        if (attempt < 20) window.setTimeout(() => loadScanOrigin(attempt + 1), 1000);
+      });
+  }
+
+  function batchPayload(batch) {
+    return `${scanOrigin || location.origin}/batch-report.html?d=${compactBatch(batch)}`;
+  }
+
+  function compactJob(job) {
+    const machine = String(job.machine || "").replace(/[~#&]/g, "").replace(/\s+/g, "+");
+    const text = String(job.text || "").replace(/[~#&]/g, "").replace(/\s+/g, "+").slice(0, 80);
+    const column = ["unassigned", "utility", "miscellaneous", "electrical", "mechanical", "closed"].includes(job.column) ? job.column : "unassigned";
+    return [job.id, machine, text, column].join("~");
+  }
+
+  function jobPayload(job) {
+    return `${scanOrigin || location.origin}/job-request.html?d=${compactJob(job)}`;
+  }
+
+  function jobMaintainPayload(job) {
+    return `${scanOrigin || location.origin}/job-maintain.html?d=${encodeURIComponent(job.id)}`;
+  }
+
+  function jobQrLink(job, className) {
+    const href = jobPayload(job);
+    const cls = className ? `${className} job-qr` : "ops-qr job-qr";
+    return `<a href="${esc(href)}" style="display:inline-block;line-height:0;text-decoration:none;color:inherit">${batchQrSvg(href, cls, "Operator QR code")}</a>`;
+  }
+
+  function maintainQrLink(job, className) {
+    const href = jobMaintainPayload(job);
+    const cls = className ? `${className} job-qr` : "ops-qr job-qr";
+    return `<a href="${esc(href)}" style="display:inline-block;line-height:0;text-decoration:none;color:inherit">${batchQrSvg(href, cls, "Maintenance QR code")}</a>`;
+  }
+
+  function batchQrSvg(text, className, label) {
+    const qr = qrcode(0, "M");
+    qr.addData(String(text || ""));
+    qr.make();
+    const count = qr.getModuleCount();
+    const quiet = 4;
+    const cells = [];
+    for (let row = 0; row < count; row += 1) {
+      for (let col = 0; col < count; col += 1) {
+        if (qr.isDark(row, col)) cells.push(`<rect x="${col}" y="${row}" width="1" height="1" fill="#000000"/>`);
+      }
+    }
+    const cls = className ? ` class="${className}"` : ` class="ops-qr batch-qr"`;
+    return `<svg${cls} viewBox="${-quiet} ${-quiet} ${count + quiet * 2} ${count + quiet * 2}" shape-rendering="crispEdges" role="img" aria-label="${label || "Batch QR code"}"><rect x="${-quiet}" y="${-quiet}" width="${count + quiet * 2}" height="${count + quiet * 2}" fill="#ffffff"/>${cells.join("")}</svg>`;
+  }
+
+  function batchQrLink(batch, className) {
+    const href = batchPayload(batch);
+    const cls = className ? `${className} batch-qr` : "ops-qr batch-qr";
+    return `<a href="${esc(href)}" style="display:inline-block;line-height:0;text-decoration:none;color:inherit">${batchQrSvg(href, cls)}</a>`;
+  }
+
+  function markSvg(code, payload, className) {
+    return buildTextileQrSvg(payload || code, {
+      className: className || "ops-qr",
+      label: `QR ${code}`
+    });
+  }
+
+  function formatBatchDate(iso) {
+    const parts = String(iso || "").split("-");
+    if (parts.length !== 3) return iso || "";
+    const date = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+    return date.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
+  }
+
+  const DEMO_STAGE_MINUTES = [1560, 4560, 1080, 860, 640, 420];
+
+  function seedBatchTrail(batch) {
+    if (Array.isArray(batch.trail) && batch.trail.length === BATCH_STAGES.length) return batch;
+    const stageIndex = batch.completed ? BATCH_STAGES.length : Math.max(0, BATCH_STAGES.indexOf(batch.stage));
+    const base = new Date(`${batch.date}T08:17:00`).getTime() || Date.now() - 4 * 86400000;
+    const trail = BATCH_STAGES.map((stage, index) => {
+      if (index < stageIndex) {
+        return {
+          stage,
+          minutes: DEMO_STAGE_MINUTES[index],
+          state: "done",
+          updatedBy: index % 2 === 0 ? "manual" : "scan",
+          updatedAt: base + (index + 1) * 20 * 3600000
+        };
+      }
+      if (!batch.completed && index === stageIndex) {
+        return {
+          stage,
+          minutes: 0,
+          startedAtMs: Date.now() - DEMO_STAGE_MINUTES[index] * 60000,
+          state: "live",
+          updatedBy: "",
+          updatedAt: 0
+        };
+      }
+      return { stage, minutes: 0, state: "wait", updatedBy: "", updatedAt: 0 };
+    });
+    return { ...batch, trail };
+  }
+
+  function stageMinutes(entry) {
+    if (!entry || entry.state === "wait") return 0;
+    if (entry.state === "live") return Math.max(0, Math.floor((Date.now() - (entry.startedAtMs || Date.now())) / 60000));
+    return entry.minutes || 0;
+  }
+
+  function formatMinuteLabel(mins, live) {
+    const text = `${Math.max(0, mins).toLocaleString("en-US")} min`;
+    return live ? `${text} · live` : text;
+  }
+
+  function formatBatchStamp(ms) {
+    if (!ms) return "";
+    const date = new Date(ms);
+    const day = date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const hours = date.getHours();
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const hour = String((hours % 12) || 12).padStart(2, "0");
+    const minute = String(date.getMinutes()).padStart(2, "0");
+    return `${day}, ${hour}:${minute} ${suffix}`;
+  }
+
+  function advanceBatch(batch) {
+    if (!batch || batch.completed) return batch;
+    const seeded = seedBatchTrail(batch);
+    const index = BATCH_STAGES.indexOf(seeded.stage);
+    const finishing = index >= BATCH_STAGES.length - 1;
+    const trail = seeded.trail.map((entry, i) => {
+      if (i === index) {
+        return {
+          ...entry,
+          state: "done",
+          minutes: Math.max(entry.minutes || 0, stageMinutes(entry)),
+          startedAtMs: 0,
+          updatedBy: entry.updatedBy || "manual",
+          updatedAt: entry.updatedAt || Date.now()
+        };
+      }
+      if (!finishing && i === index + 1) {
+        return { ...entry, state: "live", startedAtMs: Date.now(), minutes: 0, updatedBy: "", updatedAt: 0 };
+      }
+      return entry;
+    });
+    if (finishing) return { ...seeded, completed: true, stage: "FOLDING", trail };
+    return { ...seeded, stage: BATCH_STAGES[index + 1], trail };
+  }
+
+  const defaultBatches = [
+    { id: "BT-10418", fabric: "Cotton", gsm: 180, date: "2026-09-28", stage: "DYEING", completed: false },
+    { id: "BT-10412", fabric: "PC Blend", gsm: 220, date: "2026-09-22", stage: "FOLDING", completed: true },
+    { id: "BT-10421", fabric: "Viscose", gsm: 140, date: "2026-10-03", stage: "GREIGE", completed: false }
+  ];
+  const defaultJobs = [
+    { id: "JC-10422", text: "Print head alignment needs a mechanical check.", machine: "RFGG/ANH-03", column: "unassigned", person: "Unassigned" },
+    { id: "JC-10440", text: "Exhaust fan not holding the set speed.", machine: "STENTER-14 (NEW MONFORTS) · 25/05", column: "utility", person: "Bitalal Khan" },
+    { id: "JC-10441", text: "Steamer temperature is running above the set point.", machine: "PAD STEAM-01 · 12/05", column: "electrical", person: "Imran Shahah" },
+    { id: "JC-10439", text: "Dryer chain tension is uneven.", machine: "PAD DRY DYEING-01 · 18/05", column: "mechanical", person: "Usman Ghani" }
+  ];
+
+  function asUtilityName(value) {
+    if (value === "technical") return "utility";
+    if (value === "milinous") return "miscellaneous";
+    if (typeof value !== "string") return value;
+    return value.replace(/\bTechnical\b/g, "Utility").replace(/\bMilinous\b/g, "Miscellaneous");
+  }
+
+  function migrateJobDept(job) {
+    const column = job.column === "technical" ? "utility" : job.column === "milinous" ? "miscellaneous" : job.column;
+    const next = { ...job, column };
+    ["referredFrom", "referredToDept", "referredToLabel"].forEach((key) => {
+      if (next[key]) next[key] = asUtilityName(next[key]);
+    });
+    if (Array.isArray(next.attendance)) {
+      next.attendance = next.attendance.map((row) => ({
+        ...row,
+        department: asUtilityName(row.department),
+        referredTo: asUtilityName(row.referredTo),
+        referredToDept: asUtilityName(row.referredToDept),
+        referredDept: asUtilityName(row.referredDept)
+      }));
+    }
+    if (Array.isArray(next.notes)) {
+      next.notes = next.notes.map((note) => ({ ...note, department: asUtilityName(note.department) }));
+    }
+    return next;
+  }
+
+  let batches = load(BATCH_KEY, defaultBatches).map(seedBatchTrail);
+  let jobs = load(JOB_KEY, defaultJobs).map(migrateJobDept).map(hydrateJob);
+  let openRecord = null;
+  let clockTimer = 0;
+  const recordOverlay = document.getElementById("opsRecordOverlay");
+  const recordKicker = document.getElementById("opsRecordKicker");
+  const recordTitle = document.getElementById("opsRecordTitle");
+  const recordStatus = document.getElementById("opsRecordStatus");
+  const recordHeadExtra = document.getElementById("opsRecordHeadExtra");
+  const recordBody = document.getElementById("opsRecordBody");
+  const recordClose = document.getElementById("opsRecordClose");
+
+  function esc(value) {
+    return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    }[ch]));
+  }
+
+  function isActiveColumn(column) {
+    return column === "utility" || column === "miscellaneous" || column === "electrical" || column === "mechanical";
+  }
+
+  function formatWhen(ms) {
+    if (!ms) return "—";
+    return new Date(ms).toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  function afterLabel(assignedAtMs, arrivedAtMs) {
+    if (!assignedAtMs || !arrivedAtMs) return "—";
+    const diff = Math.max(0, arrivedAtMs - assignedAtMs);
+    return diff < 60000 ? "Immediate" : formatClock(diff);
+  }
+
+  function hydrateJob(job) {
+    const base = {
+      referredFrom: "Not referred",
+      assignedBy: "",
+      assignedAt: "",
+      arrivedAt: "",
+      arrivedAfter: "",
+      assignedAtMs: 0,
+      arrivedAtMs: 0,
+      startedAt: 0,
+      attendance: [],
+      notes: [],
+      ...job
+    };
+    if (isActiveColumn(base.column) && base.person && base.person !== "Unassigned" && !(base.attendance && base.attendance.length)) {
+      const assignedAtMs = Date.now() - 52 * 60 * 1000;
+      const arrivedAtMs = assignedAtMs + 6 * 60 * 1000;
+      base.assignedBy = "AI";
+      base.assignedAtMs = assignedAtMs;
+      base.arrivedAtMs = arrivedAtMs;
+      base.startedAt = arrivedAtMs;
+      base.assignedAt = formatWhen(assignedAtMs);
+      base.arrivedAt = formatWhen(arrivedAtMs);
+      base.arrivedAfter = afterLabel(assignedAtMs, arrivedAtMs);
+      base.attendance = [{
+        person: base.person,
+        department: deptLabel(base.column),
+        source: "ai",
+        assignedAtMs,
+        arrivedAtMs,
+        leftAtMs: 0,
+        referredTo: "",
+        referredDept: "",
+        notes: []
+      }];
+    }
+    return base;
+  }
+
+  function deptLabel(column) {
+    if (column === "unassigned") return "Unassigned";
+    if (column === "closed") return "Closed";
+    return column ? column[0].toUpperCase() + column.slice(1) : "Unassigned";
+  }
+
+  function personLabel(job) {
+    return !job.person || job.person === "Unassigned" ? "Waiting for a free person" : job.person;
+  }
+
+  function formatClock(ms) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const h = String(Math.floor(total / 3600)).padStart(2, "0");
+    const m = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+    const s = String(total % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  }
+
+  function jobClock(job) {
+    const start = job.arrivedAtMs || job.startedAt;
+    if (!start || job.column === "closed" || !job.person || job.person === "Unassigned") return "00:00:00";
+    return formatClock(Date.now() - start);
+  }
+
+  function attendanceClock(row) {
+    if (!row.arrivedAtMs) return "00:00:00";
+    const end = row.leftAtMs || Date.now();
+    return formatClock(end - row.arrivedAtMs);
+  }
+
+  function commentSummary(row) {
+    const notes = row.notes || [];
+    if (!notes.length) return "No comment or file yet.";
+    return notes.map((note) => note.fileName ? `${note.text}` : note.text).join(" · ");
+  }
+
+  function crewFor(column) {
+    return JOB_CREW[column] || [];
+  }
+
+  function allWorkers() {
+    return [...crewFor("utility"), ...crewFor("miscellaneous"), ...crewFor("electrical"), ...crewFor("mechanical"), ...JOB_FLOATERS];
+  }
+
+  function pickFreeWorker(column, exceptId) {
+    if (!isActiveColumn(column)) return "Unassigned";
+    const current = jobs.find((job) => job.id === exceptId);
+    const busyElsewhere = new Set();
+    jobs.forEach((job) => {
+      if (job.id === exceptId) return;
+      if (isActiveColumn(job.column) && job.person && job.person !== "Unassigned") busyElsewhere.add(job.person);
+    });
+    const alreadyHere = new Set();
+    if (current && current.person && current.person !== "Unassigned") alreadyHere.add(current.person);
+    (current && current.attendance || []).forEach((row) => {
+      if (row.person) alreadyHere.add(row.person);
+    });
+    const order = [];
+    [...crewFor(column), ...JOB_FLOATERS, ...allWorkers()].forEach((name) => {
+      if (name && !order.includes(name)) order.push(name);
+    });
+    const currentName = current && current.person;
+    return order.find((name) => name !== currentName && !busyElsewhere.has(name) && !alreadyHere.has(name))
+      || order.find((name) => name !== currentName && !busyElsewhere.has(name))
+      || order.find((name) => name !== currentName)
+      || "Unassigned";
+  }
+
+  function assigneeFor(column, job) {
+    if (!isActiveColumn(column)) return "Unassigned";
+    const picked = pickFreeWorker(column, job && job.id);
+    if (picked && picked !== "Unassigned" && picked !== (job && job.person)) return picked;
+    return pickFreeWorker(column, job && job.id);
+  }
+
+  function referralLabel(column, person) {
+    const dept = deptLabel(column);
+    if (!person || person === "Unassigned") return `${dept} · waiting for a free worker`;
+    return `${dept} · ${person}`;
+  }
+
+  function isReferred(job) {
+    return Boolean(job && job.referredFrom && job.referredFrom !== "Not referred");
+  }
+
+  function closeOpenAttendance(attendance, referredTo) {
+    const now = Date.now();
+    const parts = String(referredTo || "").split("·").map((part) => part.trim()).filter(Boolean);
+    const referredToDept = referredTo === "Closed" ? "" : (parts[0] || "");
+    const referredName = parts.length > 1 ? parts.slice(1).join(" · ") : "";
+    const referredToPerson = /^waiting/i.test(referredName) ? "" : referredName;
+    return (attendance || []).map((row, index, list) => {
+      if (index !== list.length - 1 || row.leftAtMs) return row;
+      return {
+        ...row,
+        leftAtMs: now,
+        referredTo: referredTo || row.referredTo || "",
+        referredToPerson: referredToPerson || row.referredToPerson || "",
+        referredToDept: referredToDept || row.referredToDept || "",
+        referredDept: referredToDept || row.referredDept || ""
+      };
+    });
+  }
+
+  function latestNote(job, type) {
+    const notes = (job.notes || []).filter((note) => note.type === type);
+    return notes[notes.length - 1] || null;
+  }
+
+  function noteCell(note, key) {
+    if (!note) return "—";
+    return esc(note[key] || "—");
+  }
+
+  function closeRecord() {
+    if (clockTimer) window.clearInterval(clockTimer);
+    clockTimer = 0;
+    clearBatchMillMap();
+    openRecord = null;
+    if (recordOverlay) recordOverlay.hidden = true;
+  }
+
+  function stamp(date) {
+    if (!date) return "—";
+    return new Date(date).toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit"
+    });
+  }
+
+  function formatRecordWhen(ms) {
+    if (!ms) return "—";
+    const date = new Date(ms);
+    const hours = date.getHours();
+    const suffix = hours >= 12 ? "PM" : "AM";
+    const hour = String((hours % 12) || 12).padStart(2, "0");
+    const minute = String(date.getMinutes()).padStart(2, "0");
+    const second = String(date.getSeconds()).padStart(2, "0");
+    return `${hour}:${minute}:${second} ${suffix}`;
+  }
+
+  function formatRecordClock(ms, live) {
+    const total = Math.max(0, Math.floor(ms / 1000));
+    const clock = `${String(Math.floor(total / 60)).padStart(2, "0")}:${String(total % 60).padStart(2, "0")}`;
+    return live ? `${clock} · live` : clock;
+  }
+
+  function recordJobClock(job) {
+    const attendance = job.attendance || [];
+    const start = (attendance[0] && attendance[0].arrivedAtMs) || job.arrivedAtMs || job.startedAt;
+    if (!start) return "00:00";
+    const last = attendance[attendance.length - 1];
+    const end = job.column === "closed" ? (last && last.leftAtMs) || start : Date.now();
+    return formatRecordClock(end - start);
+  }
+
+  function recordAttendClock(row, live) {
+    if (!row.arrivedAtMs) return live ? "00:00 · live" : "00:00";
+    return formatRecordClock((row.leftAtMs || Date.now()) - row.arrivedAtMs, live);
+  }
+
+  function recordAfterAssignment(row) {
+    if (!row.assignedAtMs || !row.arrivedAtMs) return "00:00";
+    return formatRecordClock(Math.max(0, row.arrivedAtMs - row.assignedAtMs));
+  }
+
+  function dummyWrittenNote(job) {
+    const attendance = job.attendance || [];
+    const writer = [...attendance].reverse().find((row) => row.person && row.person !== "Unassigned") || {};
+    const machine = job.machine || "the machine";
+    const fault = String(job.text || "The reported fault").replace(/\s+/g, " ").trim().replace(/\.$/, "");
+    return {
+      type: "written",
+      person: writer.person || "Shift engineer",
+      department: writer.department || deptLabel(job.column),
+      atMs: writer.arrivedAtMs || writer.assignedAtMs || Date.now(),
+      text: `${fault}. Noted on ${machine} while the crew was on the machine. No other fault was written down.`
+    };
+  }
+
+  function writtenObservation(job) {
+    const notes = (job.notes || []).filter((note) => note.type === "written");
+    return notes.length ? notes[notes.length - 1] : dummyWrittenNote(job);
+  }
+
+  function jobRcaText(job) {
+    const note = writtenObservation(job);
+    const finding = String(note.text || "").trim();
+    const who = note.person && note.person !== "—" ? note.person : "the attending engineer";
+    const dept = note.department && note.department !== "—" ? note.department : "the crew";
+    if (!jobRcaApproved(job)) {
+      return `Draft from ${who} (${dept}): ${finding} Senior engineer approval is still open.`;
+    }
+    return `Senior engineer approved the written observation from ${who} (${dept}). Root cause stands as recorded: ${finding}`;
+  }
+
+  function jobRcaApproved(job) {
+    return Boolean(job.rcaApproved) || (job.attendance || []).some((row) => row.rcaApproved);
+  }
+
+  function approveJobRca(id) {
+    jobs = jobs.map((job) => {
+      if (job.id !== id || job.rcaApproved) return job;
+      return { ...job, rcaApproved: true, rcaApprovedAt: Date.now() };
+    });
+    persistJobs();
+  }
+
+  function referredFromLabel(job) {
+    const attendance = job.attendance || [];
+    if (attendance.length >= 2) {
+      const previous = attendance[attendance.length - 2];
+      return `${previous.department} · ${previous.person}`;
+    }
+    return job.referredFrom && job.referredFrom !== "Not referred" ? job.referredFrom : "Not referred";
+  }
+
+  function referredPerson(row, index, attendance) {
+    if (row.referredToPerson) return row.referredToPerson;
+    if (!row.referredTo || row.referredTo === "Closed") return "—";
+    if (row.referredTo.includes("·")) {
+      const name = row.referredTo.split("·").slice(1).join("·").trim();
+      if (name && !/^waiting/i.test(name)) return name;
+    }
+    const next = attendance[index + 1];
+    if (next && next.person && next.person !== row.person) return next.person;
+    return "—";
+  }
+
+  function referredDepartment(row, index, attendance) {
+    if (row.referredToDept) return row.referredToDept;
+    if (!row.referredTo || row.referredTo === "Closed") return "—";
+    const next = attendance[index + 1];
+    if (next && next.department && next.person !== row.person) return next.department;
+    if (row.referredTo.includes("·")) return row.referredTo.split("·")[0].trim();
+    if (row.referredDept && !row.referredDept.includes("·")) return row.referredDept;
+    return row.referredTo;
+  }
+
+  function renderJobRecord(job) {
+    if (!recordTitle || !recordStatus || !recordBody) return;
+    const status = job.column === "closed" ? "CLOSED" : isReferred(job) ? "REFERRED" : jobStatus(job);
+    if (recordKicker) recordKicker.textContent = "ADMIN RECORD";
+    recordTitle.textContent = job.id;
+    recordStatus.textContent = status;
+    recordStatus.classList.remove("is-batch");
+    if (recordHeadExtra) {
+      recordHeadExtra.innerHTML = `<button type="button" class="ops-record-print" data-print-job="${job.id}">Print</button>`;
+    }
+    const attendance = job.attendance || [];
+    const current = attendance[attendance.length - 1] || {};
+    const attendanceRows = attendance.length
+      ? attendance.map((row, index) => {
+        const open = index === attendance.length - 1 && !row.leftAtMs;
+        return `<tr>
+          <td>${esc(row.person)}</td>
+          <td>${esc(row.department)}</td>
+          <td>${esc(formatRecordWhen(row.assignedAtMs))}</td>
+          <td>${esc(formatRecordWhen(row.arrivedAtMs))}</td>
+          <td>${esc(recordAfterAssignment(row))}</td>
+          <td ${open ? `data-attend-clock="${index}"` : ""}>${recordAttendClock(row, open)}</td>
+          <td>${esc(referredPerson(row, index, attendance))}</td>
+          <td>${esc(referredDepartment(row, index, attendance))}</td>
+        </tr>`;
+      }).join("")
+      : `<tr><td class="ops-record-empty" colspan="8">No one has been assigned yet.</td></tr>`;
+    const types = [
+      ["written", "Written", "No written observation attached."],
+      ["voice", "Voice", "No voice observation attached."],
+      ["image", "Image", "No image observation attached."],
+      ["video", "Video", "No video observation attached."]
+    ];
+    const rcaApproved = jobRcaApproved(job);
+    const rcaButton = `<button type="button" class="ops-rca-btn${rcaApproved ? " is-approved" : ""}" data-rca-approve="${job.id}"${rcaApproved ? " disabled" : ""}>${rcaApproved ? "Approved" : "Approved for RCA"}</button>`;
+    const observationRows = types.map(([type, label, empty]) => {
+      const matches = (job.notes || []).filter((note) => note.type === type);
+      const rows = type === "written" && !matches.length ? [writtenObservation(job)] : matches;
+      if (!rows.length) {
+        return `<tr>
+          <td>${label}</td><td>—</td><td>—</td><td>—</td>
+          <td class="ops-record-empty">${empty}</td>
+          <td></td>
+        </tr>`;
+      }
+      return rows.map((note, noteIndex) => `<tr>
+        <td>${label}</td>
+        <td>${noteCell(note, "person")}</td>
+        <td>${noteCell(note, "department")}</td>
+        <td>${note.atMs ? esc(formatRecordWhen(note.atMs)) : noteCell(note, "time")}</td>
+        <td>${esc(note.text)}</td>
+        <td>${type === "written" && noteIndex === rows.length - 1 ? rcaButton : ""}</td>
+      </tr>`).join("");
+    }).join("");
+    const referButtons = [
+      ["utility", "Refer to Utility"],
+      ["miscellaneous", "Refer to Miscellaneous"],
+      ["electrical", "Refer to Electrical"],
+      ["mechanical", "Refer to Mechanical"]
+    ].filter(([column]) => job.column !== column && job.column !== "closed")
+      .map(([column, label]) => `<button type="button" class="ops-ghost-chip" data-refer="${column}">${label}</button>`)
+      .join("");
+    recordBody.innerHTML = `
+      <div class="ops-record-top is-job">
+        <div class="job-qr-pair">
+          <figure>
+            ${jobQrLink(job, "ops-qr-record")}
+            <figcaption>For operator</figcaption>
+          </figure>
+          <figure>
+            ${maintainQrLink(job, "ops-qr-record")}
+            <figcaption>For maintenance</figcaption>
+          </figure>
+        </div>
+        <div>
+          <p class="ops-record-copy">${esc(job.text)}</p>
+          <div class="ops-record-facts">
+            <div class="ops-record-fact"><span>Machine</span><strong>${esc(job.machine)}</strong></div>
+            <div class="ops-record-fact"><span>Department</span><strong>${esc(deptLabel(job.column))}</strong></div>
+            <div class="ops-record-fact"><span>Person</span><strong>${esc(personLabel(job))}</strong></div>
+            <div class="ops-record-fact"><span>Referred from</span><strong>${esc(referredFromLabel(job))}</strong></div>
+          </div>
+        </div>
+        <aside class="ops-rca-box${rcaApproved ? " is-approved" : ""}">
+          <span>AI RCA</span>
+          <strong>${rcaApproved ? "Approved by Sr Engineer" : "Awaiting Sr Engineer"}</strong>
+          <p>${esc(jobRcaText(job))}</p>
+        </aside>
+      </div>
+      <div class="ops-record-metrics">
+        <div class="ops-record-metric"><span>Time on machine</span><strong data-job-clock="${job.id}">${recordJobClock(job)}</strong></div>
+        <div class="ops-record-metric"><span>Arrived after assignment</span><strong>${esc(recordAfterAssignment(current))}</strong></div>
+        <div class="ops-record-metric"><span>Assigned</span><strong>${esc(formatRecordWhen(current.assignedAtMs || job.assignedAtMs))}</strong></div>
+        <div class="ops-record-metric"><span>Arrived</span><strong>${esc(formatRecordWhen(current.arrivedAtMs || job.arrivedAtMs))}</strong></div>
+      </div>
+      <section class="ops-record-section">
+        <h3>Who attended this machine</h3>
+        <table class="ops-record-table">
+          <thead>
+            <tr>
+              <th>Person</th><th>Department</th><th>Assigned</th><th>Arrived</th>
+              <th>After assignment</th><th>Time on machine</th><th>Referred to</th><th>Department</th>
+            </tr>
+          </thead>
+          <tbody>${attendanceRows}</tbody>
+        </table>
+      </section>
+      <section class="ops-record-section">
+        <h3>Observations</h3>
+        <table class="ops-record-table">
+          <thead>
+            <tr><th>Type</th><th>Person</th><th>Department</th><th>Time</th><th>Observation</th><th></th></tr>
+          </thead>
+          <tbody>${observationRows}</tbody>
+        </table>
+      </section>
+      <div class="ops-record-compose">
+        <input type="text" id="jobObservationInput" placeholder="Write an observation" autocomplete="off" />
+        <button type="button" class="ops-ghost-chip" data-note="written">Send</button>
+        <button type="button" class="ops-ghost-chip" data-note="voice">Voice</button>
+        <button type="button" class="ops-ghost-chip" data-note="image">Image</button>
+        <button type="button" class="ops-ghost-chip" data-note="video">Video</button>
+      </div>
+      <div class="ops-record-foot">
+        ${referButtons}
+        <button type="button" class="ops-navy-btn" data-close-job="${job.id}">Close job</button>
+      </div>`;
+  }
+
+  function batchUpdater(entry, batchId) {
+    if (entry.state === "wait") return `<span class="ops-record-wait">—</span>`;
+    if (entry.state === "live" && !entry.updatedBy) {
+      return `<span class="ops-update">
+        <button type="button" class="ops-scan-btn" data-batch-mark="scan">Scan QR</button>
+        <button type="button" class="ops-manual-btn" data-batch-mark="manual">Manual</button>
+      </span>`;
+    }
+    const label = entry.updatedBy === "scan" ? "QR scan" : "Manual";
+    return `<span class="ops-update"><span class="ops-update-pill">${label}</span><span class="ops-update-time">${esc(formatBatchStamp(entry.updatedAt))}</span></span>`;
+  }
+
+  const MILL_BUILDING = { lat: 24.9387737, lon: 67.0867499 };
+  const MILL_ROOF = [[24.9384171, 67.0866555], [24.9389327, 67.0867789]];
+  let batchMillMaps = [];
+  let leafletReady = null;
+
+  function mixBatchHash(n) {
+    let x = n >>> 0;
+    x ^= x >>> 16;
+    x = Math.imul(x, 0x7feb352d);
+    x ^= x >>> 15;
+    x = Math.imul(x, 0x846ca68b);
+    x ^= x >>> 16;
+    return x >>> 0;
+  }
+
+  function batcherSpot(batchId) {
+    let hash = 0;
+    const id = String(batchId || "BT");
+    for (let i = 0; i < id.length; i += 1) hash = (Math.imul(hash, 33) + id.charCodeAt(i)) >>> 0;
+    const mixed = mixBatchHash(hash);
+    const along = (mixed % 1000) / 999;
+    const across = (mixBatchHash(hash ^ 0x9e3779b9) % 1000) / 999;
+    const south = 24.9384315;
+    const north = 24.9389183;
+    const west = 67.0866714;
+    const east = 67.0867630;
+    return {
+      lat: south + along * (north - south),
+      lon: west + across * (east - west)
+    };
+  }
+
+  function batchDepartmentName(batch) {
+    const names = {
+      GREIGE: "Greige",
+      PRETREATMENT: "Pretreatment",
+      DYEING: "Dyeing",
+      PRINTING: "Printing",
+      FINISHES: "Finishes",
+      FOLDING: "Folding"
+    };
+    return names[batch.stage] || batch.stage || "this department";
+  }
+
+  function metersBetween(lat1, lon1, lat2, lon2) {
+    const earth = 6371000;
+    const a1 = lat1 * Math.PI / 180;
+    const a2 = lat2 * Math.PI / 180;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a1) * Math.cos(a2) * Math.sin(dLon / 2) ** 2;
+    return Math.round(2 * earth * Math.asin(Math.min(1, Math.sqrt(h))));
+  }
+
+  function dropMillMaps(scope) {
+    batchMillMaps = batchMillMaps.filter((entry) => {
+      if (scope && !scope.contains(entry.host)) return true;
+      if (entry.watch) entry.watch.disconnect();
+      entry.map.remove();
+      return false;
+    });
+  }
+
+  function clearBatchMillMap() {
+    if (recordBody) dropMillMaps(recordBody);
+  }
+
+  function batchAwayText(batchId, department) {
+    const spot = batcherSpot(batchId);
+    const meters = metersBetween(spot.lat, spot.lon, MILL_BUILDING.lat, MILL_BUILDING.lon);
+    return `This batch is ${meters.toLocaleString()} m away from ${department}.`;
+  }
+
+  function loadLeaflet() {
+    if (window.L) return Promise.resolve(window.L);
+    if (leafletReady) return leafletReady;
+    leafletReady = new Promise((resolve, reject) => {
+      if (!document.querySelector("link[data-leaflet]")) {
+        const css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+        css.setAttribute("data-leaflet", "1");
+        document.head.appendChild(css);
+      }
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.onload = () => resolve(window.L);
+      script.onerror = () => reject(new Error("map unavailable"));
+      document.head.appendChild(script);
+    });
+    return leafletReady;
+  }
+
+  function mountMillHosts(scope) {
+    if (!scope) return;
+    const hosts = [...scope.querySelectorAll("[data-mill-map]")].filter((host) => host.dataset.millReady !== "1");
+    hosts.forEach((host) => { host.dataset.millReady = "1"; });
+    if (hosts.length) {
+      loadLeaflet().then((L) => {
+        hosts.forEach((host) => {
+          if (!host.isConnected) return;
+          const spot = batcherSpot(host.dataset.batchId);
+          const map = L.map(host, { zoomControl: false, scrollWheelZoom: false, dragging: false }).setView([spot.lat, spot.lon], 16);
+          L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            maxZoom: 19,
+            attribution: "&copy; OpenStreetMap"
+          }).addTo(map);
+          const batcherIcon = L.divIcon({ className: "batch-batcher-dot", iconSize: [12, 12], iconAnchor: [6, 6] });
+          L.marker([spot.lat, spot.lon], { icon: batcherIcon, keyboard: false, title: host.dataset.batchId || "Batcher" })
+            .addTo(map)
+            .bindTooltip(host.dataset.batchId || "Batcher", { permanent: true, direction: "bottom", offset: [0, 6], className: "batch-mill-tip" });
+          const placeDot = () => {
+            map.invalidateSize();
+            map.fitBounds(MILL_ROOF, { padding: [8, 8], maxZoom: 19, animate: false });
+          };
+          const watch = new ResizeObserver(placeDot);
+          watch.observe(host);
+          batchMillMaps.push({ host, map, watch });
+          window.setTimeout(placeDot, 80);
+        });
+      }).catch(() => {
+        hosts.forEach((host) => { delete host.dataset.millReady; });
+      });
+    }
+  }
+
+  function renderBatchRecord(batch) {
+    if (!recordTitle || !recordStatus || !recordBody) return;
+    const seeded = seedBatchTrail(batch);
+    const status = seeded.completed ? "COMPLETED" : seeded.stage;
+    const department = batchDepartmentName(seeded);
+    if (recordKicker) recordKicker.textContent = "BATCH RECORD";
+    recordTitle.textContent = seeded.id;
+    recordStatus.textContent = status;
+    recordStatus.classList.add("is-batch");
+    if (recordHeadExtra) {
+      recordHeadExtra.innerHTML = `<button type="button" class="ops-record-print" data-print="${seeded.id}">Print sticker</button>`;
+    }
+    const current = (seeded.trail || []).find((entry) => entry.state === "live");
+    const nowMinutes = current ? stageMinutes(current) : 0;
+    const totalMinutes = (seeded.trail || []).reduce((sum, entry) => sum + stageMinutes(entry), 0);
+    const rows = (seeded.trail || []).map((entry) => {
+      const live = entry.state === "live";
+      const waiting = entry.state === "wait";
+      const minutes = waiting ? "—" : formatMinuteLabel(stageMinutes(entry), live);
+      const stateLabel = live ? "On this stage" : waiting ? "Not started" : "Done";
+      return `<tr>
+        <td>${esc(entry.stage)}</td>
+        <td>${esc(seeded.fabric)}</td>
+        <td>${esc(seeded.gsm)}</td>
+        <td ${live ? "data-stage-live" : ""} class="${waiting ? "ops-record-wait" : ""}">${esc(minutes)}</td>
+        <td class="${waiting ? "ops-record-wait" : ""}">${stateLabel}</td>
+        <td>${batchUpdater(entry, seeded.id)}</td>
+      </tr>`;
+    }).join("");
+    dropMillMaps(recordBody);
+    recordBody.innerHTML = `
+      <div class="ops-record-top has-mill-map">
+        ${batchQrLink(seeded, "ops-qr-record")}
+        <div class="batch-mill-card">
+          <p class="batch-mill-place">Lucky Textile Mills</p>
+          <div class="batch-mill-map" data-mill-map data-batch-id="${esc(seeded.id)}" role="img" aria-label="Map of this batch and the Lucky Textile Mills building"></div>
+          <p class="batch-mill-distance" data-batch-distance data-department="${esc(department)}">${esc(batchAwayText(seeded.id, department))}</p>
+        </div>
+        <div>
+          <div class="ops-record-facts">
+            <div class="ops-record-fact"><span>Batch number</span><strong>${esc(seeded.id)}</strong></div>
+            <div class="ops-record-fact"><span>Fabric type</span><strong>${esc(seeded.fabric)}</strong></div>
+            <div class="ops-record-fact"><span>GSM</span><strong>${esc(seeded.gsm)}</strong></div>
+            <div class="ops-record-fact"><span>Date added</span><strong>${esc(formatBatchDate(seeded.date))}</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="ops-record-metrics">
+        <div class="ops-record-metric"><span>Current stage</span><strong>${esc(status)}</strong></div>
+        <div class="ops-record-metric"><span>Minutes on this stage</span><strong data-stage-now>${formatMinuteLabel(nowMinutes)}</strong></div>
+        <div class="ops-record-metric"><span>Minutes so far</span><strong data-stage-total>${formatMinuteLabel(totalMinutes)}</strong></div>
+        <div class="ops-record-metric"><span>Completed</span><strong>${seeded.completed ? "Yes" : "No"}</strong></div>
+      </div>
+      <section class="ops-record-section">
+        <h3>Time on each stage</h3>
+        <table class="ops-record-table">
+          <thead>
+            <tr><th>Stage</th><th>Cloth</th><th>GSM</th><th>Minutes</th><th>Status</th><th>Updated by</th></tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </section>`;
+    mountMillHosts(recordBody);
+  }
+
+  function showJobRecord(id) {
+    const job = jobs.find((item) => item.id === id);
+    if (!job || !recordOverlay) return;
+    openRecord = { kind: "job", id };
+    renderJobRecord(job);
+    recordOverlay.hidden = false;
+    if (clockTimer) window.clearInterval(clockTimer);
+    clockTimer = window.setInterval(() => {
+      const live = jobs.find((item) => item.id === id);
+      if (!recordBody || !live) return;
+      const clock = recordBody.querySelector("[data-job-clock]");
+      if (clock) clock.textContent = recordJobClock(live);
+      recordBody.querySelectorAll("[data-attend-clock]").forEach((cell) => {
+        const row = (live.attendance || [])[Number(cell.getAttribute("data-attend-clock"))];
+        if (row) cell.textContent = recordAttendClock(row, true);
+      });
+    }, 1000);
+  }
+
+  function showBatchRecord(id) {
+    const batch = batches.find((item) => item.id === id);
+    if (!batch || !recordOverlay) return;
+    openRecord = { kind: "batch", id };
+    renderBatchRecord(batch);
+    recordOverlay.hidden = false;
+    if (clockTimer) window.clearInterval(clockTimer);
+    clockTimer = window.setInterval(() => {
+      const live = batches.find((item) => item.id === id);
+      if (!recordBody || !live) return;
+      const seeded = seedBatchTrail(live);
+      const current = (seeded.trail || []).find((entry) => entry.state === "live");
+      const nowMinutes = current ? stageMinutes(current) : 0;
+      const totalMinutes = (seeded.trail || []).reduce((sum, entry) => sum + stageMinutes(entry), 0);
+      const nowEl = recordBody.querySelector("[data-stage-now]");
+      const totalEl = recordBody.querySelector("[data-stage-total]");
+      const liveEl = recordBody.querySelector("[data-stage-live]");
+      if (nowEl) nowEl.textContent = formatMinuteLabel(nowMinutes);
+      if (totalEl) totalEl.textContent = formatMinuteLabel(totalMinutes);
+      if (liveEl) liveEl.textContent = formatMinuteLabel(nowMinutes, true);
+    }, 1000);
+  }
+
+  function refreshOpenRecord() {
+    if (!openRecord) return;
+    if (openRecord.kind === "job") showJobRecord(openRecord.id);
+    if (openRecord.kind === "batch") showBatchRecord(openRecord.id);
+    if (openRecord.kind === "fabric") showFabricRecord(openRecord.id);
+  }
+
+  function addJobNote(id, type, text, fileName) {
+    const nowMs = Date.now();
+    const note = {
+      type,
+      person: personLabel(jobs.find((job) => job.id === id) || {}),
+      department: deptLabel((jobs.find((job) => job.id === id) || {}).column),
+      time: formatRecordWhen(nowMs),
+      atMs: nowMs,
+      text,
+      fileName: fileName || ""
+    };
+    jobs = jobs.map((job) => {
+      if (job.id !== id) return job;
+      const attendance = (job.attendance || []).map((row, index, list) => {
+        if (index !== list.length - 1 || row.leftAtMs) return row;
+        return { ...row, notes: [...(row.notes || []), note] };
+      });
+      return { ...job, notes: [...(job.notes || []), note], attendance };
+    });
+    save(JOB_KEY, jobs);
+    refreshOpenRecord();
+  }
+
+  function operatorJobs() {
+    return jobs.filter((job) => job.origin === "operator");
+  }
+
+  function operatorRcaLabel(job) {
+    if (jobRcaApproved(job)) return "Approved by Sr Engineer";
+    if (job.column === "closed" || job.column === "unassigned" || !job.person || job.person === "Unassigned") return "—";
+    return "Awaiting Sr Engineer";
+  }
+
+  function operatorMachineTime(job) {
+    if (job.column === "closed") {
+      const last = [...(job.attendance || [])].reverse().find((row) => row.arrivedAtMs);
+      if (!last) return "—";
+      return formatRecordClock(Math.max(0, (last.leftAtMs || last.arrivedAtMs) - last.arrivedAtMs));
+    }
+    if (!isActiveColumn(job.column) || !job.person || job.person === "Unassigned") return "—";
+    return jobClock(job);
+  }
+
+  function operatorRequestStatus(job) {
+    if (job.column === "closed") {
+      return { pill: "Closed", tone: "", note: "The job portal closed this request." };
+    }
+    if (isReferred(job) && isActiveColumn(job.column) && job.person && job.person !== "Unassigned") {
+      return { pill: "Referred", tone: "is-refer", note: `Now with ${job.person} in ${deptLabel(job.column)}.` };
+    }
+    if (!isActiveColumn(job.column) || !job.person || job.person === "Unassigned") {
+      return { pill: "Sent to portal", tone: "is-wait", note: "Waiting on the job portal for a free person." };
+    }
+    const rca = jobRcaApproved(job) ? " Senior engineer has approved the written observation." : "";
+    return { pill: "On machine", tone: "", note: `${job.person} is attending ${job.machine}.${rca}` };
+  }
+
+  function renderOperatorRequests() {
+    const body = document.getElementById("operatorRequestBody");
+    if (!body) return;
+    const rows = operatorJobs();
+    if (!rows.length) {
+      body.innerHTML = `<tr><td class="operator-empty" colspan="9">No job request has been sent yet. Write the fault and send it to the job portal.</td></tr>`;
+      return;
+    }
+    body.innerHTML = rows.map((job) => {
+      const status = operatorRequestStatus(job);
+      return `<tr>
+        <td>${esc(job.id)}</td>
+        <td>${esc(job.machine)}</td>
+        <td><span class="operator-request">${esc(job.text)}</span></td>
+        <td>${esc(job.raisedAtMs ? formatRecordWhen(job.raisedAtMs) : "—")}</td>
+        <td>${esc(deptLabel(job.column))}</td>
+        <td>${esc(personLabel(job))}</td>
+        <td><span class="job-status-pill ${status.tone}">${esc(status.pill)}</span><span class="operator-status-note">${esc(status.note)}</span></td>
+        <td>${esc(operatorRcaLabel(job))}</td>
+        <td data-operator-clock="${esc(job.id)}">${esc(operatorMachineTime(job))}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function operatorClockStart(job) {
+    if (job.column === "closed") return 0;
+    if (!isActiveColumn(job.column) || !job.person || job.person === "Unassigned") return 0;
+    return job.arrivedAtMs || job.startedAt || 0;
+  }
+
+  function publishOperatorStatus() {
+    const requests = operatorJobs().map((job) => {
+      const status = operatorRequestStatus(job);
+      return {
+        id: job.id,
+        machine: job.machine,
+        text: job.text,
+        sent: job.raisedAtMs ? formatRecordWhen(job.raisedAtMs) : "—",
+        department: deptLabel(job.column),
+        person: personLabel(job),
+        status: status.pill,
+        tone: status.tone,
+        note: status.note,
+        rca: operatorRcaLabel(job),
+        time: operatorMachineTime(job),
+        clockStart: operatorClockStart(job)
+      };
+    });
+    fetch("/api/job-status", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requests })
+    }).catch(() => {});
+  }
+
+  function publishMaintainBoard() {
+    const records = jobs.map((job) => {
+      const attendance = job.attendance || [];
+      const hasWritten = (job.notes || []).some((note) => note.type === "written");
+      const fallback = writtenObservation(job);
+      return {
+        id: job.id,
+        machine: job.machine || "",
+        text: job.text || "",
+        attendance: attendance.map((row, index) => {
+          const open = index === attendance.length - 1 && !row.leftAtMs && job.column !== "closed";
+          return {
+            person: row.person || "—",
+            department: row.department || "—",
+            assigned: formatRecordWhen(row.assignedAtMs),
+            arrived: formatRecordWhen(row.arrivedAtMs),
+            after: recordAfterAssignment(row),
+            time: recordAttendClock(row, open),
+            clockStart: open ? (row.arrivedAtMs || 0) : 0,
+            referred: referredPerson(row, index, attendance),
+            referredDept: referredDepartment(row, index, attendance)
+          };
+        }),
+        notes: (job.notes || []).map((note) => ({
+          token: note.token || "",
+          type: note.type || "written",
+          person: note.person || "—",
+          department: note.department || "—",
+          time: note.atMs ? formatRecordWhen(note.atMs) : (note.time || "—"),
+          text: note.text || ""
+        })),
+        writtenFallback: hasWritten ? null : {
+          person: fallback.person || "—",
+          department: fallback.department || "—",
+          time: formatRecordWhen(fallback.atMs),
+          text: fallback.text || ""
+        }
+      };
+    });
+    fetch("/api/job-maintain-board", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ records })
+    }).catch(() => {});
+  }
+
+  function persistJobs() {
+    save(JOB_KEY, jobs);
+    renderJobs();
+    renderOperatorRequests();
+    refreshOpenRecord();
+    publishOperatorStatus();
+    publishMaintainBoard();
+  }
+
+  function takeScannedJobRequests() {
+    fetch("/api/job-requests")
+      .then((response) => response.json())
+      .then((data) => {
+        const seen = new Set(jobs.map((job) => job.inboxToken).filter(Boolean));
+        let added = false;
+        (data.requests || []).forEach((request) => {
+          if (!request || !request.token || seen.has(request.token) || !request.text || !request.machine) return;
+          seen.add(request.token);
+          const column = ["utility", "miscellaneous", "electrical", "mechanical"].includes(request.column) ? request.column : "unassigned";
+          const id = nextCode("JC", jobs);
+          jobs = [hydrateJob({
+            id,
+            text: request.text,
+            machine: request.machine,
+            column,
+            person: "Unassigned",
+            origin: "operator",
+            raisedAtMs: request.raisedAtMs || Date.now(),
+            inboxToken: request.token
+          }), ...jobs];
+          if (isActiveColumn(column)) {
+            applyMove(id, column, pickFreeWorker(column, id), "ai");
+            assignQueuedJobs();
+          }
+          added = true;
+        });
+        if (added) persistJobs();
+        else publishOperatorStatus();
+      })
+      .catch(() => {})
+      .then(() => takeMaintainNotes());
+  }
+
+  function takeMaintainNotes() {
+    return fetch("/api/job-maintain-inbox")
+      .then((response) => response.json())
+      .then((data) => {
+        const known = new Set();
+        jobs.forEach((job) => (job.notes || []).forEach((note) => {
+          if (note.token) known.add(note.token);
+        }));
+        let added = false;
+        (data.notes || []).forEach((item) => {
+          if (!item || !item.token || known.has(item.token)) return;
+          const types = ["written", "voice", "image", "video"];
+          if (!types.includes(item.type) || !item.text) return;
+          const job = jobs.find((entry) => entry.id === item.jobId);
+          if (!job) return;
+          known.add(item.token);
+          const nowMs = item.atMs || Date.now();
+          const note = {
+            type: item.type,
+            person: personLabel(job),
+            department: deptLabel(job.column),
+            time: formatRecordWhen(nowMs),
+            atMs: nowMs,
+            text: item.text,
+            fileName: item.fileName || "",
+            token: item.token
+          };
+          jobs = jobs.map((entry) => {
+            if (entry.id !== job.id) return entry;
+            const attendance = (entry.attendance || []).map((row, index, list) => {
+              if (index !== list.length - 1 || row.leftAtMs) return row;
+              return { ...row, notes: [...(row.notes || []), note] };
+            });
+            return { ...entry, notes: [...(entry.notes || []), note], attendance };
+          });
+          added = true;
+        });
+        if (added) persistJobs();
+        else publishMaintainBoard();
+      })
+      .catch(() => {});
+  }
+
+  function applyMove(id, column, person, source, referredTo) {
+    const now = Date.now();
+    jobs = jobs.map((job) => {
+      if (job.id !== id) return job;
+      let assignee = person;
+      if (isActiveColumn(column) && column !== job.column && (!assignee || assignee === "Unassigned" || assignee === job.person)) {
+        assignee = assigneeFor(column, job);
+      }
+      let attendance = job.attendance || [];
+      const last = attendance[attendance.length - 1];
+      const changing = last && !last.leftAtMs && (last.person !== assignee || job.column !== column);
+      const handoff = column === "closed"
+        ? "Closed"
+        : (changing ? referralLabel(column, assignee) : (referredTo || ""));
+      if (changing) attendance = closeOpenAttendance(attendance, handoff);
+      if (isActiveColumn(column) && assignee !== "Unassigned") {
+        const alreadyOpen = attendance.some((row) => !row.leftAtMs && row.person === assignee && row.department === deptLabel(column));
+        if (!alreadyOpen) {
+          attendance = [...attendance, {
+            person: assignee,
+            department: deptLabel(column),
+            source,
+            assignedAtMs: now,
+            arrivedAtMs: now,
+            leftAtMs: 0,
+            referredTo: "",
+            referredToPerson: "",
+            referredToDept: "",
+            referredDept: "",
+            notes: []
+          }];
+        }
+      }
+      return {
+        ...job,
+        column,
+        person: assignee,
+        attendance,
+        assignedBy: assignee === "Unassigned" ? "" : source === "manual" ? "Manual" : "AI",
+        assignedAtMs: assignee === "Unassigned" ? 0 : now,
+        arrivedAtMs: assignee === "Unassigned" ? 0 : now,
+        startedAt: assignee === "Unassigned" || column === "closed" ? 0 : now,
+        assignedAt: assignee === "Unassigned" ? "" : formatWhen(now),
+        arrivedAt: assignee === "Unassigned" ? "" : formatWhen(now),
+        arrivedAfter: assignee === "Unassigned" ? "" : "Immediate"
+      };
+    });
+  }
+
+  function assignQueuedJobs() {
+    ["utility", "miscellaneous", "electrical", "mechanical"].forEach((column) => {
+      jobs.filter((job) => job.column === column && (!job.person || job.person === "Unassigned")).forEach((job) => {
+        const free = pickFreeWorker(column, job.id);
+        if (free !== "Unassigned") applyMove(job.id, column, free, "ai");
+      });
+    });
+  }
+
+  function markReferral(id, from, column, person) {
+    const label = column === "closed" ? "Closed" : referralLabel(column, person);
+    jobs = jobs.map((job) => job.id === id ? {
+      ...job,
+      referredFrom: from,
+      referredToPerson: person && person !== "Unassigned" ? person : "",
+      referredToDept: deptLabel(column),
+      referredToLabel: label
+    } : job);
+  }
+
+  function referJob(id, column) {
+    const current = jobs.find((job) => job.id === id);
+    if (!current) return;
+    const fromPerson = current.person && current.person !== "Unassigned" ? current.person : "";
+    const from = fromPerson ? `${deptLabel(current.column)} · ${fromPerson}` : deptLabel(current.column);
+    const person = column === "closed" ? "Unassigned" : assigneeFor(column, current);
+    applyMove(id, column, person, "ai", column === "closed" ? "Closed" : referralLabel(column, person));
+    markReferral(id, from, column, person);
+    assignQueuedJobs();
+    persistJobs();
+  }
+
+  function nextCode(prefix, list) {
+    const nums = list.map((item) => Number(String(item.id).replace(/\D/g, ""))).filter((n) => !Number.isNaN(n));
+    return `${prefix}-${Math.max(10430, ...nums, 10421) + 1}`;
+  }
+
+  const STICKER_LOGO = "Powered_By__14_-removebg-preview.png";
+
+  window.addEventListener("beforeprint", () => {
+    const alertEl = document.getElementById("boilerCornerAlert");
+    if (!alertEl) return;
+    alertEl.dataset.printDisplay = alertEl.style.display || "";
+    alertEl.style.setProperty("display", "none", "important");
+  });
+  window.addEventListener("afterprint", () => {
+    const alertEl = document.getElementById("boilerCornerAlert");
+    if (!alertEl || alertEl.dataset.printDisplay == null) return;
+    const previous = alertEl.dataset.printDisplay;
+    if (previous) alertEl.style.setProperty("display", previous, "important");
+    else alertEl.style.removeProperty("display");
+    delete alertEl.dataset.printDisplay;
+  });
+
+  function printSticker(batch) {
+    let sheet = document.getElementById("batchPrintSheet");
+    if (!sheet) {
+      sheet = document.createElement("div");
+      sheet.id = "batchPrintSheet";
+      document.body.appendChild(sheet);
+    }
+    sheet.innerHTML = `
+      <button type="button" class="batch-sticker-back" id="batchPrintBack">Back</button>
+      <article class="batch-sticker print-page">
+        <img class="batch-sticker-logo" src="${STICKER_LOGO}" width="521" height="382" alt="Lucky Textile Mills Limited, powered by Spark Technologies" />
+        <p class="print-page-name">Batcher</p>
+        <p class="print-page-name is-urdu" lang="ur" dir="rtl">بیچر</p>
+        <div class="batch-sticker-qr">${batchQrLink(batch, "ops-qr-print")}</div>
+        <h1>${esc(batch.id)}</h1>
+        <p>${esc(formatBatchDate(batch.date))}</p>
+      </article>`;
+    sheet.hidden = false;
+    const close = () => {
+      sheet.hidden = true;
+      window.removeEventListener("afterprint", close);
+    };
+    document.getElementById("batchPrintBack").addEventListener("click", close);
+    window.addEventListener("afterprint", close);
+    const logo = sheet.querySelector(".batch-sticker-logo");
+    const printWhenReady = () => window.requestAnimationFrame(() => window.print());
+    if (logo.complete && logo.naturalWidth) printWhenReady();
+    else {
+      logo.addEventListener("load", printWhenReady, { once: true });
+      logo.addEventListener("error", printWhenReady, { once: true });
+    }
+  }
+
+  function printJobSticker(job) {
+    let sheet = document.getElementById("batchPrintSheet");
+    if (!sheet) {
+      sheet = document.createElement("div");
+      sheet.id = "batchPrintSheet";
+      document.body.appendChild(sheet);
+    }
+    sheet.innerHTML = `
+      <button type="button" class="batch-sticker-back" id="batchPrintBack">Back</button>
+      <article class="batch-sticker print-page">
+        <img class="batch-sticker-logo" src="${STICKER_LOGO}" width="521" height="382" alt="Lucky Textile Mills Limited, powered by Spark Technologies" />
+        <p class="print-page-name">For operator</p>
+        <p class="print-page-name is-urdu" lang="ur" dir="rtl">آپریٹر کے لیے</p>
+        <div class="batch-sticker-qr">${jobQrLink(job, "ops-qr-print")}</div>
+        <h1>${esc(job.id)}</h1>
+        <p>${esc(job.machine)}</p>
+      </article>
+      <article class="batch-sticker print-page">
+        <img class="batch-sticker-logo" src="${STICKER_LOGO}" width="521" height="382" alt="Lucky Textile Mills Limited, powered by Spark Technologies" />
+        <p class="print-page-name">For maintenance</p>
+        <p class="print-page-name is-urdu" lang="ur" dir="rtl">مینٹیننس کے لیے</p>
+        <div class="batch-sticker-qr">${maintainQrLink(job, "ops-qr-print")}</div>
+        <h1>${esc(job.id)}</h1>
+        <p>${esc(job.machine)}</p>
+      </article>`;
+    sheet.hidden = false;
+    const close = () => {
+      sheet.hidden = true;
+      window.removeEventListener("afterprint", close);
+    };
+    document.getElementById("batchPrintBack").addEventListener("click", close);
+    window.addEventListener("afterprint", close);
+    const logos = [...sheet.querySelectorAll(".batch-sticker-logo")];
+    const printWhenReady = () => window.requestAnimationFrame(() => window.print());
+    const pending = logos.filter((logo) => !(logo.complete && logo.naturalWidth));
+    if (!pending.length) printWhenReady();
+    else {
+      let left = pending.length;
+      const done = () => {
+        left -= 1;
+        if (!left) printWhenReady();
+      };
+      pending.forEach((logo) => {
+        logo.addEventListener("load", done, { once: true });
+        logo.addEventListener("error", done, { once: true });
+      });
+    }
+  }
+
+  function renderBatches() {
+    const body = document.getElementById("batchLedgerBody");
+    if (!body) return;
+    dropMillMaps(body);
+    body.innerHTML = batches.map((batch) => {
+      const stageIndex = BATCH_STAGES.indexOf(batch.stage);
+      const pills = BATCH_STAGES.map((stage, index) => {
+        const state = batch.completed || index < stageIndex ? "is-done" : index === stageIndex ? "is-current" : "";
+        return `<span class="ops-stage-pill ${state}">${stage}</span>`;
+      }).join("");
+      const completeLabel = batch.completed ? "" : `<button type="button" class="ops-complete-btn" data-complete="${batch.id}">Complete ${batch.stage}</button>`;
+      const department = batchDepartmentName(batch);
+      return `<tr class="ops-ledger-row" data-batch="${batch.id}">
+        <td class="ops-qr-cell"><div class="batch-ledger-mark">${batchQrLink(batch)}<div class="batch-mill-card is-ledger"><div class="batch-mill-map" data-mill-map data-batch-id="${esc(batch.id)}" role="img" aria-label="Map of this batch and the Lucky Textile Mills building"></div><p class="batch-mill-distance" data-batch-distance data-department="${esc(department)}">${esc(batchAwayText(batch.id, department))}</p></div></div></td>
+        <td>${batch.id}</td>
+        <td>${batch.fabric}</td>
+        <td>${batch.gsm}</td>
+        <td>${formatBatchDate(batch.date)}</td>
+        <td><div class="ops-stage-track">${pills}</div></td>
+        <td class="ops-status ${batch.completed ? "is-done" : ""}">${batch.completed ? "Completed" : batch.stage}</td>
+        <td>${batch.completed ? "Yes" : "No"}</td>
+        <td><div class="ops-actions">
+          <button type="button" class="ops-ghost-btn" data-print="${batch.id}">Print sticker</button>
+          ${completeLabel}
+        </div></td>
+      </tr>`;
+    }).join("");
+    mountMillHosts(body);
+  }
+
+  const FABRIC_JOBS_KEY = "textile_fabric_jobs_v1";
+  const defaultFabricJobs = [
+    { id: "FJ-10821", company: "IKEA", fabric: "100% Organic Cotton Twill", meters: 24500, gsm: 210, width: "60 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "DYEING", date: "2026-09-30", entryType: "job", notes: "Bedding line duvet covers - Shade Optical White", completed: false },
+    { id: "FJ-10822", company: "Target", fabric: "Poly-Cotton Poplin 65/35", meters: 18200, gsm: 145, width: "58 inch", route: ["GREIGE", "PRETREATMENT", "PRINTING", "FINISHES", "FOLDING"], currentStage: "PRINTING", date: "2026-10-01", entryType: "job", notes: "Floral repeat pigment print - Threshold home collection", completed: false },
+    { id: "FJ-10823", company: "ASDA", fabric: "Heavyweight Ring Denim 12.5oz", meters: 32000, gsm: 380, width: "62 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "FINISHES", date: "2026-09-24", entryType: "job", notes: "Indigo sulfur bottom rope dyed - George apparel line", completed: false },
+    { id: "FJ-10824", company: "IKEA", fabric: "Viscose Modal Satin Weave", meters: 12400, gsm: 165, width: "54 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "FOLDING", date: "2026-09-18", entryType: "job", notes: "Silky finish luxury drape collection - Passed 4-point grading", completed: true },
+    { id: "FJ-10825", company: "H&M", fabric: "Single Combed Jersey 30s", meters: 15600, gsm: 160, width: "72 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "PRETREATMENT", date: "2026-10-02", entryType: "job", notes: "Bio-polishing and soft-flow bleaching", completed: false },
+    { id: "FJ-10826", company: "Target", fabric: "100% Linen Canvas Weave", meters: 9800, gsm: 240, width: "56 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "GREIGE", date: "2026-10-04", entryType: "job", notes: "Casement curtains natural flax unbleached", completed: false },
+    { id: "CL-5041", company: "ASDA", fabric: "100% Cotton Sheeting 60x60", meters: 480, gsm: 130, width: "90 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "DYEING", date: "2026-10-04", entryType: "manual_cloth", notes: "Manual sample cut lot for lab dip approval", completed: false },
+    { id: "CL-5042", company: "IKEA", fabric: "Woven Cotton Drill 3/1", meters: 620, gsm: 260, width: "58 inch", route: ["GREIGE", "PRETREATMENT", "FINISHES", "FOLDING"], currentStage: "GREIGE", date: "2026-10-05", entryType: "manual_cloth", notes: "Loom roll piece added manually by floor operator", completed: false }
+  ];
+
+  function loadFabricJobs() {
+    let stored = [];
+    try {
+      const raw = localStorage.getItem(FABRIC_JOBS_KEY);
+      stored = raw ? JSON.parse(raw) : [];
+    } catch (err) {
+      stored = [];
+    }
+    const usable = Array.isArray(stored)
+      ? stored.filter((item) => item && item.company && item.currentStage && Array.isArray(item.route))
+      : [];
+    if (usable.length) return usable;
+    const fresh = defaultFabricJobs.map((item) => ({ ...item, route: item.route.slice() }));
+    save(FABRIC_JOBS_KEY, fresh);
+    return fresh;
+  }
+
+  let fabricJobs = loadFabricJobs();
+
+  function getBrandBadgeHtml(company) {
+    const brand = String(company || "").toLowerCase().trim();
+    if (brand.includes("ikea")) return `<span class="fab-brand-badge brand-ikea">IKEA</span>`;
+    if (brand.includes("asda")) return `<span class="fab-brand-badge brand-asda">ASDA</span>`;
+    if (brand.includes("target")) return `<span class="fab-brand-badge brand-target">TARGET</span>`;
+    if (brand.includes("h&m") || brand.includes("hm")) return `<span class="fab-brand-badge brand-hm">H&amp;M</span>`;
+    if (brand.includes("zara")) return `<span class="fab-brand-badge brand-zara">ZARA</span>`;
+    if (brand.includes("spencer") || brand.includes("m&s")) return `<span class="fab-brand-badge brand-mns">M&amp;S</span>`;
+    if (brand.includes("walmart")) return `<span class="fab-brand-badge brand-walmart">WALMART</span>`;
+    return `<span class="fab-brand-badge brand-generic">${esc(company || "Client")}</span>`;
+  }
+
+  function getRouteFlowHtml(route, currentStage, completed) {
+    const list = Array.isArray(route) && route.length ? route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
+    const curIdx = completed ? list.length : Math.max(0, list.indexOf(currentStage));
+    return `<div class="fab-route-flow">` + list.map((step, idx) => {
+      let stateCls = "is-wait";
+      if (completed || idx < curIdx) stateCls = "is-done";
+      else if (idx === curIdx) stateCls = "is-active";
+      const sep = idx < list.length - 1 ? `<span class="fab-route-sep">›</span>` : "";
+      return `<span class="fab-route-step ${stateCls}">${esc(step)}</span>${sep}`;
+    }).join("") + `</div>`;
+  }
+
+  function renderFabricRecord(item) {
+    if (!recordTitle || !recordStatus || !recordBody) return;
+    if (recordKicker) recordKicker.textContent = "FABRIC ORDER & TRACE RECORD";
+    recordTitle.textContent = `${item.id} · ${item.company}`;
+    recordStatus.textContent = item.completed ? "COMPLETED" : item.currentStage;
+    recordStatus.classList.remove("is-batch");
+    if (recordHeadExtra) recordHeadExtra.innerHTML = getBrandBadgeHtml(item.company);
+
+    const route = Array.isArray(item.route) && item.route.length ? item.route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
+    const curIdx = item.completed ? route.length : Math.max(0, route.indexOf(item.currentStage));
+    const routeRows = route.map((step, idx) => {
+      const isPast = item.completed || idx < curIdx;
+      const isCurrent = !item.completed && idx === curIdx;
+      const statusText = isPast ? "Completed" : isCurrent ? "Currently in process" : "Pending";
+      const statusStyle = isPast ? "color:#10b981;font-weight:700;" : isCurrent ? "color:#1e1b4b;font-weight:800;" : "color:#94a3b8;";
+      return `<tr>
+        <td><strong>${esc(step)}</strong></td>
+        <td>${esc(item.fabric)}</td>
+        <td>${Number(item.meters).toLocaleString("en-US")} m</td>
+        <td>${esc(item.gsm ? `${item.gsm} GSM` : "Standard")}</td>
+        <td style="${statusStyle}">${statusText}</td>
+      </tr>`;
+    }).join("");
+
+    recordBody.innerHTML = `
+      <div class="ops-record-top">
+        <div>
+          <div class="ops-record-facts">
+            <div class="ops-record-fact"><span>Order / Cloth ID</span><strong>${esc(item.id)}</strong></div>
+            <div class="ops-record-fact"><span>Buyer / Client</span><strong>${esc(item.company)}</strong></div>
+            <div class="ops-record-fact"><span>Fabric specification</span><strong>${esc(item.fabric)}</strong></div>
+            <div class="ops-record-fact"><span>Allocated meters</span><strong>${Number(item.meters).toLocaleString("en-US")} m</strong></div>
+          </div>
+        </div>
+      </div>
+      <div class="ops-record-metrics">
+        <div class="ops-record-metric"><span>Current stage</span><strong>${esc(item.completed ? "COMPLETED" : item.currentStage)}</strong></div>
+        <div class="ops-record-metric"><span>Record type</span><strong>${item.entryType === "manual_cloth" ? "Manual Cloth Piece" : "Buyer Job Order"}</strong></div>
+        <div class="ops-record-metric"><span>GSM / Width</span><strong>${item.gsm || 180} GSM · ${esc(item.width || "58 inch")}</strong></div>
+        <div class="ops-record-metric"><span>Date entered</span><strong>${esc(item.date)}</strong></div>
+      </div>
+      <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 16px;margin:10px 0;">
+        <span style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">Defined Process Route</span>
+        <div style="margin-top:6px;">${getRouteFlowHtml(route, item.currentStage, item.completed)}</div>
+        ${item.notes ? `<div style="margin-top:8px;font-size:0.82rem;color:#334155;"><strong>Notes:</strong> ${esc(item.notes)}</div>` : ""}
+      </div>
+      <section class="ops-record-section">
+        <h3>Process stages</h3>
+        <table class="ops-record-table">
+          <thead>
+            <tr><th>Stage</th><th>Fabric type</th><th>Meters</th><th>GSM</th><th>Status</th></tr>
+          </thead>
+          <tbody>${routeRows}</tbody>
+        </table>
+      </section>
+      <div class="ops-record-foot" style="justify-content:flex-end;">
+        ${item.completed ? `<span style="font-weight:700;color:#10b981;font-size:0.86rem;">Order process completed</span>` : `<button type="button" class="ops-navy-btn" data-record-advance="${esc(item.id)}">Advance next stage</button>`}
+      </div>`;
+  }
+
+  function showFabricRecord(id) {
+    const item = fabricJobs.find((entry) => entry.id === id);
+    if (!item || !recordOverlay) return;
+    if (clockTimer) window.clearInterval(clockTimer);
+    clockTimer = 0;
+    openRecord = { kind: "fabric", id };
+    renderFabricRecord(item);
+    recordOverlay.hidden = false;
+  }
+
+  function updateFabricTelemetry() {
+    const activeJobs = fabricJobs.filter((item) => !item.completed).length;
+    const totalMeters = fabricJobs.reduce((sum, item) => sum + (Number(item.meters) || 0), 0);
+    const brands = new Set(fabricJobs.map((item) => String(item.company || "").trim().toUpperCase()).filter(Boolean)).size;
+    const jobsEl = document.getElementById("modValFabJobs");
+    const metersEl = document.getElementById("modValFabMeters");
+    const brandsEl = document.getElementById("modValFabBrands");
+    const summaryEl = document.getElementById("fabStatSummary");
+    if (jobsEl) jobsEl.textContent = String(activeJobs);
+    if (metersEl) metersEl.textContent = totalMeters >= 1000 ? `${(totalMeters / 1000).toFixed(1)}k` : String(totalMeters);
+    if (brandsEl) brandsEl.textContent = String(brands);
+    if (summaryEl) summaryEl.textContent = `${fabricJobs.length} Records · ${totalMeters.toLocaleString("en-US")} m`;
+  }
+
+  function renderFabricJobs() {
+    const body = document.getElementById("fabricTraceBody");
+    if (!body) return;
+    if (!fabricJobs.length) {
+      body.innerHTML = `<tr><td colspan="9" style="text-align:center;padding:32px;color:#94a3b8;">No fabric jobs recorded yet.</td></tr>`;
+      updateFabricTelemetry();
+      return;
+    }
+    body.innerHTML = fabricJobs.map((item) => {
+      const route = Array.isArray(item.route) && item.route.length ? item.route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
+      const curIdx = item.completed ? route.length - 1 : Math.max(0, route.indexOf(item.currentStage));
+      const pct = item.completed ? 100 : Math.max(10, Math.min(95, Math.round(((curIdx + 0.5) / route.length) * 100)));
+      const typeBadge = item.entryType === "manual_cloth"
+        ? `<span class="fab-type-badge type-cloth">MANUAL CLOTH</span>`
+        : `<span class="fab-type-badge type-job">JOB ORDER</span>`;
+      const stagePill = item.completed
+        ? `<span class="fab-stage-pill stage-done">COMPLETED</span>`
+        : `<span class="fab-stage-pill stage-live"><span class="live-dot"></span> ${esc(item.currentStage)}</span>`;
+      return `<tr data-fab-row="${esc(item.id)}" style="cursor:pointer;">
+        <td>
+          <div style="font-weight:800;font-family:monospace;font-size:0.92rem;color:#0f172a;">${esc(item.id)}</div>
+          <div style="margin-top:3px;">${typeBadge}</div>
+        </td>
+        <td>
+          <div>${getBrandBadgeHtml(item.company)}</div>
+          <div style="font-size:0.76rem;color:#64748b;font-weight:600;margin-top:2px;">${esc(item.company)}</div>
+        </td>
+        <td>
+          <div style="font-weight:700;color:#0f172a;font-size:0.88rem;">${esc(item.fabric)}</div>
+          <div style="font-size:0.72rem;color:#64748b;">${item.gsm || 180} GSM · ${esc(item.width || "58 inch")}</div>
+        </td>
+        <td>
+          <div style="font-weight:900;font-size:0.96rem;color:#0f172a;">${Number(item.meters).toLocaleString("en-US")} <span style="font-size:0.74rem;font-weight:700;color:#64748b;">m</span></div>
+        </td>
+        <td>${getRouteFlowHtml(route, item.currentStage, item.completed)}</td>
+        <td>${stagePill}</td>
+        <td>
+          <div class="fab-progress-wrap">
+            <div class="fab-progress-bar"><div class="fab-progress-fill" style="width:${pct}%;"></div></div>
+            <span class="fab-progress-text">${pct}% done</span>
+          </div>
+        </td>
+        <td><span style="font-size:0.8rem;font-weight:600;color:#475569;">${esc(item.date)}</span></td>
+        <td>
+          <div class="fab-actions-wrap">
+            ${item.completed ? `<span style="font-size:0.75rem;color:#10b981;font-weight:700;">Done</span>` : `<button type="button" class="fab-act-btn fab-advance-btn" data-fab-advance="${esc(item.id)}">Advance</button>`}
+            <button type="button" class="fab-act-btn fab-view-btn" data-fab-view="${esc(item.id)}">Details</button>
+            <button type="button" class="fab-act-btn fab-delete-btn" data-fab-del="${esc(item.id)}" aria-label="Remove">✕</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join("");
+    updateFabricTelemetry();
+  }
+
+  function advanceFabricStage(id) {
+    fabricJobs = fabricJobs.map((item) => {
+      if (item.id !== id || item.completed) return item;
+      const route = Array.isArray(item.route) && item.route.length ? item.route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
+      const curIdx = route.indexOf(item.currentStage);
+      if (curIdx >= route.length - 1) return { ...item, completed: true, currentStage: route[route.length - 1] };
+      return { ...item, currentStage: route[curIdx + 1] };
+    });
+    save(FABRIC_JOBS_KEY, fabricJobs);
+    renderFabricJobs();
+    refreshOpenRecord();
+  }
+
+  function deleteFabricJob(id) {
+    fabricJobs = fabricJobs.filter((item) => item.id !== id);
+    save(FABRIC_JOBS_KEY, fabricJobs);
+    renderFabricJobs();
+    if (openRecord && openRecord.kind === "fabric" && openRecord.id === id) closeRecord();
+  }
+
+  function nextFabricId(prefix, floor) {
+    const nums = fabricJobs.map((item) => {
+      const match = String(item.id || "").match(new RegExp("^" + prefix + "-(\\d+)$"));
+      return match ? Number(match[1]) : 0;
+    });
+    return `${prefix}-${Math.max(floor, ...nums) + 1}`;
+  }
+
+  function setupFabricTraceView() {
+    const jobForm = document.getElementById("fabricJobCreateForm");
+    const clothForm = document.getElementById("fabricClothManualForm");
+    const btnToggleJob = document.getElementById("btnToggleFabricJobForm");
+    const btnToggleCloth = document.getElementById("btnToggleManualClothForm");
+    const table = document.getElementById("fabricTraceTable");
+
+    if (btnToggleJob && jobForm) {
+      btnToggleJob.addEventListener("click", () => {
+        const opening = jobForm.hidden;
+        jobForm.hidden = !opening;
+        if (clothForm) clothForm.hidden = true;
+        if (opening) {
+          const idInput = document.getElementById("fabJobIdInput");
+          if (idInput) idInput.value = nextFabricId("FJ", 10826);
+        }
+      });
+    }
+
+    if (btnToggleCloth && clothForm) {
+      btnToggleCloth.addEventListener("click", () => {
+        const opening = clothForm.hidden;
+        clothForm.hidden = !opening;
+        if (jobForm) jobForm.hidden = true;
+        if (opening) {
+          const rollInput = document.getElementById("fabClothRollInput");
+          if (rollInput) rollInput.value = nextFabricId("CL", 5042);
+        }
+      });
+    }
+
+    if (jobForm) {
+      jobForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const id = (document.getElementById("fabJobIdInput")?.value || nextFabricId("FJ", 10826)).trim().toUpperCase();
+        const fabric = (document.getElementById("fabJobFabricInput")?.value || "100% Organic Cotton Twill").trim();
+        const meters = Number(document.getElementById("fabJobMetersInput")?.value) || 5000;
+        if (!id || !fabric || !meters || fabricJobs.some((item) => item.id === id)) return;
+        const processStr = document.getElementById("fabJobProcessInput")?.value || "GREIGE,PRETREATMENT,DYEING,FINISHES,FOLDING";
+        const route = processStr.split(",").map((step) => step.trim()).filter(Boolean);
+        fabricJobs = [{
+          id,
+          company: document.getElementById("fabJobCompanyInput")?.value || "IKEA",
+          fabric,
+          meters,
+          gsm: Number(document.getElementById("fabJobGsmInput")?.value) || 180,
+          width: "58 inch",
+          route: route.length ? route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"],
+          currentStage: document.getElementById("fabJobStageInput")?.value || "GREIGE",
+          date: new Date().toISOString().slice(0, 10),
+          entryType: "job",
+          notes: (document.getElementById("fabJobNotesInput")?.value || "").trim(),
+          completed: false
+        }, ...fabricJobs];
+        save(FABRIC_JOBS_KEY, fabricJobs);
+        renderFabricJobs();
+        jobForm.hidden = true;
+        jobForm.reset();
+      });
+    }
+
+    if (clothForm) {
+      clothForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const id = (document.getElementById("fabClothRollInput")?.value || nextFabricId("CL", 5042)).trim().toUpperCase();
+        const fabric = (document.getElementById("fabClothFabricInput")?.value || "100% Cotton Sheeting").trim();
+        const meters = Number(document.getElementById("fabClothMetersInput")?.value) || 450;
+        if (!id || !fabric || !meters || fabricJobs.some((item) => item.id === id)) return;
+        fabricJobs = [{
+          id,
+          company: document.getElementById("fabClothCompanyInput")?.value || "IKEA",
+          fabric,
+          meters,
+          gsm: Number(document.getElementById("fabClothGsmInput")?.value) || 160,
+          width: "60 inch",
+          route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"],
+          currentStage: document.getElementById("fabClothStageInput")?.value || "GREIGE",
+          date: new Date().toISOString().slice(0, 10),
+          entryType: "manual_cloth",
+          notes: (document.getElementById("fabClothNotesInput")?.value || "Manual roll cut by operator").trim(),
+          completed: false
+        }, ...fabricJobs];
+        save(FABRIC_JOBS_KEY, fabricJobs);
+        renderFabricJobs();
+        clothForm.hidden = true;
+        clothForm.reset();
+      });
+    }
+
+    if (table) {
+      table.addEventListener("click", (event) => {
+        const advanceId = event.target.closest("[data-fab-advance]")?.getAttribute("data-fab-advance");
+        if (advanceId) {
+          advanceFabricStage(advanceId);
+          return;
+        }
+        const deleteId = event.target.closest("[data-fab-del]")?.getAttribute("data-fab-del");
+        if (deleteId) {
+          deleteFabricJob(deleteId);
+          return;
+        }
+        const viewId = event.target.closest("[data-fab-view]")?.getAttribute("data-fab-view")
+          || event.target.closest("[data-fab-row]")?.getAttribute("data-fab-row");
+        if (viewId) showFabricRecord(viewId);
+      });
+    }
+
+    document.addEventListener("click", (event) => {
+      const recordAdvance = event.target.closest("[data-record-advance]")?.getAttribute("data-record-advance");
+      if (recordAdvance) advanceFabricStage(recordAdvance);
+    });
+
+    window.renderFabricLedger = renderFabricJobs;
+    renderFabricJobs();
+  }
+
+  function setupBatchView() {
+    const form = document.getElementById("batchCreateForm");
+    const toggle = document.getElementById("btnToggleBatchForm");
+    const numberInput = document.getElementById("batchNumberInput");
+    const fabricInput = document.getElementById("batchFabricInput");
+    const gsmInput = document.getElementById("batchGsmInput");
+    const dateInput = document.getElementById("batchDateInput");
+    const stageInput = document.getElementById("batchStageInput");
+    const table = document.getElementById("batchLedgerTable");
+    if (!form || !toggle || !table) return;
+
+    function fillDefaults() {
+      numberInput.value = nextCode("BT", batches);
+      fabricInput.value = "Cotton";
+      gsmInput.value = "160";
+      dateInput.value = new Date().toISOString().slice(0, 10);
+      stageInput.value = "GREIGE";
+    }
+
+    toggle.addEventListener("click", () => {
+      const opening = form.hidden;
+      form.hidden = !opening;
+      if (opening) fillDefaults();
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const id = (numberInput.value || "").trim().toUpperCase();
+      const fabric = (fabricInput.value || "").trim();
+      const gsm = Number(gsmInput.value);
+      if (!id || !fabric || !gsm) return;
+      if (batches.some((batch) => batch.id === id)) return;
+      batches = [{
+        id,
+        fabric,
+        gsm,
+        date: dateInput.value || new Date().toISOString().slice(0, 10),
+        stage: stageInput.value || "GREIGE",
+        completed: false
+      }, ...batches];
+      save(BATCH_KEY, batches);
+      renderBatches();
+      form.hidden = true;
+    });
+
+    table.addEventListener("click", (event) => {
+      const printId = event.target.closest("[data-print]")?.getAttribute("data-print");
+      const completeId = event.target.closest("[data-complete]")?.getAttribute("data-complete");
+      if (printId) {
+        const batch = batches.find((item) => item.id === printId);
+        if (batch) printSticker(batch);
+        return;
+      }
+      if (completeId) {
+        batches = batches.map((batch) => batch.id === completeId ? advanceBatch(batch) : batch);
+        save(BATCH_KEY, batches);
+        renderBatches();
+        refreshOpenRecord();
+        return;
+      }
+      if (event.target.closest(".batch-mill-card")) return;
+      const rowId = event.target.closest("[data-batch]")?.getAttribute("data-batch");
+      if (rowId) showBatchRecord(rowId);
+    });
+
+    renderBatches();
+    loadScanOrigin(0);
+  }
+
+  function jobStatus(job) {
+    const column = typeof job === "string" ? job : job.column;
+    const person = typeof job === "string" ? "" : job.person;
+    if (column === "closed") return "CLOSED";
+    if (column === "unassigned" || !person || person === "Unassigned") return "WAITING";
+    return "ON MACHINE";
+  }
+
+  function renderJobs() {
+    const board = document.getElementById("jobBoard");
+    if (!board) return;
+    ["unassigned", "utility", "miscellaneous", "electrical", "mechanical", "closed"].forEach((column) => {
+      const list = board.querySelector(`[data-drop="${column}"]`);
+      const count = board.querySelector(`[data-count-for="${column}"]`);
+      const items = jobs.filter((job) => job.column === column);
+      if (count) count.textContent = String(items.length);
+      if (!list) return;
+      if (!items.length) {
+        list.innerHTML = `<p class="job-empty">${column === "closed" ? "No closed job cards." : ""}</p>`;
+        return;
+      }
+      list.innerHTML = items.map((job) => {
+        const deptOptions = ["unassigned", "utility", "miscellaneous", "electrical", "mechanical", "closed"].map((value) => {
+          const label = value === "unassigned" ? "Unassigned" : value[0].toUpperCase() + value.slice(1);
+          return `<option value="${value}" ${job.column === value ? "selected" : ""}>${label}</option>`;
+        }).join("");
+        const people = JOB_PEOPLE.map((name) => `<option value="${name}" ${job.person === name ? "selected" : ""}>${name}</option>`).join("");
+        return `<article class="job-card" data-job="${job.id}">
+          <div class="job-card-top">
+            <div class="job-card-id">${jobQrLink(job)} ${job.id}</div>
+            <div class="job-card-tags">
+              <span class="job-status-pill ${jobStatus(job) === "WAITING" ? "is-wait" : ""}">${jobStatus(job)}</span>
+              ${isReferred(job) ? `<span class="job-status-pill is-refer">REFERRED</span>` : ""}
+            </div>
+          </div>
+          <p class="job-card-copy">${job.text}</p>
+          <p class="job-card-machine">${job.machine}</p>
+          <p class="job-card-assignee">${job.person && job.person !== "Unassigned" ? `${isReferred(job) ? `AI referred to ${job.person}` : job.assignedBy === "Manual" ? `Assigned ${job.person}` : `AI assigned ${job.person}`}` : "Waiting for a free worker"}</p>
+          <div class="job-card-meta">
+            <label>Department<select draggable="false" data-job-dept="${job.id}">${deptOptions}</select></label>
+            <label>By<select draggable="false" data-job-person="${job.id}">${people}</select></label>
+          </div>
+        </article>`;
+      }).join("");
+    });
+  }
+
+  function moveJob(id, column) {
+    const current = jobs.find((job) => job.id === id);
+    if (!current || current.column === column) return;
+    const person = column === "closed" || column === "unassigned" ? "Unassigned" : assigneeFor(column, current);
+    const fromActive = isActiveColumn(current.column);
+    const label = fromActive && isActiveColumn(column) ? referralLabel(column, person) : column === "closed" && fromActive ? "Closed" : "";
+    applyMove(id, column, person, "ai", label);
+    if (fromActive && column !== current.column) markReferral(id, deptLabel(current.column), column, person);
+    assignQueuedJobs();
+    persistJobs();
+  }
+
+  function setupJobView() {
+    const form = document.getElementById("jobCreateForm");
+    const toggle = document.getElementById("btnToggleJobForm");
+    const machineInput = document.getElementById("jobMachineInput");
+    const textInput = document.getElementById("jobTextInput");
+    const deptInput = document.getElementById("jobDeptInput");
+    const board = document.getElementById("jobBoard");
+    if (!form || !toggle || !board || !machineInput) return;
+
+    machineInput.innerHTML = JOB_MACHINES.map((name) => `<option value="${name}">${name}</option>`).join("");
+
+    const operatorView = document.getElementById("operatorView");
+    const operatorBtn = document.getElementById("btnOperatorView");
+    const operatorForm = document.getElementById("operatorJobForm");
+    const operatorMachine = document.getElementById("operatorMachineInput");
+    const operatorText = document.getElementById("operatorJobText");
+    const operatorDept = document.getElementById("operatorDeptInput");
+    const jobSubtitle = document.querySelector("#jobCardView .inspection-subtitle");
+    const portalSubtitle = jobSubtitle ? jobSubtitle.textContent : "";
+    let operatorClock = 0;
+
+    if (operatorMachine) {
+      operatorMachine.innerHTML = JOB_MACHINES.map((name) => `<option value="${name}">${name}</option>`).join("");
+    }
+
+    function tickOperatorClocks() {
+      const table = document.getElementById("operatorRequestBody");
+      if (!table) return;
+      table.querySelectorAll("[data-operator-clock]").forEach((cell) => {
+        const job = jobs.find((item) => item.id === cell.getAttribute("data-operator-clock"));
+        if (job) cell.textContent = operatorMachineTime(job);
+      });
+    }
+
+    function setOperatorOpen(open) {
+      if (!operatorView || !operatorBtn) return;
+      operatorView.hidden = !open;
+      board.hidden = open;
+      if (open) form.hidden = true;
+      toggle.hidden = open;
+      operatorBtn.textContent = open ? "Job portal" : "Operator view";
+      if (jobSubtitle) {
+        jobSubtitle.textContent = open
+          ? "Raise a job request, send it to the portal, and follow its status as the crew is assigned."
+          : portalSubtitle;
+      }
+      if (operatorClock) window.clearInterval(operatorClock);
+      operatorClock = 0;
+      if (open) {
+        renderOperatorRequests();
+        operatorClock = window.setInterval(tickOperatorClocks, 1000);
+        operatorText?.focus();
+      }
+    }
+
+    operatorBtn?.addEventListener("click", () => {
+      setOperatorOpen(operatorView.hidden);
+    });
+
+    operatorForm?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const text = (operatorText.value || "").trim();
+      if (!text) return;
+      const column = operatorDept.value || "unassigned";
+      const id = nextCode("JC", jobs);
+      jobs = [hydrateJob({
+        id,
+        text,
+        machine: operatorMachine.value,
+        column,
+        person: "Unassigned",
+        origin: "operator",
+        raisedAtMs: Date.now()
+      }), ...jobs];
+      if (isActiveColumn(column)) {
+        applyMove(id, column, pickFreeWorker(column, id), "ai");
+        assignQueuedJobs();
+      }
+      persistJobs();
+      operatorText.value = "";
+      operatorDept.value = "unassigned";
+    });
+
+    window.addEventListener("storage", (event) => {
+      if (event.key !== JOB_KEY || !event.newValue) return;
+      try {
+        const parsed = JSON.parse(event.newValue);
+        if (!Array.isArray(parsed)) return;
+        jobs = parsed.map(migrateJobDept).map(hydrateJob);
+        renderJobs();
+        renderOperatorRequests();
+        refreshOpenRecord();
+      } catch (err) {
+        /* ignore a bad portal write */
+      }
+    });
+
+    toggle.addEventListener("click", () => {
+      form.hidden = !form.hidden;
+      if (!form.hidden) {
+        machineInput.value = "BLEACHING-01";
+        textInput.value = "";
+        deptInput.value = "unassigned";
+        textInput.focus();
+      }
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const text = (textInput.value || "").trim();
+      if (!text) return;
+      const column = deptInput.value || "unassigned";
+      const id = nextCode("JC", jobs);
+      jobs = [hydrateJob({
+        id,
+        text,
+        machine: machineInput.value,
+        column,
+        person: "Unassigned"
+      }), ...jobs];
+      if (isActiveColumn(column)) {
+        applyMove(id, column, pickFreeWorker(column, id), "ai");
+        assignQueuedJobs();
+      }
+      persistJobs();
+      form.hidden = true;
+    });
+
+    board.addEventListener("change", (event) => {
+      const deptId = event.target.getAttribute("data-job-dept");
+      const personId = event.target.getAttribute("data-job-person");
+      if (deptId) {
+        moveJob(deptId, event.target.value);
+        return;
+      }
+      if (personId) {
+        const job = jobs.find((item) => item.id === personId);
+        if (!job) return;
+        applyMove(personId, job.column, event.target.value, "manual");
+        assignQueuedJobs();
+        persistJobs();
+      }
+    });
+
+    const pointer = { x: 0, y: 0, id: "", dragging: false };
+
+    function clearDragMarks() {
+      board.querySelectorAll(".is-dragging, .is-over").forEach((el) => el.classList.remove("is-dragging", "is-over"));
+    }
+
+    function columnFromPoint(x, y) {
+      const stack = document.elementsFromPoint(x, y);
+      const zone = stack.find((el) => el.closest && el.closest("[data-drop], [data-column]"));
+      const host = zone && zone.closest("[data-drop], [data-column]");
+      return host ? host.getAttribute("data-drop") || host.getAttribute("data-column") : "";
+    }
+
+    board.addEventListener("pointerdown", (event) => {
+      if (event.target.closest("select, input, button, label")) return;
+      const card = event.target.closest("[data-job]");
+      if (!card) return;
+      pointer.x = event.clientX;
+      pointer.y = event.clientY;
+      pointer.id = card.getAttribute("data-job") || "";
+      pointer.dragging = false;
+    });
+
+    board.addEventListener("pointermove", (event) => {
+      if (!pointer.id || event.buttons !== 1) return;
+      if (Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) < 8) return;
+      const card = board.querySelector(`[data-job="${pointer.id}"]`);
+      if (!card) return;
+      if (!pointer.dragging) {
+        pointer.dragging = true;
+        card.classList.add("is-dragging");
+        try { card.setPointerCapture(event.pointerId); } catch (err) { /* ignore */ }
+      }
+      board.querySelectorAll(".is-over").forEach((el) => el.classList.remove("is-over"));
+      const column = columnFromPoint(event.clientX, event.clientY);
+      if (column) board.querySelector(`[data-drop="${column}"]`)?.classList.add("is-over");
+    });
+
+    board.addEventListener("pointerup", (event) => {
+      const id = pointer.id;
+      const wasDrag = pointer.dragging;
+      const column = wasDrag ? columnFromPoint(event.clientX, event.clientY) : "";
+      clearDragMarks();
+      pointer.id = "";
+      pointer.dragging = false;
+      if (wasDrag) {
+        if (id && column) moveJob(id, column);
+        return;
+      }
+      if (!id || event.target.closest("select, input, button, label")) return;
+      if (Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 8) return;
+      showJobRecord(id);
+    });
+
+    board.addEventListener("pointercancel", () => {
+      clearDragMarks();
+      pointer.id = "";
+      pointer.dragging = false;
+    });
+
+    renderJobs();
+    window.setInterval(takeScannedJobRequests, 3000);
+    takeScannedJobRequests();
+  }
+
+  if (recordClose) recordClose.addEventListener("click", closeRecord);
+  if (recordOverlay) {
+    recordOverlay.addEventListener("click", (event) => {
+      if (event.target === recordOverlay) closeRecord();
+    });
+    recordOverlay.addEventListener("click", (event) => {
+      if (!openRecord) return;
+      const noteType = event.target.closest("[data-note]")?.getAttribute("data-note");
+      const referTo = event.target.closest("[data-refer]")?.getAttribute("data-refer");
+      const closeJob = event.target.closest("[data-close-job]")?.getAttribute("data-close-job");
+      const printId = event.target.closest("[data-print]")?.getAttribute("data-print");
+      const completeId = event.target.closest("[data-complete]")?.getAttribute("data-complete");
+      if (noteType && openRecord.kind === "job") {
+        if (noteType === "image") {
+          document.getElementById("jobFileImage")?.click();
+          return;
+        }
+        if (noteType === "video") {
+          document.getElementById("jobFileVideo")?.click();
+          return;
+        }
+        if (noteType === "voice") {
+          document.getElementById("jobFileVoice")?.click();
+          return;
+        }
+        const input = document.getElementById("jobObservationInput");
+        const typed = (input && input.value || "").trim();
+        if (!typed) return;
+        addJobNote(openRecord.id, "written", typed);
+        return;
+      }
+      if (referTo && openRecord.kind === "job") {
+        referJob(openRecord.id, referTo);
+        return;
+      }
+      if (closeJob) {
+        referJob(closeJob, "closed");
+        return;
+      }
+      if (printId) {
+        const batch = batches.find((item) => item.id === printId);
+        if (batch) printSticker(batch);
+        return;
+      }
+      const printJobId = event.target.closest("[data-print-job]")?.getAttribute("data-print-job");
+      if (printJobId && openRecord.kind === "job") {
+        const job = jobs.find((item) => item.id === printJobId);
+        if (job) printJobSticker(job);
+        return;
+      }
+      const rcaApprove = event.target.closest("[data-rca-approve]");
+      if (rcaApprove && openRecord.kind === "job") {
+        approveJobRca(openRecord.id);
+        return;
+      }
+      const batchMark = event.target.closest("[data-batch-mark]")?.getAttribute("data-batch-mark");
+      if (batchMark && openRecord.kind === "batch") {
+        batches = batches.map((batch) => {
+          if (batch.id !== openRecord.id) return batch;
+          const seeded = seedBatchTrail(batch);
+          return {
+            ...seeded,
+            trail: seeded.trail.map((entry) => entry.state === "live"
+              ? { ...entry, updatedBy: batchMark, updatedAt: Date.now() }
+              : entry)
+          };
+        });
+        save(BATCH_KEY, batches);
+        renderBatches();
+        refreshOpenRecord();
+        return;
+      }
+      if (completeId) {
+        batches = batches.map((batch) => batch.id === completeId ? advanceBatch(batch) : batch);
+        save(BATCH_KEY, batches);
+        renderBatches();
+        refreshOpenRecord();
+      }
+    });
+  }
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeRecord();
+  });
+  window.addEventListener("hashchange", closeRecord);
+  document.getElementById("btnBackFromJobCard")?.addEventListener("click", closeRecord);
+  document.getElementById("btnBackFromBatchTrace")?.addEventListener("click", closeRecord);
+  document.getElementById("btnBackFromFabricTrace")?.addEventListener("click", closeRecord);
+
+  function attachPickedFile(type, file) {
+    if (!file || !openRecord || openRecord.kind !== "job") return;
+    const kb = Math.max(1, Math.round(file.size / 1024));
+    addJobNote(openRecord.id, type, `${file.name} · ${kb} KB`, file.name);
+  }
+  document.getElementById("jobFileImage")?.addEventListener("change", (event) => {
+    attachPickedFile("image", event.target.files && event.target.files[0]);
+    event.target.value = "";
+  });
+  document.getElementById("jobFileVideo")?.addEventListener("change", (event) => {
+    attachPickedFile("video", event.target.files && event.target.files[0]);
+    event.target.value = "";
+  });
+  document.getElementById("jobFileVoice")?.addEventListener("change", (event) => {
+    attachPickedFile("voice", event.target.files && event.target.files[0]);
+    event.target.value = "";
+  });
+
+  setupBatchView();
+  setupJobView();
+  setupFabricTraceView();
+}
+
 // ==========================================================================
 // 14. INITIALIZATION
 // ==========================================================================
@@ -9542,6 +11936,7 @@ function initApp() {
   setupProductionPlanningInteractions();
   setupEnergyUtilitiesInteractions();
   setupComplianceTraceabilityInteractions();
+  setupOpsWorkbenches();
   initCustomCursor();
   initScadaClock();
   initScadaRealTimeEngine();

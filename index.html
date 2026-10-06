@@ -16,7 +16,7 @@
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="style.css?v=24.2" />
+  <link rel="stylesheet" href="style.css?v=27.3" />
 </head>
 
 <body>
@@ -290,7 +290,7 @@
       </button>
     </header>
 
-    <!-- 7 Specialized AI Module Cards -->
+    <!-- 9 Specialized AI Module Cards -->
     <main class="proc-modules-grid" id="procModulesGrid">
 
       <!-- 01: COLOR INTELLIGENCE AI -->
@@ -543,6 +543,111 @@
               <div class="card-telem-item">
                 <span class="telem-label">SOP QUERIES</span>
                 <div class="telem-val-wrap"><span class="telem-val" id="modValMilQry" style="color: #000000 !important; font-weight: 900;">1,420</span><span class="telem-unit">ops/d</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 08: BATCH TRACEABILITY -->
+      <button class="sector-card module-card-btn" data-module="batch-traceability" aria-label="Batch Traceability">
+        <div class="card-glow-bg glow-blue-card"></div>
+        <div class="card-border border-blue"></div>
+        <div class="card-content-overlay">
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 08</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-blue">BATCH TRACEABILITY</h2>
+            <p class="card-description">
+              Piece-lot barcodes, stage-by-stage route control, and sticker print for greige through folding.
+            </p>
+          </div>
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">OPEN LOTS</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValBatOpen" style="color: #000000 !important; font-weight: 900;">3</span><span class="telem-unit">lots</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">IN PROCESS</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValBatRun" style="color: #000000 !important; font-weight: 900;">2</span><span class="telem-unit">stages</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">COMPLETED</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValBatDone" style="color: #000000 !important; font-weight: 900;">1</span><span class="telem-unit">lot</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 09: JOB CARD -->
+      <button class="sector-card module-card-btn" data-module="job-card" aria-label="Job Card">
+        <div class="card-glow-bg glow-rose-card"></div>
+        <div class="card-border border-rose"></div>
+        <div class="card-content-overlay">
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 09</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-rose">JOB CARD</h2>
+            <p class="card-description">
+              Maintenance job cards for utility, miscellaneous, electrical and mechanical crews, assigned to the machine that needs attention.
+            </p>
+          </div>
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">OPEN CARDS</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValJobOpen" style="color: #000000 !important; font-weight: 900;">4</span><span class="telem-unit">jobs</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">ON MACHINE</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValJobRun" style="color: #000000 !important; font-weight: 900;">3</span><span class="telem-unit">crew</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">CLOSED</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValJobDone" style="color: #000000 !important; font-weight: 900;">0</span><span class="telem-unit">today</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-glare"></div>
+      </button>
+
+      <!-- 10: FABRIC TRACEABILITY -->
+      <button class="sector-card module-card-btn" data-module="fabric-traceability" aria-label="Fabric Traceability">
+        <div class="card-glow-bg glow-blue-card"></div>
+        <div class="card-border border-blue"></div>
+        <div class="card-content-overlay">
+          <div class="card-top-group">
+            <div class="card-phase-row">
+              <span class="card-phase-badge">MODULE 10</span>
+              <span class="card-live-indicator"><span class="live-dot"></span> LIVE</span>
+            </div>
+            <h2 class="card-title title-blue">FABRIC TRACEABILITY</h2>
+            <p class="card-description">
+              Buyer fabric jobs, allocated metres, and the defined route from greige through folding.
+            </p>
+          </div>
+          <div class="card-bottom-group">
+            <div class="card-telemetry-grid">
+              <div class="card-telem-item">
+                <span class="telem-label">ACTIVE JOBS</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValFabJobs" style="color: #000000 !important; font-weight: 900;">5</span><span class="telem-unit">jobs</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">TOTAL METERS</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValFabMeters" style="color: #000000 !important; font-weight: 900;">46.8k</span><span class="telem-unit">m</span></div>
+              </div>
+              <div class="card-telem-item">
+                <span class="telem-label">BUYER BRANDS</span>
+                <div class="telem-val-wrap"><span class="telem-val" id="modValFabBrands" style="color: #000000 !important; font-weight: 900;">6</span><span class="telem-unit">brands</span></div>
               </div>
             </div>
           </div>
@@ -7034,6 +7139,402 @@
   </div>
 
   <!-- =========================================================================
+       VIEW 5: BATCH TRACEABILITY
+       ========================================================================= -->
+  <div class="dyeing-inspection-container ops-workbench" id="batchTraceabilityView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromBatchTrace" aria-label="Back to Processing Modules">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Batch Traceability</h1>
+          <p class="inspection-subtitle">Create a lot barcode, walk it through greige to folding, and print the sticker</p>
+        </div>
+      </div>
+      <div class="inspection-header-right">
+        <button type="button" class="ops-navy-btn" id="btnToggleBatchForm">Create batch barcode</button>
+      </div>
+    </header>
+
+    <div class="ops-body">
+      <form class="ops-create-row" id="batchCreateForm" hidden>
+        <label class="ops-field">
+          <span>Batch number</span>
+          <input type="text" id="batchNumberInput" autocomplete="off" />
+        </label>
+        <label class="ops-field">
+          <span>Fabric type</span>
+          <input type="text" id="batchFabricInput" placeholder="Cotton" autocomplete="off" />
+        </label>
+        <label class="ops-field ops-field-sm">
+          <span>GSM</span>
+          <input type="number" id="batchGsmInput" min="80" max="600" step="1" />
+        </label>
+        <label class="ops-field ops-field-sm">
+          <span>Date added</span>
+          <input type="date" id="batchDateInput" />
+        </label>
+        <label class="ops-field">
+          <span>Current stage</span>
+          <select id="batchStageInput">
+            <option value="GREIGE">GREIGE</option>
+            <option value="PRETREATMENT">PRETREATMENT</option>
+            <option value="DYEING">DYEING</option>
+            <option value="PRINTING">PRINTING</option>
+            <option value="FINISHES">FINISHES</option>
+            <option value="FOLDING">FOLDING</option>
+          </select>
+        </label>
+        <button type="submit" class="ops-navy-btn ops-save-btn">Save batch</button>
+      </form>
+
+      <article class="ops-panel inspect-detail-card">
+        <h2 class="detail-card-title visually-hidden">Batch ledger</h2>
+        <div class="ops-table-wrap">
+          <table class="ops-table" id="batchLedgerTable">
+            <thead>
+              <tr>
+                <th>QR</th>
+                <th>BATCH NUMBER</th>
+                <th>FABRIC TYPE</th>
+                <th>GSM</th>
+                <th>DATE ADDED</th>
+                <th>STAGES</th>
+                <th>CURRENT STATUS</th>
+                <th>COMPLETED</th>
+                <th>ACTION BUTTONS</th>
+              </tr>
+            </thead>
+            <tbody id="batchLedgerBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 6: JOB CARD
+       ========================================================================= -->
+  <div class="dyeing-inspection-container ops-workbench" id="jobCardView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromJobCard" aria-label="Back to Processing Modules">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Job Card</h1>
+          <p class="inspection-subtitle">Start a job, see who is free, and drag the card to Utility, Miscellaneous, Electrical, or Mechanical</p>
+        </div>
+      </div>
+      <div class="inspection-header-right job-header-actions">
+        <button type="button" class="ops-ghost-btn" id="btnOperatorView">Operator view</button>
+        <button type="button" class="ops-navy-btn" id="btnToggleJobForm">+ start job card</button>
+      </div>
+    </header>
+
+    <div class="ops-body">
+      <form class="ops-create-row ops-job-form" id="jobCreateForm" hidden>
+        <label class="ops-field">
+          <span>Machine</span>
+          <select id="jobMachineInput"></select>
+        </label>
+        <label class="ops-field ops-field-grow">
+          <span>Job</span>
+          <input type="text" id="jobTextInput" placeholder="What needs attention on this machine" autocomplete="off" />
+        </label>
+        <label class="ops-field">
+          <span>Department</span>
+          <select id="jobDeptInput">
+            <option value="unassigned">Leave unassigned</option>
+            <option value="utility">Utility</option>
+            <option value="miscellaneous">Miscellaneous</option>
+            <option value="electrical">Electrical</option>
+            <option value="mechanical">Mechanical</option>
+          </select>
+        </label>
+        <button type="submit" class="ops-navy-btn ops-save-btn">Create</button>
+      </form>
+
+      <section class="operator-view" id="operatorView" hidden>
+        <form class="ops-create-row" id="operatorJobForm">
+          <label class="ops-field">
+            <span>Machine</span>
+            <select id="operatorMachineInput"></select>
+          </label>
+          <label class="ops-field ops-field-grow">
+            <span>Job request</span>
+            <input type="text" id="operatorJobText" placeholder="What needs attention on this machine" autocomplete="off" />
+          </label>
+          <label class="ops-field">
+            <span>Send to</span>
+            <select id="operatorDeptInput">
+              <option value="unassigned">Job portal</option>
+              <option value="utility">Utility</option>
+              <option value="miscellaneous">Miscellaneous</option>
+              <option value="electrical">Electrical</option>
+              <option value="mechanical">Mechanical</option>
+            </select>
+          </label>
+          <button type="submit" class="ops-navy-btn ops-save-btn">Send to job portal</button>
+        </form>
+        <article class="ops-panel operator-status-panel">
+          <div class="operator-status-head">
+            <h2 class="detail-card-title">Job request status</h2>
+            <p>Each request stays on this table. Department, person, RCA, and time update as the job portal moves the card.</p>
+          </div>
+          <div class="ops-table-wrap">
+            <table class="ops-table operator-status-table">
+              <thead>
+                <tr>
+                  <th>Job</th>
+                  <th>Machine</th>
+                  <th>Request</th>
+                  <th>Sent</th>
+                  <th>Department</th>
+                  <th>Person</th>
+                  <th>Status</th>
+                  <th>RCA</th>
+                  <th>Time on machine</th>
+                </tr>
+              </thead>
+              <tbody id="operatorRequestBody"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="job-board" id="jobBoard" aria-label="Maintenance job board">
+        <article class="job-column inspect-detail-card" data-column="unassigned">
+          <div class="job-column-head">
+            <h2 class="detail-card-title">UNASSIGNED</h2>
+            <span class="job-column-count" data-count-for="unassigned">0</span>
+          </div>
+          <div class="job-column-list" data-drop="unassigned"></div>
+        </article>
+        <article class="job-column inspect-detail-card" data-column="utility">
+          <div class="job-column-head">
+            <h2 class="detail-card-title">UTILITY</h2>
+            <span class="job-column-count" data-count-for="utility">0</span>
+          </div>
+          <div class="job-column-list" data-drop="utility"></div>
+        </article>
+        <article class="job-column inspect-detail-card" data-column="miscellaneous">
+          <div class="job-column-head">
+            <h2 class="detail-card-title">MISCELLANEOUS</h2>
+            <span class="job-column-count" data-count-for="miscellaneous">0</span>
+          </div>
+          <div class="job-column-list" data-drop="miscellaneous"></div>
+        </article>
+        <article class="job-column inspect-detail-card" data-column="electrical">
+          <div class="job-column-head">
+            <h2 class="detail-card-title">ELECTRICAL</h2>
+            <span class="job-column-count" data-count-for="electrical">0</span>
+          </div>
+          <div class="job-column-list" data-drop="electrical"></div>
+        </article>
+        <article class="job-column inspect-detail-card" data-column="mechanical">
+          <div class="job-column-head">
+            <h2 class="detail-card-title">MECHANICAL</h2>
+            <span class="job-column-count" data-count-for="mechanical">0</span>
+          </div>
+          <div class="job-column-list" data-drop="mechanical"></div>
+        </article>
+        <article class="job-column inspect-detail-card" data-column="closed">
+          <div class="job-column-head">
+            <h2 class="detail-card-title">CLOSED</h2>
+            <span class="job-column-count" data-count-for="closed">0</span>
+          </div>
+          <div class="job-column-list" data-drop="closed"></div>
+        </article>
+      </section>
+    </div>
+  </div>
+
+  <div class="ops-record" id="opsRecordOverlay" hidden>
+    <div class="ops-record-card" role="dialog" aria-modal="true" aria-labelledby="opsRecordTitle">
+      <header class="ops-record-head">
+        <div>
+          <p class="ops-record-kicker" id="opsRecordKicker">ADMIN RECORD</p>
+          <h2 class="ops-record-title" id="opsRecordTitle"></h2>
+        </div>
+        <div class="ops-record-head-actions">
+          <span class="ops-record-status" id="opsRecordStatus"></span>
+          <span id="opsRecordHeadExtra"></span>
+          <button type="button" class="ops-record-x" id="opsRecordClose" aria-label="Close record">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      </header>
+      <div class="ops-record-body" id="opsRecordBody"></div>
+      <input type="file" id="jobFileImage" accept="image/*" hidden />
+      <input type="file" id="jobFileVideo" accept="video/*" hidden />
+      <input type="file" id="jobFileVoice" accept="audio/*" hidden />
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       VIEW 7: FABRIC TRACEABILITY
+       ========================================================================= -->
+  <div class="dyeing-inspection-container ops-workbench" id="fabricTraceabilityView" style="display: none;">
+    <header class="inspection-header-bar">
+      <div class="inspection-header-left">
+        <button class="proc-back-btn" id="btnBackFromFabricTrace" aria-label="Back to Processing Modules">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+        <div class="inspection-title-group">
+          <h1 class="inspection-main-title">Fabric Traceability</h1>
+          <p class="inspection-subtitle">Create a buyer fabric job, log a cloth roll by hand, and follow the defined process route</p>
+        </div>
+      </div>
+      <div class="inspection-header-right job-header-actions">
+        <span class="fab-ledger-stat-pill" id="fabStatSummary">8 records</span>
+        <button type="button" class="ops-navy-btn" id="btnToggleFabricJobForm">+ Create Fabric Job</button>
+        <button type="button" class="ops-ghost-chip" id="btnToggleManualClothForm">+ Add Cloth Manually</button>
+      </div>
+    </header>
+
+    <div class="ops-body">
+      <form class="ops-create-row" id="fabricJobCreateForm" hidden>
+        <label class="ops-field">
+          <span>Job / Order ID</span>
+          <input type="text" id="fabJobIdInput" readonly />
+        </label>
+        <label class="ops-field">
+          <span>Company / Buyer</span>
+          <select id="fabJobCompanyInput">
+            <option>IKEA</option>
+            <option>ASDA</option>
+            <option>Target</option>
+            <option>H&amp;M</option>
+            <option>Zara</option>
+            <option>Walmart</option>
+          </select>
+        </label>
+        <label class="ops-field ops-field-grow">
+          <span>Fabric type</span>
+          <input type="text" id="fabJobFabricInput" value="100% Organic Cotton Twill" autocomplete="off" required />
+        </label>
+        <label class="ops-field ops-field-sm">
+          <span>Meters for job</span>
+          <input type="number" id="fabJobMetersInput" min="1" step="1" value="5000" required />
+        </label>
+        <label class="ops-field ops-field-grow">
+          <span>Process route</span>
+          <select id="fabJobProcessInput">
+            <option value="GREIGE,PRETREATMENT,DYEING,FINISHES,FOLDING">Greige → Pretreatment → Dyeing → Finishes → Folding</option>
+            <option value="GREIGE,PRETREATMENT,PRINTING,FINISHES,FOLDING">Greige → Pretreatment → Printing → Finishes → Folding</option>
+            <option value="GREIGE,PRETREATMENT,DYEING,PRINTING,FINISHES,FOLDING">Greige → Pretreatment → Dyeing → Printing → Finishes → Folding</option>
+            <option value="GREIGE,PRETREATMENT,FINISHES,FOLDING">Greige → Pretreatment → Finishes → Folding</option>
+            <option value="GREIGE,DYEING,FINISHES,FOLDING">Greige → Dyeing → Finishes → Folding</option>
+            <option value="GREIGE,PRETREATMENT,DYEING,FOLDING">Greige → Pretreatment → Dyeing → Folding</option>
+          </select>
+        </label>
+        <label class="ops-field">
+          <span>Starting stage</span>
+          <select id="fabJobStageInput">
+            <option>GREIGE</option>
+            <option>PRETREATMENT</option>
+            <option>DYEING</option>
+            <option>PRINTING</option>
+            <option>FINISHES</option>
+            <option>FOLDING</option>
+          </select>
+        </label>
+        <label class="ops-field ops-field-sm">
+          <span>GSM</span>
+          <input type="number" id="fabJobGsmInput" min="40" max="800" step="1" value="180" />
+        </label>
+        <label class="ops-field ops-field-grow">
+          <span>PO / Order notes</span>
+          <input type="text" id="fabJobNotesInput" placeholder="Shade, delivery week, buyer PO" autocomplete="off" />
+        </label>
+        <button type="submit" class="ops-navy-btn ops-save-btn">Save fabric job</button>
+      </form>
+
+      <form class="ops-create-row" id="fabricClothManualForm" hidden>
+        <label class="ops-field">
+          <span>Roll #</span>
+          <input type="text" id="fabClothRollInput" autocomplete="off" required />
+        </label>
+        <label class="ops-field">
+          <span>Buyer</span>
+          <select id="fabClothCompanyInput">
+            <option>IKEA</option>
+            <option>ASDA</option>
+            <option>Target</option>
+            <option>H&amp;M</option>
+            <option>Zara</option>
+            <option>Walmart</option>
+          </select>
+        </label>
+        <label class="ops-field ops-field-grow">
+          <span>Fabric type</span>
+          <input type="text" id="fabClothFabricInput" value="100% Cotton Sheeting" autocomplete="off" required />
+        </label>
+        <label class="ops-field ops-field-sm">
+          <span>Meters</span>
+          <input type="number" id="fabClothMetersInput" min="1" step="1" value="450" required />
+        </label>
+        <label class="ops-field">
+          <span>Stage</span>
+          <select id="fabClothStageInput">
+            <option>GREIGE</option>
+            <option>PRETREATMENT</option>
+            <option>DYEING</option>
+            <option>PRINTING</option>
+            <option>FINISHES</option>
+            <option>FOLDING</option>
+          </select>
+        </label>
+        <label class="ops-field ops-field-sm">
+          <span>GSM</span>
+          <input type="number" id="fabClothGsmInput" min="40" max="800" step="1" value="160" />
+        </label>
+        <label class="ops-field ops-field-grow">
+          <span>Remarks</span>
+          <input type="text" id="fabClothNotesInput" placeholder="Where this cloth was added" autocomplete="off" />
+        </label>
+        <button type="submit" class="ops-navy-btn ops-save-btn">Add cloth roll</button>
+      </form>
+
+      <article class="ops-panel inspect-detail-card">
+        <h2 class="detail-card-title visually-hidden">Fabric jobs</h2>
+        <div class="ops-table-wrap">
+          <table class="ops-table" id="fabricTraceTable">
+            <thead>
+              <tr>
+                <th>JOB / ROLL ID</th>
+                <th>BUYER BRAND</th>
+                <th>FABRIC TYPE</th>
+                <th>ALLOCATED METERS</th>
+                <th>DEFINED PROCESS ROUTE</th>
+                <th>CURRENT STAGE</th>
+                <th>PROGRESS</th>
+                <th>DATE ADDED</th>
+                <th>ACTIONS</th>
+              </tr>
+            </thead>
+            <tbody id="fabricTraceBody"></tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+  </div>
+
+  <!-- =========================================================================
        BOTTOM CORNER BOILER SCADA ALERT (BILINGUAL URDU & ENGLISH)
        Appears everywhere across all views after delay
        ========================================================================= -->
@@ -7108,7 +7609,8 @@
     <span class="mini-badge-ur" id="miniBadgeUr">• فعال انتباہات</span>
   </button>
 
-  <script src="app.js?v=8.0"></script>
+  <script src="qrcode.js?v=1"></script>
+  <script src="app.js?v=11.9"></script>
 </body>
 
 </html>

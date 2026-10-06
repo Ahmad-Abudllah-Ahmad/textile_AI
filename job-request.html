@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Job request</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: #f8fafc;
+      color: #0f172a;
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+    .sheet {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 22px 16px calc(28px + env(safe-area-inset-bottom));
+    }
+    .logo {
+      display: block;
+      width: min(220px, 70vw);
+      height: auto;
+      margin: 0 auto 16px;
+    }
+    .kicker {
+      margin: 0;
+      text-align: center;
+      letter-spacing: 0.16em;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #64748b;
+    }
+    h1 {
+      margin: 6px 0 4px;
+      text-align: center;
+      font-size: 1.7rem;
+      letter-spacing: -0.03em;
+      overflow-wrap: anywhere;
+    }
+    .lede {
+      margin: 0 0 18px;
+      text-align: center;
+      color: #475569;
+      font-size: 0.92rem;
+      overflow-wrap: anywhere;
+    }
+    section {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 16px 14px 12px;
+      margin-bottom: 14px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+    }
+    h2 { margin: 0 0 10px; font-size: 0.95rem; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td {
+      text-align: left;
+      padding: 9px 0;
+      border-top: 1px solid #f1f5f9;
+      font-size: 0.92rem;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+    th {
+      width: 42%;
+      border-top: 0;
+      color: #64748b;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    label {
+      display: block;
+      margin: 0 0 12px;
+    }
+    label span {
+      display: block;
+      margin-bottom: 6px;
+      color: #64748b;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    input, select {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #ffffff;
+      color: #0f172a;
+      font: inherit;
+      font-size: 1rem;
+    }
+    .send {
+      width: 100%;
+      min-height: 46px;
+      border: 0;
+      border-radius: 12px;
+      background: #1e1b4b;
+      color: #ffffff;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .send:disabled { opacity: 0.6; cursor: default; }
+    .note {
+      margin: 12px 0 0;
+      color: #047857;
+      font-size: 0.92rem;
+      overflow-wrap: anywhere;
+    }
+    .note.is-error { color: #b91c1c; }
+    .history-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 16px;
+      margin-bottom: 8px;
+    }
+    .history-head h2 { margin: 0; }
+    .history-head p {
+      margin: 0;
+      max-width: 460px;
+      text-align: right;
+      color: #64748b;
+      font-size: 0.82rem;
+    }
+    .history-scroll { overflow-x: auto; }
+    .history-table { width: 100%; border-collapse: collapse; }
+    .history-table th,
+    .history-table td {
+      width: auto;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 500;
+      color: #0f172a;
+      padding: 10px 10px 10px 0;
+      white-space: normal;
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+    .history-table th {
+      color: #64748b;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .history-table td:nth-child(1),
+    .history-table td:nth-child(2),
+    .history-table td:nth-child(4),
+    .history-table td:nth-child(5),
+    .history-table td:nth-child(9) {
+      white-space: nowrap;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #ecfdf5;
+      color: #047857;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+    }
+    .pill.is-wait { background: #eef2ff; color: #1e1b4b; }
+    .pill.is-refer { background: #fff7ed; color: #c2410c; }
+    .status-note {
+      display: block;
+      margin-top: 4px;
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .empty {
+      color: #94a3b8;
+      font-size: 0.88rem;
+    }
+    @media (max-width: 800px) {
+      h1 { font-size: 1.45rem; }
+      .history-head { display: block; }
+      .history-head p { text-align: left; margin-top: 6px; }
+      .history-table { min-width: 0; }
+      .history-table thead { display: none; }
+      .history-table tr {
+        display: block;
+        border-top: 1px solid #e2e8f0;
+        padding: 8px 0 4px;
+      }
+      .history-table td {
+        display: grid;
+        grid-template-columns: 7.4rem minmax(0, 1fr);
+        column-gap: 10px;
+        border-top: 0;
+        padding: 5px 0;
+      }
+      .history-table td::before {
+        content: attr(data-label);
+        color: #64748b;
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .history-table td:nth-child(1),
+      .history-table td:nth-child(2),
+      .history-table td:nth-child(4),
+      .history-table td:nth-child(5),
+      .history-table td:nth-child(9) {
+        white-space: normal;
+      }
+      .facts tr {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        column-gap: 12px;
+      }
+      .facts th, .facts td {
+        display: block;
+        width: auto;
+        padding: 8px 0;
+      }
+      .facts td { text-align: right; }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <img class="logo" src="Powered_By__14_-removebg-preview.png" width="521" height="382" alt="Lucky Textile Mills Limited, powered by Spark Technologies" />
+    <p class="kicker">JOB REQUEST</p>
+    <h1 id="jobId">Job card</h1>
+    <p class="lede" id="jobLede">Scan this code, then send the request to the job portal.</p>
+    <section>
+      <h2>This job</h2>
+      <table class="facts"><tbody id="jobFacts"></tbody></table>
+    </section>
+    <section class="request">
+      <h2>Send a request</h2>
+      <form id="requestForm">
+        <label>
+          <span>Machine</span>
+          <select id="machine"></select>
+        </label>
+        <label>
+          <span>Job request</span>
+          <input id="requestText" type="text" maxlength="400" placeholder="What needs attention on this machine" autocomplete="off" required />
+        </label>
+        <label>
+          <span>Send to</span>
+          <select id="department">
+            <option value="unassigned">Job portal</option>
+            <option value="utility">Utility</option>
+            <option value="miscellaneous">Miscellaneous</option>
+            <option value="electrical">Electrical</option>
+            <option value="mechanical">Mechanical</option>
+          </select>
+        </label>
+        <button class="send" type="submit">Send to job portal</button>
+      </form>
+      <p class="note" id="requestNote" hidden></p>
+    </section>
+    <section class="history">
+      <div class="history-head">
+        <h2>Job request status</h2>
+        <p>Each request stays on this table. Department, person, RCA, and time update as the job portal moves the card.</p>
+      </div>
+      <div class="history-scroll">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Job</th>
+              <th>Machine</th>
+              <th>Request</th>
+              <th>Sent</th>
+              <th>Department</th>
+              <th>Person</th>
+              <th>Status</th>
+              <th>RCA</th>
+              <th>Time on machine</th>
+            </tr>
+          </thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script>
+    (function () {
+      const MACHINES = [
+        "BLEACHING-01",
+        "STENTER-14 (NEW MONFORTS)",
+        "PAD DRY DYEING-01",
+        "PAD STEAM-01",
+        "RFGG/ANH-03",
+        "JET DYEING-02",
+        "JIGGER-03"
+      ];
+      const DEPT = {
+        unassigned: "Unassigned",
+        utility: "Utility",
+        miscellaneous: "Miscellaneous",
+        electrical: "Electrical",
+        mechanical: "Mechanical",
+        closed: "Closed"
+      };
+
+      function esc(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (ch) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        }[ch]));
+      }
+
+      function fromPacked(packed) {
+        const parts = String(packed || "").split("~");
+        if (!parts[0]) return null;
+        return {
+          id: parts[0],
+          machine: (parts[1] || "").replace(/\+/g, " "),
+          text: (parts[2] || "").replace(/\+/g, " "),
+          column: parts[3] || "unassigned"
+        };
+      }
+
+      function clockLabel(row) {
+        if (!row.clockStart) return row.time || "—";
+        const total = Math.max(0, Math.floor((Date.now() - row.clockStart) / 1000));
+        const hours = String(Math.floor(total / 3600)).padStart(2, "0");
+        const minutes = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
+        const seconds = String(total % 60).padStart(2, "0");
+        return hours + ":" + minutes + ":" + seconds;
+      }
+
+      function cell(label, html) {
+        return '<td data-label="' + esc(label) + '">' + html + "</td>";
+      }
+
+      let historyRows = [];
+
+      function renderHistory() {
+        const body = document.getElementById("historyBody");
+        if (!historyRows.length) {
+          body.innerHTML = '<tr><td class="empty" colspan="9">No job request has been sent yet.</td></tr>';
+          return;
+        }
+        body.innerHTML = historyRows.map((row) => "<tr>" +
+          cell("Job", esc(row.id)) +
+          cell("Machine", esc(row.machine)) +
+          cell("Request", esc(row.text)) +
+          cell("Sent", esc(row.sent || "—")) +
+          cell("Department", esc(row.department)) +
+          cell("Person", esc(row.person)) +
+          cell("Status", '<span class="pill ' + esc(row.tone || "") + '">' + esc(row.status || "Sent to portal") + '</span><span class="status-note">' + esc(row.note || "") + "</span>") +
+          cell("RCA", esc(row.rca || "—")) +
+          cell("Time on machine", esc(clockLabel(row))) +
+          "</tr>").join("");
+      }
+
+      function loadHistory() {
+        fetch("/api/job-status")
+          .then((response) => response.json())
+          .then((data) => {
+            historyRows = Array.isArray(data.requests) ? data.requests : [];
+            renderHistory();
+          })
+          .catch(() => {});
+      }
+
+      const job = fromPacked(new URLSearchParams(location.search).get("d") || "") || {
+        id: "New request",
+        machine: MACHINES[0],
+        text: "",
+        column: "unassigned"
+      };
+      const machine = job.machine || MACHINES[0];
+      const machines = MACHINES.includes(machine) ? MACHINES : [machine, ...MACHINES];
+      document.title = job.id + " · Job request";
+      document.getElementById("jobId").textContent = job.id;
+      document.getElementById("jobLede").textContent = job.text || "Send this machine request to the job portal.";
+      const rows = [
+        ["Job", job.id],
+        ["Machine", machine],
+        ["Request", job.text || "—"],
+        ["Department", DEPT[job.column] || "Unassigned"]
+      ];
+      document.getElementById("jobFacts").innerHTML = rows.map((row) => "<tr><th>" + esc(row[0]) + "</th><td>" + esc(row[1]) + "</td></tr>").join("");
+      const machineSelect = document.getElementById("machine");
+      machineSelect.innerHTML = machines.map((name) => '<option value="' + esc(name) + '">' + esc(name) + "</option>").join("");
+      machineSelect.value = machine;
+      document.getElementById("requestForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        const note = document.getElementById("requestNote");
+        const button = event.target.querySelector("button");
+        const text = document.getElementById("requestText").value.trim();
+        if (!text) return;
+        button.disabled = true;
+        note.hidden = true;
+        fetch("/api/job-requests", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            token: "qr-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8),
+            machine: machineSelect.value,
+            text,
+            column: document.getElementById("department").value
+          })
+        }).then((response) => {
+          if (!response.ok) throw new Error("send");
+          note.classList.remove("is-error");
+          note.textContent = "Sent to the job portal. It will show on the job card board.";
+          note.hidden = false;
+          document.getElementById("requestText").value = "";
+          loadHistory();
+        }).catch(() => {
+          note.classList.add("is-error");
+          note.textContent = "The job portal could not take this request. Keep this page open and send it again.";
+          note.hidden = false;
+        }).finally(() => {
+          button.disabled = false;
+        });
+      });
+      loadHistory();
+      window.setInterval(() => {
+        renderHistory();
+        loadHistory();
+      }, 3000);
+    })();
+  </script>
+</body>
+</html>
