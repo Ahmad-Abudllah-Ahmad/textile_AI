@@ -16,7 +16,7 @@
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="style.css?v=28.9" />
+  <link rel="stylesheet" href="style.css?v=29.2" />
 </head>
 
 <body>
@@ -597,7 +597,7 @@
             </div>
             <h2 class="card-title title-blue">FABRIC JOB</h2>
             <p class="card-description">
-              Buyer fabric jobs, allocated metres, and the defined route from greige through folding.
+              Customer fabric jobs, allocated metres, and the defined route from greige through folding.
             </p>
           </div>
           <div class="card-bottom-group">
@@ -7733,7 +7733,7 @@
         </button>
         <div class="inspection-title-group">
           <h1 class="inspection-main-title">Fabric Job</h1>
-          <p class="inspection-subtitle">Create a buyer fabric job, log a cloth roll by hand, and follow the defined process route</p>
+          <p class="inspection-subtitle">Create a customer fabric job, log a cloth roll by hand, and follow the defined process route</p>
         </div>
       </div>
       <div class="inspection-header-right job-header-actions">
@@ -7750,7 +7750,7 @@
           <input type="text" id="fabJobIdInput" readonly />
         </label>
         <label class="ops-field">
-          <span>Company / Buyer</span>
+          <span>Customer</span>
           <select id="fabJobCompanyInput">
             <option>IKEA</option>
             <option>ASDA</option>
@@ -7758,6 +7758,7 @@
             <option>H&amp;M</option>
             <option>Zara</option>
             <option>Walmart</option>
+            <option>Rubelli</option>
           </select>
         </label>
         <label class="ops-field ops-field-grow">
@@ -7796,7 +7797,7 @@
         </label>
         <label class="ops-field ops-field-grow">
           <span>PO / Order notes</span>
-          <input type="text" id="fabJobNotesInput" placeholder="Shade, delivery week, buyer PO" autocomplete="off" />
+          <input type="text" id="fabJobNotesInput" placeholder="Shade, delivery week, customer PO" autocomplete="off" />
         </label>
         <button type="submit" class="ops-navy-btn ops-save-btn">Save fabric job</button>
       </form>
@@ -7807,7 +7808,7 @@
           <input type="text" id="fabClothRollInput" autocomplete="off" required />
         </label>
         <label class="ops-field">
-          <span>Buyer</span>
+          <span>Customer</span>
           <select id="fabClothCompanyInput">
             <option>IKEA</option>
             <option>ASDA</option>
@@ -7815,6 +7816,7 @@
             <option>H&amp;M</option>
             <option>Zara</option>
             <option>Walmart</option>
+            <option>Rubelli</option>
           </select>
         </label>
         <label class="ops-field ops-field-grow">
@@ -7854,7 +7856,7 @@
             <thead>
               <tr>
                 <th>JOB / ROLL ID</th>
-                <th>BUYER BRAND</th>
+                <th>CUSTOMER</th>
                 <th>FABRIC TYPE</th>
                 <th>ALLOCATED METERS</th>
                 <th>DEFINED PROCESS ROUTE</th>
@@ -7947,7 +7949,7 @@
   </button>
 
   <script src="qrcode.js?v=1"></script>
-  <script src="app.js?v=11.29"></script>
+  <script src="app.js?v=11.31"></script>
 </body>
 
 </html>

@@ -11439,7 +11439,8 @@ function setupOpsWorkbenches() {
     { id: "FJ-10825", company: "H&M", fabric: "Single Combed Jersey 30s", meters: 15600, gsm: 160, width: "72 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "PRETREATMENT", date: "2026-10-02", entryType: "job", notes: "Bio-polishing and soft-flow bleaching", completed: false },
     { id: "FJ-10826", company: "Target", fabric: "100% Linen Canvas Weave", meters: 9800, gsm: 240, width: "56 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "GREIGE", date: "2026-10-04", entryType: "job", notes: "Casement curtains natural flax unbleached", completed: false },
     { id: "CL-5041", company: "ASDA", fabric: "100% Cotton Sheeting 60x60", meters: 480, gsm: 130, width: "90 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "DYEING", date: "2026-10-04", entryType: "manual_cloth", notes: "Manual sample cut lot for lab dip approval", completed: false },
-    { id: "CL-5042", company: "IKEA", fabric: "Woven Cotton Drill 3/1", meters: 620, gsm: 260, width: "58 inch", route: ["GREIGE", "PRETREATMENT", "FINISHES", "FOLDING"], currentStage: "GREIGE", date: "2026-10-05", entryType: "manual_cloth", notes: "Loom roll piece added manually by floor operator", completed: false }
+    { id: "CL-5042", company: "IKEA", fabric: "Woven Cotton Drill 3/1", meters: 620, gsm: 260, width: "58 inch", route: ["GREIGE", "PRETREATMENT", "FINISHES", "FOLDING"], currentStage: "GREIGE", date: "2026-10-05", entryType: "manual_cloth", notes: "Loom roll piece added manually by floor operator", completed: false },
+    { id: "FJ-10827", company: "Rubelli", fabric: "Silk Viscose Damask", meters: 8600, gsm: 220, width: "54 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "DYEING", date: "2026-10-07", entryType: "job", notes: "Venetian furnishing damask", completed: false }
   ];
 
   function loadFabricJobs() {
@@ -11453,8 +11454,34 @@ function setupOpsWorkbenches() {
     const usable = Array.isArray(stored)
       ? stored.filter((item) => item && item.company && item.currentStage && Array.isArray(item.route))
       : [];
-    if (usable.length) return usable;
-    const fresh = defaultFabricJobs.map((item) => ({ ...item, route: item.route.slice() }));
+    const withRubelli = (list) => {
+      if (list.some((item) => String(item.company || "").toLowerCase().includes("rubelli"))) return list;
+      const nums = list.map((item) => {
+        const match = String(item.id || "").match(/^FJ-(\d+)$/);
+        return match ? Number(match[1]) : 0;
+      });
+      const id = `FJ-${Math.max(10827, ...nums, 0) + 1}`;
+      return [{
+        id,
+        company: "Rubelli",
+        fabric: "Silk Viscose Damask",
+        meters: 8600,
+        gsm: 220,
+        width: "54 inch",
+        route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"],
+        currentStage: "DYEING",
+        date: "2026-10-07",
+        entryType: "job",
+        notes: "Venetian furnishing damask",
+        completed: false
+      }, ...list];
+    };
+    if (usable.length) {
+      const next = withRubelli(usable);
+      if (next.length !== usable.length) save(FABRIC_JOBS_KEY, next);
+      return next.map((item) => ({ ...item, route: item.route.slice() }));
+    }
+    const fresh = withRubelli(defaultFabricJobs).map((item) => ({ ...item, route: item.route.slice() }));
     save(FABRIC_JOBS_KEY, fresh);
     return fresh;
   }
@@ -11470,7 +11497,8 @@ function setupOpsWorkbenches() {
     if (brand.includes("zara")) return `<span class="fab-brand-badge brand-zara">ZARA</span>`;
     if (brand.includes("spencer") || brand.includes("m&s")) return `<span class="fab-brand-badge brand-mns">M&amp;S</span>`;
     if (brand.includes("walmart")) return `<span class="fab-brand-badge brand-walmart">WALMART</span>`;
-    return `<span class="fab-brand-badge brand-generic">${esc(company || "Client")}</span>`;
+    if (brand.includes("rubelli")) return `<span class="fab-brand-badge brand-rubelli">RUBELLI</span>`;
+    return `<span class="fab-brand-badge brand-generic">${esc(company || "Customer")}</span>`;
   }
 
   function getRouteFlowHtml(route, currentStage, completed) {
@@ -11485,6 +11513,16 @@ function setupOpsWorkbenches() {
     }).join("") + `</div>`;
   }
 
+  function fabricShortfallMeters(jobId, stage, incoming) {
+    const base = Math.max(0, Math.round(Number(incoming) || 0));
+    if (base <= 1) return 0;
+    let hash = 0;
+    const key = `${jobId || ""}|${stage || ""}`;
+    for (let i = 0; i < key.length; i += 1) hash = (hash * 33 + key.charCodeAt(i)) >>> 0;
+    const loss = Math.max(1, Math.round(base * (0.05 + (hash % 41) / 1000)));
+    return Math.min(loss, base - 1);
+  }
+
   function renderFabricRecord(item) {
     if (!recordTitle || !recordStatus || !recordBody) return;
     if (recordKicker) recordKicker.textContent = "FABRIC ORDER & TRACE RECORD";
@@ -11495,15 +11533,21 @@ function setupOpsWorkbenches() {
 
     const route = Array.isArray(item.route) && item.route.length ? item.route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
     const curIdx = item.completed ? route.length : Math.max(0, route.indexOf(item.currentStage));
+    let stageMeters = Number(item.meters) || 0;
     const routeRows = route.map((step, idx) => {
       const isPast = item.completed || idx < curIdx;
       const isCurrent = !item.completed && idx === curIdx;
+      const reached = item.completed || idx <= curIdx;
+      const shortfall = reached ? fabricShortfallMeters(item.id, step, stageMeters) : 0;
+      const metersHere = stageMeters;
+      if (reached) stageMeters = Math.max(0, stageMeters - shortfall);
       const statusText = isPast ? "Completed" : isCurrent ? "Currently in process" : "Pending";
       const statusStyle = isPast ? "color:#10b981;font-weight:700;" : isCurrent ? "color:#1e1b4b;font-weight:800;" : "color:#94a3b8;";
       return `<tr>
         <td><strong>${esc(step)}</strong></td>
         <td>${esc(item.fabric)}</td>
-        <td>${Number(item.meters).toLocaleString("en-US")} m</td>
+        <td>${Number(metersHere).toLocaleString("en-US")} m</td>
+        <td>${reached ? `${shortfall.toLocaleString("en-US")} m` : "—"}</td>
         <td>${esc(item.gsm ? `${item.gsm} GSM` : "Standard")}</td>
         <td style="${statusStyle}">${statusText}</td>
       </tr>`;
@@ -11514,7 +11558,7 @@ function setupOpsWorkbenches() {
         <div>
           <div class="ops-record-facts">
             <div class="ops-record-fact"><span>Order / Cloth ID</span><strong>${esc(item.id)}</strong></div>
-            <div class="ops-record-fact"><span>Buyer / Client</span><strong>${esc(item.company)}</strong></div>
+            <div class="ops-record-fact"><span>Customer</span><strong>${esc(item.company)}</strong></div>
             <div class="ops-record-fact"><span>Fabric specification</span><strong>${esc(item.fabric)}</strong></div>
             <div class="ops-record-fact"><span>Allocated meters</span><strong>${Number(item.meters).toLocaleString("en-US")} m</strong></div>
           </div>
@@ -11522,7 +11566,7 @@ function setupOpsWorkbenches() {
       </div>
       <div class="ops-record-metrics">
         <div class="ops-record-metric"><span>Current stage</span><strong>${esc(item.completed ? "COMPLETED" : (item.currentStage === "FINISHES" ? "FINISHING" : item.currentStage))}</strong></div>
-        <div class="ops-record-metric"><span>Record type</span><strong>${item.entryType === "manual_cloth" ? "Manual Cloth Piece" : "Buyer Job Order"}</strong></div>
+        <div class="ops-record-metric"><span>Record type</span><strong>${item.entryType === "manual_cloth" ? "Manual Cloth Piece" : "Customer Job Order"}</strong></div>
         <div class="ops-record-metric"><span>GSM / Width</span><strong>${item.gsm || 180} GSM · ${esc(item.width || "58 inch")}</strong></div>
         <div class="ops-record-metric"><span>Date entered</span><strong>${esc(item.date)}</strong></div>
       </div>
@@ -11535,7 +11579,7 @@ function setupOpsWorkbenches() {
         <h3>Process stages</h3>
         <table class="ops-record-table">
           <thead>
-            <tr><th>Stage</th><th>Fabric type</th><th>Meters</th><th>GSM</th><th>Status</th></tr>
+            <tr><th>Stage</th><th>Fabric type</th><th>Meters</th><th>Shortfall</th><th>GSM</th><th>Status</th></tr>
           </thead>
           <tbody>${routeRows}</tbody>
         </table>
@@ -11581,20 +11625,15 @@ function setupOpsWorkbenches() {
       const route = Array.isArray(item.route) && item.route.length ? item.route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
       const curIdx = item.completed ? route.length - 1 : Math.max(0, route.indexOf(item.currentStage));
       const pct = item.completed ? 100 : Math.max(10, Math.min(95, Math.round(((curIdx + 0.5) / route.length) * 100)));
-      const typeBadge = item.entryType === "manual_cloth"
-        ? `<span class="fab-type-badge type-cloth">MANUAL CLOTH</span>`
-        : `<span class="fab-type-badge type-job">JOB ORDER</span>`;
       const stagePill = item.completed
         ? `<span class="fab-stage-pill stage-done">COMPLETED</span>`
         : `<span class="fab-stage-pill stage-live"><span class="live-dot"></span> ${esc(item.currentStage === "FINISHES" ? "FINISHING" : item.currentStage)}</span>`;
       return `<tr data-fab-row="${esc(item.id)}" style="cursor:pointer;">
         <td>
           <div style="font-weight:800;font-family:monospace;font-size:0.92rem;color:#0f172a;">${esc(item.id)}</div>
-          <div style="margin-top:3px;">${typeBadge}</div>
         </td>
         <td>
           <div>${getBrandBadgeHtml(item.company)}</div>
-          <div style="font-size:0.76rem;color:#64748b;font-weight:600;margin-top:2px;">${esc(item.company)}</div>
         </td>
         <td>
           <div style="font-weight:700;color:#0f172a;font-size:0.88rem;">${esc(item.fabric)}</div>

@@ -13665,6 +13665,12 @@ figcaption {
   border: 1px solid #0056a4;
 }
 
+.fab-brand-badge.brand-rubelli {
+  background: #4a1c2f;
+  color: #f6efe6;
+  border: 1px solid #2e101c;
+}
+
 .fab-brand-badge.brand-generic {
   background: #e2e8f0;
   color: #1e293b;
@@ -13887,5 +13893,281 @@ figcaption {
   .ops-create-row,
   .ops-job-form {
     flex-wrap: wrap;
+  }
+}
+
+@media (max-height: 860px) and (min-width: 1101px) {
+  .dyeing-inspection-container.energy-container {
+    height: auto;
+    min-height: calc(100vh - 64px);
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .energy-container .inspection-content-body,
+  .energy-top-row,
+  .energy-top-row .energy-stack-card,
+  .energy-stack {
+    flex: 0 0 auto;
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .energy-stack-block,
+  .energy-ai-block {
+    flex: 0 0 auto;
+    height: auto;
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+    justify-content: flex-start;
+  }
+
+  .energy-viz-row {
+    flex: 0 0 auto;
+    height: auto;
+    min-height: 84px;
+    overflow: visible;
+  }
+
+  .energy-pie-mini {
+    height: 84px;
+    min-height: 84px;
+    overflow: visible;
+  }
+
+  .energy-pie-mini svg {
+    width: 64px;
+    height: 64px;
+    max-height: none;
+  }
+
+  .energy-pie-mini ul,
+  .energy-pie-mini li {
+    overflow: visible;
+    text-overflow: unset;
+    white-space: normal;
+  }
+
+  .energy-meter-mini,
+  .energy-oem-mini {
+    height: 84px;
+  }
+
+  .energy-meter-mini svg,
+  .energy-oem-mini svg {
+    width: 58px;
+    height: 58px;
+    max-height: none;
+  }
+
+  .energy-bottom-row {
+    height: 190px;
+    min-height: 170px;
+    flex: 0 0 auto;
+  }
+
+  .energy-ai-compare-row {
+    min-width: 0;
+  }
+
+  .ai-match-bar-wrap,
+  .ai-compare-val-box {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 1100px) {
+  .dyeing-inspection-container.energy-container,
+  .dyeing-inspection-container.compliance-container,
+  .planning-container,
+  .dashboard-container,
+  .dash-inner-content {
+    height: auto;
+    min-height: 100vh;
+    max-height: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .energy-container .inspection-content-body,
+  .compliance-container .inspection-content-body,
+  .energy-top-row,
+  .energy-top-row .energy-stack-card,
+  .energy-stack,
+  .energy-stack-block,
+  .energy-ai-block,
+  .energy-bottom-row,
+  .energy-chart-card,
+  .energy-chart-grid,
+  .energy-chart-grid .energy-stack-block,
+  .energy-viz-row,
+  .inspect-detail-card {
+    overflow: visible;
+    height: auto;
+    max-height: none;
+    flex: 0 0 auto;
+  }
+
+  .energy-top-row,
+  .inspection-details-row,
+  .energy-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inspection-metrics-row,
+  #pretreatmentInspectionView .inspection-metrics-row,
+  #fvDyeingInspectionView .inspection-metrics-row,
+  #fvPrintingInspectionView .inspection-metrics-row,
+  #fvFinishInspectionView .inspection-metrics-row,
+  #foldingInspectionView .inspection-metrics-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .energy-bottom-row {
+    min-height: 0;
+  }
+
+  .energy-mini-viewport {
+    height: 120px;
+    max-height: none;
+  }
+
+  .energy-viz-row {
+    flex-wrap: wrap;
+    align-items: center;
+    min-height: 96px;
+  }
+
+  .energy-pie-mini {
+    height: auto;
+    min-height: 72px;
+    overflow: visible;
+  }
+
+  .energy-pie-mini svg {
+    width: 72px;
+    height: 72px;
+    max-height: none;
+  }
+
+  .energy-pie-mini ul,
+  .energy-pie-mini li {
+    overflow: visible;
+    text-overflow: unset;
+    white-space: normal;
+  }
+
+  .energy-meter-mini,
+  .energy-oem-mini {
+    height: auto;
+  }
+
+  .energy-meter-mini svg,
+  .energy-oem-mini svg {
+    width: 64px;
+    height: 64px;
+    max-height: none;
+  }
+
+  .energy-stack-head {
+    flex-wrap: wrap;
+  }
+
+  .energy-stack-head h3,
+  .energy-stack-head span {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .energy-ai-compare-row {
+    grid-template-columns: minmax(92px, 112px) minmax(0, 1fr) minmax(78px, 104px);
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .ai-match-bar-wrap,
+  .ai-match-track,
+  .ai-compare-val-box {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .ai-match-sub-info {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .inspection-header-bar {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .inspection-header-left {
+    min-width: 0;
+    flex: 1 1 220px;
+  }
+
+  .inspection-main-title,
+  .inspection-subtitle {
+    overflow-wrap: anywhere;
+  }
+
+  .dash-map-viewport {
+    height: auto;
+    aspect-ratio: 1060 / 920;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .scada-pid-diagram {
+    height: auto;
+    max-height: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .inspection-metrics-row,
+  #pretreatmentInspectionView .inspection-metrics-row,
+  #fvDyeingInspectionView .inspection-metrics-row,
+  #fvPrintingInspectionView .inspection-metrics-row,
+  #fvFinishInspectionView .inspection-metrics-row,
+  #foldingInspectionView .inspection-metrics-row,
+  .energy-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .energy-ai-compare-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .energy-ai-compare-row .desired-box {
+    order: 1;
+  }
+
+  .energy-ai-compare-row .live-box {
+    order: 2;
+  }
+
+  .energy-ai-compare-row .ai-match-bar-wrap {
+    order: 3;
+    grid-column: 1 / -1;
+  }
+
+  .energy-header-actions,
+  .energy-ai-actions-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .inspection-content-body,
+  .energy-container .inspection-content-body,
+  .compliance-container .inspection-content-body {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 }
