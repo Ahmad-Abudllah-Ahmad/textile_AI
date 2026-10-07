@@ -133,6 +133,8 @@ function hideAllViews() {
     const el = document.getElementById(id);
     if (el) el.style.display = "none";
   });
+  const boilerAlert = document.getElementById("boilerCornerAlert");
+  if (boilerAlert) boilerAlert.style.setProperty("display", "none", "important");
 }
 
 function placeFloatingChartTip(tip, event, options) {
@@ -544,6 +546,9 @@ function openModuleDashboard(moduleKey = "predictive-maintenance") {
 
   if (typeof window.activateTab === "function") {
     window.activateTab(moduleKey);
+  }
+  if (typeof window.showMaintenanceCornerAlert === "function") {
+    window.showMaintenanceCornerAlert();
   }
 }
 
@@ -1593,6 +1598,95 @@ function setupScadaInteractivity() {
     valve.addEventListener("mouseleave", hideHud);
   });
 
+  const SCADA_SERVICE_EPOCH = Date.now();
+  const BOILER_NAMEPLATE_RPM = [1450, 1410, 899, 1450];
+  const BOILER_BEARING = [
+    { runH: 6240, lifeH: 18000, greaseH: 720 },
+    { runH: 5110, lifeH: 18000, greaseH: 720 },
+    { runH: 8920, lifeH: 16000, greaseH: 720 },
+    { runH: 2740, lifeH: 18000, greaseH: 720 }
+  ];
+  const BOILER_MOTOR = [
+    { runH: 5988, lifeH: 20000, greaseH: 500 },
+    { runH: 4704, lifeH: 20000, greaseH: 500 },
+    { runH: 8360, lifeH: 18000, greaseH: 500 },
+    { runH: 2516, lifeH: 20000, greaseH: 500 }
+  ];
+  const TANK_CLEAN = {
+    Alpha: { runH: 1460, cleanH: 2160, hoursPerCycle: 8 },
+    Beta: { runH: 980, cleanH: 2160, hoursPerCycle: 8 },
+    "Flash Condensate Recovery Tank": { runH: 640, cleanH: 1440, hoursPerCycle: 6 }
+  };
+  const TANK_CLEAN_DEFAULT = { runH: 410, cleanH: 720, hoursPerCycle: 4 };
+
+  function formatServiceClock(totalSeconds) {
+    const sec = Math.max(0, Math.floor(totalSeconds));
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${h.toLocaleString("en-US")} h ${pad(m)} m ${pad(s)} s`;
+  }
+
+  function formatServiceCycles(n) {
+    const v = Math.max(0, Math.round(n));
+    if (v < 100000) return v.toLocaleString("en-US");
+    if (v < 1e9) return `${(v / 1e6).toFixed(2)} M`;
+    return `${(v / 1e9).toFixed(2)} B`;
+  }
+
+  function wearRows(spec, rpm, running, labels) {
+    const elapsedSec = running ? (Date.now() - SCADA_SERVICE_EPOCH) / 1000 : 0;
+    const runSec = spec.runH * 3600 + elapsedSec;
+    const cyclesPerHour = rpm * 60;
+    const runCyc = (runSec / 3600) * cyclesPerHour;
+    const lifeCyc = spec.lifeH * cyclesPerHour;
+    const greaseSec = spec.greaseH * 3600;
+    const leftSec = greaseSec - (runSec % greaseSec);
+    const leftCyc = (leftSec / 3600) * cyclesPerHour;
+    return [
+      [labels.time, `${formatServiceClock(runSec)} / ${spec.lifeH.toLocaleString("en-US")} h`],
+      [labels.cycles, `${formatServiceCycles(runCyc)} / ${formatServiceCycles(lifeCyc)}`],
+      [labels.grease, formatServiceClock(leftSec)],
+      [labels.greaseCycles, `${formatServiceCycles(leftCyc)} left`]
+    ];
+  }
+
+  function boilerServiceRows(compNum, isRun) {
+    const rpm = BOILER_NAMEPLATE_RPM[compNum] || 1450;
+    return [
+      ...wearRows(BOILER_BEARING[compNum] || BOILER_BEARING[0], rpm, isRun, {
+        time: "Bearing time",
+        cycles: "Bearing cycles",
+        grease: "Parts grease due",
+        greaseCycles: "Parts grease cycles"
+      }),
+      ...wearRows(BOILER_MOTOR[compNum] || BOILER_MOTOR[0], rpm, isRun, {
+        time: "Motor time",
+        cycles: "Motor cycles",
+        grease: "Motor grease due",
+        greaseCycles: "Motor grease cycles"
+      })
+    ];
+  }
+
+  function tankServiceRows(name) {
+    const spec = TANK_CLEAN[name] || TANK_CLEAN_DEFAULT;
+    const elapsedSec = (Date.now() - SCADA_SERVICE_EPOCH) / 1000;
+    const runSec = spec.runH * 3600 + elapsedSec;
+    const runCyc = (runSec / 3600) / spec.hoursPerCycle;
+    const limitCyc = spec.cleanH / spec.hoursPerCycle;
+    const cleanSec = spec.cleanH * 3600;
+    const leftSec = cleanSec - (runSec % cleanSec);
+    const leftCyc = (leftSec / 3600) / spec.hoursPerCycle;
+    return [
+      ["Running time", formatServiceClock(runSec)],
+      ["Running cycles", `${formatServiceCycles(runCyc)} / ${formatServiceCycles(limitCyc)}`],
+      ["Clean due", formatServiceClock(leftSec)],
+      ["Clean cycles", `${formatServiceCycles(leftCyc)} left`]
+    ];
+  }
+
   // 2. Interactive Compressors Click & Hover
   const compressors = document.querySelectorAll(".interactive-compressor");
   compressors.forEach((comp) => {
@@ -1619,7 +1713,8 @@ function setupScadaInteractivity() {
           ["Burner / Firing Rate", isRun ? "88.5% (High Fire)" : "0.0% (Standby)"],
           ["Feedwater Pump", isRun ? `${scadaState.compRPMs[compNum]} RPM` : "0 RPM"],
           ["Steam Output Temp", isRun ? "175.4°C (Sat. Steam)" : "85.0°C (Hot Standby)"],
-          ["Header Pressure", isRun ? "8.20 bar" : "0.0 bar"]
+          ["Header Pressure", isRun ? "8.20 bar" : "0.0 bar"],
+          ...boilerServiceRows(compNum, isRun)
         ],
         isRun ? "FIRING NOMINAL" : "STANDBY IDLE",
         isRun ? "status-ok" : "status-warn"
@@ -1638,7 +1733,8 @@ function setupScadaInteractivity() {
           ["Status", isRun ? "Active Firing (ASME Sec. I)" : "Standby Reserve"],
           ["Feed Pump RPM", `${rpm} RPM`],
           ["Vibration", vib],
-          ["Command", "Click to Toggle Boiler Firing / Standby"]
+          ["Command", "Click to Toggle Boiler Firing / Standby"],
+          ...boilerServiceRows(compNum, isRun)
         ],
         statusText: isRun ? "OPTIMAL" : "OFFLINE",
         statusType: isRun ? "status-ok" : "status-warn"
@@ -1750,12 +1846,13 @@ function setupScadaInteractivity() {
       const isBlowdown = name === "Auto-Drain Condensate Tank" || name.includes("Blowdown") || name.includes("Recovery & Drain");
       return {
         title: isBuffer ? "Flash Condensate Recovery Tank" : isBlowdown ? "Boiler Continuous Blowdown & Heat Recovery Tank" : `Steam Accumulator Vessel ${name}`,
-        tag: `TK-${name.toUpperCase().replace(/[^A-Z0-9]/g, '-')}`,
+        tag: isBlowdown ? "TK-BLOWDOWN" : `TK-${name.toUpperCase().replace(/[^A-Z0-9]/g, '-')}`,
         rows: [
           ["Operating Pressure", `${p} bar`],
           ["Vessel Capacity", isBuffer ? "8,000 Liters (Flash Steam Recovery)" : isBlowdown ? "6,000 Liters (Heat Exchanger Loop)" : "15,000 Liters (Steam Cushion)"],
           ["Thermal Enthalpy", "2,773 kJ/kg (Sat. Vapor)"],
-          ["Core Saturation Temp", `${temp}°C`]
+          ["Core Saturation Temp", `${temp}°C`],
+          ...tankServiceRows(name)
         ],
         statusText: "CHARGED NOMINAL",
         statusType: "status-ok"
@@ -2687,38 +2784,38 @@ const PANEL_INFO_LIBRARY = {
       matters: "Even heat setting fixes dimensional stability and handle. Overheating yellows fabric and damages elastane; underheating leaves residual shrinkage that shows up after washing."
     },
     "Moisture & Softener Dosing": {
-      category: "Finish application",
+      category: "Finishing application",
       summary: "Residual moisture at the stenter exit together with the softener add-on applied in the pad.",
       shows: "The current moisture and dosing values with their trend.",
       matters: "Over-drying wastes thermal energy and harshens the handle; under-drying risks shade change and mildew in the roll. Add-on level affects handle, sewability and shade."
     },
-    "Live In-Line Finish Spectrophotometer Sensor Feed": colorFeedInfo(
+    "Live In-Line Finishing Spectrophotometer Sensor Feed": colorFeedInfo(
       "finishing",
       "Fabric leaves the stenter hot and under tension, so the feed helps confirm the goods are settled and flat where the reading is taken."
     ),
     "Master Standard vs Actual Measured Color Data": colorStandardInfo(
-      "Comparing pre- and post-finish measurements separates a dyeing error from a shift introduced by curing or the finish recipe."
+      "Comparing pre- and post-finishing measurements separates a dyeing error from a shift introduced by curing or the finishing recipe."
     )
   },
 
   greigeInspectionView: {
-    "Defect Match Index": {
-      category: "Vision detection",
-      summary: "Agreement between the vision system's defect classification and the reference classification used for grading.",
-      shows: "The match index with its trend.",
-      matters: "Grading decisions and buyer claims depend on consistent classification. A falling index usually points to lighting, focus, or a fabric construction the model has not been trained on."
+    "Tear": {
+      category: "Defect rate",
+      summary: "Live tears seen by the greige camera, counted per 1000 m of loom-state cloth.",
+      shows: "A live line of tears per 1000 m. The line rises when a new tear enters the scan.",
+      matters: "A tear on greige usually comes from a broken end, a sharp temple, or the take-up. It cannot be repaired after dyeing, so the loom should be stopped and the source found."
     },
-    "Auto-Grading Accuracy": {
-      category: "Fabric grading",
-      summary: "Accuracy of automatic grading against the four-point system commonly used for woven fabric inspection.",
-      shows: "Grading accuracy with its trend.",
-      matters: "In the four-point system each defect scores one to four points by size, and the points per 100 square metres decide whether a roll is first or second quality."
+    "Crease": {
+      category: "Defect rate",
+      summary: "Live creases on greige cloth, counted per 1000 m of loom-state cloth.",
+      shows: "A live line of creases per 1000 m. The line rises when a new crease enters the scan.",
+      matters: "A crease on loom-state cloth usually comes from a folded selvedge, a tight batch, or the take-up. If it stays closed it dyes as a pale line, so the cloth should be opened before preparation."
     },
-    "Scan Throughput": {
-      category: "Line capacity",
-      summary: "The fabric speed the inspection system is currently processing.",
-      shows: "Throughput in metres per minute for the running machine.",
-      matters: "Inspection has to keep pace with the weaving shed without losing detection resolution, so throughput links quality confidence to the delivery schedule."
+    "Pin Hole": {
+      category: "Defect rate",
+      summary: "Live pin holes on greige cloth, counted per 1000 m.",
+      shows: "A live line of pin holes per 1000 m.",
+      matters: "A pin hole on loom-state cloth is a small puncture from a broken end or a sharp guide. In the four-point system it scores as a hole and it will still be there after finishing."
     },
     "Live In-Line Greige Linear-Camera Sensor Feed": visionFeedInfo(
       "greige",
@@ -2727,29 +2824,35 @@ const PANEL_INFO_LIBRARY = {
     "Live Tear, Hole & Oil Stain Classification": {
       category: "Defect classification",
       summary: "A live breakdown of detected defects by type, with the tolerance applied to the running quality.",
-      shows: "Tear index, hole count and oil stains per 1000 m against the configured tolerance.",
+      shows: "Hover the chart for the live tear, crease and pin-hole reading at that metre. The log under the buttons records each defect with the time and the metre it appears.",
       matters: "Separating mechanical damage from contamination points to different root causes — loom and take-up mechanics on one side, lubrication and handling on the other."
     }
   },
 
   pretreatmentInspectionView: {
-    "Absorbency Deviation": {
-      category: "Preparation quality",
-      summary: "Variation in fabric wettability after singeing, desizing, scouring and bleaching.",
-      shows: "Deviation from the target absorbency with its trend.",
-      matters: "Uneven absorbency is one of the most common causes of unlevel dyeing, and it has to be corrected in preparation rather than in the dyehouse."
+    "Tear": {
+      category: "Defect rate",
+      summary: "Live tears seen on the preparation range, counted per 1000 m.",
+      shows: "A live line of tears per 1000 m.",
+      matters: "A tear here usually comes from a guide, an expander, or the singeing flame edge. The cloth is already wet and open, so the damage will run into dyeing unless the range is stopped."
     },
-    "Desize–Scour Efficiency": {
-      category: "Preparation chemistry",
-      summary: "Effectiveness of size removal and scouring, the basis for residual-size checks such as the violet iodine scale.",
-      shows: "The efficiency value with its trend.",
-      matters: "Residual size, waxes and seed coat block dye penetration and cause spots and patchy shade in the next stage."
+    "Chemical Stain": {
+      category: "Contamination",
+      summary: "Live chemical stains on prepared cloth, counted per 1000 m.",
+      shows: "A live line of chemical stains per 1000 m.",
+      matters: "Stains at pretreatment come from size residue, alkali splash, or uneven peroxide. They become shade patches in dyeing, so the bath or the pad should be corrected before the next length."
     },
-    "Bath pH Level": {
-      category: "Bath chemistry",
-      summary: "The pH of the running preparation bath.",
-      shows: "The live pH reading with its trend.",
-      matters: "Scouring and peroxide bleaching are strongly pH-dependent, and goods must also be neutralized before dyeing, so drifting pH affects both fabric quality and shade reproducibility."
+    "Pin Hole": {
+      category: "Defect rate",
+      summary: "Live pin holes on prepared cloth, counted per 1000 m.",
+      shows: "A live line of pin holes per 1000 m.",
+      matters: "Pin holes after singeing and scouring come from a sharp pin, a burnt end, or a hole that was already in the greige. They fail the piece and they cannot be closed later."
+    },
+    "Crease": {
+      category: "Defect rate",
+      summary: "Live creases on prepared cloth, counted per 1000 m.",
+      shows: "A live line of creases per 1000 m.",
+      matters: "A crease on the preparation range usually comes from a folded rope, a stopped expander, or a tight batch. It holds liquor unevenly and dyes as a pale streak if it is not opened."
     },
     "Live In-Line Pretreatment Optical Sensor Feed": visionFeedInfo(
       "pretreatment",
@@ -2757,30 +2860,36 @@ const PANEL_INFO_LIBRARY = {
     ),
     "Live Tear & Chemical Stain Classification": {
       category: "Defect classification",
-      summary: "Live classification of mechanical damage and chemical marks detected on the prepared fabric.",
-      shows: "Tear index, hole count and chemical stains per 1000 m against the configured tolerance.",
-      matters: "Chemical marks in preparation usually indicate dosing, rinsing or splash problems that will repeat on every following length until they are corrected."
+      summary: "Live tear Δ and hole Δ on the prepared web, together with chemical stains per 1000 m.",
+      shows: "Hover the chart for the live tear, stain, pin-hole and crease reading at that metre. The log under the buttons records each defect with the time and the metre it appears.",
+      matters: "A rising tear or hole Δ means the cloth is being damaged on the preparation range. Chemical stains point to dosing, splash or poor rinsing. Each one needs its own correction before the goods reach dyeing."
     }
   },
 
   fvDyeingInspectionView: {
-    "Defect Detection Rate": {
-      category: "Vision detection",
-      summary: "The proportion of surface defects on dyed fabric that the vision system detects.",
-      shows: "The detection rate with its trend.",
-      matters: "Dyed goods carry the full value added so far, so a defect missed here travels into finishing, inspection and, in the worst case, the buyer's claim."
+    "Tear": {
+      category: "Defect rate",
+      summary: "Live tears seen on the dye range, counted per 1000 m.",
+      shows: "A live line of tears per 1000 m.",
+      matters: "A tear on dyed cloth usually comes from a guide roller, an expander, or the jet. The goods already carry the dye cost, so the machine should be stopped before the tear runs the length."
     },
-    "Tear / Hole Match Index": {
-      category: "Defect classification",
-      summary: "Agreement between the system's classification of mechanical damage and the reference classification.",
-      shows: "The match index for tears and holes with its trend.",
-      matters: "Mechanical damage on a dye range usually traces back to guide rollers, expanders or jet transport, so reliable classification is what makes the maintenance action clear."
+    "Chemical Stain": {
+      category: "Contamination",
+      summary: "Live chemical stains on dyed cloth, counted per 1000 m.",
+      shows: "A live line of chemical stains per 1000 m.",
+      matters: "These stains are dye splash, alkali, or oil. They repeat until filtration, dosing, or a leaking pad is corrected."
     },
-    "Chemical Spot Alerts": {
-      category: "Contamination watch",
-      summary: "Alerts raised for dye spots, chemical splashes and crease marks found on the running fabric.",
-      shows: "The current alert rate with its trend.",
-      matters: "Spots and crease marks are often correctable at source — filtration, dosing or transport — and every length produced before the alert is acted on carries the same fault."
+    "Pin Hole": {
+      category: "Defect rate",
+      summary: "Live pin holes on dyed cloth, counted per 1000 m.",
+      shows: "A live line of pin holes per 1000 m.",
+      matters: "A pin hole at dyeing is either damage from this range or a hole that arrived from preparation. Either way it fails the piece and should be traced to the guide that made it."
+    },
+    "Crease": {
+      category: "Defect rate",
+      summary: "Live creases on dyed cloth, counted per 1000 m.",
+      shows: "A live line of creases per 1000 m.",
+      matters: "A crease in the jet or on the pad becomes a pale or dark line once the dye is fixed. Open the rope and reset the plaiter before the mark runs the length."
     },
     "Live In-Line Dyeing Defect Vision Sensor Feed": visionFeedInfo(
       "dyeing",
@@ -2789,29 +2898,35 @@ const PANEL_INFO_LIBRARY = {
     "Live Tear & Chemical Stain Classification": {
       category: "Defect classification",
       summary: "Live classification of mechanical damage and chemical or dye marks on dyed fabric.",
-      shows: "Tear index, hole count and chemical stains per 1000 m against the configured tolerance.",
+      shows: "Hover the chart for the live tear, stain, pin-hole and crease reading at that metre. The log under the buttons records each defect with the time and the metre it appears.",
       matters: "The split between damage and staining decides whether the response is mechanical maintenance or a change to the dyeing and rinsing chemistry."
     }
   },
 
   fvPrintingInspectionView: {
-    "Print Defect Match Index": {
-      category: "Vision detection",
-      summary: "Agreement between the vision system's print-defect classification and the reference classification.",
-      shows: "The match index with its trend.",
-      matters: "Printed defects are judged against the design itself, so classification accuracy determines whether a genuine misprint is separated from an intended pattern feature."
-    },
-    "Registration Skew Accuracy": {
-      category: "Registration control",
-      summary: "Measured skew and misalignment of the pattern repeat across screens or print heads.",
-      shows: "Registration and skew deviation with its trend.",
-      matters: "Drifting registration on a rotary or digital line spoils every following repeat, so it is one of the fastest ways to lose a long print run."
-    },
-    "Misprint Alert Rate": {
+    "Tear": {
       category: "Defect rate",
-      summary: "Rate of misprints, pin-holes and blotches detected on the running length.",
-      shows: "Alerts per 1000 m with the current trend.",
-      matters: "Rising alerts typically indicate a blocked screen, a missing nozzle or a paste supply problem — all faults that repeat until the machine is stopped and cleared."
+      summary: "Live tears seen on the print line, counted per 1000 m.",
+      shows: "A live line of tears per 1000 m.",
+      matters: "A tear under a rotary screen or a digital head spoils the repeat and can catch in the blanket. Stop the printer and clear the guide before the tear runs."
+    },
+    "Chemical Stain": {
+      category: "Contamination",
+      summary: "Live chemical stains on printed cloth, counted per 1000 m.",
+      shows: "A live line of chemical stains per 1000 m.",
+      matters: "On a print line these are paste drips, doctor-blade marks, or a chemical splash. They repeat on every following metre until the screen or the paste supply is cleaned."
+    },
+    "Pin Hole": {
+      category: "Defect rate",
+      summary: "Live pin holes on printed cloth, counted per 1000 m.",
+      shows: "A live line of pin holes per 1000 m.",
+      matters: "A pin hole on print is a missing spot of paste or a puncture in the cloth. A blocked screen makes a regular hole in the design; a cloth hole is irregular and was already in the fabric."
+    },
+    "Crease": {
+      category: "Defect rate",
+      summary: "Live creases on printed cloth, counted per 1000 m.",
+      shows: "A live line of creases per 1000 m.",
+      matters: "A crease under a screen or a digital head leaves an unprinted line in the repeat. The cloth has to lie flat before the next metre is printed."
     },
     "Live In-Line Print Defect Vision Sensor Feed": visionFeedInfo(
       "print",
@@ -2820,29 +2935,35 @@ const PANEL_INFO_LIBRARY = {
     "Live Misprint & Registration Classification": {
       category: "Defect classification",
       summary: "Live breakdown of print defects by type together with the registration measurement.",
-      shows: "Registration in millimetres, pin-hole count and misprints per 1000 m against the tolerance.",
+      shows: "Hover the chart for the live tear, stain, pin-hole and crease reading at that metre. The log under the buttons records each defect with the time and the metre it appears.",
       matters: "Registration faults and paste faults have different causes; classifying them separately sends the correct action to the printer or to the colour kitchen."
     }
   },
 
   fvFinishInspectionView: {
-    "Dimensional Match Index": {
-      category: "Dimensional control",
-      summary: "How closely finished width and weight match the specification for the quality being produced.",
-      shows: "The dimensional match index with its trend.",
-      matters: "Width and GSM are contractual values. Running narrow wastes fabric at cutting, and running heavy gives away material on every metre delivered."
-    },
-    "Skew / Bow Correction": {
-      category: "Fabric geometry",
-      summary: "Measured weft distortion and the correction applied by the straightening unit before the stenter chambers.",
-      shows: "Current skew and bow in degrees with the applied correction trend.",
-      matters: "Bow and skew cause garments to twist after washing, so buyers set tight limits and the fault must be corrected while the fabric is still on the stenter."
-    },
-    "Surface Defect Density": {
+    "Tear": {
       category: "Defect rate",
-      summary: "Density of surface defects detected on the finished fabric.",
-      shows: "Defects per unit length with the current trend.",
-      matters: "Finishing is the last chance to detect a fault before final inspection and packing, where any rejection costs the full value of the piece."
+      summary: "Live tears seen on the stenter and finishing line, counted per 1000 m.",
+      shows: "A live line of tears per 1000 m.",
+      matters: "A tear on the stenter usually starts at a pin, a clip, or an overfeed roller. Finished cloth already has its full cost, so the chamber should be stopped before the tear opens."
+    },
+    "Chemical Stain": {
+      category: "Contamination",
+      summary: "Live chemical stains on finished cloth, counted per 1000 m.",
+      shows: "A live line of chemical stains per 1000 m.",
+      matters: "Stains at finishing come from softener drip, residual alkali, or a dirty pad. They are visible on the finished shade and will be claimed if they reach packing."
+    },
+    "Pin Hole": {
+      category: "Defect rate",
+      summary: "Live pin holes on finished cloth, counted per 1000 m.",
+      shows: "A live line of pin holes per 1000 m.",
+      matters: "Stenter pin marks and small punctures show here. A rising line means the pin chain or a guide is damaging the selvedge or the body of the cloth."
+    },
+    "Crease": {
+      category: "Defect rate",
+      summary: "Live creases on finished cloth, counted per 1000 m.",
+      shows: "A live line of creases per 1000 m.",
+      matters: "A crease on the stenter comes from a missed pin, a bowed weft, or too much overfeed. Heat sets it, so it will not press out after the chamber."
     },
     "Live In-Line Finish Surface Vision Sensor Feed": visionFeedInfo(
       "finishing",
@@ -2851,29 +2972,35 @@ const PANEL_INFO_LIBRARY = {
     "Live Dimensional & Surface Defect Classification": {
       category: "Defect classification",
       summary: "Live dimensional readings together with the classification of surface defects on finished goods.",
-      shows: "Width in centimetres, skew and bow in degrees, GSM, and the applied tolerance.",
+      shows: "Hover the chart for the live tear, stain, pin-hole and crease reading at that metre. The log under the buttons records each defect with the time and the metre it appears.",
       matters: "Dimensional drift and surface defects are reported together because overfeed, tension and temperature changes usually affect both at the same time."
     }
   },
 
   foldingInspectionView: {
-    "Length Count Accuracy": {
-      category: "Measurement accuracy",
-      summary: "Accuracy of the measured roll length against the length recorded for dispatch.",
-      shows: "Counting accuracy with its trend.",
-      matters: "Short measure leads to buyer claims and credit notes, while over-measure gives away fabric, so the counter is a direct commercial control."
+    "Tear": {
+      category: "Defect rate",
+      summary: "Live tears seen at folding and packing, counted per 1000 m.",
+      shows: "A live line of tears per 1000 m.",
+      matters: "This is the last look before dispatch. A tear found here keeps a damaged roll off the shipment."
     },
-    "Edge Alignment Match": {
-      category: "Roll geometry",
-      summary: "Alignment of the fabric edges as the roll or plait is built.",
-      shows: "Edge deviation in millimetres with its trend.",
-      matters: "Poorly aligned rolls are damaged in transport and slow down the buyer's spreading and cutting operation."
+    "Chemical Stain": {
+      category: "Contamination",
+      summary: "Live chemical stains seen at folding, counted per 1000 m.",
+      shows: "A live line of chemical stains per 1000 m.",
+      matters: "A stain that reaches folding has already passed every process. The roll should be held and graded rather than wrapped for the buyer."
     },
-    "Packing Throughput": {
-      category: "Line capacity",
-      summary: "Rate at which rolls are being folded, wrapped and packed for dispatch.",
-      shows: "Current throughput for the packing line.",
-      matters: "Packing is the last operation before the dispatch cut-off, so its rate determines whether finished goods actually leave on the booked shipment."
+    "Pin Hole": {
+      category: "Defect rate",
+      summary: "Live pin holes seen at folding, counted per 1000 m.",
+      shows: "A live line of pin holes per 1000 m.",
+      matters: "Pin holes at folding decide the final four-point grade. A rising line means an earlier machine is still making holes and the source should be checked before the next lot is packed."
+    },
+    "Crease": {
+      category: "Defect rate",
+      summary: "Live creases seen at folding and packing, counted per 1000 m.",
+      shows: "A live line of creases per 1000 m.",
+      matters: "A crease found at folding is already set in the cloth. The roll should be graded, and the earlier machine that folded it should be checked before the next lot is packed."
     },
     "Live In-Line Folding & Pack Vision Sensor Feed": visionFeedInfo(
       "folding and packing",
@@ -2882,7 +3009,7 @@ const PANEL_INFO_LIBRARY = {
     "Live Roll Edge & Fold Geometry Classification": {
       category: "Pack quality",
       summary: "Classification of roll and plait geometry, wrap condition and measured length before dispatch.",
-      shows: "Length in metres, edge error in millimetres, wrap tension and the applied tolerance.",
+      shows: "Hover the chart for the live tear, stain, pin-hole and crease reading at that metre. The log under the buttons records each defect with the time and the metre it appears.",
       matters: "Wrap tension and fold geometry protect the goods in transit; loose wraps allow soiling and crushed edges that appear as damage on arrival."
     }
   },
@@ -4842,7 +4969,7 @@ function createInspectionDashboardController(cfg) {
   }
 
   // Bind Sparkline Hover Helpers for 3 Top Metric Cards
-  if (cfg.sparkFormatters && cfg.sparkFormatters.length === 3) {
+  if (cfg.sparkFormatters && cfg.sparkFormatters.length >= 3) {
     setupSparklineHover(
       `${p}SparkWrapDeltaE`,
       `${p}SparkPathDeltaE`,
@@ -4870,6 +4997,17 @@ function createInspectionDashboardController(cfg) {
       `${p}SparkValDosing`,
       cfg.sparkFormatters[2]
     );
+    if (cfg.sparkFormatters[3]) {
+      setupSparklineHover(
+        `${p}SparkWrapCrease`,
+        `${p}SparkPathCrease`,
+        `${p}SparkCrosshairCrease`,
+        `${p}SparkHoverDotCrease`,
+        `${p}SparkTipCrease`,
+        `${p}SparkValCrease`,
+        cfg.sparkFormatters[3]
+      );
+    }
   }
 
   let scanPhase = 0;
@@ -4884,7 +5022,7 @@ function createInspectionDashboardController(cfg) {
 
     if (Array.isArray(cfg.machines) && liveDeltaEVal) {
       const hudStrong = view.querySelector(".hud-delta-tag strong");
-      if (hudStrong) hudStrong.textContent = liveDeltaEVal.textContent;
+      if (hudStrong && !hudStrong.dataset.absorbency) hudStrong.textContent = liveDeltaEVal.textContent;
     }
 
     scanPhase += 0.018;
@@ -6971,11 +7109,11 @@ function setupProductionPlanningInteractions() {
 
     let top = rect.top - height - gap;
     let isBelow = false;
-    if (top < pad) {
+    if (top < 72) {
       top = rect.bottom + gap;
       isBelow = true;
       if (top + height > window.innerHeight - pad) {
-        top = Math.max(pad, window.innerHeight - height - pad);
+        top = Math.max(72, window.innerHeight - height - pad);
       }
     }
 
@@ -7923,14 +8061,26 @@ function setupEnergyUtilitiesInteractions() {
               </svg>
               <ul>${visual.pie.map((item) => `<li data-tip-title="${item.label}" data-tip-a="${item.tip}"><i style="background:${item.color}"></i>${item.label}</li>`).join("")}</ul>
             </div>
-            <div class="energy-meter-mini" data-tip-title="${scene.title} meter" data-tip-a="${visual.meter.value} ${visual.meter.unit}" data-tip-b="${visual.meter.label}">
-              <svg viewBox="0 0 80 80" aria-label="${scene.title} meter">
-                <circle cx="40" cy="40" r="35" fill="none" stroke="#E2E8F0" stroke-width="8"></circle>
-                <circle class="energy-meter-arc" cx="40" cy="40" r="35" fill="none" stroke="${visual.meter.color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${meterArc(visual.meter.pct)}" transform="rotate(-90 40 40)"></circle>
-                <text class="energy-meter-val" x="40" y="38.5" text-anchor="middle">${visual.meter.value}</text>
-                <text class="energy-meter-unit" x="40" y="50.5" text-anchor="middle">${visual.meter.unit}</text>
-              </svg>
-              <small>${visual.meter.label}</small>
+            <div class="energy-meter-pair">
+              <div class="energy-meter-mini" data-tip-title="${scene.title} meter" data-tip-a="${visual.meter.value} ${visual.meter.unit}" data-tip-b="${visual.meter.label}">
+                <svg viewBox="0 0 80 80" aria-label="${scene.title} meter">
+                  <circle cx="40" cy="40" r="35" fill="none" stroke="#E2E8F0" stroke-width="8"></circle>
+                  <circle class="energy-meter-arc" cx="40" cy="40" r="35" fill="none" stroke="${visual.meter.color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${meterArc(visual.meter.pct)}" transform="rotate(-90 40 40)"></circle>
+                  <text class="energy-meter-val" x="40" y="38.5" text-anchor="middle">${visual.meter.value}</text>
+                  <text class="energy-meter-unit" x="40" y="50.5" text-anchor="middle">${visual.meter.unit}</text>
+                </svg>
+                <small>Real time</small>
+              </div>
+              <span class="energy-meter-rule" aria-hidden="true"></span>
+              <div class="energy-oem-mini" data-tip-title="${scene.title} OEM" data-tip-a="${scene.set}" data-tip-b="OEM given value">
+                <svg viewBox="0 0 80 80" aria-label="${scene.title} OEM value">
+                  <circle cx="40" cy="40" r="35" fill="none" stroke="#E2E8F0" stroke-width="8"></circle>
+                  <circle cx="40" cy="40" r="35" fill="none" stroke="#475569" stroke-width="8"></circle>
+                  <text class="energy-meter-val" x="40" y="38.5" text-anchor="middle">${scene.set.replace(/[^\d.]/g, "")}</text>
+                  <text class="energy-meter-unit" x="40" y="50.5" text-anchor="middle">${scene.set.replace(/[\d.\s]/g, "")}</text>
+                </svg>
+                <small>OEM standard</small>
+              </div>
             </div>
           </div>
         </article>`;
@@ -8587,7 +8737,7 @@ function setupComplianceTraceabilityInteractions() {
         { key: "greige", title: "Greige", machine: "L-18", operator: "Imran", time: "08:12", state: "done", capture: "Origin G-441", recipe: "Loom-state cotton", chemicals: "None", utilities: "0.02 kWh/kg" },
         { key: "pretreat", title: "Pretreat", machine: "PT-02", operator: "Sana", time: "10:04", state: "done", capture: "Whiteness 152", recipe: "Caustic 12 g/L · H₂O₂ 8 g/L", chemicals: "ZDHC L3 auxiliaries", utilities: "18 L/kg · 1.4 kg steam/kg" },
         { key: "dyeing", title: "Dye", machine: "JD-04", operator: "Hassan", time: "14:32", state: "done", capture: "ΔE 0.18 pass", recipe: "RN-8821 · liquor 1:8", chemicals: "Reactive navy · MRSL L3", utilities: "42 L/kg · 0.114 kWh/kg" },
-        { key: "finish", title: "Finishes", machine: "ST-02", operator: "Nadia", time: "16:10", state: "done", capture: "180°C · 240 cm", recipe: "Heat-set profile F-12", chemicals: "Softener ZDHC L3", utilities: "0.8 kg steam/kg" },
+        { key: "finish", title: "Finishing", machine: "ST-02", operator: "Nadia", time: "16:10", state: "done", capture: "180°C · 240 cm", recipe: "Heat-set profile F-12", chemicals: "Softener ZDHC L3", utilities: "0.8 kg steam/kg" },
         { key: "roll", title: "Roll", machine: "RL-04", operator: "Ali", time: "16:58", state: "done", capture: "Rolls 218–224", recipe: "Final rolling", chemicals: "None", utilities: "0.01 kWh/kg" },
         { key: "cert", title: "Cert", machine: "QA-01", operator: "Mariam", time: "17:12", state: "done", capture: "C-8841 issued", recipe: "ASTM D5430 · A grade", chemicals: "ZDHC verified", utilities: "Evidence sealed" },
         { key: "ship", title: "Ship", machine: "PK-02", operator: "Usman", time: "17:42", state: "alert", capture: "Seal number pending", recipe: "MSKU-884 · vessel Fri", chemicals: "Not applicable", utilities: "Packing list 92%" }
@@ -8605,7 +8755,7 @@ function setupComplianceTraceabilityInteractions() {
       evidence: [["Chain of custody", 100, "7 linked events"], ["Certificates", 88, "2 valid"], ["Lab & quality", 92, "5 records"], ["Shipment", 62, "Sign-off due"]],
       attest: ["Better Cotton", "OEKO-TEX 100", "ZDHC L3"], passportLine: "TEX-8840 connects the greige source, rotary-print recipe, paste inputs, finishing settings and shipment evidence for IKEA order EU-1192.",
       stages: [
-        { key: "greige", title: "Greige", machine: "L-22", operator: "Asad", time: "07:48", state: "done", capture: "Origin B-218", recipe: "Plain weave cotton", chemicals: "None", utilities: "0.02 kWh/kg" }, { key: "pretreat", title: "Pretreat", machine: "PT-03", operator: "Sana", time: "09:38", state: "done", capture: "Whiteness 148", recipe: "Enzyme + peroxide", chemicals: "ZDHC L3 auxiliaries", utilities: "21 L/kg · 1.5 kg steam/kg" }, { key: "printing", title: "Print", machine: "RP-02", operator: "Faraz", time: "13:18", state: "done", capture: "Screens 08–13", recipe: "PB-8840 · 4,200 cP", chemicals: "Paste inputs · 96% cleared", utilities: "31 L/kg · 0.128 kWh/kg" }, { key: "finish", title: "Finishes", machine: "ST-01", operator: "Nadia", time: "15:10", state: "done", capture: "175°C · 232 cm", recipe: "Finish profile PF-08", chemicals: "Softener ZDHC L3", utilities: "0.9 kg steam/kg" }, { key: "roll", title: "Roll", machine: "RL-03", operator: "Ali", time: "16:02", state: "done", capture: "Rolls 301–306", recipe: "Final rolling", chemicals: "None", utilities: "0.01 kWh/kg" }, { key: "cert", title: "Cert", machine: "QA-02", operator: "Mariam", time: "16:28", state: "alert", capture: "Supplier sign-off due", recipe: "OEKO-TEX + ZDHC pack", chemicals: "1 declaration open", utilities: "Evidence 88%" }, { key: "ship", title: "Ship", machine: "PK-03", operator: "Usman", time: "17:20", state: "pending", capture: "Feeder slot reserved", recipe: "PKHU-218", chemicals: "Not applicable", utilities: "Packing list draft" }
+        { key: "greige", title: "Greige", machine: "L-22", operator: "Asad", time: "07:48", state: "done", capture: "Origin B-218", recipe: "Plain weave cotton", chemicals: "None", utilities: "0.02 kWh/kg" }, { key: "pretreat", title: "Pretreat", machine: "PT-03", operator: "Sana", time: "09:38", state: "done", capture: "Whiteness 148", recipe: "Enzyme + peroxide", chemicals: "ZDHC L3 auxiliaries", utilities: "21 L/kg · 1.5 kg steam/kg" }, { key: "printing", title: "Print", machine: "RP-02", operator: "Faraz", time: "13:18", state: "done", capture: "Screens 08–13", recipe: "PB-8840 · 4,200 cP", chemicals: "Paste inputs · 96% cleared", utilities: "31 L/kg · 0.128 kWh/kg" }, { key: "finish", title: "Finishing", machine: "ST-01", operator: "Nadia", time: "15:10", state: "done", capture: "175°C · 232 cm", recipe: "Finish profile PF-08", chemicals: "Softener ZDHC L3", utilities: "0.9 kg steam/kg" }, { key: "roll", title: "Roll", machine: "RL-03", operator: "Ali", time: "16:02", state: "done", capture: "Rolls 301–306", recipe: "Final rolling", chemicals: "None", utilities: "0.01 kWh/kg" }, { key: "cert", title: "Cert", machine: "QA-02", operator: "Mariam", time: "16:28", state: "alert", capture: "Supplier sign-off due", recipe: "OEKO-TEX + ZDHC pack", chemicals: "1 declaration open", utilities: "Evidence 88%" }, { key: "ship", title: "Ship", machine: "PK-03", operator: "Usman", time: "17:20", state: "pending", capture: "Feeder slot reserved", recipe: "PKHU-218", chemicals: "Not applicable", utilities: "Packing list draft" }
       ]
     }
   };
@@ -9483,6 +9633,8 @@ function initBoilerAlertSystem() {
   }
 
   function showAlert(isManual = false) {
+    const maintenanceDash = document.getElementById("dashboardView");
+    if (!maintenanceDash || maintenanceDash.style.display === "none") return;
     if (isAcknowledged && !isManual) return;
     clearTimers();
     if (miniBadge) {
@@ -9507,6 +9659,10 @@ function initBoilerAlertSystem() {
       hideAlert(false);
     }, 13000);
   }
+
+  window.showMaintenanceCornerAlert = function () {
+    showAlert(false);
+  };
 
   function hideAlert(isManual = false, reappearDelayMs = 18000) {
     clearTimers();
@@ -9714,7 +9870,70 @@ function setupOpsWorkbenches() {
     "PAD STEAM-01",
     "RFGG/ANH-03",
     "JET DYEING-02",
-    "JIGGER-03"
+    "JIGGER-03",
+    "Zimmer Printing 01 (5 Chamber, 16 Heads), Squeeze Washing Zimmer 01, Screen Washing Zimmer 01",
+    "Zimmer Sample Table",
+    "Steam Ager 01 & Oil Boiler",
+    "Termo Print (Manual Mixture, Production Head, Drum Washing, Production Mixture, Head # 01, Preparator Head with Urea Loading Tank, Sampling Head)",
+    "Rotary Engraving (Nova Jet 02Nos, Poly Mizer 02Nos, Coating Machine 02Nos, Clamitizer 01Nos, DLE 02Nos, End Ring Glueing 02Nos)",
+    "Reggiani Printing (5 Chamber, 12 Heads), Reggiani Squeeze Washing, Reggiani Screen Washing",
+    "Flat Bed Printing (4 Chamber, 12 Heads)",
+    "Flat Bed Sample Table",
+    "Flat Bed Color Kitchen (Gum Mixer, Color Mixer, Manual Mixture)",
+    "Steam Ager 02 & Oil Boiler, Lebo Steamer",
+    "Flat Bed Engraving (Coating 01Nos, Dryer 01Nos, DLE 01Nos, Straching 01Nos)",
+    "Benninger Bleaching",
+    "Red Flag Bleaching",
+    "Red Flag Mercerize",
+    "OSTHOFF Singeing 02",
+    "Benninger Mercerize",
+    "Tacome MACHINE 01, Batching 01 & 02",
+    "Stenter 10F (10th Chambers)",
+    "Pad Thermosol",
+    "Benninger Pad Steam 01",
+    "Shaoyang Stenter 04 (8th Chambers)",
+    "Singeing 01, Dewling Station 04Nos",
+    "Seer Sucker",
+    "Mario Crosta (04 Drum) + Dust Collector",
+    "Sanforize 01",
+    "Lamperti Raising Mc",
+    "Babcock Stenter (5th Chambers)",
+    "Shaoyang Stenter 01 (8th Chambers)",
+    "Shaoyang Stenter 03 (8th Chambers)",
+    "Shaoyang Stenter 02 (8th Chambers) + Washing Chamber",
+    "Kuster Calendar",
+    "Termo Chem (Hot Water Tank, Loading Pump 01Nos, Over Head Tank, Chemical Dossing Auto Valve Section, Chemical Transfer Pump 01Nos, Chemical Tank and Starrer)",
+    "Processing Lab (Milnor Washer 02Nos, Milnor Dryer, Thermosol, Frame Steamer, Pad Steam, Padder (Mathis) 02Nos, Padder (Rocal) 01Nos, Frame Steamer, Data Color, Gyro wash, Lebo Mat Dryer, Light Fastness, Wascotor 02Nos, Miele Washer, Whirl Pool Washer, Whirl Pool Dryer, Titan, Elmatear, Humidifier)",
+    "Utility Section (Loos Boiler 16 Ton, Loos Boiler 28 Ton, Compressor, RO Plant, CRU, Caustic Tank, Coal Boiler)",
+    "Coal Steam Boiler 25 TPH",
+    "Rolling M/C (31Nos), Packing Machine (01Nos), Fold Machines (03Nos)",
+    "Zimmer Printing 02 (5 Chamber, 15 Heads), Squeeze Washing Zimmer 02, Screen Washing Zimmer 02",
+    "Shaoyang Stenter 05 (8th Chambers)",
+    "Digital Printing",
+    "Transfer Calender",
+    "Shearing Machine",
+    "Ferraro Compacting",
+    "Exhaust Dyeing 05Nos",
+    "Garment Washing 1 (45Nos)",
+    "Garment Washing 2",
+    "Singeing 03 (Pong Kwang)",
+    "Thailand Pad Steam 02",
+    "New Reggiani Printing (5 Chamber, 12 Heads)",
+    "Benninger Bleaching 03",
+    "JIGGER-03",
+    "Sanforize 02",
+    "Shaoyang Stenter 06 (8th Chambers)",
+    "Shaoyang Stenter 07 (8th Chambers)",
+    "New Mario Crosta Raising Machine (4 Drums)",
+    "Mario Crosta (02 Drum) + Dust Collector",
+    "Mario Crosta (02 Drum) + Dust Collector (Spain)",
+    "New Haining Raising Machine (2 Drum)",
+    "Old Haining Raising Machine (2 Drum)",
+    "Sample Pad Steam",
+    "Lafer Peaching Machine 02",
+    "Guarneri Calander",
+    "Double Fold Machine (Turkey)",
+    "Pitching Micro Sand"
   ];
 
   function load(key, fallback) {
@@ -10472,14 +10691,88 @@ function setupOpsWorkbenches() {
 
   function batchDepartmentName(batch) {
     const names = {
-      GREIGE: "Greige",
-      PRETREATMENT: "Pretreatment",
-      DYEING: "Dyeing",
-      PRINTING: "Printing",
-      FINISHES: "Finishes",
-      FOLDING: "Folding"
+      GREIGE: [
+        "Tacome MACHINE 01, Batching 01 & 02"
+      ],
+      PRETREATMENT: [
+        "Benninger Bleaching",
+        "Red Flag Bleaching",
+        "Red Flag Mercerize",
+        "OSTHOFF Singeing 02",
+        "Benninger Mercerize",
+        "Singeing 01, Dewling Station 04Nos",
+        "Singeing 03 (Pong Kwang)",
+        "Benninger Bleaching 03",
+        "Utility Section (Loos Boiler 16 Ton, Loos Boiler 28 Ton, Compressor, RO Plant, CRU, Caustic Tank, Coal Boiler)",
+        "Coal Steam Boiler 25 TPH"
+      ],
+      DYEING: [
+        "Pad Thermosol",
+        "Benninger Pad Steam 01",
+        "Termo Chem (Hot Water Tank, Loading Pump 01Nos, Over Head Tank, Chemical Dossing Auto Valve Section, Chemical Transfer Pump 01Nos, Chemical Tank and Starrer)",
+        "Exhaust Dyeing 05Nos",
+        "Thailand Pad Steam 02",
+        "JIGGER-03",
+        "Sample Pad Steam",
+        "Garment Washing 1 (45Nos)",
+        "Garment Washing 2",
+        "Processing Lab (Milnor Washer 02Nos, Milnor Dryer, Thermosol, Frame Steamer, Pad Steam, Padder (Mathis) 02Nos, Padder (Rocal) 01Nos, Frame Steamer, Data Color, Gyro wash, Lebo Mat Dryer, Light Fastness, Wascotor 02Nos, Miele Washer, Whirl Pool Washer, Whirl Pool Dryer, Titan, Elmatear, Humidifier)"
+      ],
+      PRINTING: [
+        "Zimmer Printing 01 (5 Chamber, 16 Heads), Squeeze Washing Zimmer 01, Screen Washing Zimmer 01",
+        "Zimmer Sample Table",
+        "Steam Ager 01 & Oil Boiler",
+        "Termo Print (Manual Mixture, Production Head, Drum Washing, Production Mixture, Head # 01, Preparator Head with Urea Loading Tank, Sampling Head)",
+        "Rotary Engraving (Nova Jet 02Nos, Poly Mizer 02Nos, Coating Machine 02Nos, Clamitizer 01Nos, DLE 02Nos, End Ring Glueing 02Nos)",
+        "Reggiani Printing (5 Chamber, 12 Heads), Reggiani Squeeze Washing, Reggiani Screen Washing",
+        "Flat Bed Printing (4 Chamber, 12 Heads)",
+        "Flat Bed Sample Table",
+        "Flat Bed Color Kitchen (Gum Mixer, Color Mixer, Manual Mixture)",
+        "Steam Ager 02 & Oil Boiler, Lebo Steamer",
+        "Flat Bed Engraving (Coating 01Nos, Dryer 01Nos, DLE 01Nos, Straching 01Nos)",
+        "Zimmer Printing 02 (5 Chamber, 15 Heads), Squeeze Washing Zimmer 02, Screen Washing Zimmer 02",
+        "Digital Printing",
+        "New Reggiani Printing (5 Chamber, 12 Heads)"
+      ],
+      FINISHES: [
+        "Stenter 10F (10th Chambers)",
+        "Shaoyang Stenter 04 (8th Chambers)",
+        "Seer Sucker",
+        "Mario Crosta (04 Drum) + Dust Collector",
+        "Sanforize 01",
+        "Lamperti Raising Mc",
+        "Babcock Stenter (5th Chambers)",
+        "Shaoyang Stenter 01 (8th Chambers)",
+        "Shaoyang Stenter 03 (8th Chambers)",
+        "Shaoyang Stenter 02 (8th Chambers) + Washing Chamber",
+        "Kuster Calendar",
+        "Shaoyang Stenter 05 (8th Chambers)",
+        "Transfer Calender",
+        "Shearing Machine",
+        "Ferraro Compacting",
+        "Sanforize 02",
+        "Shaoyang Stenter 06 (8th Chambers)",
+        "Shaoyang Stenter 07 (8th Chambers)",
+        "New Mario Crosta Raising Machine (4 Drums)",
+        "Mario Crosta (02 Drum) + Dust Collector",
+        "Mario Crosta (02 Drum) + Dust Collector (Spain)",
+        "New Haining Raising Machine (2 Drum)",
+        "Old Haining Raising Machine (2 Drum)",
+        "Lafer Peaching Machine 02",
+        "Guarneri Calander",
+        "Pitching Micro Sand"
+      ],
+      FOLDING: [
+        "Rolling M/C (31Nos), Packing Machine (01Nos), Fold Machines (03Nos)",
+        "Double Fold Machine (Turkey)"
+      ]
     };
-    return names[batch.stage] || batch.stage || "this department";
+    const list = names[batch.stage];
+    if (!list || !list.length) return batch.stage || "this machine";
+    let hash = 0;
+    const id = String(batch.id || "");
+    for (let i = 0; i < id.length; i += 1) hash = (Math.imul(hash, 33) + id.charCodeAt(i)) >>> 0;
+    return list[mixBatchHash(hash) % list.length];
   }
 
   function metersBetween(lat1, lon1, lat2, lon2) {
@@ -10508,7 +10801,7 @@ function setupOpsWorkbenches() {
   function batchAwayText(batchId, department) {
     const spot = batcherSpot(batchId);
     const meters = metersBetween(spot.lat, spot.lon, MILL_BUILDING.lat, MILL_BUILDING.lon);
-    return `This batch is ${meters.toLocaleString()} m away from ${department}.`;
+    return `This batcher is ${meters.toLocaleString()} m away from ${department}.`;
   }
 
   function loadLeaflet() {
@@ -10567,7 +10860,7 @@ function setupOpsWorkbenches() {
   function renderBatchRecord(batch) {
     if (!recordTitle || !recordStatus || !recordBody) return;
     const seeded = seedBatchTrail(batch);
-    const status = seeded.completed ? "COMPLETED" : seeded.stage;
+    const status = seeded.completed ? "COMPLETED" : (seeded.stage === "FINISHES" ? "FINISHING" : seeded.stage);
     const department = batchDepartmentName(seeded);
     if (recordKicker) recordKicker.textContent = "BATCH RECORD";
     recordTitle.textContent = seeded.id;
@@ -10585,7 +10878,7 @@ function setupOpsWorkbenches() {
       const minutes = waiting ? "—" : formatMinuteLabel(stageMinutes(entry), live);
       const stateLabel = live ? "On this stage" : waiting ? "Not started" : "Done";
       return `<tr>
-        <td>${esc(entry.stage)}</td>
+        <td>${esc(entry.stage === "FINISHES" ? "FINISHING" : entry.stage)}</td>
         <td>${esc(seeded.fabric)}</td>
         <td>${esc(seeded.gsm)}</td>
         <td ${live ? "data-stage-live" : ""} class="${waiting ? "ops-record-wait" : ""}">${esc(minutes)}</td>
@@ -11036,7 +11329,7 @@ function setupOpsWorkbenches() {
       <button type="button" class="batch-sticker-back" id="batchPrintBack">Back</button>
       <article class="batch-sticker print-page">
         <img class="batch-sticker-logo" src="${STICKER_LOGO}" width="521" height="382" alt="Lucky Textile Mills Limited, powered by Spark Technologies" />
-        <p class="print-page-name">Batcher</p>
+        <p class="print-page-name">Batcher Traceability</p>
         <p class="print-page-name is-urdu" lang="ur" dir="rtl">بیچر</p>
         <div class="batch-sticker-qr">${batchQrLink(batch, "ops-qr-print")}</div>
         <h1>${esc(batch.id)}</h1>
@@ -11115,9 +11408,9 @@ function setupOpsWorkbenches() {
       const stageIndex = BATCH_STAGES.indexOf(batch.stage);
       const pills = BATCH_STAGES.map((stage, index) => {
         const state = batch.completed || index < stageIndex ? "is-done" : index === stageIndex ? "is-current" : "";
-        return `<span class="ops-stage-pill ${state}">${stage}</span>`;
+        return `<span class="ops-stage-pill ${state}">${stage === "FINISHES" ? "FINISHING" : stage}</span>`;
       }).join("");
-      const completeLabel = batch.completed ? "" : `<button type="button" class="ops-complete-btn" data-complete="${batch.id}">Complete ${batch.stage}</button>`;
+      const completeLabel = batch.completed ? "" : `<button type="button" class="ops-complete-btn" data-complete="${batch.id}">Complete ${batch.stage === "FINISHES" ? "FINISHING" : batch.stage}</button>`;
       const department = batchDepartmentName(batch);
       return `<tr class="ops-ledger-row" data-batch="${batch.id}">
         <td class="ops-qr-cell"><div class="batch-ledger-mark">${batchQrLink(batch)}<div class="batch-mill-card is-ledger"><div class="batch-mill-map" data-mill-map data-batch-id="${esc(batch.id)}" role="img" aria-label="Map of this batch and the Lucky Textile Mills building"></div><p class="batch-mill-distance" data-batch-distance data-department="${esc(department)}">${esc(batchAwayText(batch.id, department))}</p></div></div></td>
@@ -11126,7 +11419,7 @@ function setupOpsWorkbenches() {
         <td>${batch.gsm}</td>
         <td>${formatBatchDate(batch.date)}</td>
         <td><div class="ops-stage-track">${pills}</div></td>
-        <td class="ops-status ${batch.completed ? "is-done" : ""}">${batch.completed ? "Completed" : batch.stage}</td>
+        <td class="ops-status ${batch.completed ? "is-done" : ""}">${batch.completed ? "Completed" : (batch.stage === "FINISHES" ? "FINISHING" : batch.stage)}</td>
         <td>${batch.completed ? "Yes" : "No"}</td>
         <td><div class="ops-actions">
           <button type="button" class="ops-ghost-btn" data-print="${batch.id}">Print sticker</button>
@@ -11188,7 +11481,7 @@ function setupOpsWorkbenches() {
       if (completed || idx < curIdx) stateCls = "is-done";
       else if (idx === curIdx) stateCls = "is-active";
       const sep = idx < list.length - 1 ? `<span class="fab-route-sep">›</span>` : "";
-      return `<span class="fab-route-step ${stateCls}">${esc(step)}</span>${sep}`;
+      return `<span class="fab-route-step ${stateCls}">${esc(step === "FINISHES" ? "FINISHING" : step)}</span>${sep}`;
     }).join("") + `</div>`;
   }
 
@@ -11196,7 +11489,7 @@ function setupOpsWorkbenches() {
     if (!recordTitle || !recordStatus || !recordBody) return;
     if (recordKicker) recordKicker.textContent = "FABRIC ORDER & TRACE RECORD";
     recordTitle.textContent = `${item.id} · ${item.company}`;
-    recordStatus.textContent = item.completed ? "COMPLETED" : item.currentStage;
+    recordStatus.textContent = item.completed ? "COMPLETED" : (item.currentStage === "FINISHES" ? "FINISHING" : item.currentStage);
     recordStatus.classList.remove("is-batch");
     if (recordHeadExtra) recordHeadExtra.innerHTML = getBrandBadgeHtml(item.company);
 
@@ -11228,7 +11521,7 @@ function setupOpsWorkbenches() {
         </div>
       </div>
       <div class="ops-record-metrics">
-        <div class="ops-record-metric"><span>Current stage</span><strong>${esc(item.completed ? "COMPLETED" : item.currentStage)}</strong></div>
+        <div class="ops-record-metric"><span>Current stage</span><strong>${esc(item.completed ? "COMPLETED" : (item.currentStage === "FINISHES" ? "FINISHING" : item.currentStage))}</strong></div>
         <div class="ops-record-metric"><span>Record type</span><strong>${item.entryType === "manual_cloth" ? "Manual Cloth Piece" : "Buyer Job Order"}</strong></div>
         <div class="ops-record-metric"><span>GSM / Width</span><strong>${item.gsm || 180} GSM · ${esc(item.width || "58 inch")}</strong></div>
         <div class="ops-record-metric"><span>Date entered</span><strong>${esc(item.date)}</strong></div>
@@ -11293,7 +11586,7 @@ function setupOpsWorkbenches() {
         : `<span class="fab-type-badge type-job">JOB ORDER</span>`;
       const stagePill = item.completed
         ? `<span class="fab-stage-pill stage-done">COMPLETED</span>`
-        : `<span class="fab-stage-pill stage-live"><span class="live-dot"></span> ${esc(item.currentStage)}</span>`;
+        : `<span class="fab-stage-pill stage-live"><span class="live-dot"></span> ${esc(item.currentStage === "FINISHES" ? "FINISHING" : item.currentStage)}</span>`;
       return `<tr data-fab-row="${esc(item.id)}" style="cursor:pointer;">
         <td>
           <div style="font-weight:800;font-family:monospace;font-size:0.92rem;color:#0f172a;">${esc(item.id)}</div>
@@ -12087,15 +12380,16 @@ function initApp() {
     calibratingText: "Zeroing Linear Camera...",
     correctedText: "Grade Correction Applied!",
     sparkFormatters: [
-      (t, y) => `${(0.28 - t * 0.05 + Math.sin(t * 7) * 0.02).toFixed(2)} pts`,
-      (t, y) => `${(97.4 + t * 1.4).toFixed(1)}%`,
-      (t, y) => `${(36.8 + (70 - y) / 70 * 2.2).toFixed(1)} m/min`
+      (t) => `${Math.max(0, Math.round(2 + Math.sin(t * 7) * 0.8))} /1000m`,
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 5) * 0.7))} /1000m`,
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 6) * 0.6))} /1000m`
     ],
     machines: [
       { id: "uster-fv2", name: "Uster Fabriq Vision 2", model: "USTER FV2 (LINEAR CAMERA)", tag: "#GRG-2204-GREY" },
       { id: "comatex-isw", name: "Comatex ISW Inspection", model: "COMATEX ISW (4-POINT TABLE)", tag: "#GRG-2204-ISW" },
       { id: "four-point", name: "4-Point Grading Table", model: "ASTM D5430 MENDING FRAME", tag: "#GRG-2204-MEND" },
-      { id: "aframe", name: "A-Frame Batching Winder", model: "A-FRAME BATCHER 320 cm", tag: "#GRG-2204-BATCH" }
+      { id: "aframe", name: "A-Frame Batching Winder", model: "A-FRAME BATCHER 320 cm", tag: "#GRG-2204-BATCH" },
+      { id: "mill-17", name: "Tacome MACHINE 01, Batching 01 & 02", model: "TACOME MACHINE 01, BATCHING 01 & 02", tag: "#MILL-17" }
     ]
   });
 
@@ -12103,7 +12397,7 @@ function initApp() {
     viewId: "pretreatmentInspectionView",
     prefix: "pre",
     visionMode: true,
-    deltaUnit: "idx",
+    deltaUnit: "Δ",
     defaultL: 0.00,
     defaultA: 0.00,
     defaultB: 0.00,
@@ -12125,15 +12419,26 @@ function initApp() {
     calibratingText: "Zeroing Prep Optic & pH Probe...",
     correctedText: "Pretreatment Correction Applied!",
     sparkFormatters: [
-      (t, y) => `Δ ${(0.28 - t * 0.08 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
-      (t, y) => `${(97.8 + t * 1.3).toFixed(1)}%`,
-      (t, y) => `${(6.2 + (70 - y) / 70 * 0.4).toFixed(1)} pH`
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 7) * 0.6))} /1000m`,
+      (t) => `${Math.max(0, Math.round(3 + Math.sin(t * 5) * 0.8))} /1000m`,
+      (t) => `${Math.max(0, Math.round(2 + Math.sin(t * 6) * 0.7))} /1000m`,
+      (t) => `${Math.max(0, Math.round(2 + Math.sin(t * 4) * 0.7))} /1000m`
     ],
     machines: [
       { id: "goller-scour-bleach", name: "GOLLER — Scouring & Bleaching Range", model: "GOLLER SCOUR & BLEACH RANGE", tag: "#PRE-1092-GOLLER" },
       { id: "benninger-bleach", name: "BENNINGER — Bleaching Range", model: "BENNINGER BLEACHING RANGE", tag: "#PRE-1092-BEN" },
       { id: "redflag-singe-desize", name: "RED FLAG — Singeing & Desizing Machine", model: "RED FLAG SINGE & DESIZE", tag: "#PRE-1092-RF-SINGE" },
-      { id: "redflag-mercerizing", name: "RED FLAG — Mercerizing Machine", model: "RED FLAG MERCERIZING RANGE", tag: "#PRE-1092-RF-MERC" }
+      { id: "redflag-mercerizing", name: "RED FLAG — Mercerizing Machine", model: "RED FLAG MERCERIZING RANGE", tag: "#PRE-1092-RF-MERC" },
+      { id: "mill-12", name: "Benninger Bleaching", model: "BENNINGER BLEACHING", tag: "#MILL-12" },
+      { id: "mill-13", name: "Red Flag Bleaching", model: "RED FLAG BLEACHING", tag: "#MILL-13" },
+      { id: "mill-14", name: "Red Flag Mercerize", model: "RED FLAG MERCERIZE", tag: "#MILL-14" },
+      { id: "mill-15", name: "OSTHOFF Singeing 02", model: "OSTHOFF SINGEING 02", tag: "#MILL-15" },
+      { id: "mill-16", name: "Benninger Mercerize", model: "BENNINGER MERCERIZE", tag: "#MILL-16" },
+      { id: "mill-22", name: "Singeing 01, Dewling Station 04Nos", model: "SINGEING 01, DEWLING STATION 04NOS", tag: "#MILL-22" },
+      { id: "mill-46", name: "Singeing 03 (Pong Kwang)", model: "SINGEING 03 (PONG KWANG)", tag: "#MILL-46" },
+      { id: "mill-49", name: "Benninger Bleaching 03", model: "BENNINGER BLEACHING 03", tag: "#MILL-49" },
+      { id: "mill-34", name: "Utility Section (Loos Boiler 16 Ton, Loos Boiler 28 Ton, Compressor, RO Plant, CRU, Caustic Tank, Coal Boiler)", model: "UTILITY SECTION", tag: "#MILL-34" },
+      { id: "mill-35", name: "Coal Steam Boiler 25 TPH", model: "COAL STEAM BOILER 25 TPH", tag: "#MILL-35" }
     ]
   });
 
@@ -12163,13 +12468,24 @@ function initApp() {
     calibratingText: "Zeroing Defect Vision Camera...",
     correctedText: "Defect Map Correction Applied!",
     sparkFormatters: [
-      (t, y) => `${(98.6 + t * 0.9).toFixed(1)}%`,
-      (t, y) => `Δ ${(0.20 - t * 0.08 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
-      (t, y) => `${Math.max(1, Math.round(4 - t * 2 + Math.sin(t * 6)))} /1000m`
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 7) * 0.6))} /1000m`,
+      (t) => `${Math.max(0, Math.round(3 + Math.sin(t * 5) * 0.8))} /1000m`,
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 6) * 0.6))} /1000m`,
+      (t) => `${Math.max(0, Math.round(2 + Math.sin(t * 4) * 0.7))} /1000m`
     ],
     machines: [
       { id: "thermosol-dyeing", name: "THERMOSOL — Thermosol Dyeing Machine", model: "THERMOSOL CONTINUOUS DYEING", tag: "#DYE-4410-THERMO" },
-      { id: "pad-steam", name: "PAD STEAM — Pad Steam Machine", model: "PAD STEAM CONTINUOUS DYEING", tag: "#DYE-4410-PADSTEAM" }
+      { id: "pad-steam", name: "PAD STEAM — Pad Steam Machine", model: "PAD STEAM CONTINUOUS DYEING", tag: "#DYE-4410-PADSTEAM" },
+      { id: "mill-19", name: "Pad Thermosol", model: "PAD THERMOSOL", tag: "#MILL-19" },
+      { id: "mill-20", name: "Benninger Pad Steam 01", model: "BENNINGER PAD STEAM 01", tag: "#MILL-20" },
+      { id: "mill-32", name: "Termo Chem (Hot Water Tank, Loading Pump 01Nos, Over Head Tank, Chemical Dossing Auto Valve Section, Chemical Transfer Pump 01Nos, Chemical Tank and Starrer)", model: "TERMO CHEM", tag: "#MILL-32" },
+      { id: "mill-43", name: "Exhaust Dyeing 05Nos", model: "EXHAUST DYEING 05NOS", tag: "#MILL-43" },
+      { id: "mill-47", name: "Thailand Pad Steam 02", model: "THAILAND PAD STEAM 02", tag: "#MILL-47" },
+      { id: "mill-50", name: "JIGGER-03", model: "JIGGER-03", tag: "#MILL-50" },
+      { id: "mill-59", name: "Sample Pad Steam", model: "SAMPLE PAD STEAM", tag: "#MILL-59" },
+      { id: "mill-44", name: "Garment Washing 1 (45Nos)", model: "GARMENT WASHING 1 (45NOS)", tag: "#MILL-44" },
+      { id: "mill-45", name: "Garment Washing 2", model: "GARMENT WASHING 2", tag: "#MILL-45" },
+      { id: "mill-33", name: "Processing Lab (Milnor Washer 02Nos, Milnor Dryer, Thermosol, Frame Steamer, Pad Steam, Padder (Mathis) 02Nos, Padder (Rocal) 01Nos, Frame Steamer, Data Color, Gyro wash, Lebo Mat Dryer, Light Fastness, Wascotor 02Nos, Miele Washer, Whirl Pool Washer, Whirl Pool Dryer, Titan, Elmatear, Humidifier)", model: "PROCESSING LAB", tag: "#MILL-33" }
     ]
   });
 
@@ -12199,15 +12515,30 @@ function initApp() {
     calibratingText: "Zeroing Print Vision Camera...",
     correctedText: "Print Map Correction Applied!",
     sparkFormatters: [
-      (t, y) => `Δ ${(0.22 - t * 0.06 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
-      (t, y) => `${(98.2 + t * 1.0).toFixed(1)}%`,
-      (t, y) => `${Math.max(1, Math.round(3 - t * 1.5 + Math.sin(t * 5)))} /1000m`
+      (t) => `${Math.max(0, Math.round(0 + Math.sin(t * 7) * 0.4))} /1000m`,
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 5) * 0.6))} /1000m`,
+      (t) => `${Math.max(0, Math.round(2 + Math.sin(t * 6) * 0.7))} /1000m`,
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 4) * 0.6))} /1000m`
     ],
     machines: [
       { id: "reggiani-rotary", name: "EFI REGGIANI — Rotary Screen Printing Machine", model: "EFI REGGIANI ROTARY SCREEN", tag: "#PRN-704-REG-ROT" },
       { id: "reggiani-prima-flatbed", name: "EFI REGGIANI PRIMA — Flatbed Screen Printer", model: "EFI REGGIANI PRIMA FLATBED", tag: "#PRN-704-PRIMA" },
       { id: "reggiani-digital", name: "EFI REGGIANI — Digital Textile Printer", model: "EFI REGGIANI DIGITAL TEXTILE", tag: "#PRN-704-DIGITAL" },
-      { id: "arioli-steamer", name: "ARIOLI — Steamer / Steamer-Ager", model: "ARIOLI STEAMER-AGER", tag: "#PRN-704-ARIOLI" }
+      { id: "arioli-steamer", name: "ARIOLI — Steamer / Steamer-Ager", model: "ARIOLI STEAMER-AGER", tag: "#PRN-704-ARIOLI" },
+      { id: "mill-01", name: "Zimmer Printing 01 (5 Chamber, 16 Heads), Squeeze Washing Zimmer 01, Screen Washing Zimmer 01", model: "ZIMMER PRINTING 01", tag: "#MILL-01" },
+      { id: "mill-02", name: "Zimmer Sample Table", model: "ZIMMER SAMPLE TABLE", tag: "#MILL-02" },
+      { id: "mill-03", name: "Steam Ager 01 & Oil Boiler", model: "STEAM AGER 01 & OIL BOILER", tag: "#MILL-03" },
+      { id: "mill-04", name: "Termo Print (Manual Mixture, Production Head, Drum Washing, Production Mixture, Head # 01, Preparator Head with Urea Loading Tank, Sampling Head)", model: "TERMO PRINT", tag: "#MILL-04" },
+      { id: "mill-05", name: "Rotary Engraving (Nova Jet 02Nos, Poly Mizer 02Nos, Coating Machine 02Nos, Clamitizer 01Nos, DLE 02Nos, End Ring Glueing 02Nos)", model: "ROTARY ENGRAVING", tag: "#MILL-05" },
+      { id: "mill-06", name: "Reggiani Printing (5 Chamber, 12 Heads), Reggiani Squeeze Washing, Reggiani Screen Washing", model: "REGGIANI PRINTING", tag: "#MILL-06" },
+      { id: "mill-07", name: "Flat Bed Printing (4 Chamber, 12 Heads)", model: "FLAT BED PRINTING", tag: "#MILL-07" },
+      { id: "mill-08", name: "Flat Bed Sample Table", model: "FLAT BED SAMPLE TABLE", tag: "#MILL-08" },
+      { id: "mill-09", name: "Flat Bed Color Kitchen (Gum Mixer, Color Mixer, Manual Mixture)", model: "FLAT BED COLOR KITCHEN", tag: "#MILL-09" },
+      { id: "mill-10", name: "Steam Ager 02 & Oil Boiler, Lebo Steamer", model: "STEAM AGER 02 & OIL BOILER, LEBO STEAMER", tag: "#MILL-10" },
+      { id: "mill-11", name: "Flat Bed Engraving (Coating 01Nos, Dryer 01Nos, DLE 01Nos, Straching 01Nos)", model: "FLAT BED ENGRAVING", tag: "#MILL-11" },
+      { id: "mill-37", name: "Zimmer Printing 02 (5 Chamber, 15 Heads), Squeeze Washing Zimmer 02, Screen Washing Zimmer 02", model: "ZIMMER PRINTING 02", tag: "#MILL-37" },
+      { id: "mill-39", name: "Digital Printing", model: "DIGITAL PRINTING", tag: "#MILL-39" },
+      { id: "mill-48", name: "New Reggiani Printing (5 Chamber, 12 Heads)", model: "NEW REGGIANI PRINTING", tag: "#MILL-48" }
     ]
   });
 
@@ -12237,16 +12568,43 @@ function initApp() {
     calibratingText: "Zeroing Finish Vision Camera...",
     correctedText: "Finish Correction Applied!",
     sparkFormatters: [
-      (t, y) => `Δ ${(0.22 - t * 0.07 + Math.sin(t * 7) * 0.02).toFixed(2)}`,
-      (t, y) => `${(98.6 + t * 0.8).toFixed(1)}%`,
-      (t, y) => `${(0.12 - t * 0.04 + Math.abs(Math.sin(t * 5)) * 0.02).toFixed(2)} /m²`
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 7) * 0.6))} /1000m`,
+      (t) => `${Math.max(0, Math.round(0 + Math.sin(t * 5) * 0.4))} /1000m`,
+      (t) => `${Math.max(0, Math.round(2 + Math.sin(t * 6) * 0.7))} /1000m`,
+      (t) => `${Math.max(0, Math.round(3 + Math.sin(t * 4) * 0.8))} /1000m`
     ],
     machines: [
       { id: "monfongs-stenter", name: "MONFONGS — Stenter", model: "MONFONGS STENTER LINE", tag: "#FNS-8802-MON-STENT" },
       { id: "bruckner-stenter", name: "BRÜCKNER — Stenter", model: "BRÜCKNER POWER-FRAME STENTER", tag: "#FNS-8802-BRUCKNER" },
       { id: "redflag-stenter", name: "RED FLAG — Stenter", model: "RED FLAG STENTER RANGE", tag: "#FNS-8802-RF-STENT" },
       { id: "monfongs-sanfor", name: "MONFONGS — Sanfor / Sanforizing Machine", model: "MONFONGS SANFORIZING RANGE", tag: "#FNS-8802-SANFOR" },
-      { id: "ferraro-compactor", name: "FERRARO — Compactor", model: "FERRARO KNIT & WOVEN COMPACTOR", tag: "#FNS-8802-FERRARO" }
+      { id: "ferraro-compactor", name: "FERRARO — Compactor", model: "FERRARO KNIT & WOVEN COMPACTOR", tag: "#FNS-8802-FERRARO" },
+      { id: "mill-18", name: "Stenter 10F (10th Chambers)", model: "STENTER 10F (10TH CHAMBERS)", tag: "#MILL-18" },
+      { id: "mill-21", name: "Shaoyang Stenter 04 (8th Chambers)", model: "SHAOYANG STENTER 04 (8TH CHAMBERS)", tag: "#MILL-21" },
+      { id: "mill-23", name: "Seer Sucker", model: "SEER SUCKER", tag: "#MILL-23" },
+      { id: "mill-24", name: "Mario Crosta (04 Drum) + Dust Collector", model: "MARIO CROSTA (04 DRUM) + DUST COLLECTOR", tag: "#MILL-24" },
+      { id: "mill-25", name: "Sanforize 01", model: "SANFORIZE 01", tag: "#MILL-25" },
+      { id: "mill-26", name: "Lamperti Raising Mc", model: "LAMPERTI RAISING MC", tag: "#MILL-26" },
+      { id: "mill-27", name: "Babcock Stenter (5th Chambers)", model: "BABCOCK STENTER (5TH CHAMBERS)", tag: "#MILL-27" },
+      { id: "mill-28", name: "Shaoyang Stenter 01 (8th Chambers)", model: "SHAOYANG STENTER 01 (8TH CHAMBERS)", tag: "#MILL-28" },
+      { id: "mill-29", name: "Shaoyang Stenter 03 (8th Chambers)", model: "SHAOYANG STENTER 03 (8TH CHAMBERS)", tag: "#MILL-29" },
+      { id: "mill-30", name: "Shaoyang Stenter 02 (8th Chambers) + Washing Chamber", model: "SHAOYANG STENTER 02 (8TH CHAMBERS) + WASHING CHAMBER", tag: "#MILL-30" },
+      { id: "mill-31", name: "Kuster Calendar", model: "KUSTER CALENDAR", tag: "#MILL-31" },
+      { id: "mill-38", name: "Shaoyang Stenter 05 (8th Chambers)", model: "SHAOYANG STENTER 05 (8TH CHAMBERS)", tag: "#MILL-38" },
+      { id: "mill-40", name: "Transfer Calender", model: "TRANSFER CALENDER", tag: "#MILL-40" },
+      { id: "mill-41", name: "Shearing Machine", model: "SHEARING MACHINE", tag: "#MILL-41" },
+      { id: "mill-42", name: "Ferraro Compacting", model: "FERRARO COMPACTING", tag: "#MILL-42" },
+      { id: "mill-51", name: "Sanforize 02", model: "SANFORIZE 02", tag: "#MILL-51" },
+      { id: "mill-52", name: "Shaoyang Stenter 06 (8th Chambers)", model: "SHAOYANG STENTER 06 (8TH CHAMBERS)", tag: "#MILL-52" },
+      { id: "mill-53", name: "Shaoyang Stenter 07 (8th Chambers)", model: "SHAOYANG STENTER 07 (8TH CHAMBERS)", tag: "#MILL-53" },
+      { id: "mill-54", name: "New Mario Crosta Raising Machine (4 Drums)", model: "NEW MARIO CROSTA RAISING MACHINE (4 DRUMS)", tag: "#MILL-54" },
+      { id: "mill-55", name: "Mario Crosta (02 Drum) + Dust Collector", model: "MARIO CROSTA (02 DRUM) + DUST COLLECTOR", tag: "#MILL-55" },
+      { id: "mill-56", name: "Mario Crosta (02 Drum) + Dust Collector (Spain)", model: "MARIO CROSTA (02 DRUM) + DUST COLLECTOR (SPAIN)", tag: "#MILL-56" },
+      { id: "mill-57", name: "New Haining Raising Machine (2 Drum)", model: "NEW HAINING RAISING MACHINE (2 DRUM)", tag: "#MILL-57" },
+      { id: "mill-58", name: "Old Haining Raising Machine (2 Drum)", model: "OLD HAINING RAISING MACHINE (2 DRUM)", tag: "#MILL-58" },
+      { id: "mill-60", name: "Lafer Peaching Machine 02", model: "LAFER PEACHING MACHINE 02", tag: "#MILL-60" },
+      { id: "mill-61", name: "Guarneri Calander", model: "GUARNERI CALANDER", tag: "#MILL-61" },
+      { id: "mill-63", name: "Pitching Micro Sand", model: "PITCHING MICRO SAND", tag: "#MILL-63" }
     ]
   });
 
@@ -12276,15 +12634,18 @@ function initApp() {
     calibratingText: "Zeroing Length Encoder & Edge Eye...",
     correctedText: "Pack Correction Applied!",
     sparkFormatters: [
-      (t, y) => `${(99.40 + t * 0.48).toFixed(2)}%`,
-      (t, y) => `±${(2.6 - t * 0.5 + Math.sin(t * 6) * 0.08).toFixed(1)} mm`,
-      (t, y) => `${(30.4 + (70 - y) / 70 * 2.4).toFixed(0)} m/min`
+      (t) => `${Math.max(0, Math.round(0 + Math.sin(t * 7) * 0.4))} /1000m`,
+      (t) => `${Math.max(0, Math.round(0 + Math.sin(t * 5) * 0.4))} /1000m`,
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 6) * 0.6))} /1000m`,
+      (t) => `${Math.max(0, Math.round(1 + Math.sin(t * 4) * 0.6))} /1000m`
     ],
     machines: [
       { id: "konsan", name: "Konsan Plaiting & Roll", model: "KONSAN PLAIT / ROLL INSPECT", tag: "#FLD-3301-KON" },
       { id: "suntech", name: "Suntech ST-DFPM", model: "SUNTECH DOUBLE-FOLD PLAITER", tag: "#FLD-3301-ST" },
       { id: "comatex-isp", name: "Comatex ISP Inspection", model: "COMATEX ISP HIGH-PROD LINE", tag: "#FLD-3301-ISP" },
-      { id: "imb-sa", name: "Comatex IMB SA Packer", model: "IMB SA AUTO PE WRAP", tag: "#FLD-3301-PACK" }
+      { id: "imb-sa", name: "Comatex IMB SA Packer", model: "IMB SA AUTO PE WRAP", tag: "#FLD-3301-PACK" },
+      { id: "mill-36", name: "Rolling M/C (31Nos), Packing Machine (01Nos), Fold Machines (03Nos)", model: "ROLLING M/C, PACKING MACHINE, FOLD MACHINES", tag: "#MILL-36" },
+      { id: "mill-62", name: "Double Fold Machine (Turkey)", model: "DOUBLE FOLD MACHINE (TURKEY)", tag: "#MILL-62" }
     ]
   });
 
@@ -12295,7 +12656,122 @@ function initApp() {
 // =========================================================================
 // HIGH-TECH INDUSTRIAL MACHINE VISION CAMERA FEED ENGINE FOR 6 MODULES
 // =========================================================================
+function defectTrackLabel(name) {
+  const labels = {
+    "FABRIC TEAR": "Tear",
+    "CHEMICAL STAIN": "Chemical Stain",
+    "BLEACH STREAK": "Bleach Streak",
+    "SINGE SCORCH": "Singe Scorch",
+    "DYE LIQUOR SPLASH": "Dye Splash",
+    "SHADING STREAK": "Shading Streak",
+    "OIL STAIN": "Oil Stain",
+    "BROKEN PICK": "Broken Pick",
+    "SLUB KNOT": "Slub",
+    "WEAVE HOLE": "Pin Hole",
+    "COLOR BLOTCH / DRIP": "Chemical Stain",
+    "DOCTOR BLADE STREAK": "Doctor Streak",
+    "MISREGISTRATION": "Misregister",
+    "LINT RESIST WHITE": "Pin Hole",
+    "SURFACE NEP / LUMP": "Surface Nep",
+    "STENTER PIN MARK": "Pin Hole",
+    "CHEMICAL RESIDUE": "Chemical Stain",
+    "WEFT SKEW LINE": "Weft Skew",
+    "SELVEDGE EDGE CREASE": "Crease",
+    "CONTAMINANT SPOT": "Chemical Stain",
+    "LOOSE SELVEDGE THREAD": "Loose Thread",
+    "TENSION WRINKLE": "Crease"
+  };
+  return labels[name] || name;
+}
+
+function mountLiveDefectLog(bodyId, metreId, speedMpm, baseM, seeds) {
+  const body = document.getElementById(bodyId);
+  const metreEl = document.getElementById(metreId);
+  let metres = baseM;
+  let lastTick = performance.now();
+  const metresNow = () => {
+    const now = performance.now();
+    const view = metreEl && metreEl.closest(".dyeing-inspection-container");
+    if (view && view.style.display !== "none") {
+      metres += ((now - lastTick) / 60000) * speedMpm;
+    }
+    lastTick = now;
+    return metres;
+  };
+  const clock = (offsetMs) => {
+    const d = new Date(Date.now() - offsetMs);
+    return d.toLocaleTimeString([], { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  };
+  const paint = (name, time, metres, fresh) => {
+    const tr = document.createElement("tr");
+    if (fresh) tr.className = "is-fresh";
+    const defect = document.createElement("td");
+    const when = document.createElement("td");
+    const where = document.createElement("td");
+    defect.textContent = name;
+    when.textContent = time;
+    where.textContent = `${metres.toFixed(1)} m`;
+    tr.append(defect, when, where);
+    return tr;
+  };
+  if (body) {
+    seeds.forEach((seed) => body.appendChild(paint(seed.name, clock(seed.ago), seed.metres, false)));
+  }
+  const tick = () => {
+    if (metreEl) metreEl.textContent = `${metresNow().toFixed(1)} m`;
+  };
+  tick();
+  setInterval(tick, 500);
+  return {
+    push(defect) {
+      if (!body || !defect) return;
+      const metres = metresNow();
+      body.insertBefore(paint(defectTrackLabel(defect.name), clock(0), metres, true), body.firstChild);
+      while (body.rows.length > 40) body.removeChild(body.lastElementChild);
+      const scroller = body.closest(".defect-track-scroll");
+      if (scroller) scroller.scrollTop = 0;
+      if (metreEl) metreEl.textContent = `${metres.toFixed(1)} m`;
+    }
+  };
+}
+
 function initFabricInspectionCameraFeeds() {
+  const grgDefectLog = mountLiveDefectLog("grgDefectLogBody", "grgDefectRunMetre", 38.4, 22.4, [
+    { name: "Tear", ago: 16000, metres: 22.4 },
+    { name: "Crease", ago: 44000, metres: 16.8 },
+    { name: "Pin Hole", ago: 72000, metres: 10.2 },
+    { name: "Broken Pick", ago: 98000, metres: 4.6 }
+  ]);
+  const preDefectLog = mountLiveDefectLog("preDefectLogBody", "preDefectRunMetre", 48, 36.2, [
+    { name: "Chemical Stain", ago: 14000, metres: 36.2 },
+    { name: "Tear", ago: 42000, metres: 28.4 },
+    { name: "Bleach Streak", ago: 71000, metres: 19.6 },
+    { name: "Chemical Stain", ago: 98000, metres: 11.2 }
+  ]);
+  const fvdDefectLog = mountLiveDefectLog("fvdDefectLogBody", "fvdDefectRunMetre", 42.5, 44.8, [
+    { name: "Tear", ago: 12000, metres: 44.8 },
+    { name: "Chemical Stain", ago: 38000, metres: 35.1 },
+    { name: "Dye Splash", ago: 64000, metres: 26.4 },
+    { name: "Tear", ago: 91000, metres: 17.0 }
+  ]);
+  const fvpDefectLog = mountLiveDefectLog("fvpDefectLogBody", "fvpDefectRunMetre", 55, 51.6, [
+    { name: "Pin Hole", ago: 11000, metres: 51.6 },
+    { name: "Chemical Stain", ago: 36000, metres: 42.8 },
+    { name: "Crease", ago: 62000, metres: 33.4 },
+    { name: "Tear", ago: 88000, metres: 24.1 }
+  ]);
+  const fvfDefectLog = mountLiveDefectLog("fvfDefectLogBody", "fvfDefectRunMetre", 55, 48.2, [
+    { name: "Crease", ago: 15000, metres: 48.2 },
+    { name: "Pin Hole", ago: 41000, metres: 39.6 },
+    { name: "Chemical Stain", ago: 68000, metres: 29.8 },
+    { name: "Tear", ago: 94000, metres: 20.4 }
+  ]);
+  const fldDefectLog = mountLiveDefectLog("fldDefectLogBody", "fldDefectRunMetre", 32, 30.5, [
+    { name: "Crease", ago: 18000, metres: 30.5 },
+    { name: "Pin Hole", ago: 46000, metres: 24.2 },
+    { name: "Chemical Stain", ago: 74000, metres: 17.6 },
+    { name: "Tear", ago: 102000, metres: 11.0 }
+  ]);
   const cameraConfigs = [
     {
       prefix: "grg",
@@ -12336,6 +12812,7 @@ function initFabricInspectionCameraFeeds() {
           ptsEl.textContent = updated;
           idxEl.textContent = updated;
         }
+        grgDefectLog.push(defect);
       }
     },
     {
@@ -12364,9 +12841,10 @@ function initFabricInspectionCameraFeeds() {
       onLaserHit: (defect) => {
         const deltaTag = document.querySelector("#pretreatmentInspectionView .hud-delta-tag strong");
         if (deltaTag) {
-          const cur = parseFloat(deltaTag.textContent || "0.21");
+          const cur = parseFloat(deltaTag.textContent || "0.19");
           deltaTag.textContent = (cur + 0.03).toFixed(2);
         }
+        preDefectLog.push(defect);
       }
     },
     {
@@ -12401,6 +12879,7 @@ function initFabricInspectionCameraFeeds() {
         if (idxEl) {
           idxEl.textContent = (parseFloat(idxEl.textContent || "0.12") + 0.03).toFixed(2);
         }
+        fvdDefectLog.push(defect);
       }
     },
     {
@@ -12435,6 +12914,7 @@ function initFabricInspectionCameraFeeds() {
         if (idxEl) {
           idxEl.textContent = (parseFloat(idxEl.textContent || "0.16") + 0.03).toFixed(2);
         }
+        fvpDefectLog.push(defect);
       }
     },
     {
@@ -12470,6 +12950,7 @@ function initFabricInspectionCameraFeeds() {
           skewEl.textContent = "0.7°";
           setTimeout(() => { if (skewEl) skewEl.textContent = "0.4°"; }, 3000);
         }
+        fvfDefectLog.push(defect);
       }
     },
     {
@@ -12505,6 +12986,7 @@ function initFabricInspectionCameraFeeds() {
           edgeEl.textContent = "3.8";
           setTimeout(() => { if (edgeEl) edgeEl.textContent = "2.1"; }, 3000);
         }
+        fldDefectLog.push(defect);
       }
     }
   ];

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Batch report</title>
+  <title>Batcher Traceability</title>
   <style>
     :root { color-scheme: light; }
     * { box-sizing: border-box; }
@@ -194,8 +194,8 @@
 <body>
   <main class="sheet">
     <img class="logo" src="Powered_By__14_-removebg-preview.png" width="521" height="382" alt="Lucky Textile Mills Limited, powered by Spark Technologies" />
-    <p class="kicker">BATCH REPORT</p>
-    <h1 id="reportId">Batch</h1>
+    <p class="kicker">BATCHER TRACEABILITY</p>
+    <h1 id="reportId">Batcher Traceability</h1>
     <p class="lede" id="reportLede">Piece-lot record opened from the batch QR code.</p>
     <div id="reportBody"></div>
   </main>
@@ -347,22 +347,96 @@
         return Math.round(2 * earth * Math.asin(Math.min(1, Math.sqrt(h))));
       }
 
-      function departmentName(stage) {
+      function departmentName(stage, batchId) {
         const names = {
-          GREIGE: "Greige",
-          PRETREATMENT: "Pretreatment",
-          DYEING: "Dyeing",
-          PRINTING: "Printing",
-          FINISHES: "Finishes",
-          FOLDING: "Folding"
+          GREIGE: [
+            "Tacome MACHINE 01, Batching 01 & 02"
+          ],
+          PRETREATMENT: [
+            "Benninger Bleaching",
+            "Red Flag Bleaching",
+            "Red Flag Mercerize",
+            "OSTHOFF Singeing 02",
+            "Benninger Mercerize",
+            "Singeing 01, Dewling Station 04Nos",
+            "Singeing 03 (Pong Kwang)",
+            "Benninger Bleaching 03",
+            "Utility Section (Loos Boiler 16 Ton, Loos Boiler 28 Ton, Compressor, RO Plant, CRU, Caustic Tank, Coal Boiler)",
+            "Coal Steam Boiler 25 TPH"
+          ],
+          DYEING: [
+            "Pad Thermosol",
+            "Benninger Pad Steam 01",
+            "Termo Chem (Hot Water Tank, Loading Pump 01Nos, Over Head Tank, Chemical Dossing Auto Valve Section, Chemical Transfer Pump 01Nos, Chemical Tank and Starrer)",
+            "Exhaust Dyeing 05Nos",
+            "Thailand Pad Steam 02",
+            "JIGGER-03",
+            "Sample Pad Steam",
+            "Garment Washing 1 (45Nos)",
+            "Garment Washing 2",
+            "Processing Lab (Milnor Washer 02Nos, Milnor Dryer, Thermosol, Frame Steamer, Pad Steam, Padder (Mathis) 02Nos, Padder (Rocal) 01Nos, Frame Steamer, Data Color, Gyro wash, Lebo Mat Dryer, Light Fastness, Wascotor 02Nos, Miele Washer, Whirl Pool Washer, Whirl Pool Dryer, Titan, Elmatear, Humidifier)"
+          ],
+          PRINTING: [
+            "Zimmer Printing 01 (5 Chamber, 16 Heads), Squeeze Washing Zimmer 01, Screen Washing Zimmer 01",
+            "Zimmer Sample Table",
+            "Steam Ager 01 & Oil Boiler",
+            "Termo Print (Manual Mixture, Production Head, Drum Washing, Production Mixture, Head # 01, Preparator Head with Urea Loading Tank, Sampling Head)",
+            "Rotary Engraving (Nova Jet 02Nos, Poly Mizer 02Nos, Coating Machine 02Nos, Clamitizer 01Nos, DLE 02Nos, End Ring Glueing 02Nos)",
+            "Reggiani Printing (5 Chamber, 12 Heads), Reggiani Squeeze Washing, Reggiani Screen Washing",
+            "Flat Bed Printing (4 Chamber, 12 Heads)",
+            "Flat Bed Sample Table",
+            "Flat Bed Color Kitchen (Gum Mixer, Color Mixer, Manual Mixture)",
+            "Steam Ager 02 & Oil Boiler, Lebo Steamer",
+            "Flat Bed Engraving (Coating 01Nos, Dryer 01Nos, DLE 01Nos, Straching 01Nos)",
+            "Zimmer Printing 02 (5 Chamber, 15 Heads), Squeeze Washing Zimmer 02, Screen Washing Zimmer 02",
+            "Digital Printing",
+            "New Reggiani Printing (5 Chamber, 12 Heads)"
+          ],
+          FINISHES: [
+            "Stenter 10F (10th Chambers)",
+            "Shaoyang Stenter 04 (8th Chambers)",
+            "Seer Sucker",
+            "Mario Crosta (04 Drum) + Dust Collector",
+            "Sanforize 01",
+            "Lamperti Raising Mc",
+            "Babcock Stenter (5th Chambers)",
+            "Shaoyang Stenter 01 (8th Chambers)",
+            "Shaoyang Stenter 03 (8th Chambers)",
+            "Shaoyang Stenter 02 (8th Chambers) + Washing Chamber",
+            "Kuster Calendar",
+            "Shaoyang Stenter 05 (8th Chambers)",
+            "Transfer Calender",
+            "Shearing Machine",
+            "Ferraro Compacting",
+            "Sanforize 02",
+            "Shaoyang Stenter 06 (8th Chambers)",
+            "Shaoyang Stenter 07 (8th Chambers)",
+            "New Mario Crosta Raising Machine (4 Drums)",
+            "Mario Crosta (02 Drum) + Dust Collector",
+            "Mario Crosta (02 Drum) + Dust Collector (Spain)",
+            "New Haining Raising Machine (2 Drum)",
+            "Old Haining Raising Machine (2 Drum)",
+            "Lafer Peaching Machine 02",
+            "Guarneri Calander",
+            "Pitching Micro Sand"
+          ],
+          FOLDING: [
+            "Rolling M/C (31Nos), Packing Machine (01Nos), Fold Machines (03Nos)",
+            "Double Fold Machine (Turkey)"
+          ]
         };
-        return names[stage] || stage || "this department";
+        const list = names[stage];
+        if (!list || !list.length) return stage || "this machine";
+        let hash = 0;
+        const id = String(batchId || "");
+        for (let i = 0; i < id.length; i += 1) hash = (Math.imul(hash, 33) + id.charCodeAt(i)) >>> 0;
+        return list[mixBatchHash(hash) % list.length];
       }
 
       function batchAwayText(batchId, department) {
         const spot = batcherSpot(batchId);
         const meters = metersBetween(spot.lat, spot.lon, MILL.lat, MILL.lon);
-        return "This batch is " + meters.toLocaleString("en-US") + " m away from " + department + ".";
+        return "This batcher is " + meters.toLocaleString("en-US") + " m away from " + department + ".";
       }
 
       function mountScanMap(batchId) {
@@ -413,8 +487,8 @@
         const current = view.trail.find((entry) => entry.state === "live");
         const nowMinutes = current ? liveMinutes(current) : 0;
         const totalMinutes = view.trail.reduce((sum, entry) => sum + (entry.state === "wait" ? 0 : liveMinutes(entry)), 0);
-        const status = view.completed ? "Completed" : view.stage;
-        document.title = view.id + " · Batch report";
+        const status = view.completed ? "Completed" : (view.stage === "FINISHES" ? "FINISHING" : view.stage);
+        document.title = view.id + " · Batcher Traceability";
         document.getElementById("reportId").textContent = view.id;
         document.getElementById("reportLede").textContent = view.fabric + " · " + view.gsm + " gsm · " + formatDate(view.date);
         const facts = [
@@ -427,14 +501,14 @@
           ["Minutes on this stage", current ? nowMinutes.toLocaleString("en-US") + " min" : "—"],
           ["Minutes so far", totalMinutes.toLocaleString("en-US") + " min"]
         ];
-        const department = departmentName(view.completed ? "FOLDING" : view.stage);
+        const department = departmentName(view.completed ? "FOLDING" : view.stage, view.id);
         const factRows = facts.map((row) => "<tr><th>" + esc(row[0]) + "</th><td>" + esc(row[1]) + "</td></tr>").join("");
         const stageCell = (label, html, className) => '<td data-label="' + esc(label) + '"' + (className ? ' class="' + className + '"' : "") + ">" + html + "</td>";
         const stageRows = view.trail.map((entry) => {
           const waiting = entry.state === "wait";
           const mins = waiting ? "—" : liveMinutes(entry).toLocaleString("en-US") + " min" + (entry.state === "live" && entry.startedAtMs ? " · live" : "");
           return "<tr>" +
-            stageCell("Stage", esc(entry.stage)) +
+            stageCell("Stage", esc(entry.stage === "FINISHES" ? "FINISHING" : entry.stage)) +
             stageCell("Cloth", esc(view.fabric)) +
             stageCell("GSM", esc(view.gsm)) +
             stageCell("Minutes", esc(mins), waiting ? "muted" : "") +
@@ -444,7 +518,7 @@
             "</tr>";
         }).join("");
         document.getElementById("reportBody").innerHTML =
-          '<section><h2>Batch</h2><div class="scan-map-card"><div class="scan-map" id="scanMillMap" role="img" aria-label="Map of this batch and the mill building"></div><p class="scan-distance">' + esc(batchAwayText(view.id, department)) + "</p></div><table class=\"facts\"><tbody>" + factRows + "</tbody></table></section>" +
+          '<section><h2>Batcher Traceability</h2><div class="scan-map-card"><div class="scan-map" id="scanMillMap" role="img" aria-label="Map of this batch and the mill building"></div><p class="scan-distance">' + esc(batchAwayText(view.id, department)) + "</p></div><table class=\"facts\"><tbody>" + factRows + "</tbody></table></section>" +
           '<section><h2>Each stage</h2><div class="stage-scroll"><table class="stage-table"><thead><tr><th>Stage</th><th>Cloth</th><th>GSM</th><th>Minutes</th><th>Status</th><th>Updated by</th><th>Updated</th></tr></thead><tbody>' + stageRows + "</tbody></table></div></section>";
       }
 
@@ -455,8 +529,8 @@
         ? { ...decoded, ...saved, trail: (saved.trail && saved.trail.length) ? saved.trail : decoded.trail }
         : (saved || decoded);
       if (!batch) {
-        document.getElementById("reportId").textContent = "No batch in this code";
-        document.getElementById("reportLede").textContent = "Scan a batch sticker from Batch Traceability.";
+        document.getElementById("reportId").textContent = "No batcher traceability in this code";
+        document.getElementById("reportLede").textContent = "Scan a sticker from Batcher Traceability.";
         document.getElementById("reportBody").innerHTML = '<p class="empty">This QR code does not carry a batch record.</p>';
         return;
       }
