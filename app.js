@@ -11330,7 +11330,7 @@ function setupOpsWorkbenches() {
       <article class="batch-sticker print-page">
         <img class="batch-sticker-logo" src="${STICKER_LOGO}" width="521" height="382" alt="Lucky Textile Mills Limited, powered by Spark Technologies" />
         <p class="print-page-name">Batcher Traceability</p>
-        <p class="print-page-name is-urdu" lang="ur" dir="rtl">بیچر</p>
+        <p class="print-page-name is-urdu" lang="ur" dir="rtl">بیچر ٹریس ایبلٹی</p>
         <div class="batch-sticker-qr">${batchQrLink(batch, "ops-qr-print")}</div>
         <h1>${esc(batch.id)}</h1>
         <p>${esc(formatBatchDate(batch.date))}</p>
