@@ -11440,7 +11440,7 @@ function setupOpsWorkbenches() {
     { id: "FJ-10826", company: "Target", fabric: "100% Linen Canvas Weave", meters: 9800, gsm: 240, width: "56 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "GREIGE", date: "2026-10-04", entryType: "job", notes: "Casement curtains natural flax unbleached", completed: false },
     { id: "CL-5041", company: "ASDA", fabric: "100% Cotton Sheeting 60x60", meters: 480, gsm: 130, width: "90 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "DYEING", date: "2026-10-04", entryType: "manual_cloth", notes: "Manual sample cut lot for lab dip approval", completed: false },
     { id: "CL-5042", company: "IKEA", fabric: "Woven Cotton Drill 3/1", meters: 620, gsm: 260, width: "58 inch", route: ["GREIGE", "PRETREATMENT", "FINISHES", "FOLDING"], currentStage: "GREIGE", date: "2026-10-05", entryType: "manual_cloth", notes: "Loom roll piece added manually by floor operator", completed: false },
-    { id: "FJ-10827", company: "Rubelli", fabric: "Silk Viscose Damask", meters: 8600, gsm: 220, width: "54 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "DYEING", date: "2026-10-07", entryType: "job", notes: "Venetian furnishing damask", completed: false }
+    { id: "FJ-10827", company: "Dibella", fabric: "Silk Viscose Damask", meters: 8600, gsm: 220, width: "54 inch", route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"], currentStage: "DYEING", date: "2026-10-07", entryType: "job", notes: "Venetian furnishing damask", completed: false }
   ];
 
   function loadFabricJobs() {
@@ -11452,10 +11452,14 @@ function setupOpsWorkbenches() {
       stored = [];
     }
     const usable = Array.isArray(stored)
-      ? stored.filter((item) => item && item.company && item.currentStage && Array.isArray(item.route))
+      ? stored.filter((item) => item && item.company && item.currentStage && Array.isArray(item.route)).map((item) => {
+        const company = String(item.company || "");
+        if (company.toLowerCase().includes("rubelli")) return { ...item, company: "Dibella" };
+        return item;
+      })
       : [];
-    const withRubelli = (list) => {
-      if (list.some((item) => String(item.company || "").toLowerCase().includes("rubelli"))) return list;
+    const withDibella = (list) => {
+      if (list.some((item) => String(item.company || "").toLowerCase().includes("dibella"))) return list;
       const nums = list.map((item) => {
         const match = String(item.id || "").match(/^FJ-(\d+)$/);
         return match ? Number(match[1]) : 0;
@@ -11463,7 +11467,7 @@ function setupOpsWorkbenches() {
       const id = `FJ-${Math.max(10827, ...nums, 0) + 1}`;
       return [{
         id,
-        company: "Rubelli",
+        company: "Dibella",
         fabric: "Silk Viscose Damask",
         meters: 8600,
         gsm: 220,
@@ -11477,18 +11481,19 @@ function setupOpsWorkbenches() {
       }, ...list];
     };
     if (usable.length) {
-      const rubelli = withRubelli(usable);
-      const next = rubelli.map((item) => prepareFabricJob(item, true));
-      const dirty = rubelli.length !== usable.length || next.some((item) => {
+      const dibella = withDibella(usable);
+      const next = dibella.map((item) => prepareFabricJob(item, true));
+      const dirty = dibella.length !== usable.length || next.some((item) => {
         const prev = usable.find((entry) => entry.id === item.id);
         if (!prev) return true;
         const prevRoute = Array.isArray(prev.route) ? prev.route.join("|") : "";
-        return prevRoute !== item.route.join("|") || !prev.shortfalls;
+        const prevCompany = String(prev.company || "");
+        return prevRoute !== item.route.join("|") || !prev.shortfalls || prevCompany.toLowerCase().includes("rubelli");
       });
       if (dirty) save(FABRIC_JOBS_KEY, next);
       return next;
     }
-    const fresh = withRubelli(defaultFabricJobs).map((item) => prepareFabricJob(item, true));
+    const fresh = withDibella(defaultFabricJobs).map((item) => prepareFabricJob(item, true));
     save(FABRIC_JOBS_KEY, fresh);
     return fresh;
   }
@@ -11504,7 +11509,7 @@ function setupOpsWorkbenches() {
     if (brand.includes("zara")) return `<span class="fab-brand-badge brand-zara">ZARA</span>`;
     if (brand.includes("spencer") || brand.includes("m&s")) return `<span class="fab-brand-badge brand-mns">M&amp;S</span>`;
     if (brand.includes("walmart")) return `<span class="fab-brand-badge brand-walmart">WALMART</span>`;
-    if (brand.includes("rubelli")) return `<span class="fab-brand-badge brand-rubelli">RUBELLI</span>`;
+    if (brand.includes("dibella")) return `<span class="fab-brand-badge brand-dibella">DIBELLA</span>`;
     return `<span class="fab-brand-badge brand-generic">${esc(company || "Customer")}</span>`;
   }
 
@@ -11516,7 +11521,8 @@ function setupOpsWorkbenches() {
       if (completed || idx < curIdx) stateCls = "is-done";
       else if (idx === curIdx) stateCls = "is-active";
       const sep = idx < list.length - 1 ? `<span class="fab-route-sep">›</span>` : "";
-      return `<span class="fab-route-step ${stateCls}">${esc(step === "FINISHES" ? "FINISHING" : step)}</span>${sep}`;
+      const stepLabel = step === "FINISHES" ? "FINISHING" : step === "FABRIC ISSUED" ? "FABRIC JOB" : step;
+      return `<span class="fab-route-step ${stateCls}">${esc(stepLabel)}</span>${sep}`;
     }).join("") + `</div>`;
   }
 
@@ -11528,6 +11534,10 @@ function setupOpsWorkbenches() {
     for (let i = 0; i < key.length; i += 1) hash = (hash * 33 + key.charCodeAt(i)) >>> 0;
     const loss = Math.max(1, Math.round(base * (0.05 + (hash % 41) / 1000)));
     return Math.min(loss, base - 1);
+  }
+
+  function fabricStageLabel(step) {
+    return step === "FABRIC ISSUED" ? "FABRIC JOB" : step;
   }
 
   function withFabricIssued(route) {
@@ -11571,21 +11581,51 @@ function setupOpsWorkbenches() {
   function fabricStageMeters(item) {
     const route = withFabricIssued(item.route);
     const stored = item.shortfalls && typeof item.shortfalls === "object" ? item.shortfalls : {};
+    const manual = item.stageMeters && typeof item.stageMeters === "object" ? item.stageMeters : {};
     let incoming = Number(item.meters) || 0;
     const meters = {};
     route.forEach((stage) => {
-      meters[stage] = incoming;
-      incoming = Math.max(0, incoming - shortfallLoss(stored[stage], incoming));
+      if (stage === "FABRIC ISSUED") {
+        meters[stage] = Math.max(0, Math.round(Number(item.meters) || 0));
+      } else if (Object.prototype.hasOwnProperty.call(manual, stage)) {
+        meters[stage] = Math.max(0, Math.round(Number(manual[stage]) || 0));
+      } else {
+        meters[stage] = incoming;
+      }
+      incoming = Math.max(0, meters[stage] - shortfallLoss(stored[stage], meters[stage]));
     });
     return meters;
+  }
+
+  function setFabricStageMeters(item, stage, rawValue) {
+    const route = withFabricIssued(item.route);
+    const idx = route.indexOf(stage);
+    if (idx < 0) return;
+    const v = Math.max(0, Math.round(Number(rawValue) || 0));
+    if (stage === "FABRIC ISSUED") item.meters = v;
+    else {
+      if (!item.stageMeters || typeof item.stageMeters !== "object") item.stageMeters = {};
+      item.stageMeters[stage] = v;
+    }
+    if (item.stageMeters) {
+      for (let j = idx + 1; j < route.length; j += 1) delete item.stageMeters[route[j]];
+    }
+  }
+
+  function clearFabricStageMetersAfter(item, stage) {
+    const route = withFabricIssued(item.route);
+    const idx = route.indexOf(stage);
+    if (idx < 0 || !item.stageMeters || typeof item.stageMeters !== "object") return;
+    for (let j = idx + 1; j < route.length; j += 1) delete item.stageMeters[route[j]];
   }
 
   function paintFabricStageMeters(item) {
     if (!recordBody) return;
     const meters = fabricStageMeters(item);
-    recordBody.querySelectorAll("[data-stage-meters]").forEach((cell) => {
-      const stage = cell.getAttribute("data-stage-meters");
-      cell.textContent = `${Number(meters[stage] || 0).toLocaleString("en-US")} m`;
+    recordBody.querySelectorAll("input.fab-stage-meters-input").forEach((input) => {
+      if (input === document.activeElement) return;
+      const stage = input.getAttribute("data-stage-meters");
+      input.value = String(Math.max(0, Math.round(Number(meters[stage] || 0))));
     });
   }
 
@@ -11609,10 +11649,16 @@ function setupOpsWorkbenches() {
       const shortfallValue = saved === "" || saved == null ? "" : String(saved);
       const statusText = isPast ? "Completed" : isCurrent ? "Currently in process" : "Pending";
       const statusStyle = isPast ? "color:#10b981;font-weight:700;" : isCurrent ? "color:#1e1b4b;font-weight:800;" : "color:#94a3b8;";
+      const metersCell = `<td>
+          <label class="fab-shortfall-field">
+            <input type="number" class="fab-shortfall-input fab-stage-meters-input" min="0" step="1" inputmode="numeric" value="${Math.max(0, Math.round(Number(metersHere) || 0))}" data-stage-meters="${esc(step)}" aria-label="Meters for ${esc(fabricStageLabel(step))}" />
+            <span>m</span>
+          </label>
+        </td>`;
       return `<tr>
-        <td><strong>${esc(step)}</strong></td>
+        <td><strong>${esc(fabricStageLabel(step))}</strong></td>
         <td>${esc(item.fabric)}</td>
-        <td data-stage-meters="${esc(step)}">${Number(metersHere).toLocaleString("en-US")} m</td>
+        ${metersCell}
         <td>
           <label class="fab-shortfall-field">
             <input type="number" class="fab-shortfall-input" min="0" step="1" inputmode="numeric" placeholder="" value="${esc(shortfallValue)}" data-shortfall-stage="${esc(step)}" aria-label="Shortfall for ${esc(step)}" />
@@ -11879,6 +11925,18 @@ function setupOpsWorkbenches() {
     if (recordBody && !recordBody.dataset.shortfallBound) {
       recordBody.dataset.shortfallBound = "1";
       recordBody.addEventListener("input", (event) => {
+        const metersInput = event.target.closest(".fab-stage-meters-input");
+        if (metersInput) {
+          if (!openRecord || openRecord.kind !== "fabric") return;
+          const item = fabricJobs.find((entry) => entry.id === openRecord.id);
+          const stage = metersInput.getAttribute("data-stage-meters");
+          if (!item || !stage) return;
+          setFabricStageMeters(item, stage, metersInput.value);
+          item.route = withFabricIssued(item.route);
+          save(FABRIC_JOBS_KEY, fabricJobs);
+          paintFabricStageMeters(item);
+          return;
+        }
         const input = event.target.closest(".fab-shortfall-input");
         if (!input || !openRecord || openRecord.kind !== "fabric") return;
         const stage = input.getAttribute("data-shortfall-stage");
@@ -11886,6 +11944,7 @@ function setupOpsWorkbenches() {
         if (!item || !stage) return;
         if (!item.shortfalls || typeof item.shortfalls !== "object") item.shortfalls = {};
         item.shortfalls[stage] = input.value.trim();
+        clearFabricStageMetersAfter(item, stage);
         item.route = withFabricIssued(item.route);
         save(FABRIC_JOBS_KEY, fabricJobs);
         paintFabricStageMeters(item);

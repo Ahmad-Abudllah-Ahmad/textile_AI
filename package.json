@@ -4,6 +4,6 @@
   "private": true,
   "description": "TEX//STACK textile operations demo with Mill Knowledge Copilot",
   "scripts": {
-    "dev": "node server.js"
+    "dev": "node api.js && node server.js"
   }
 }
