@@ -16,7 +16,7 @@
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=Noto+Nastaliq+Urdu:wght@400;600;700&display=swap"
     rel="stylesheet" />
 
-  <link rel="stylesheet" href="style.css?v=29.2" />
+  <link rel="stylesheet" href="style.css?v=29.3" />
 </head>
 
 <body>
@@ -7772,18 +7772,19 @@
         <label class="ops-field ops-field-grow">
           <span>Process route</span>
           <select id="fabJobProcessInput">
-            <option value="GREIGE,PRETREATMENT,DYEING,FINISHES,FOLDING">Greige → Pretreatment → Dyeing → Finishing → Folding</option>
-            <option value="GREIGE,PRETREATMENT,PRINTING,FINISHES,FOLDING">Greige → Pretreatment → Printing → Finishing → Folding</option>
-            <option value="GREIGE,PRETREATMENT,DYEING,PRINTING,FINISHES,FOLDING">Greige → Pretreatment → Dyeing → Printing → Finishing → Folding</option>
-            <option value="GREIGE,PRETREATMENT,FINISHES,FOLDING">Greige → Pretreatment → Finishing → Folding</option>
-            <option value="GREIGE,DYEING,FINISHES,FOLDING">Greige → Dyeing → Finishing → Folding</option>
-            <option value="GREIGE,PRETREATMENT,DYEING,FOLDING">Greige → Pretreatment → Dyeing → Folding</option>
+            <option value="FABRIC ISSUED,GREIGE,PRETREATMENT,DYEING,FINISHES,FOLDING">Fabric issued → Greige → Pretreatment → Dyeing → Finishing → Folding</option>
+            <option value="FABRIC ISSUED,GREIGE,PRETREATMENT,PRINTING,FINISHES,FOLDING">Fabric issued → Greige → Pretreatment → Printing → Finishing → Folding</option>
+            <option value="FABRIC ISSUED,GREIGE,PRETREATMENT,DYEING,PRINTING,FINISHES,FOLDING">Fabric issued → Greige → Pretreatment → Dyeing → Printing → Finishing → Folding</option>
+            <option value="FABRIC ISSUED,GREIGE,PRETREATMENT,FINISHES,FOLDING">Fabric issued → Greige → Pretreatment → Finishing → Folding</option>
+            <option value="FABRIC ISSUED,GREIGE,DYEING,FINISHES,FOLDING">Fabric issued → Greige → Dyeing → Finishing → Folding</option>
+            <option value="FABRIC ISSUED,GREIGE,PRETREATMENT,DYEING,FOLDING">Fabric issued → Greige → Pretreatment → Dyeing → Folding</option>
           </select>
         </label>
         <label class="ops-field">
           <span>Starting stage</span>
           <select id="fabJobStageInput">
-            <option>GREIGE</option>
+            <option>FABRIC ISSUED</option>
+            <option selected>GREIGE</option>
             <option>PRETREATMENT</option>
             <option>DYEING</option>
             <option>PRINTING</option>
@@ -7830,7 +7831,8 @@
         <label class="ops-field">
           <span>Stage</span>
           <select id="fabClothStageInput">
-            <option>GREIGE</option>
+            <option>FABRIC ISSUED</option>
+            <option selected>GREIGE</option>
             <option>PRETREATMENT</option>
             <option>DYEING</option>
             <option>PRINTING</option>
@@ -7949,7 +7951,7 @@
   </button>
 
   <script src="qrcode.js?v=1"></script>
-  <script src="app.js?v=11.31"></script>
+  <script src="app.js?v=11.32"></script>
 </body>
 
 </html>

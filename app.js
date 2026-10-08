@@ -11477,11 +11477,18 @@ function setupOpsWorkbenches() {
       }, ...list];
     };
     if (usable.length) {
-      const next = withRubelli(usable);
-      if (next.length !== usable.length) save(FABRIC_JOBS_KEY, next);
-      return next.map((item) => ({ ...item, route: item.route.slice() }));
+      const rubelli = withRubelli(usable);
+      const next = rubelli.map((item) => prepareFabricJob(item, true));
+      const dirty = rubelli.length !== usable.length || next.some((item) => {
+        const prev = usable.find((entry) => entry.id === item.id);
+        if (!prev) return true;
+        const prevRoute = Array.isArray(prev.route) ? prev.route.join("|") : "";
+        return prevRoute !== item.route.join("|") || !prev.shortfalls;
+      });
+      if (dirty) save(FABRIC_JOBS_KEY, next);
+      return next;
     }
-    const fresh = withRubelli(defaultFabricJobs).map((item) => ({ ...item, route: item.route.slice() }));
+    const fresh = withRubelli(defaultFabricJobs).map((item) => prepareFabricJob(item, true));
     save(FABRIC_JOBS_KEY, fresh);
     return fresh;
   }
@@ -11523,6 +11530,65 @@ function setupOpsWorkbenches() {
     return Math.min(loss, base - 1);
   }
 
+  function withFabricIssued(route) {
+    const list = (Array.isArray(route) ? route : [])
+      .map((step) => String(step || "").trim())
+      .filter(Boolean);
+    const base = list.length ? list : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
+    if (base.some((step) => step.toUpperCase() === "FABRIC ISSUED")) {
+      return base.map((step) => (step.toUpperCase() === "FABRIC ISSUED" ? "FABRIC ISSUED" : step));
+    }
+    return ["FABRIC ISSUED", ...base];
+  }
+
+  function shortfallLoss(raw, incoming) {
+    if (raw === "" || raw == null) return 0;
+    const n = Math.round(Number(String(raw).replace(/,/g, "")));
+    if (!Number.isFinite(n) || n <= 0) return 0;
+    return Math.min(n, Math.max(0, Math.round(Number(incoming) || 0)));
+  }
+
+  function prepareFabricJob(item, seedMissing) {
+    const route = withFabricIssued(item.route);
+    const had = item.shortfalls && typeof item.shortfalls === "object";
+    let shortfalls = had ? { ...item.shortfalls } : null;
+    if (!had && seedMissing) {
+      const seeded = {};
+      const curIdx = item.completed ? route.length : Math.max(0, route.indexOf(item.currentStage));
+      let incoming = Number(item.meters) || 0;
+      route.forEach((stage, idx) => {
+        const reached = item.completed || idx <= curIdx;
+        if (stage === "FABRIC ISSUED" || !reached) return;
+        const loss = fabricShortfallMeters(item.id, stage, incoming);
+        seeded[stage] = loss;
+        incoming = Math.max(0, incoming - loss);
+      });
+      shortfalls = seeded;
+    }
+    return { ...item, route, shortfalls: shortfalls || {} };
+  }
+
+  function fabricStageMeters(item) {
+    const route = withFabricIssued(item.route);
+    const stored = item.shortfalls && typeof item.shortfalls === "object" ? item.shortfalls : {};
+    let incoming = Number(item.meters) || 0;
+    const meters = {};
+    route.forEach((stage) => {
+      meters[stage] = incoming;
+      incoming = Math.max(0, incoming - shortfallLoss(stored[stage], incoming));
+    });
+    return meters;
+  }
+
+  function paintFabricStageMeters(item) {
+    if (!recordBody) return;
+    const meters = fabricStageMeters(item);
+    recordBody.querySelectorAll("[data-stage-meters]").forEach((cell) => {
+      const stage = cell.getAttribute("data-stage-meters");
+      cell.textContent = `${Number(meters[stage] || 0).toLocaleString("en-US")} m`;
+    });
+  }
+
   function renderFabricRecord(item) {
     if (!recordTitle || !recordStatus || !recordBody) return;
     if (recordKicker) recordKicker.textContent = "FABRIC ORDER & TRACE RECORD";
@@ -11531,23 +11597,28 @@ function setupOpsWorkbenches() {
     recordStatus.classList.remove("is-batch");
     if (recordHeadExtra) recordHeadExtra.innerHTML = getBrandBadgeHtml(item.company);
 
-    const route = Array.isArray(item.route) && item.route.length ? item.route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
+    const route = withFabricIssued(item.route);
     const curIdx = item.completed ? route.length : Math.max(0, route.indexOf(item.currentStage));
-    let stageMeters = Number(item.meters) || 0;
+    const stageMeters = fabricStageMeters(item);
+    const storedShortfalls = item.shortfalls && typeof item.shortfalls === "object" ? item.shortfalls : {};
     const routeRows = route.map((step, idx) => {
       const isPast = item.completed || idx < curIdx;
       const isCurrent = !item.completed && idx === curIdx;
-      const reached = item.completed || idx <= curIdx;
-      const shortfall = reached ? fabricShortfallMeters(item.id, step, stageMeters) : 0;
-      const metersHere = stageMeters;
-      if (reached) stageMeters = Math.max(0, stageMeters - shortfall);
+      const metersHere = stageMeters[step] || 0;
+      const saved = Object.prototype.hasOwnProperty.call(storedShortfalls, step) ? storedShortfalls[step] : "";
+      const shortfallValue = saved === "" || saved == null ? "" : String(saved);
       const statusText = isPast ? "Completed" : isCurrent ? "Currently in process" : "Pending";
       const statusStyle = isPast ? "color:#10b981;font-weight:700;" : isCurrent ? "color:#1e1b4b;font-weight:800;" : "color:#94a3b8;";
       return `<tr>
         <td><strong>${esc(step)}</strong></td>
         <td>${esc(item.fabric)}</td>
-        <td>${Number(metersHere).toLocaleString("en-US")} m</td>
-        <td>${reached ? `${shortfall.toLocaleString("en-US")} m` : "—"}</td>
+        <td data-stage-meters="${esc(step)}">${Number(metersHere).toLocaleString("en-US")} m</td>
+        <td>
+          <label class="fab-shortfall-field">
+            <input type="number" class="fab-shortfall-input" min="0" step="1" inputmode="numeric" placeholder="" value="${esc(shortfallValue)}" data-shortfall-stage="${esc(step)}" aria-label="Shortfall for ${esc(step)}" />
+            <span>m</span>
+          </label>
+        </td>
         <td>${esc(item.gsm ? `${item.gsm} GSM` : "Standard")}</td>
         <td style="${statusStyle}">${statusText}</td>
       </tr>`;
@@ -11572,7 +11643,7 @@ function setupOpsWorkbenches() {
       </div>
       <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 16px;margin:10px 0;">
         <span style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;">Defined Process Route</span>
-        <div style="margin-top:6px;">${getRouteFlowHtml(route, item.currentStage, item.completed)}</div>
+        <div style="margin-top:6px;">${getRouteFlowHtml(withFabricIssued(route), item.currentStage, item.completed)}</div>
         ${item.notes ? `<div style="margin-top:8px;font-size:0.82rem;color:#334155;"><strong>Notes:</strong> ${esc(item.notes)}</div>` : ""}
       </div>
       <section class="ops-record-section">
@@ -11622,7 +11693,7 @@ function setupOpsWorkbenches() {
       return;
     }
     body.innerHTML = fabricJobs.map((item) => {
-      const route = Array.isArray(item.route) && item.route.length ? item.route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
+      const route = withFabricIssued(item.route);
       const curIdx = item.completed ? route.length - 1 : Math.max(0, route.indexOf(item.currentStage));
       const pct = item.completed ? 100 : Math.max(10, Math.min(95, Math.round(((curIdx + 0.5) / route.length) * 100)));
       const stagePill = item.completed
@@ -11666,7 +11737,7 @@ function setupOpsWorkbenches() {
   function advanceFabricStage(id) {
     fabricJobs = fabricJobs.map((item) => {
       if (item.id !== id || item.completed) return item;
-      const route = Array.isArray(item.route) && item.route.length ? item.route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"];
+      const route = withFabricIssued(item.route);
       const curIdx = route.indexOf(item.currentStage);
       if (curIdx >= route.length - 1) return { ...item, completed: true, currentStage: route[route.length - 1] };
       return { ...item, currentStage: route[curIdx + 1] };
@@ -11730,7 +11801,7 @@ function setupOpsWorkbenches() {
         const meters = Number(document.getElementById("fabJobMetersInput")?.value) || 5000;
         if (!id || !fabric || !meters || fabricJobs.some((item) => item.id === id)) return;
         const processStr = document.getElementById("fabJobProcessInput")?.value || "GREIGE,PRETREATMENT,DYEING,FINISHES,FOLDING";
-        const route = processStr.split(",").map((step) => step.trim()).filter(Boolean);
+        const route = withFabricIssued(processStr.split(",").map((step) => step.trim()).filter(Boolean));
         fabricJobs = [{
           id,
           company: document.getElementById("fabJobCompanyInput")?.value || "IKEA",
@@ -11738,12 +11809,13 @@ function setupOpsWorkbenches() {
           meters,
           gsm: Number(document.getElementById("fabJobGsmInput")?.value) || 180,
           width: "58 inch",
-          route: route.length ? route : ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"],
+          route,
           currentStage: document.getElementById("fabJobStageInput")?.value || "GREIGE",
           date: new Date().toISOString().slice(0, 10),
           entryType: "job",
           notes: (document.getElementById("fabJobNotesInput")?.value || "").trim(),
-          completed: false
+          completed: false,
+          shortfalls: {}
         }, ...fabricJobs];
         save(FABRIC_JOBS_KEY, fabricJobs);
         renderFabricJobs();
@@ -11766,12 +11838,13 @@ function setupOpsWorkbenches() {
           meters,
           gsm: Number(document.getElementById("fabClothGsmInput")?.value) || 160,
           width: "60 inch",
-          route: ["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"],
+          route: withFabricIssued(["GREIGE", "PRETREATMENT", "DYEING", "FINISHES", "FOLDING"]),
           currentStage: document.getElementById("fabClothStageInput")?.value || "GREIGE",
           date: new Date().toISOString().slice(0, 10),
           entryType: "manual_cloth",
           notes: (document.getElementById("fabClothNotesInput")?.value || "Manual roll cut by operator").trim(),
-          completed: false
+          completed: false,
+          shortfalls: {}
         }, ...fabricJobs];
         save(FABRIC_JOBS_KEY, fabricJobs);
         renderFabricJobs();
@@ -11802,6 +11875,22 @@ function setupOpsWorkbenches() {
       const recordAdvance = event.target.closest("[data-record-advance]")?.getAttribute("data-record-advance");
       if (recordAdvance) advanceFabricStage(recordAdvance);
     });
+
+    if (recordBody && !recordBody.dataset.shortfallBound) {
+      recordBody.dataset.shortfallBound = "1";
+      recordBody.addEventListener("input", (event) => {
+        const input = event.target.closest(".fab-shortfall-input");
+        if (!input || !openRecord || openRecord.kind !== "fabric") return;
+        const stage = input.getAttribute("data-shortfall-stage");
+        const item = fabricJobs.find((entry) => entry.id === openRecord.id);
+        if (!item || !stage) return;
+        if (!item.shortfalls || typeof item.shortfalls !== "object") item.shortfalls = {};
+        item.shortfalls[stage] = input.value.trim();
+        item.route = withFabricIssued(item.route);
+        save(FABRIC_JOBS_KEY, fabricJobs);
+        paintFabricStageMeters(item);
+      });
+    }
 
     window.renderFabricLedger = renderFabricJobs;
     renderFabricJobs();
