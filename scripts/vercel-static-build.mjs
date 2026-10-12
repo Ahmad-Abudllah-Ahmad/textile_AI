@@ -14,6 +14,7 @@ const files = [
   "style.css",
   "qrcode.js",
   "batch-report.html",
+  "logo.png",
   "Powered_By__14_-removebg-preview.png"
 ];
 
