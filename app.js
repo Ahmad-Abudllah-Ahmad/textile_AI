@@ -11619,6 +11619,63 @@ function setupOpsWorkbenches() {
     for (let j = idx + 1; j < route.length; j += 1) delete item.stageMeters[route[j]];
   }
 
+  function syncShortfallsFromMeters(item) {
+    const route = withFabricIssued(item.route);
+    const meters = fabricStageMeters(item);
+    if (!item.shortfalls || typeof item.shortfalls !== "object") item.shortfalls = {};
+    for (let j = 0; j < route.length - 1; j += 1) {
+      const stage = route[j];
+      item.shortfalls[stage] = Math.max(0, Math.round((meters[stage] || 0) - (meters[route[j + 1]] || 0)));
+    }
+    const last = route[route.length - 1];
+    if (last) item.shortfalls[last] = "";
+  }
+
+  function ensureFabricShortfalls(item) {
+    const route = withFabricIssued(item.route);
+    const curIdx = item.completed ? route.length - 1 : Math.max(0, route.indexOf(item.currentStage));
+    if (!item.shortfalls || typeof item.shortfalls !== "object") item.shortfalls = {};
+
+    for (let pass = 0; pass < route.length; pass += 1) {
+      const meters = fabricStageMeters(item);
+      let changed = false;
+      for (let j = 0; j < route.length - 1; j += 1) {
+        if (!item.completed && j > curIdx) continue;
+
+        const stage = route[j];
+        const next = route[j + 1];
+        const diff = Math.max(0, Math.round((meters[stage] || 0) - (meters[next] || 0)));
+        const hasManualNext = item.stageMeters
+          && Object.prototype.hasOwnProperty.call(item.stageMeters, next);
+
+        if (hasManualNext) {
+          item.shortfalls[stage] = Math.max(0, Math.round((meters[stage] || 0) - (Number(item.stageMeters[next]) || 0)));
+        } else if (diff > 0) {
+          item.shortfalls[stage] = diff;
+        } else {
+          const base = Math.max(0, Math.round(meters[stage] || 0));
+          if (base <= 1) {
+            item.shortfalls[stage] = "";
+            continue;
+          }
+          const loss = fabricShortfallMeters(item.id, stage, base);
+          if (loss <= 0) {
+            item.shortfalls[stage] = 0;
+            continue;
+          }
+          item.shortfalls[stage] = loss;
+          if (item.stageMeters) {
+            for (let k = j + 1; k < route.length; k += 1) delete item.stageMeters[route[k]];
+          }
+          changed = true;
+        }
+      }
+      if (!changed) break;
+    }
+
+    syncShortfallsFromMeters(item);
+  }
+
   function paintFabricStageMeters(item) {
     if (!recordBody) return;
     const meters = fabricStageMeters(item);
@@ -11627,6 +11684,22 @@ function setupOpsWorkbenches() {
       const stage = input.getAttribute("data-stage-meters");
       input.value = String(Math.max(0, Math.round(Number(meters[stage] || 0))));
     });
+  }
+
+  function paintFabricShortfalls(item) {
+    if (!recordBody) return;
+    const stored = item.shortfalls && typeof item.shortfalls === "object" ? item.shortfalls : {};
+    recordBody.querySelectorAll("input[data-shortfall-stage]").forEach((input) => {
+      if (input === document.activeElement) return;
+      const stage = input.getAttribute("data-shortfall-stage");
+      const val = Object.prototype.hasOwnProperty.call(stored, stage) ? stored[stage] : "";
+      input.value = val === "" || val == null ? "" : String(val);
+    });
+  }
+
+  function paintFabricStageChain(item) {
+    paintFabricStageMeters(item);
+    paintFabricShortfalls(item);
   }
 
   function renderFabricRecord(item) {
@@ -11712,6 +11785,8 @@ function setupOpsWorkbenches() {
     if (clockTimer) window.clearInterval(clockTimer);
     clockTimer = 0;
     openRecord = { kind: "fabric", id };
+    ensureFabricShortfalls(item);
+    save(FABRIC_JOBS_KEY, fabricJobs);
     renderFabricRecord(item);
     recordOverlay.hidden = false;
   }
@@ -11788,6 +11863,8 @@ function setupOpsWorkbenches() {
       if (curIdx >= route.length - 1) return { ...item, completed: true, currentStage: route[route.length - 1] };
       return { ...item, currentStage: route[curIdx + 1] };
     });
+    const item = fabricJobs.find((entry) => entry.id === id);
+    if (item) ensureFabricShortfalls(item);
     save(FABRIC_JOBS_KEY, fabricJobs);
     renderFabricJobs();
     refreshOpenRecord();
@@ -11932,22 +12009,25 @@ function setupOpsWorkbenches() {
           const stage = metersInput.getAttribute("data-stage-meters");
           if (!item || !stage) return;
           setFabricStageMeters(item, stage, metersInput.value);
+          syncShortfallsFromMeters(item);
           item.route = withFabricIssued(item.route);
           save(FABRIC_JOBS_KEY, fabricJobs);
-          paintFabricStageMeters(item);
+          paintFabricStageChain(item);
           return;
         }
         const input = event.target.closest(".fab-shortfall-input");
-        if (!input || !openRecord || openRecord.kind !== "fabric") return;
+        if (!input || input.classList.contains("fab-stage-meters-input")) return;
+        if (!openRecord || openRecord.kind !== "fabric") return;
         const stage = input.getAttribute("data-shortfall-stage");
         const item = fabricJobs.find((entry) => entry.id === openRecord.id);
         if (!item || !stage) return;
         if (!item.shortfalls || typeof item.shortfalls !== "object") item.shortfalls = {};
         item.shortfalls[stage] = input.value.trim();
         clearFabricStageMetersAfter(item, stage);
+        syncShortfallsFromMeters(item);
         item.route = withFabricIssued(item.route);
         save(FABRIC_JOBS_KEY, fabricJobs);
-        paintFabricStageMeters(item);
+        paintFabricStageChain(item);
       });
     }
 
