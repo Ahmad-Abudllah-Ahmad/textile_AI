@@ -4,7 +4,7 @@
   "private": true,
   "description": "TEX//STACK textile operations demo with Mill Knowledge Copilot",
   "scripts": {
-    "dev": "node api.js && node server.js",
-    "build": "node api.js && node scripts/vercel-static-build.mjs"
+    "dev": "node init && node server.js",
+    "build": "node init && node scripts/vercel-static-build.mjs"
   }
 }
